@@ -15,9 +15,9 @@ This library requires the following dependencies be present in your application:
 - [ng-common](https://github.com/GeoPlatform/ng-common)
 
 
-### Including Map Core in your app
+### Including GeoPlatform API Client in your app
 
-Map core should be included in your app _after_ you provided environment-specific
+This dependency should be included in your app _after_ you provided environment-specific
 configuration variables. It expects `window.GeoPlatform` to exist at runtime.
 See Environment Variables below for details on what is expected to be provided.
 
@@ -61,10 +61,7 @@ GeoPlatform = {
 ```
 
 
-## Using GeoPlatform Client
-Using map core functionality in an application is described in the following sections.
-
-### GeoPlatform APIs
+## Using GeoPlatform API Client
 To learn how to use the GeoPlatform API to fetch, create, update, and remove
 GeoPlatform Assets, see the [GeoPlatform API](api.md) documentation.
 

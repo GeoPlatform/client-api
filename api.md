@@ -3,7 +3,7 @@
 ## ItemService
 [GeoPlatform.ItemService](src/shared/item-service.js) is a base class from which implementations exist that
 allow interacting with GeoPlatform model objects such as Maps, Layers, Services, etc.  
-Included with the Map Core's main build file are implementations of ItemService
+Included with the the library's main build file are implementations of ItemService
 which use jQuery to perform AJAX requests against the GeoPlatform API.
 
 - [JQueryItemService](src/shared/item-service-jquery.js) - extension of ItemService, base class using jQuery

@@ -62,7 +62,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             _classCallCheck(this, Query);
 
             //fields list sent to MDR in order to have these properties for display in search results
-            this._fields = ['created', 'modified', 'publishers', 'themes', 'description', 'extent'];
+            this._fields = ['created', 'modified', 'createdBy', 'publishers', 'themes', 'description'];
 
             //facets list sent to MDR in order to get aggregation numbers
             this._facets = ['types', 'themes', 'publishers', 'serviceTypes', 'schemes', 'visibility', 'createdBy'];

@@ -26,8 +26,7 @@
 
             //fields list sent to MDR in order to have these properties for display in search results
             this._fields = [
-                'created','modified','publishers',
-                'themes','description','extent'
+                'created','modified','createdBy','publishers','themes','description'
             ];
 
             //facets list sent to MDR in order to get aggregation numbers

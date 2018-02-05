@@ -11,12 +11,24 @@ This library requires the following dependencies be present in your application:
 - [Q](https://cdnjs.cloudflare.com/ajax/libs/q.js/1.5.1/q.js) - version 1.5+
 
 
-### GeoPlatform Dependencies
-- [ng-common](https://github.com/GeoPlatform/ng-common)
+## NG-Common
+The ng-common GeoPlatform library provides Angular 1.x components, services,
+filters, and other resources for interacting with the GeoPlatform API and Object Model
+from within the UI of an application. It does not rely upon this library,
+nor does this library rely upon it.
+
+This library contains Angular-based services for invoking the GeoPlatform API,
+but nothing more. If you need visual components or support for more than just
+API calling, it is recommended that you use ng-common in your application.
+
+It is possible to utilize both libraries; ng-common at the front-end UI layer and
+this library within the backend NodeJS server layer. See the NodeJS section on how
+to use client-api in a NodeJS application.
 
 
-### Including GeoPlatform API Client in your app
+## Including GeoPlatform API Client in your app...
 
+### Within a front-end application
 This dependency should be included in your app _after_ you provided environment-specific
 configuration variables. It expects `window.GeoPlatform` to exist at runtime.
 See Environment Variables below for details on what is expected to be provided.
@@ -37,7 +49,7 @@ If you are using Angular 1.x, import the client.ng.js file to get access to
 <script src="geoplatform.client.ng.js"></script>
 ```
 
-## Environment Variables
+#### Environment Variables
 An example of the `GeoPlatform` object and environment variables contained
 within is shown below.
 
@@ -61,12 +73,29 @@ GeoPlatform = {
 ```
 
 
+### Within a NodeJS Server-side application
+
+First, add this library as a run-time dependency to your server's package.json file:
+
+```json
+"geoplatform.client": "git+https://github.com/GeoPlatform/client-api.git",
+```
+
+Then, install the library using NPM
+
+```
+$>npm install geoplatform.client
+```
+
+Lastly, include the necessary modules in your application's source code. See the [GeoPlatform API](api.md) documentation for details.
+
+
 ## Using GeoPlatform API Client
 To learn how to use the GeoPlatform API to fetch, create, update, and remove
-GeoPlatform Assets, see the [GeoPlatform API](api.md) documentation.
+GeoPlatform Assets, see the [GeoPlatform API](api.md) and [Query](query.md) documentation.
 
-### Miscellaneous
+## Miscellaneous
 
-#### Conventions
+### Conventions
 If defining a class or object or constant, use upper case. If defining a function,
 use camel case.

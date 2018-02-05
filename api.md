@@ -1,30 +1,31 @@
 # GeoPlatform APIs
 
-## ItemService
-[GeoPlatform.ItemService](src/services/base.js) is a base class from which implementations exist that
+## Services
+[ItemService](src/services/base.js) is a base class from which implementations exist that
 allow interacting with GeoPlatform model objects such as Maps, Layers, Services, etc.  
 Included with the the library's main build file are implementations of ItemService
 which use jQuery to perform AJAX requests against the GeoPlatform API.
 
-- [JQueryItemService](src/services/item-jquery.js) - extension of ItemService, base class using jQuery
-- [JQueryMapService](src/services/map-jquery.js) - extension of JQueryItemService which works with GP Map objects
-- [JQueryLayerService](src/services/layer-jquery.js) - extension of JQueryItemService which works with GP Layer objects
-- [JQueryServiceService](src/services/service-jquery.js) - extension of JQueryItemService which works with GP Service objects
+- [JQueryItemService](src/services/jq/item.js) - extension of ItemService, base class using jQuery
+- [JQueryMapService](src/services/jq/map.js) - extension of JQueryItemService which works with GP Map objects
+- [JQueryLayerService](src/services/jq/layer.js) - extension of JQueryItemService which works with GP Layer objects
+- [JQueryServiceService](src/services/jq/service.js) - extension of JQueryItemService which works with GP Service objects
 
 
 Included with the "ng" build file for Angular 1.x applications are
 implementations of ItemService which use Angular's $http service.
 
-- [NGItemService](src/services/item-ng.js) - extension of ItemService, base class using $http  
-- [NGMapService](src/services/map-ng.js) - extension of NGItemService which works with GP Map objects
-- [NGLayerService](src/services/layer-ng.js) - extension of NGItemService which works with GP Layer objects
-- [NGServiceService](src/services/service-ng.js) - extension of NGItemService which works with GP Service objects
+- [NGItemService](src/services/ng/item.js) - extension of ItemService, base class using $http  
+- [NGMapService](src/services/ng/map.js) - extension of NGItemService which works with GP Map objects
+- [NGLayerService](src/services/ng/layer.js) - extension of NGItemService which works with GP Layer objects
+- [NGServiceService](src/services/ng/service.js) - extension of NGItemService which works with GP Service objects
 
 
 _Note:_ Using Angular's $http service allows you to define global behaviors in your application's
 config file using $httpProvider. This can include forwarding authentication credentials automatically
 or appending parameters and headers to each request.  For example, setting a default timeout for all $http
 service requests:
+
 
 ```javascript
 
@@ -36,19 +37,44 @@ angular.module('myApp', [])
 
 ```
 
+Provided via module.exports and usable within NodeJS applications are implementations
+which use [request](https://github.com/request/request) to perform HTTP calls.
+
+- [NodeItemService](src/services/node/item.js) - extension of ItemService, base class using request
+- [NodeMapService](src/services/node/map.js) - extension of NodeItemService which works with GP Map objects
+- [NodeLayerService](src/services/node/layer.js) - extension of NodeItemService which works with GP Layer objects
+- [NodeServiceService](src/services/node/service.js) - extension of NodeItemService which works with GP Service objects
+- [NodeServiceService](src/services/node/dataset.js) - extension of NodeItemService which works with GP Dataset objects
+- [NodeServiceService](src/services/node/gallery.js) - extension of NodeItemService which works with GP Gallery objects
+
+
+
+
 ### Service API
 
+- `ItemService.constructor(:baseUrl)` - creates a new instance of the service and points api calls to the specified GP API
 - `ItemService.search(:query)` - Searches items using specified query parameters.
 - `ItemService.get(:id)` - Fetch item with specified identifier
 - `ItemService.save(:item)` - Create or update the specified item. If 'item.id' exists, updates with HTTP-PUT. Otherwise, creates using HTTP-POST.
 - `ItemService.patch(:id, :patch)` - Partial update of item with specified identifier using the specified HTTP-PATCH ops.
 - `ItemService.remove(:id)` - Delete item with specified identifier
 
+#### Configuring the GeoPlatform API URL
+The JQuery and Angular versions of `ItemService` and its sub-classes will, by default,
+use the `GeoPlatform` configuration object to direct all API calls using the services
+to that defined by `GeoPlatform.ualUrl` (the location of the GeoPlatform Unified Access Layer service).
+If you wish to override that location, provide the desired UAL base endpoint (without "/api/...")
+when calling the constructor of the service.
+
+__Note:__ Node-based `ItemService` implementations __require__ the base URL to be provided
+in the constructor as there is no `GeoPlatform` configuration object present when
+operating inside a NodeJS app.
+
 ### Examples
 
+#### JQuery
 ```javascript
-let query = GeoPlatform.QueryFactory()
-    .types('Map','Layer');
+let query = GeoPlatform.QueryFactory().types('Map','Layer');
 let svc = new GeoPlatform.JQueryItemService();
 svc.search(query)
 .then( response => {
@@ -62,55 +88,65 @@ svc.search(query)
 .catch(e=>{...});
 ```
 
+
+#### Angular
+
 ```javascript
-let item = {
-    type: "Map",
-    title: "My New Map",
-    label: "My New Map",
-    description: "This map needs a description",
-    createdBy: 'testUser',
-    baseLayer: null,
-    layers: [],
-    keywords: [],
-    themes: [],
-    resourceTypes: ['http://www.geoplatform.gov/ont/openmap/GeoplatformMap']
-};
-//save new map
-let svc = new GeoPlatform.JQueryMapService();
-svc.save(item)
-//then work against persisted copy
-.then( saved => {
-
-    //patch the map by changing its label
-    let patch = [{
-        op: 'replace',
-        path: '/label',
-        value: "Updated label"
-    }];
-    return svc.patch(saved.id, patch);
-
+let query = GeoPlatform.QueryFactory().types('Map','Layer');
+let svc = new GeoPlatform.NGItemService();
+svc.search(query)
+.then( response => {
+    if(!response.results.length) {
+        console.log("No results");
+        return;
+    }
+    console.log(response.results.length + " of " +
+    response.totalResults + " matches");
 })
-//lastly, remove the map
-.then( updated => svc.remove(updated.id) )
-// map has been removed
-.then( () => {
-    //204 empty response
-})
-.catch(e => { ... });
+.catch(e=>{...});
 ```
 
 
-
-
-### Maps
+#### NodeJS
 
 ```javascript
-new GeoPlatform.JQueryMapService().get(mapId).then( map => {...}).catch(e=>{...});
+const GPAPI = require('geoplatform.client')
+const Query = GPAPI.Query
+const ItemTypes = GPAPI.ItemTypes
+const ItemService = GPAPI.ItemService
+
+module.exports = {
+    listDatasets: function() {
+        let apiUrl = 'https://sit-ual.geoplatform.us'
+        let query = new Query().types(ItemTypes.DATASET)
+        return new ItemService(apiUrl).search(query)
+    }
+}
 ```
+
+
+## NodeJS Modules
+The following modules are exposed via `require('geoplatform.client')`:
+- `ItemTypes` - set of supported GeoPlatform object model item types.
+- `QueryParameters` - set of supported query parameters
+- `Query` - class used to build queries
+- `QueryFactory` - convenience factory for quickly creating query instances
+- `ServiceFactory` - convenience factor for quickly creating a service based upon a specified object model item type
+- `ItemService` - default API service, supports all item types
+- `DatasetService` - API service for working with Datasets
+- `MapService` - API service for working with Maps
+- `LayerService` - API service for working with Layers
+- `ServiceService` - API service for working with Services
+- `GalleryService` - API service for working with Galleries
+- `UtilsService` - API service for miscellaneous usage not directly tied to any item type, such as API capabilities queries and GeoJSON file parsing
+
+
+
+
 
 ### Layers
 
-`JQueryLayerService` and `NGLayerService` additionally provide the following methods:
+Layer-based implementations of `ItemService` additionally provide the following methods:
 
 - `.style(:id)` - requests JSON style content for the FeatureLayer with the specified identifier
 - `.describe(:id, :options)` - requests feature information for RasterLayer with specified identifier using OGC GetFeatureInfo operation (The layer must reference a service of type WMS)
@@ -135,9 +171,9 @@ svc.get(layerId)
 
 ### Services
 
-`JQueryServiceService` and `NGServiceService` additionally provide the following methods:
+Service-based implementations of `ItemService` additionally provide the following methods:
 
-- `.about(:service)` - requests updated service information from the remote web service 
+- `.about(:service)` - requests updated service information from the remote web service
 
 ```javascript
 let svc = new GeoPlatform.JQueryServiceService();
@@ -149,121 +185,6 @@ svc.get(serviceId)
 .catch(e=>{...});
 ```
 
-## Query
 
-The 'search' method of ItemService implementations accepts both either generic
-JS objects containing parameter name and value combinations to send as the query string
-and GeoPlatform.Query objects. `Query` provides methods for quickly building queries
-based upon the GeoPlatform object model.
-
-### Creating a Query
-You can instantiate Query directly or use `GeoPlatform.QueryFactory` to get a new Query instance.
-
-```javascript
-let queryA = new GeoPlatform.Query();
-queryA.setQ("testing");
-
-let queryB = GeoPlatform.QueryFactory();
-queryB.setQ("testing");
-```
-
-### Fluent Queries
-
-`Query` exposes both getter/setter methods for each supported query parameter as well
-as a fluent version of the setter which returns "this", allowing you to chain
-method calls.
-
-```javascript
-//Both of these are equivalent
-let queryA = new GeoPlatform.Query();
-queryA.setTypes( 'Layer' );
-queryA.setEndDate( new Date().getTime() );
-
-let queryB = new GeoPlatform.Query()
-    .types( 'Layer' )
-    .ends( new Date().getTime() );
-```
-
-### Query.setQ()
-
-The `setQ()`, `getQ()`, `q()` methods allow setting/getting the "q" parameter which
-maps to free text search in the GeoPlatform API.  This is equivalent to searching
-labels, descriptions, keywords, and any other textual field that supports being searched
-via free text.
-
-Values with spaces are treated as multiple, OR'ed constraints. To search for a specific
-phrase, wrap the value with double quotes.
-
-```javascript
-let query = new GeoPlatform.Query().q('"This is a phrase"');
-```
-
-### Date Parameters
-Date values should be passed to Query methods as their millisecond representation.
-
-```javascript
-let queryB = new GeoPlatform.Query().ends( new Date().getTime() );
-```
-
-### Requesting Specific Item Properties
-By default, search result items contain only a limited set of properties:
-
-- ID ('id') - included automatically
-- URI ('uri') - included automatically
-- Type ('type') - included automatically
-- Label ('label') - included automatically
-- Description ('description')
-- Created by ('createdBy')
-- Creation date ('created')
-- Last modified date ('modified')
-- Publishing Organizations ('publishers')
-- Themes ('themes')
-
-To request a different set of fields, specify them using `Query.setFields()` or
-`Query.fields()`. To get the current set of fields, use `Query.getFields()`.
-
-_Note:_ You must specify the property name to use. For example, to also request
-the geographic extent for each item in the search results, do the following:
-
-```javascript
-let query = new GeoPlatform.Query();
-let fields = query.getFields();
-fields.push('extent'); //'extent' is the property to use in this case
-query.setFields(fields);
-```
-
-
-### Request Faceted Information
-Search results contain facet information specifying how certain values appear
-within the entire repository of data.  By default, the following facets are
-requested with each search:
-
-- Types ('types')
-- Themes ('themes')
-- Publishers ('publishers')
-- Service Types ('serviceTypes') - only applies to type 'regp:Service' items
-- Concept Schemes ('schemes') - only applies to type 'skos:Concept' items
-- Visibility ('visibility')
-- Created By ('createdBy')
-
-To omit facet information, use `Query.setFacets(false)`.  To request a different
-set of facets, do the following:
-
-```javascript
-let query = new GeoPlatform.Query();
-let facets = query.getFacets();
-facets.push('layerType'); //Layer.layerType facet info requested
-query.setFacets(facets);
-```
-
-### Sorting
-
-The `Query.setSort()` and `Query.sort()` methods allows you to set both the property
-and direction of sorting to use. To specifically set either, use the `Query.setSortField()`
-and `Query.setSortOrder()` methods.
-
-The list of supported default sort options can be retrieved using `Query.getSortOptions()`.
-
-### Clearing Query Values
-
-To reset a Query instance, use `Query.clear()`;
+## Queries
+For information on how to construct Query objects to search using ItemService implementations, see the [Query](query.md) documentation.

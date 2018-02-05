@@ -35,6 +35,7 @@ class NodeServiceService extends NodeItemService {
             let opts = this.buildRequest('POST', this.baseUrl + '/about', service, options);
             return this.execute(opts);
         })
+        .then( response => response.body )
         .catch(e => {
             let err = new Error(`NodeServiceService.about() -
                 Error describing service: ${e.message}`);
@@ -61,7 +62,7 @@ class NodeServiceService extends NodeItemService {
             let opts = this.buildRequest('GET', url, params, options);
             return this.execute(opts);
         })
-        .then( response => response.results )
+        .then( response => response.body.results )
         .catch(e => {
             let err = new Error(`NodeServiceService.types() -
                 Error fetching service types: ${e.message}`);
@@ -83,7 +84,7 @@ class NodeServiceService extends NodeItemService {
             let opts = this.buildRequest('POST', url, service, options);
             return this.execute(opts);
         })
-        .then( response => response.results )
+        .then( response => response.body.results )
         .catch(e => {
             let err = new Error(`NodeServiceService.import() -
                 Error importing service: ${e.message}`);
@@ -105,6 +106,7 @@ class NodeServiceService extends NodeItemService {
             let opts = this.buildRequest('GET', url, null, options);
             return this.execute(opts);
         })
+        .then( response => response.body )
         .catch(e => {
             let err = new Error(`NodeServiceService.harvest() -
                 Error harvesting layers from service: ${e.message}`);
@@ -126,6 +128,7 @@ class NodeServiceService extends NodeItemService {
             let opts = this.buildRequest('GET', url, null, options);
             return this.execute(opts);
         })
+        .then( response => response.body )
         .catch(e => {
             let err = new Error(`NodeServiceService.liveTest() -
                 Error testing service: ${e.message}`);

@@ -37,6 +37,7 @@ class NodeUtilsService extends NodeItemService {
             let opts = this.buildRequest("GET", url, query||{}, options);
             return this.execute(opts);
         })
+        .then( response => response.body )
         .catch(e => {
             let err = new Error(`NodeUtilsService.capabilities() - Error getting capabilities: ${e.message}`);
             return Q.reject(err);
@@ -69,6 +70,7 @@ class NodeUtilsService extends NodeItemService {
             delete opts.body;
             return this.execute(opts);
         })
+        .then( response => response.body )
         .catch(e => {
             let err = new Error(`NodeUtilsService.parseFile() - Error parsing file: ${e.message}`);
             return Q.reject(err);

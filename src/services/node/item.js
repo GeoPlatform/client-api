@@ -32,6 +32,7 @@ class NodeItemService extends ItemService {
             let opts = this.buildRequest("GET", this.baseUrl + '/' + id, null, options);
             return this.execute(opts);
         })
+        .then( response => response.body )
         .catch(e => {
             let err = new Error(`ItemService.save() - Error fetching item: ${e.message}`);
             return Q.reject(err);
@@ -59,6 +60,7 @@ class NodeItemService extends ItemService {
             return this.execute(opts);
 
         })
+        .then( response => response.body )
         .catch(e => {
             let err = new Error(`ItemService.save() - Error saving item: ${e.message}`);
             return Q.reject(err);
@@ -77,6 +79,7 @@ class NodeItemService extends ItemService {
             let opts = this.buildRequest("DELETE", this.baseUrl + '/' + id, null, options);
             return this.execute(opts);
         })
+        .then( response => response.body )
         .catch(e => {
             let err = new Error(`ItemService.save() - Error deleting item: ${e.message}`);
             return Q.reject(err);
@@ -95,6 +98,7 @@ class NodeItemService extends ItemService {
             let opts = this.buildRequest("PATCH", this.baseUrl + '/' + id, patch, options);
             return this.execute(opts);
         })
+        .then( response => response.body )
         .catch(e => {
             let err = new Error(`ItemService.save() - Error patching item: ${e.message}`);
             return Q.reject(err);
@@ -122,6 +126,7 @@ class NodeItemService extends ItemService {
             let opts = this.buildRequest("GET", this.baseUrl, params, options);
             return this.execute(opts);
         })
+        .then( response => response.body )
         .catch(e => {
             let err = new Error(`ItemService.search() - Error searching items: ${e.message}`);
             return Q.reject(err);
@@ -164,6 +169,7 @@ class NodeItemService extends ItemService {
             delete opts.body;
             return this.execute(opts);
         })
+        .then( response => response.body )
         .catch( e => {
             let err = new Error(`ItemService.import() - Error importing item: ${e.message}`);
             return Q.reject(err);
@@ -186,7 +192,7 @@ class NodeItemService extends ItemService {
             opts.json = false;
             return this.execute(opts)
         })
-        .then( (body, response) => response )
+        .then( response => response.response )
         .catch( e => {
             let err = new Error(`ItemService.export() - Error exporting item: ${e.message}`);
             return Q.reject(err);
@@ -207,6 +213,7 @@ class NodeItemService extends ItemService {
             let opts = this.buildRequest("POST", url, object, options);
             return this.execute(opts);
         })
+        .then( response => response.body )
         .catch( e => {
             let err = new Error(`ItemService.getUri() - Error getting URI for item: ${e.message}`);
             return Q.reject(err);
@@ -272,7 +279,7 @@ class NodeItemService extends ItemService {
         let deferred = Q.defer();
         request(options, (error, response, body) => {
             this.checkAndHandleError(error, response)
-            .then( () =>  deferred.resolve(body, response))
+            .then( () =>  deferred.resolve({body:body, response:response}))
             .catch( e => deferred.reject(e) );
         });
         return deferred.promise;

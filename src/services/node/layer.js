@@ -25,6 +25,7 @@ class NodeLayerService extends NodeItemService {
             let opts = this.buildRequest("GET", url, null, options);
             return this.execute(opts);
         })
+        .then( response => response.body )
         .catch(e => {
             let err = new Error(`NodeLayerService.save() - Error deleting item: ${e.message}`);
             return Q.reject(err);
@@ -67,6 +68,7 @@ class NodeLayerService extends NodeItemService {
             let opts = this.buildRequest("GET", url, params, options);
             return this.execute(opts);
         })
+        .then( response => response.body )
         .catch(e => {
             let err = new Error(`NodeLayerService.describe() -
                 Error describing layer feature: ${e.message}`);

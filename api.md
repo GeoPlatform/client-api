@@ -44,8 +44,8 @@ which use [request](https://github.com/request/request) to perform HTTP calls.
 - [NodeMapService](src/services/node/map.js) - extension of NodeItemService which works with GP Map objects
 - [NodeLayerService](src/services/node/layer.js) - extension of NodeItemService which works with GP Layer objects
 - [NodeServiceService](src/services/node/service.js) - extension of NodeItemService which works with GP Service objects
-- [NodeServiceService](src/services/node/dataset.js) - extension of NodeItemService which works with GP Dataset objects
-- [NodeServiceService](src/services/node/gallery.js) - extension of NodeItemService which works with GP Gallery objects
+- [NodeDatasetService](src/services/node/dataset.js) - extension of NodeItemService which works with GP Dataset objects
+- [NodeGalleryService](src/services/node/gallery.js) - extension of NodeItemService which works with GP Gallery objects
 
 
 

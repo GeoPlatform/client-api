@@ -1,12 +1,12 @@
 # Queries
 
-The 'search' method of ItemService implementations accepts both either generic
+The 'search' method of `ItemService` implementations accepts both either generic
 JS objects containing parameter name and value combinations to send as the query string
 and GeoPlatform.Query objects. `Query` provides methods for quickly building queries
 based upon the GeoPlatform object model.
 
 ## Creating a Query
-You can instantiate Query directly or use `QueryFactory` to get a new Query instance.
+You can instantiate `Query` directly or use `QueryFactory` to get a new `Query` instance.
 
 ### Client-side
 
@@ -52,7 +52,8 @@ let queryB = new GeoPlatform.Query()
 
 
 ## Query Parameters
-You can get a list of the predefined query parameters supported by the Query object using the QueryParameters object:
+You can get a list of the predefined query parameters supported by the
+`Query` object using the `QueryParameters` object:
 
 ### Client-side
 ```javascript
@@ -81,7 +82,7 @@ let query = new GeoPlatform.Query().q('"This is a phrase"');
 ```
 
 ## Date Parameters
-Date values should be passed to Query methods as their millisecond representation.
+Date values should be passed to `Query` methods as their millisecond representation.
 
 ```javascript
 let queryB = new GeoPlatform.Query().ends( new Date().getTime() );
@@ -90,16 +91,16 @@ let queryB = new GeoPlatform.Query().ends( new Date().getTime() );
 ## Requesting specific result properties
 By default, search result items contain only a limited set of properties:
 
-- ID ('id') - included automatically
-- URI ('uri') - included automatically
-- Type ('type') - included automatically
-- Label ('label') - included automatically
-- Description ('description')
-- Created by ('createdBy')
-- Creation date ('created')
-- Last modified date ('modified')
-- Publishing Organizations ('publishers')
-- Themes ('themes')
+- ID (`id`) - included automatically
+- URI (`uri`) - included automatically
+- Type (`type`) - included automatically
+- Label (`label`) - included automatically
+- Description (`description`)
+- Created by (`createdBy`)
+- Creation date (`created`)
+- Last modified date (`modified`)
+- Publishing Organizations (`publishers`)
+- Themes (`themes`)
 
 To request a different set of fields, specify them using `Query.setFields()` or
 `Query.fields()`. To get the current set of fields, use `Query.getFields()`.
@@ -120,13 +121,13 @@ Search results contain facet information specifying how certain values appear
 within the entire repository of data.  By default, the following facets are
 requested with each search:
 
-- Types ('types')
-- Themes ('themes')
-- Publishers ('publishers')
-- Service Types ('serviceTypes') - only applies to type 'regp:Service' items
-- Concept Schemes ('schemes') - only applies to type 'skos:Concept' items
-- Visibility ('visibility')
-- Created By ('createdBy')
+- Types (`types`)
+- Themes (`themes`)
+- Publishers (`publishers`)
+- Service Types (`serviceTypes`) - only applies to type "regp:Service" items
+- Concept Schemes (`schemes`) - only applies to type "skos:Concept" items
+- Visibility (`visibility`)
+- Created By (`createdBy`)
 
 To omit facet information, use `Query.setFacets(false)`.  To request a different
 set of facets, do the following:
@@ -148,4 +149,4 @@ The list of supported default sort options can be retrieved using `Query.getSort
 
 ## Clearing Query values
 
-To reset a Query instance, use `Query.clear()`;
+To reset a Query instance, use `Query.clear()`.

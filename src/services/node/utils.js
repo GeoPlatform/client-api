@@ -21,11 +21,12 @@ class NodeUtilsService extends NodeItemService {
 
 
     /**
-     * @param {string} property
-     * @param {Object} options
-     * @return {Promise}
+     * @param {string} property - optional capa property to specifically request
+     * @param {Object} query - optional query parameters to include with request
+     * @param {Object} options - optional config to send with http request
+     * @return {Promise} resolving capabilities object
      */
-    capabilities (property, options) {
+    capabilities (property, query, options) {
 
         let url = this.baseUrl + '/api/capabilities';
         if(property)
@@ -33,7 +34,7 @@ class NodeUtilsService extends NodeItemService {
 
         return Q.resolve( url )
         .then( (url) => {
-            let opts = this.buildRequest("GET", url, null, options);
+            let opts = this.buildRequest("GET", url, query||{}, options);
             return this.execute(opts);
         })
         .catch(e => {

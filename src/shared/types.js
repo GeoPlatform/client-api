@@ -23,14 +23,15 @@
 
 
     const ItemTypes = {
-        DATASET: "dcat:Dataset",
-        SERVICE: "regp:Service",
-        LAYER: "Layer",
-        MAP: "Map",
-        GALLERY: "Gallery",
-        CONCEPT: "skos:Concept",
-        CONCEPT_SCHEME: "skos:ConceptScheme",
-        STANDARD: 'dct:Standard'
+        DATASET         : "dcat:Dataset",
+        SERVICE         : "regp:Service",
+        LAYER           : "Layer",
+        MAP             : "Map",
+        GALLERY         : "Gallery",
+        ORGANIZATION    : "org:Organization",
+        CONCEPT         : "skos:Concept",
+        CONCEPT_SCHEME  : "skos:ConceptScheme",
+        STANDARD        : 'dct:Standard'
     }
 
     return ItemTypes;

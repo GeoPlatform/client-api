@@ -1,4 +1,8 @@
 
+// const request = require('request');
+// require('request-debug')(request);
+
+
 const GPClient = require('../../src/index');
 const Query = GPClient.Query;
 const ItemTypes = GPClient.ItemTypes;
@@ -23,6 +27,8 @@ let query = new Query()
      .start(0)
      .pageSize(50)
      .sort('modified', 'desc');
+
+// console.log(JSON.stringify(query.getQuery()));
 
 let service = new ItemService(URL);
 service.search(query)

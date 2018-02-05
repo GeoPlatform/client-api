@@ -35,6 +35,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         LAYER: "Layer",
         MAP: "Map",
         GALLERY: "Gallery",
+        ORGANIZATION: "org:Organization",
         CONCEPT: "skos:Concept",
         CONCEPT_SCHEME: "skos:ConceptScheme",
         STANDARD: 'dct:Standard'
@@ -166,12 +167,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "setParameter",
             value: function setParameter(name, value) {
-                this.query[name] = value;
+                if (value === null || value === undefined) delete this.query[name];else this.query[name] = value;
             }
         }, {
             key: "getParameter",
             value: function getParameter(key) {
-                return this.getParameter(ke);
+                return this.getParameter(key);
             }
         }, {
             key: "applyParameters",

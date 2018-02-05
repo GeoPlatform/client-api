@@ -88,11 +88,14 @@
         }
 
         setParameter (name, value) {
-            this.query[name] = value;
+            if(value === null || value === undefined)
+                delete this.query[name];
+            else
+                this.query[name] = value;
         }
 
         getParameter (key) {
-            return this.getParameter(ke);
+            return this.getParameter(key);
         }
 
         applyParameters (obj) { 
@@ -148,7 +151,7 @@
 
         // -----------------------------------------------------------
 
-        
+
         uri (uri) {
             this.setUri(uri);
             return this;

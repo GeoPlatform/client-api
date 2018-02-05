@@ -1,9 +1,8 @@
 # Queries
 
-The 'search' method of `ItemService` implementations accepts both either generic
-JS objects containing parameter name and value combinations to send as the query string
-and GeoPlatform.Query objects. `Query` provides methods for quickly building queries
-based upon the GeoPlatform object model.
+The 'search' method of `ItemService` implementations accepts both generic
+JS objects, containing parameter name and value combinations, and GeoPlatform.Query objects.
+`Query` provides methods for quickly building search criteria based upon the GeoPlatform object model.
 
 ## Creating a Query
 You can instantiate `Query` directly or use `QueryFactory` to get a new `Query` instance.

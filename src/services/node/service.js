@@ -25,14 +25,14 @@ class NodeServiceService extends NodeItemService {
      */
     about( service, options ) {
 
-        return Q.resolve( true )
-        .then( () => {
+        return Q.resolve( service )
+        .then( svc => {
 
-            if(!service) {
+            if(!svc) {
                 throw new Error("Must provide service to get metadata about");
             }
 
-            let opts = this.buildRequest('POST', this.baseUrl + '/about', service, options);
+            let opts = this.buildRequest('POST', this.baseUrl + '/about', svc, options);
             return this.execute(opts);
         })
         .then( response => response.body )
@@ -78,10 +78,10 @@ class NodeServiceService extends NodeItemService {
      */
     import (service, options) {
 
-        return Q.resolve( query )
-        .then( (params) => {
+        return Q.resolve( service )
+        .then( svc => {
             let url = this.baseUrl + '/import';
-            let opts = this.buildRequest('POST', url, service, options);
+            let opts = this.buildRequest('POST', url, svc, options);
             return this.execute(opts);
         })
         .then( response => response.body.results )
@@ -100,8 +100,8 @@ class NodeServiceService extends NodeItemService {
      */
     harvest (id, options) {
 
-        return Q.resolve( query )
-        .then( (params) => {
+        return Q.resolve( id )
+        .then( id => {
             let url = this.baseUrl + '/' + id + '/harvest';
             let opts = this.buildRequest('GET', url, null, options);
             return this.execute(opts);

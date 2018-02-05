@@ -112,15 +112,13 @@ class NodeItemService extends ItemService {
      */
     search (arg, options) {
 
-        return Q.resolve( true )
-        .then( () => {
+        return Q.resolve( arg )
+        .then( params => {
 
-            let params = arg;
-
-            if(arg && typeof(arg.getQuery) !== 'undefined') {
+            if(params && typeof(params.getQuery) !== 'undefined') {
                 //if passed a GeoPlatform.Query object,
                 // convert to parameters object
-                params = arg.getQuery();
+                params = params.getQuery();
             }
 
             let opts = this.buildRequest("GET", this.baseUrl, params, options);
@@ -207,10 +205,10 @@ class NodeItemService extends ItemService {
      */
     getUri (object, options) {
 
-        return Q.resolve( true )
-        .then( () => {
+        return Q.resolve( object )
+        .then( (obj) => {
             let url = this.apiBase + '/api/utils/uri';
-            let opts = this.buildRequest("POST", url, object, options);
+            let opts = this.buildRequest("POST", url, obj, options);
             return this.execute(opts);
         })
         .then( response => response.body )

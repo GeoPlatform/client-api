@@ -72,7 +72,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         function NGItemService() {
             _classCallCheck(this, NGItemService);
 
-            var _this = _possibleConstructorReturn(this, (NGItemService.__proto__ || Object.getPrototypeOf(NGItemService)).call(this));
+            var _this = _possibleConstructorReturn(this, (NGItemService.__proto__ || Object.getPrototypeOf(NGItemService)).call(this, GeoPlatform.ualUrl));
 
             if (typeof angular === 'undefined') throw new Error("Angular not defined");
             return _this;
@@ -301,11 +301,15 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         function NGMapService() {
             _classCallCheck(this, NGMapService);
 
-            var _this7 = _possibleConstructorReturn(this, (NGMapService.__proto__ || Object.getPrototypeOf(NGMapService)).call(this));
-
-            _this7.baseUrl = GeoPlatform.ualUrl + '/api/maps';
-            return _this7;
+            return _possibleConstructorReturn(this, (NGMapService.__proto__ || Object.getPrototypeOf(NGMapService)).call(this));
         }
+
+        _createClass(NGMapService, [{
+            key: "setUrl",
+            value: function setUrl(baseUrl) {
+                this.baseUrl = baseUrl + '/api/maps';
+            }
+        }]);
 
         return NGMapService;
     }(NGItemService);
@@ -348,19 +352,21 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         function NGLayerService() {
             _classCallCheck(this, NGLayerService);
 
-            var _this8 = _possibleConstructorReturn(this, (NGLayerService.__proto__ || Object.getPrototypeOf(NGLayerService)).call(this));
-
-            _this8.baseUrl = GeoPlatform.ualUrl + '/api/layers';
-            return _this8;
+            return _possibleConstructorReturn(this, (NGLayerService.__proto__ || Object.getPrototypeOf(NGLayerService)).call(this));
         }
 
-        /**
-         * @param {Object} options - optional set of request options to apply to xhr request
-         * @return {Promise} resolving style JSON object
-         */
-
-
         _createClass(NGLayerService, [{
+            key: "setUrl",
+            value: function setUrl(baseUrl) {
+                this.baseUrl = baseUrl + '/api/layers';
+            }
+
+            /**
+             * @param {Object} options - optional set of request options to apply to xhr request
+             * @return {Promise} resolving style JSON object
+             */
+
+        }, {
             key: "style",
             value: function style(options) {
                 var _this9 = this;
@@ -469,23 +475,25 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         function NGServiceService() {
             _classCallCheck(this, NGServiceService);
 
-            var _this11 = _possibleConstructorReturn(this, (NGServiceService.__proto__ || Object.getPrototypeOf(NGServiceService)).call(this));
-
-            _this11.baseUrl = GeoPlatform.ualUrl + '/api/services';
-            return _this11;
+            return _possibleConstructorReturn(this, (NGServiceService.__proto__ || Object.getPrototypeOf(NGServiceService)).call(this));
         }
 
-        /**
-         * Fetch metadata from the specified GeoPlatform Service's
-         * web-accessible implementation using either GetCapabilities
-         * or ESRI documentInfo.
-         * @param {Object} service - GeoPlatform Service object
-         * @param {Object} options - optional set of request options to apply to xhr request
-         * @return {Promise} resolving service metadata
-         */
-
-
         _createClass(NGServiceService, [{
+            key: "setUrl",
+            value: function setUrl(baseUrl) {
+                this.baseUrl = baseUrl + '/api/services';
+            }
+
+            /**
+             * Fetch metadata from the specified GeoPlatform Service's
+             * web-accessible implementation using either GetCapabilities
+             * or ESRI documentInfo.
+             * @param {Object} service - GeoPlatform Service object
+             * @param {Object} options - optional set of request options to apply to xhr request
+             * @return {Promise} resolving service metadata
+             */
+
+        }, {
             key: "about",
             value: function about(service, options) {
                 var _this12 = this;
@@ -512,4 +520,49 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }(NGItemService);
 
     return NGServiceService;
+});
+
+(function (root, factory) {
+    if (typeof define === "function" && define.amd) {
+        // Now we're wrapping the factory and assigning the return
+        // value to the root (window) and returning it as well to
+        // the AMD loader.
+        define(["ItemTypes", "NGItemService", "NGLayerService", "NGMapService", "NGServiceService"], function (ItemTypes, NGItemService, NGLayerService, NGMapService, NGServiceService) {
+            return root.NGServiceFactory = factory(ItemTypes, NGItemService, NGLayerService, NGMapService, NGServiceService);
+        });
+    } else if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === "object" && module.exports) {
+        // I've not encountered a need for this yet, since I haven't
+        // run into a scenario where plain modules depend on CommonJS
+        // *and* I happen to be loading in a CJS browser environment
+        // but I'm including it for the sake of being thorough
+        module.exports = root.NGServiceFactory = factory(require('../../shared/types'), require('./item'), require('./layer'), require('./map'), require('./service'));
+    } else {
+        GeoPlatform.NGServiceFactory = factory(GeoPlatform.ItemTypes, GeoPlatform.NGItemService, GeoPlatform.NGLayerService, GeoPlatform.NGMapService, GeoPlatform.NGServiceService);
+    }
+})(undefined || window, function (NGItemService, NGLayerService, NGMapService, NGServiceService) {
+
+    /**
+     * @param {any} arg - string type or object with type property
+     * @param {string} baseUrl - base endpoint of GeoPlatform API
+     * @return {ItemService}
+     */
+    var ServiceFactory = function ServiceFactory(arg, baseUrl) {
+        var type = typeof arg === 'string' ? arg : arg && arg.type ? arg.type : null;
+        if (!type) throw new Error("Must provide a type or object with a type specified");
+        if (!baseUrl) throw new Error("Must provide a base url");
+        switch (type) {
+            case Types.LAYER:
+                return new NGLayerService(baseUrl);
+            case Types.SERVICE:
+                return new NGServiceService(baseUrl);
+            case Types.MAP:
+                return new NGMapService(baseUrl);
+            // case Types.GALLERY: return new NGGalleryService(baseUrl);
+            // case Types.DATASET: return new NGDatasetService(baseUrl);
+            default:
+                return new NGItemService(baseUrl);
+        }
+    };
+
+    return ServiceFactory;
 });

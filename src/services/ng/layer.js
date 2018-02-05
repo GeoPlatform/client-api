@@ -42,7 +42,10 @@
 
         constructor() {
             super();
-            this.baseUrl = GeoPlatform.ualUrl + '/api/layers';
+        }
+
+        setUrl(baseUrl) {
+            this.baseUrl = baseUrl + '/api/layers';
         }
 
         /**

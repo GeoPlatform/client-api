@@ -6,9 +6,9 @@
         // Now we're wrapping the factory and assigning the return
         // value to the root (window) and returning it as well to
         // the AMD loader.
-        define(["q", "angular", "GeoPlatform", "NGItemService"],
-            function(Q, angular, GeoPlatform, NGItemService) {
-                return (root.NGServiceService = factory(Q, angular, GeoPlatform, NGItemService));
+        define(["jquery", "q", "GeoPlatform", "JQueryItemService"],
+            function(jQuery, Q, GeoPlatform, JQueryItemService) {
+                return (root.JQueryServiceService = factory(jQuery, Q, GeoPlatform, JQueryItemService));
             });
     } else if(typeof module === "object" && module.exports) {
         // I've not encountered a need for this yet, since I haven't
@@ -16,17 +16,19 @@
         // *and* I happen to be loading in a CJS browser environment
         // but I'm including it for the sake of being thorough
         module.exports = (
-            root.NGServiceService = factory(
+            root.JQueryServiceService = factory(
+                require("jquery"),
                 require('q'),
-                require("angular"),
                 require('GeoPlatform'),
-                require('NGItemService')
+                require('JQueryItemService')
             )
         );
     } else {
-        GeoPlatform.NGServiceService = factory(Q, angular, GeoPlatform, GeoPlatform.NGItemService);
+        GeoPlatform.JQueryServiceService = factory(jQuery, Q, GeoPlatform, GeoPlatform.JQueryItemService);
     }
-}(this||window, function(Q, angular, GeoPlatform, NGItemService) {
+}(this||window, function(jQuery, Q, GeoPlatform, JQueryItemService) {
+
+// ( function(jQuery, Q, L/*eaflet*/, GeoPlatform) {
 
     'use strict';
 
@@ -35,14 +37,17 @@
      * service for working with the GeoPlatform API to
      * retrieve and manipulate service objects.
      *
-     * @see GeoPlatform.NGItemService
+     * @see GeoPlatform.JQueryItemService
      */
 
-    class NGServiceService extends NGItemService {
+    class JQueryServiceService extends JQueryItemService {
 
         constructor() {
             super();
-            this.baseUrl = GeoPlatform.ualUrl + '/api/services';
+        }
+
+        setUrl(baseUrl) {
+            this.baseUrl = baseUrl + '/api/services';
         }
 
 
@@ -56,28 +61,29 @@
          */
         about( service, options ) {
 
-            if(!service) {
-                let err = new Error("Must provide service to get metadata about");
-                return Q.reject(err);
-            }
+            return Q.resolve( true )
+            .then( () => {
 
-            return Q.resolve( angular.injector(['ng']).get('$http') )
-            .then( $http => {
-                if(typeof($http) === 'undefined')
-                    throw new Error("Angular $http not resolved");
+                if(!service) {
+                    throw new Error("Must provide service to get metadata about");
+                }
 
+                let d = Q.defer();
                 let opts = this.buildRequest('POST', this.baseUrl + '/about', service, options);
-                return $http(opts);
-
-            }).catch( e => {
-                let m = `NGServiceService.get() - Error describing service: ${e.message}`;
-                let err = new Error(m);
+                opts.success = function(data) { d.resolve(data); };
+                opts.error = function(xhr, status, message) { d.reject(new Error(message)); };
+                jQuery.ajax(opts);
+                return d.promise;
+            })
+            .catch(e => {
+                let err = new Error(`JQueryServiceService.about() -
+                    Error describing service: ${e.message}`);
                 return Q.reject(err);
             });
         }
 
     }
 
-    return NGServiceService;
+    return JQueryServiceService;
 
 }));

@@ -10,33 +10,37 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-/**
- * Defines the L.GeoPlatform namespace object for later usage
- * in containing the various Leaflet extensions GeoPlatform
- * makes available
- */
-
 (function (root, factory) {
     if (typeof define === "function" && define.amd) {
         // Now we're wrapping the factory and assigning the return
         // value to the root (window) and returning it as well to
         // the AMD loader.
         define([], function () {
-            return factory();
+            return root.ItemTypes = factory();
         });
     } else if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === "object" && module.exports) {
         // I've not encountered a need for this yet, since I haven't
         // run into a scenario where plain modules depend on CommonJS
         // *and* I happen to be loading in a CJS browser environment
         // but I'm including it for the sake of being thorough
-        module.exports = factory();
+        module.exports = root.ItemTypes = factory();
     } else {
-        factory();
+        GeoPlatform.ItemTypes = factory();
     }
 })(undefined || window, function () {
 
-    //Do something
+    var ItemTypes = {
+        DATASET: "dcat:Dataset",
+        SERVICE: "regp:Service",
+        LAYER: "Layer",
+        MAP: "Map",
+        GALLERY: "Gallery",
+        CONCEPT: "skos:Concept",
+        CONCEPT_SCHEME: "skos:ConceptScheme",
+        STANDARD: 'dct:Standard'
+    };
 
+    return ItemTypes;
 });
 
 (function (root, factory) {
@@ -44,65 +48,94 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         // Now we're wrapping the factory and assigning the return
         // value to the root (window) and returning it as well to
         // the AMD loader.
-        define(["GeoPlatform"], function (GeoPlatform) {
-            return root.Query = factory(GeoPlatform);
+        define([], function () {
+            return root.QueryParameters = factory();
         });
     } else if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === "object" && module.exports) {
         // I've not encountered a need for this yet, since I haven't
         // run into a scenario where plain modules depend on CommonJS
         // *and* I happen to be loading in a CJS browser environment
         // but I'm including it for the sake of being thorough
-        module.exports = root.Query = factory(require('GeoPlatform'));
+        module.exports = root.QueryParameters = factory();
     } else {
-        GeoPlatform.Query = factory(GeoPlatform);
+        GeoPlatform.QueryParameters = factory();
     }
-})(undefined || window, function (GeoPlatform) {
+})(undefined || window, function () {
+
+    var Parameters = {
+        TYPES: 'type',
+        QUERY: 'q',
+        KEYWORDS: 'keyword',
+        CREATED_BY: 'createdBy',
+        CONTRIBUTED_BY: 'contributedBy',
+        CREATOR: 'creator.id',
+        SVC_TYPES: 'serviceType.id',
+        THEMES_ID: 'theme.id',
+        THEMES_LABEL: 'theme.label',
+        THEMES_URI: 'theme.uri',
+        PUBLISHERS: 'publisher.id',
+        PUBLISHERS_LABEL: 'publisher.label',
+        PUBLISHERS_URI: 'publisher.uri',
+        SCHEMES_ID: 'scheme.id',
+        SCHEMES_LABEL: 'scheme.label',
+        SCHEMES_URI: 'scheme.uri',
+        VISIBILITY: 'visibility',
+        EXTENT: 'extent',
+        MODIFIED_BEFORE: 'modified.max',
+        MODIFIED_AFTER: 'modified.min',
+        BEGINS: 'startDate.min',
+        ENDS: 'endDate.max',
+        RESOURCE_TYPE: 'resourceType'
+    };
+
+    return Parameters;
+});
+
+(function (root, factory) {
+    if (typeof define === "function" && define.amd) {
+        // Now we're wrapping the factory and assigning the return
+        // value to the root (window) and returning it as well to
+        // the AMD loader.
+        define(['QueryParameters'], function (QueryParameters) {
+            return root.Query = factory(QueryParameters);
+        });
+    } else if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === "object" && module.exports) {
+        // I've not encountered a need for this yet, since I haven't
+        // run into a scenario where plain modules depend on CommonJS
+        // *and* I happen to be loading in a CJS browser environment
+        // but I'm including it for the sake of being thorough
+        module.exports = root.Query = factory(require('./parameters'));
+    } else {
+        GeoPlatform.Query = factory(GeoPlatform.QueryParameters);
+    }
+})(undefined || window, function (QueryParameters) {
+
+    var FIELDS_DEFAULT = ['created', 'modified', 'createdBy', 'publishers', 'themes', 'description'];
+
+    var FACETS_DEFAULT = ['types', 'themes', 'publishers', 'serviceTypes', 'schemes', 'visibility', 'createdBy'];
+
+    var SORT_OPTIONS_DEFAULT = [{ value: "label,asc", label: "Name (A-Z)" }, { value: "label,desc", label: "Name (Z-A)" }, { value: "type,asc", label: "Type (A-Z)" }, { value: "type,desc", label: "Type (Z-A)" }, { value: "modified,desc", label: "Most recently modified" }, { value: "modified,asc", label: "Least recently modified" }, { value: "_score,desc", label: "Relevance" }];
+
     var Query = function () {
         function Query() {
             _classCallCheck(this, Query);
 
-            //fields list sent to MDR in order to have these properties for display in search results
-            this._fields = ['created', 'modified', 'createdBy', 'publishers', 'themes', 'description'];
-
-            //facets list sent to MDR in order to get aggregation numbers
-            this._facets = ['types', 'themes', 'publishers', 'serviceTypes', 'schemes', 'visibility', 'createdBy'];
-
-            this.sortOptions = [{ value: "label,asc", label: "Name (A-Z)" }, { value: "label,desc", label: "Name (Z-A)" }, { value: "type,asc", label: "Type (A-Z)" }, { value: "type,desc", label: "Type (Z-A)" }, { value: "modified,desc", label: "Most recently modified" }, { value: "modified,asc", label: "Least recently modified" }, { value: "_score,desc", label: "Relevance" }];
-
-            //list of this.query variables for mapping to parameters
-            this.parameters = {
-                TYPES: 'type',
-                THEMES_ID: 'theme.id',
-                THEMES_LABEL: 'theme.label',
-                THEMES_URI: 'theme.uri',
-                PUBLISHERS: 'publisher.id',
-                PUBLISHERS_LABEL: 'publisher.label',
-                PUBLISHERS_URI: 'publisher.uri',
-                CREATED_BY: 'createdBy',
-                CONTRIBUTED_BY: 'contributedBy',
-                CREATOR: 'creator.id',
-                SVC_TYPES: 'serviceType.id',
-                SCHEMES_ID: 'scheme.id',
-                SCHEMES_LABEL: 'scheme.label',
-                SCHEMES_URI: 'scheme.uri',
-                VISIBILITY: 'visibility',
-                QUERY: 'q',
-                KEYWORDS: 'keyword',
-                EXTENT: 'extent',
-                MODIFIED_BEFORE: 'modified.max',
-                MODIFIED_AFTER: 'modified.min',
-                BEGINS: 'startDate.min',
-                ENDS: 'endDate.max',
-                RESOURCE_TYPE: 'resourceType'
-            };
-
-            this.query = this.defaultQuery = {
+            this.defaultQuery = {
                 start: 0,
                 size: 10,
                 total: 0,
                 sort: "modified,desc",
-                fields: this._fields,
-                includeFacets: this._facets
+                fields: FIELDS_DEFAULT.slice(0),
+                includeFacets: FACETS_DEFAULT.slice(0)
+            };
+
+            this.query = {
+                start: 0,
+                size: 10,
+                total: 0,
+                sort: "modified,desc",
+                fields: FIELDS_DEFAULT.slice(0),
+                includeFacets: FACETS_DEFAULT.slice(0)
             };
         }
 
@@ -112,13 +145,17 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 var result = {};
                 for (var prop in this.query) {
                     var value = this.query[prop];
-                    if (typeof value.push !== 'undefined') {
+                    if (value !== null && typeof value.push !== 'undefined') {
                         value = value.join(',');
                     }
                     result[prop] = value;
                 }
                 return result;
             }
+
+            // -----------------------------------------------------------
+
+
         }, {
             key: "parameter",
             value: function parameter(name, value) {
@@ -144,6 +181,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                     }
                 }
             }
+
+            // -----------------------------------------------------------
+
+
         }, {
             key: "q",
             value: function q(text) {
@@ -158,13 +199,17 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "setQ",
             value: function setQ(text) {
-                this.setParameter(this.parameters.QUERY, text);
+                this.setParameter(QueryParameters.QUERY, text);
             }
         }, {
             key: "getQ",
             value: function getQ() {
-                return this.getParameter(this.parameters.QUERY);
+                return this.getParameter(QueryParameters.QUERY);
             }
+
+            // -----------------------------------------------------------
+
+
         }, {
             key: "keywords",
             value: function keywords(text) {
@@ -180,13 +225,17 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             key: "setKeywords",
             value: function setKeywords(text) {
                 if (text && typeof text.push !== 'undefined') text = text.join(',');
-                this.setParameter(this.parameters.KEYWORDS, text);
+                this.setParameter(QueryParameters.KEYWORDS, text);
             }
         }, {
             key: "getKeywords",
             value: function getKeywords() {
-                return this.getParameter(this.parameters.KEYWORDS);
+                return this.getParameter(QueryParameters.KEYWORDS);
             }
+
+            // -----------------------------------------------------------
+
+
         }, {
             key: "types",
             value: function types(_types) {
@@ -202,13 +251,17 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             key: "setTypes",
             value: function setTypes(types) {
                 if (types && types.push === 'undefined') types = [types];
-                this.setParameter(this.parameters.TYPES, types);
+                this.setParameter(QueryParameters.TYPES, types);
             }
         }, {
             key: "getTypes",
             value: function getTypes() {
-                return this.getParameter(this.parameters.TYPES);
+                return this.getParameter(QueryParameters.TYPES);
             }
+
+            // -----------------------------------------------------------
+
+
         }, {
             key: "createdBy",
             value: function createdBy(user) {
@@ -224,63 +277,167 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "setCreatedBy",
             value: function setCreatedBy(user) {
-                this.setParameter(this.parameters.CREATED_BY, user);
+                this.setParameter(QueryParameters.CREATED_BY, user);
             }
         }, {
             key: "getCreatedBy",
             value: function getCreatedBy() {
-                return this.getParameter(this.parameters.CREATED_BY);
+                return this.getParameter(QueryParameters.CREATED_BY);
             }
+
+            // -----------------------------------------------------------
+
+
+            /**
+             * Specify a Theme or set of Themes to constrain results. By
+             * default, values are assumed to be theme identifiers. If using
+             * theme labels or theme uris, specify the optional second parameter
+             * to be either QueryParameters.THEMES_LABEL or QueryParameters.THEMES_URI
+             * respectively.
+             * @param {array[string]} themes - string or array of strings containing theme constraint
+             * @param {string} parameter - optional, to indicate the parameter to use
+             * @return {Query}
+             */
+
         }, {
             key: "themes",
-            value: function themes(_themes, key) {
-                this.setThemes(_themes);
+            value: function themes(_themes, parameter) {
+                this.setThemes(_themes, parameter);
                 return this;
             }
 
             /**
-             * @param {array[string]} themes - themes to constrain by
-             * @param {string} key - optional, theme property to use
+             * Specify a Theme or set of Themes to constrain results. By
+             * default, values are assumed to be theme identifiers. If using
+             * theme labels or theme uris, specify the optional second parameter
+             * to be either QueryParameters.THEMES_LABEL or QueryParameters.THEMES_URI
+             * respectively.
+             * @param {array[string]} themes - theme or themes to constrain by
              */
 
         }, {
             key: "setThemes",
-            value: function setThemes(themes, key) {
+            value: function setThemes(themes, parameter) {
                 if (themes && themes.push === 'undefined') themes = [themes];
-                var param = this.parameters.THEMES_ID;
-                if (key && 'label' === key) param = this.parameters.THEMES_LABEL;else if (key && 'uri' === key) param = this.parameters.THEMES_URI;
+
+                //clear existing
+                this.setParameter(QueryParameters.THEMES_ID, null);
+                this.setParameter(QueryParameters.THEMES_LABEL, null);
+                this.setParameter(QueryParameters.THEMES_URI, null);
+
+                var param = parameter || QueryParameters.THEMES_ID;
                 this.setParameter(param, themes);
             }
         }, {
             key: "getThemes",
             value: function getThemes() {
-                return this.getParameter(this.parameters.THEMES);
+                return this.getParameter(QueryParameters.THEMES_ID) || this.getParameter(QueryParameters.THEMES_LABEL) || this.getParameter(QueryParameters.THEMES_URI);
             }
+
+            // -----------------------------------------------------------
+
+
+            /**
+             * Specify a Publisher or set of Publishers to constrain results. By
+             * default, values are assumed to be theme identifiers. If using
+             * theme labels or theme uris, specify the optional second parameter
+             * to be either QueryParameters.PUBLISHERS_LABEL or QueryParameters.PUBLISHERS_URI
+             * respectively.
+             * @param {string} parameter - optional, to indicate the parameter to use
+             * @return {Query}
+             */
+
         }, {
             key: "publishers",
-            value: function publishers(_publishers, key) {
-                this.setPublishers(_publishers);
+            value: function publishers(_publishers, parameter) {
+                this.setPublishers(_publishers, parameter);
                 return this;
             }
 
             /**
+             * Specify a Publisher or set of Publishers to constrain results. By
+             * default, values are assumed to be theme identifiers. If using
+             * theme labels or theme uris, specify the optional second parameter
+             * to be either QueryParameters.PUBLISHERS_LABEL or QueryParameters.PUBLISHERS_URI
+             * respectively.
              * @param {array[string]} publishers - publishing orgs to constrain by
-             * @param {string} key - optional, publisher property to use
              */
 
         }, {
             key: "setPublishers",
-            value: function setPublishers(publishers, key) {
+            value: function setPublishers(publishers, parameter) {
                 if (publishers && publishers.push === 'undefined') publishers = [publishers];
-                var param = this.parameters.PUBLISHERS_ID;
-                if (key && 'label' === key) param = this.parameters.PUBLISHERS_LABEL;else if (key && 'uri' === key) param = this.parameters.PUBLISHERS_URI;
+
+                //clear existing
+                this.setParameter(QueryParameters.PUBLISHERS_ID, null);
+                this.setParameter(QueryParameters.PUBLISHERS_LABEL, null);
+                this.setParameter(QueryParameters.PUBLISHERS_URI, null);
+
+                var param = parameter || QueryParameters.PUBLISHERS_ID;
                 this.setParameter(param, publishers);
             }
         }, {
             key: "getPublishers",
             value: function getPublishers() {
-                return this.getParameter(this.parameters.PUBLISHERS);
+                return this.getParameter(QueryParameters.PUBLISHERS_ID) || this.getParameter(QueryParameters.PUBLISHERS_LABEL) || this.getParameter(QueryParameters.PUBLISHERS_URI);
             }
+
+            // -----------------------------------------------------------
+
+
+            /**
+             * Specify a Concept Scheme or set of Concept Schemes to constrain results. By
+             * default, values are assumed to be theme identifiers. If using
+             * theme labels or theme uris, specify the optional second parameter
+             * to be either QueryParameters.SCHEMES_LABEL or QueryParameters.SCHEMES_URI
+             * respectively.
+             * @param {array[string]} schemes - schemes to constrain by
+             * @param {string} parameter - optional, to indicate the parameter to use
+             * @return {Query}
+             */
+
+        }, {
+            key: "schemes",
+            value: function schemes(_schemes, parameter) {
+                this.setSchemes(_schemes, parameter);
+                return this;
+            }
+
+            /**
+             * Specify a Concept Scheme or set of Concept Schemes to constrain results. By
+             * default, values are assumed to be theme identifiers. If using
+             * theme labels or theme uris, specify the optional second parameter
+             * to be either QueryParameters.SCHEMES_LABEL or QueryParameters.SCHEMES_URI
+             * respectively.
+             * @param {array[string]} schemes - schemes to constrain by
+             * @param {string} parameter - optional, to indicate the parameter to use
+             */
+
+        }, {
+            key: "setSchemes",
+            value: function setSchemes(schemes, parameter) {
+                if (schemes && schemes.push === 'undefined') schemes = [schemes];
+
+                //clear existing
+                this.setParameter(QueryParameters.SCHEMES_ID, null);
+                this.setParameter(QueryParameters.SCHEMES_LABEL, null);
+                this.setParameter(QueryParameters.SCHEMES_URI, null);
+
+                var param = parameter || QueryParameters.SCHEMES_ID;
+                this.setParameter(param, schemes);
+            }
+        }, {
+            key: "getSchemes",
+            value: function getSchemes() {
+                return this.getParameter(QueryParameters.SCHEMES) || this.getParameter(QueryParameters.SCHEMES_LABEL) || this.getParameter(QueryParameters.SCHEMES_URI);
+            }
+
+            // -----------------------------------------------------------
+
+            /**
+             *
+             */
+
         }, {
             key: "serviceTypes",
             value: function serviceTypes(types) {
@@ -296,38 +453,17 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             key: "setServiceTypes",
             value: function setServiceTypes(types) {
                 if (types && types.push === 'undefined') types = [types];
-                this.setParameter(this.parameters.SERVICE_TYPES, types);
+                this.setParameter(QueryParameters.SERVICE_TYPES, types);
             }
         }, {
             key: "getServiceTypes",
             value: function getServiceTypes() {
-                return this.getParameter(this.parameters.SERVICE_TYPES);
-            }
-        }, {
-            key: "schemes",
-            value: function schemes(_schemes, key) {
-                this.setSchemes(_schemes);
-                return this;
+                return this.getParameter(QueryParameters.SERVICE_TYPES);
             }
 
-            /**
-             * @param {array[string]} schemes - ids
-             * @param {string} key - optional, scheme property to use
-             */
+            // -----------------------------------------------------------
 
-        }, {
-            key: "setSchemes",
-            value: function setSchemes(schemes, key) {
-                if (schemes && schemes.push === 'undefined') schemes = [schemes];
-                var param = this.parameters.SCHEMES_ID;
-                if (key && 'label' === key) param = this.parameters.SCHEMES_LABEL;else if (key && 'uri' === key) param = this.parameters.SCHEMES_URI;
-                this.setParameter(param, schemes);
-            }
-        }, {
-            key: "getSchemes",
-            value: function getSchemes() {
-                return this.getParameter(this.parameters.SCHEMES);
-            }
+
         }, {
             key: "visibility",
             value: function visibility(vis) {
@@ -343,13 +479,17 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "setVisibility",
             value: function setVisibility(visibility) {
-                this.setParameter(this.parameters.VISIBILITY, visibility);
+                this.setParameter(QueryParameters.VISIBILITY, visibility);
             }
         }, {
             key: "getVisibility",
             value: function getVisibility() {
-                this.getParameter(this.parameters.VISIBILITY);
+                this.getParameter(QueryParameters.VISIBILITY);
             }
+
+            // -----------------------------------------------------------
+
+
         }, {
             key: "modified",
             value: function modified(date, beforeOrAfter) {
@@ -369,14 +509,14 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
                 //if no date was supplied, consider it "unset" for both properties
                 if (!date) {
-                    this.setParameter(this.parameters.MODIFIED_BEFORE, null);
-                    this.setParameter(this.parameters.MODIFIED_AFTER, null);
+                    this.setParameter(QueryParameters.MODIFIED_BEFORE, null);
+                    this.setParameter(QueryParameters.MODIFIED_AFTER, null);
                     return;
                 }
 
                 var dir = beforeOrAfter && (beforeOrAfter === true || beforeOrAfter === "true");
-                var prop = dir ? this.parameters.MODIFIED_BEFORE : this.parameters.MODIFIED_AFTER; //property being set
-                var oppProp = dir ? this.parameters.MODIFIED_AFTER : this.parameters.MODIFIED_BEFORE; //unset opposite property
+                var prop = dir ? QueryParameters.MODIFIED_BEFORE : QueryParameters.MODIFIED_AFTER; //property being set
+                var oppProp = dir ? QueryParameters.MODIFIED_AFTER : QueryParameters.MODIFIED_BEFORE; //unset opposite property
                 var arg = date && date.getTime ? date.getTime() : date;
 
                 this.setParameter(oppProp, null);
@@ -385,8 +525,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "getModified",
             value: function getModified() {
-                return this.getParameter(this.parameters.MODIFIED_BEFORE) || this.getParameter(this.parameters.MODIFIED_AFTER);
+                return this.getParameter(QueryParameters.MODIFIED_BEFORE) || this.getParameter(QueryParameters.MODIFIED_AFTER);
             }
+
+            // -----------------------------------------------------------
+
+
         }, {
             key: "extent",
             value: function extent(bbox) {
@@ -402,7 +546,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             key: "setExtent",
             value: function setExtent(bbox) {
                 if (bbox && typeof bbox.toBboxString !== 'undefined') bbox = bbox.toBboxString();
-                this.setParameter(this.parameters.EXTENT, bbox);
+                this.setParameter(QueryParameters.EXTENT, bbox);
             }
 
             /**
@@ -412,19 +556,23 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "getExtent",
             value: function getExtent() {
-                return this.getParameter(this.parameters.EXTENT);
+                return this.getParameter(QueryParameters.EXTENT);
             }
+
+            // -----------------------------------------------------------
+
+
         }, {
             key: "begins",
             value: function begins(date) {
-                this.setBegins(date);
+                this.setBeginDate(date);
                 return this;
             }
         }, {
             key: "setBeginDate",
             value: function setBeginDate(date) {
                 if (date && date instanceof Date) date = date.getTime();
-                this.setParameter(this.parameters.BEGINS, date);
+                this.setParameter(QueryParameters.BEGINS, date);
             }
         }, {
             key: "getBeginDate",
@@ -433,17 +581,21 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 if (date) date = new Date(date);
                 return date;
             }
+
+            // -----------------------------------------------------------
+
+
         }, {
             key: "ends",
             value: function ends(date) {
-                this.setEnds(date);
+                this.setEndDate(date);
                 return this;
             }
         }, {
             key: "setEndDate",
             value: function setEndDate(date) {
                 if (date && date instanceof Date) date = date.getTime();
-                this.setParameter(this.parameters.ENDS, date);
+                this.setParameter(QueryParameters.ENDS, date);
             }
         }, {
             key: "getEndDate",
@@ -452,6 +604,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 if (date) date = new Date(date);
                 return date;
             }
+
+            // -----------------------------------------------------------
+
+
         }, {
             key: "between",
             value: function between(begin, end) {
@@ -464,6 +620,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 this.begins(begin);
                 this.ends(end);
             }
+
+            // -----------------------------------------------------------
+
+
         }, {
             key: "resourceTypes",
             value: function resourceTypes(types) {
@@ -474,13 +634,17 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             key: "setResourceTypes",
             value: function setResourceTypes(types) {
                 if (types && types.push === 'undefined') types = [types];
-                this.setParameter(this.parameters.RESOURCE_TYPE, types);
+                this.setParameter(QueryParameters.RESOURCE_TYPE, types);
             }
         }, {
             key: "getResourceTypes",
             value: function getResourceTypes() {
-                return this.getParameter(this.parameters.RESOURCE_TYPE);
+                return this.getParameter(QueryParameters.RESOURCE_TYPE);
             }
+
+            // -----------------------------------------------------------
+
+
         }, {
             key: "facets",
             value: function facets(names) {
@@ -502,6 +666,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             value: function getFacets() {
                 return this.query.includeFacets;
             }
+
+            // -----------------------------------------------------------
+
+
         }, {
             key: "fields",
             value: function fields(_fields) {
@@ -525,6 +693,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 return this.query.fields;
             }
 
+            // -----------------------------------------------------------
+
+
             /**
              * @param {int} start - beginning index of results to request
              */
@@ -547,6 +718,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 return this.query.start;
             }
 
+            // -----------------------------------------------------------
+
+
             /**
              * @param {int} page - page of results to fetch
              */
@@ -568,6 +742,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             value: function getPage() {
                 return this.query.start;
             }
+
+            // -----------------------------------------------------------
+
 
             /**
              * @param {int} size - page size to request
@@ -595,6 +772,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             value: function getPageSize() {
                 return this.query.size;
             }
+
+            // -----------------------------------------------------------
+
 
             /**
              * @param {string} sort - form of <field>,<dir> or just field name
@@ -643,8 +823,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "getSortOptions",
             value: function getSortOptions() {
-                return this.sortOptions.slice(0);
+                return SORT_OPTIONS_DEFAULT.slice(0);
             }
+
+            // -----------------------------------------------------------
+
 
             /**
              *
@@ -676,7 +859,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         // run into a scenario where plain modules depend on CommonJS
         // *and* I happen to be loading in a CJS browser environment
         // but I'm including it for the sake of being thorough
-        module.exports = root.QueryFactory = factory(require('Query'));
+        module.exports = root.QueryFactory = factory(require('./query'));
     } else {
         GeoPlatform.QueryFactory = factory(GeoPlatform.Query);
     }
@@ -692,19 +875,19 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         // Now we're wrapping the factory and assigning the return
         // value to the root (window) and returning it as well to
         // the AMD loader.
-        define(["q", "GeoPlatform"], function (Q, GeoPlatform) {
-            return root.ItemService = factory(Q, GeoPlatform);
+        define(["q"], function (Q) {
+            return root.ItemService = factory(Q);
         });
     } else if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === "object" && module.exports) {
         // I've not encountered a need for this yet, since I haven't
         // run into a scenario where plain modules depend on CommonJS
         // *and* I happen to be loading in a CJS browser environment
         // but I'm including it for the sake of being thorough
-        module.exports = root.ItemService = factory(require('q'), require('GeoPlatform'));
+        module.exports = root.ItemService = factory(require('Q'));
     } else {
-        GeoPlatform.ItemService = factory(Q, GeoPlatform);
+        GeoPlatform.ItemService = factory(Q);
     }
-})(undefined || window, function (Q, GeoPlatform) {
+})(undefined || window, function (Q) {
 
     /**
      * ItemService
@@ -731,19 +914,24 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
      *
      */
     var ItemService = function () {
-        function ItemService() {
+        function ItemService(url) {
             _classCallCheck(this, ItemService);
 
-            this.baseUrl = GeoPlatform.ualUrl + '/api/items';
-            this.timeout = GeoPlatform.timeout || 10000;
+            this.setUrl(url);
+            this.timeout = 10000;
         }
 
-        /**
-         * @param {number} milliseconds - override environment variable timeout
-         */
-
-
         _createClass(ItemService, [{
+            key: "setUrl",
+            value: function setUrl(baseUrl) {
+                this.baseUrl = baseUrl + '/api/items';
+            }
+
+            /**
+             * @param {number} milliseconds - override environment variable timeout
+             */
+
+        }, {
             key: "timeout",
             value: function timeout(milliseconds) {
                 this.timeout = milliseconds;
@@ -796,7 +984,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "search",
             value: function search(arg) {
-
                 return Q.reject(new Error("Must use a subclass of ItemService"));
             }
         }]);
@@ -868,7 +1055,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         function JQueryItemService() {
             _classCallCheck(this, JQueryItemService);
 
-            return _possibleConstructorReturn(this, (JQueryItemService.__proto__ || Object.getPrototypeOf(JQueryItemService)).call(this));
+            return _possibleConstructorReturn(this, (JQueryItemService.__proto__ || Object.getPrototypeOf(JQueryItemService)).call(this, GeoPlatform.ualUrl));
         }
 
         /**
@@ -1118,11 +1305,15 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         function JQueryMapService() {
             _classCallCheck(this, JQueryMapService);
 
-            var _this7 = _possibleConstructorReturn(this, (JQueryMapService.__proto__ || Object.getPrototypeOf(JQueryMapService)).call(this));
-
-            _this7.baseUrl = GeoPlatform.ualUrl + '/api/maps';
-            return _this7;
+            return _possibleConstructorReturn(this, (JQueryMapService.__proto__ || Object.getPrototypeOf(JQueryMapService)).call(this));
         }
+
+        _createClass(JQueryMapService, [{
+            key: "setUrl",
+            value: function setUrl(baseUrl) {
+                this.baseUrl = baseUrl + '/api/maps';
+            }
+        }]);
 
         return JQueryMapService;
     }(JQueryItemService);
@@ -1165,19 +1356,21 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         function JQueryLayerService() {
             _classCallCheck(this, JQueryLayerService);
 
-            var _this8 = _possibleConstructorReturn(this, (JQueryLayerService.__proto__ || Object.getPrototypeOf(JQueryLayerService)).call(this));
-
-            _this8.baseUrl = GeoPlatform.ualUrl + '/api/layers';
-            return _this8;
+            return _possibleConstructorReturn(this, (JQueryLayerService.__proto__ || Object.getPrototypeOf(JQueryLayerService)).call(this));
         }
 
-        /**
-         * @param {Object} options - optional set of request options to apply to xhr request
-         * @return {Promise} resolving style JSON object
-         */
-
-
         _createClass(JQueryLayerService, [{
+            key: "setUrl",
+            value: function setUrl(baseUrl) {
+                this.baseUrl = baseUrl + '/api/layers';
+            }
+
+            /**
+             * @param {Object} options - optional set of request options to apply to xhr request
+             * @return {Promise} resolving style JSON object
+             */
+
+        }, {
             key: "style",
             value: function style(options) {
                 var _this9 = this;
@@ -1301,23 +1494,25 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         function JQueryServiceService() {
             _classCallCheck(this, JQueryServiceService);
 
-            var _this11 = _possibleConstructorReturn(this, (JQueryServiceService.__proto__ || Object.getPrototypeOf(JQueryServiceService)).call(this));
-
-            _this11.baseUrl = GeoPlatform.ualUrl + '/api/services';
-            return _this11;
+            return _possibleConstructorReturn(this, (JQueryServiceService.__proto__ || Object.getPrototypeOf(JQueryServiceService)).call(this));
         }
 
-        /**
-         * Fetch metadata from the specified GeoPlatform Service's
-         * web-accessible implementation using either GetCapabilities
-         * or ESRI documentInfo.
-         * @param {Object} service - GeoPlatform Service object
-         * @param {Object} options - optional set of request options to apply to xhr request
-         * @return {Promise} resolving service metadata
-         */
-
-
         _createClass(JQueryServiceService, [{
+            key: "setUrl",
+            value: function setUrl(baseUrl) {
+                this.baseUrl = baseUrl + '/api/services';
+            }
+
+            /**
+             * Fetch metadata from the specified GeoPlatform Service's
+             * web-accessible implementation using either GetCapabilities
+             * or ESRI documentInfo.
+             * @param {Object} service - GeoPlatform Service object
+             * @param {Object} options - optional set of request options to apply to xhr request
+             * @return {Promise} resolving service metadata
+             */
+
+        }, {
             key: "about",
             value: function about(service, options) {
                 var _this12 = this;
@@ -1349,4 +1544,49 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }(JQueryItemService);
 
     return JQueryServiceService;
+});
+
+(function (root, factory) {
+    if (typeof define === "function" && define.amd) {
+        // Now we're wrapping the factory and assigning the return
+        // value to the root (window) and returning it as well to
+        // the AMD loader.
+        define(["ItemTypes", "JQueryItemService", "JQueryLayerService", "JQueryMapService", "JQueryServiceService"], function (ItemTypes, JQueryItemService, JQueryLayerService, JQueryMapService, JQueryServiceService) {
+            return root.JQueryServiceFactory = factory(ItemTypes, JQueryItemService, JQueryLayerService, JQueryMapService, JQueryServiceService);
+        });
+    } else if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === "object" && module.exports) {
+        // I've not encountered a need for this yet, since I haven't
+        // run into a scenario where plain modules depend on CommonJS
+        // *and* I happen to be loading in a CJS browser environment
+        // but I'm including it for the sake of being thorough
+        module.exports = root.JQueryServiceFactory = factory(require('../../shared/types'), require('./item'), require('./layer'), require('./map'), require('./service'));
+    } else {
+        GeoPlatform.JQueryServiceFactory = factory(GeoPlatform.ItemTypes, GeoPlatform.JQueryItemService, GeoPlatform.JQueryLayerService, GeoPlatform.JQueryMapService, GeoPlatform.JQueryServiceService);
+    }
+})(undefined || window, function (JQueryItemService, JQueryLayerService, JQueryMapService, JQueryServiceService) {
+
+    /**
+     * @param {any} arg - string type or object with type property
+     * @param {string} baseUrl - base endpoint of GeoPlatform API
+     * @return {ItemService}
+     */
+    var ServiceFactory = function ServiceFactory(arg, baseUrl) {
+        var type = typeof arg === 'string' ? arg : arg && arg.type ? arg.type : null;
+        if (!type) throw new Error("Must provide a type or object with a type specified");
+        if (!baseUrl) throw new Error("Must provide a base url");
+        switch (type) {
+            case Types.LAYER:
+                return new JQueryLayerService(baseUrl);
+            case Types.SERVICE:
+                return new JQueryServiceService(baseUrl);
+            case Types.MAP:
+                return new JQueryMapService(baseUrl);
+            // case Types.GALLERY: return new JQueryGalleryService(baseUrl);
+            // case Types.DATASET: return new JQueryDatasetService(baseUrl);
+            default:
+                return new JQueryItemService(baseUrl);
+        }
+    };
+
+    return ServiceFactory;
 });

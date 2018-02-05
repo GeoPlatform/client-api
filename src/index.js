@@ -1,31 +1,50 @@
 
+
+const Types = require('./shared/types')
+const ItemService = require('./services/node/item')
+const DatasetService = require('./services/node/dataset')
+const MapService = require('./services/node/map')
+const LayerService = require('./services/node/layer')
+const ServiceService = require('./services/node/service')
+const GalleryService = require('./services/node/gallery')
+
+
 /**
- * Defines the L.GeoPlatform namespace object for later usage
- * in containing the various Leaflet extensions GeoPlatform
- * makes available
+ * @param {any} arg - string type or object with type property
+ * @param {string} baseUrl - base endpoint of GeoPlatform API
+ * @return {ItemService}
  */
+const ServiceFactory = function(arg, baseUrl) {
+    let type = (typeof(arg) === 'string') ?
+        arg : (arg && arg.type ? arg.type : null);
+    if(!type) throw new Error("Must provide a type or object with a type specified");
+    if(!baseUrl) throw new Error("Must provide a base url");
+    switch(type) {
+        case Types.LAYER:   return new LayerService(baseUrl);
+        case Types.SERVICE: return new ServiceService(baseUrl);
+        case Types.MAP:     return new MapService(baseUrl);
+        case Types.GALLERY: return new GalleryService(baseUrl);
+        case Types.DATASET: return new DatasetService(baseUrl);
+        default:            return new ItemService(baseUrl);
+    }
+}
 
- (function (root, factory) {
-     if(typeof define === "function" && define.amd) {
-         // Now we're wrapping the factory and assigning the return
-         // value to the root (window) and returning it as well to
-         // the AMD loader.
-         define([], function() {
-             return (factory());
-         });
-     } else if(typeof module === "object" && module.exports) {
-         // I've not encountered a need for this yet, since I haven't
-         // run into a scenario where plain modules depend on CommonJS
-         // *and* I happen to be loading in a CJS browser environment
-         // but I'm including it for the sake of being thorough
-         module.exports = (
-             factory()
-         );
-     } else {
-         factory();
-     }
- }(this||window, function() {
 
-     //Do something
 
-}));
+
+module.exports = {
+
+    ItemTypes: Types,
+    QueryParameters: require('./shared/parameters'),
+    Query: require('./shared/query'),
+    QueryFactory: require('./shared/query-factory'),
+
+    ServiceFactory: ServiceFactory,
+    ItemService: ItemService,
+    DatasetService: DatasetService,
+    MapService: MapService,
+    LayerService: LayerService,
+    ServiceService: ServiceService,
+    GalleryService: GalleryService,
+    UtilsService: require('./services/node/utils')
+}

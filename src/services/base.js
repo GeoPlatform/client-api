@@ -4,8 +4,8 @@
         // Now we're wrapping the factory and assigning the return
         // value to the root (window) and returning it as well to
         // the AMD loader.
-        define(["q", "GeoPlatform"], function(Q, GeoPlatform){
-            return (root.ItemService = factory(Q, GeoPlatform));
+        define(["q"], function(Q){
+            return (root.ItemService = factory(Q));
         });
     } else if(typeof module === "object" && module.exports) {
         // I've not encountered a need for this yet, since I haven't
@@ -13,15 +13,12 @@
         // *and* I happen to be loading in a CJS browser environment
         // but I'm including it for the sake of being thorough
         module.exports = (
-            root.ItemService = factory(
-                require('q'),
-                require('GeoPlatform')
-            )
+            root.ItemService = factory(require('Q'))
         );
     } else {
-        GeoPlatform.ItemService = factory(Q, GeoPlatform);
+        GeoPlatform.ItemService = factory(Q);
     }
-}(this||window, function(Q, GeoPlatform) {
+}(this||window, function(Q) {
 
     /**
      * ItemService
@@ -49,9 +46,13 @@
      */
     class ItemService {
 
-        constructor() {
-            this.baseUrl = GeoPlatform.ualUrl + '/api/items';
-            this.timeout = GeoPlatform.timeout || 10000;
+        constructor(url) {
+            this.setUrl(url);
+            this.timeout = 10000;
+        }
+
+        setUrl(baseUrl) {
+            this.baseUrl = baseUrl + '/api/items';
         }
 
         /**
@@ -95,7 +96,6 @@
         }
 
         search (arg) {
-
             return Q.reject(new Error("Must use a subclass of ItemService"));
         }
 

@@ -4,8 +4,8 @@
         // Now we're wrapping the factory and assigning the return
         // value to the root (window) and returning it as well to
         // the AMD loader.
-        define(["jquery", "q", "GeoPlatform", "ItemService"], function(jQuery, Q, GeoPlatform, ItemService){
-            return (root.JQueryItemService = factory(jQuery, Q, GeoPlatform, ItemService));
+        define(["Q", "angular", "GeoPlatform", "ItemService"], function(Q, angular, GeoPlatform, ItemService){
+            return (root.NGItemService = factory(Q, angular, GeoPlatform, ItemService));
         });
     } else if(typeof module === "object" && module.exports) {
         // I've not encountered a need for this yet, since I haven't
@@ -13,23 +13,24 @@
         // *and* I happen to be loading in a CJS browser environment
         // but I'm including it for the sake of being thorough
         module.exports = (
-            root.JQueryItemService = factory(
-                require("jquery"),
-                require('q'),
+            root.NGItemService = factory(
+                require('Q'),
+                require('angular'),
                 require('GeoPlatform'),
                 require('ItemService')
             )
         );
     } else {
-        GeoPlatform.JQueryItemService = factory(jQuery, Q, GeoPlatform, GeoPlatform.ItemService);
+        GeoPlatform.NGItemService = factory(Q, angular, GeoPlatform, GeoPlatform.ItemService);
     }
-}(this||window, function(jQuery, Q, GeoPlatform, ItemService) {
+}(this||window, function(Q, angular, GeoPlatform, ItemService) {
 
 
     const METHODS = ["GET", "POST", "PUT", "DELETE", "PATCH"];
 
+
     /**
-     * JQuery ItemService
+     * NGItemService
      * service for working with the GeoPlatform API to
      * retrieve and manipulate items.
      *
@@ -52,19 +53,22 @@
      *      itemService.patch(itemId,patch).then(item=>{...}).catch(e=>{...});
      *
      *
+     *
      * Example of adding custom request options:
      *
      *      let options = {
      *          headers: { 'X-My-Header': 'myHeaderValue' },
-     *          xhrFields: { withCredentials: true }
+     *          withCredentials: true
      *      };
      *      itemService.get(itemId, options).then(item=> {...}).catch(e=>{...});
      *
      */
-    class JQueryItemService extends ItemService {
+    class NGItemService extends ItemService {
 
         constructor() {
-            super();
+            super(GeoPlatform.ualUrl);
+            if(typeof(angular) === 'undefined')
+                throw new Error("Angular not defined");
         }
 
         /**
@@ -74,17 +78,17 @@
          */
         get (id, options) {
 
-            return Q.resolve( true )
-            .then( () => {
-                let opts = this.buildRequest("GET", this.baseUrl + '/' + id, null, options);
-                let d = Q.defer();
-                opts.success = function(data) { d.resolve(data); };
-                opts.error = function(xhr, status, message) { d.reject(new Error(message)); };
-                jQuery.ajax(opts);
-                return d.promise;
+            return Q.resolve( angular.injector(['ng']).get('$http') )
+            .then( $http => {
+                if(typeof($http) === 'undefined')
+                    throw new Error("Angular $http not resolved");
+
+                let opts = this.buildRequest('GET', this.baseUrl + '/' + id, null, options);
+                return $http(opts).then(response=>response.data);
             })
-            .catch(e => {
-                let err = new Error(`ItemService.save() - Error fetching item: ${e.message}`);
+            .catch( e => {
+                let m = `NGItemService.get() - Error fetching item: ${e.message}`;
+                let err = new Error(m);
                 return Q.reject(err);
             });
         }
@@ -96,27 +100,24 @@
          */
         save (itemObj, options) {
 
-            return Q.resolve( true )
-            .then( () => {
+            return Q.resolve( angular.injector(['ng']).get('$http') )
+            .then( $http => {
+                if(typeof($http) === 'undefined')
+                    throw new Error("Angular $http not resolved");
 
-                let method = 'POST',
-                    url = this.baseUrl;
+                let method = "POST", url = this.baseUrl;
                 if(itemObj.id) {
                     method = "PUT";
                     url += '/' + itemObj.id;
                 }
 
                 let opts = this.buildRequest(method, url, itemObj, options);
-
-                let d = Q.defer();
-                opts.success = function(data) { d.resolve(data); };
-                opts.error = function(xhr, status, message) { d.reject(new Error(message)); };
-                jQuery.ajax(opts);
-                return d.promise;
+                return $http(opts).then(response=>response.data);
 
             })
-            .catch(e => {
-                let err = new Error(`ItemService.save() - Error saving item: ${e.message}`);
+            .catch( e => {
+                let m = `NGItemService.save() - Error saving item: ${e.message}`;
+                let err = new Error(m);
                 return Q.reject(err);
             });
         }
@@ -128,18 +129,17 @@
          */
         remove (id, options) {
 
-            return Q.resolve( true )
-            .then( () => {
+            return Q.resolve( angular.injector(['ng']).get('$http') )
+            .then( $http => {
+                if(typeof($http) === 'undefined')
+                    throw new Error("Angular $http not resolved");
 
-                let opts = this.buildRequest("DELETE", this.baseUrl + '/' + id, null, options);
-                let d = Q.defer();
-                opts.success = function(data) { d.resolve(true); };
-                opts.error = function(xhr, status, message) { d.reject(new Error(message)); };
-                jQuery.ajax(opts);
-                return d.promise;
-            })
-            .catch(e => {
-                let err = new Error(`ItemService.save() - Error deleting item: ${e.message}`);
+                let opts = this.buildRequest('DELETE', this.baseUrl+'/'+id, null, options);
+                return $http(opts);
+
+            }).catch( e => {
+                let m = `NGItemService.remove() - Error deleting item: ${e.message}`;
+                let err = new Error(m);
                 return Q.reject(err);
             });
         }
@@ -151,18 +151,19 @@
          * @return {Promise} resolving Item object or an error
          */
         patch (id, patch, options) {
-            return Q.resolve( true )
-            .then( () => {
 
-                let opts = this.buildRequest("PATCH", this.baseUrl + '/' + id, patch, options);
-                let d = Q.defer();
-                opts.success = function(data) { d.resolve(data); };
-                opts.error == function(xhr, status, message) { d.reject(new Error(message)); };
-                jQuery.ajax(opts);
-                return d.promise;
+            return Q.resolve( angular.injector(['ng']).get('$http') )
+            .then( $http => {
+                if(typeof($http) === 'undefined')
+                    throw new Error("Angular $http not resolved");
+
+                let opts = this.buildRequest('PATCH', this.baseUrl + '/' + id, patch, options);
+                return $http(opts).then(response=>response.data);
+
             })
-            .catch(e => {
-                let err = new Error(`ItemService.save() - Error patching item: ${e.message}`);
+            .catch( e => {
+                let m = `NGItemService.patch() - Error patching item: ${e.message}`;
+                let err = new Error(m);
                 return Q.reject(err);
             });
         }
@@ -174,29 +175,29 @@
          */
         search (arg, options) {
 
-            return Q.resolve( true )
-            .then( () => {
+            return Q.resolve( angular.injector(['ng']).get('$http') )
+            .then( $http => {
+                if(typeof($http) === 'undefined')
+                    throw new Error("Angular $http not resolved");
 
                 let params = arg;
-
                 if(arg && typeof(arg.getQuery) !== 'undefined') {
-                    //if passed a GeoPlatform.Query object,
+                    //if passed a Query object,
                     // convert to parameters object
                     params = arg.getQuery();
                 }
 
-                let opts = this.buildRequest("GET", this.baseUrl, params, options);
-                let d = Q.defer();
-                opts.success = function(data) { d.resolve(data); };
-                opts.error = function(xhr, status, message) { d.reject(new Error(message)); };
-                jQuery.ajax(opts);
-                return d.promise;
+                let opts = this.buildRequest('GET', this.baseUrl, params, options);
+                return $http(opts).then(response=>response.data);
+
             })
-            .catch(e => {
-                let err = new Error(`ItemService.search() - Error searching items: ${e.message}`);
+            .catch( e => {
+                let m = `NGItemService.search() - Error searching items: ${e.message}`;
+                let err = new Error(m);
                 return Q.reject(err);
             });
         }
+
 
 
 
@@ -219,7 +220,6 @@
             let opts = {
                 method: method,
                 url: url,
-                dataType: 'json',   //expected response type
                 timeout: this.timeout
             };
             if(data) {
@@ -242,9 +242,8 @@
             return opts;
         }
 
-
     }
 
-    return JQueryItemService;
+    return NGItemService;
 
 }));

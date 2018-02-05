@@ -2,9 +2,10 @@
     "name": "geoplatform.client",
     "version": "0.0.1",
     "description": "",
-    "main": "",
+    "main": "src/index.js",
     "scripts": {
-        "distro": "gulp"
+        "distro": "gulp",
+        "node": "node examples/search-node.js"
     },
     "keywords": [
         "GeoPlatform",
@@ -29,7 +30,10 @@
         "gulp-uglify": "^2.0.0",
         "jshint": "^2.9.3",
         "matchdep": "^0.3.0",
-        "pre-commit": "^1.2.2"
+        "pre-commit": "^1.2.2",
+        "q": "1.1.2",
+        "request": "^2.75.0",
+        "request-debug": "^0.2.0"
     },
     "pre-commit": [
         "distro"

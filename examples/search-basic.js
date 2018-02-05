@@ -1,9 +1,15 @@
 
 
-let query = new GeoPlatform.Query();
+const Query = GeoPlatform.Query;
+const ItemTypes = GeoPlatform.ItemTypes;
+const QueryParameters = GeoPlatform.QueryParameters;
+const JQueryItemService = GeoPlatform.JQueryItemService;
 
-query.setTypes('dcat:Dataset');
-query.setTypes(['dcat:Dataset', 'regp:Service']);
+
+let query = new Query();
+
+query.setTypes(ItemTypes.DATASET);
+query.setTypes([ItemTypes.DATASET, ItemTypes.SERVICE]);
 
 //modified before now
 query.setModified(new Date(), true);
@@ -14,9 +20,9 @@ query.setModified(new Date(), false);
 let themeIds = [...];
 query.setThemes(themeIds);  //default using ids
 let themeLabels = [...];
-query.setThemes(themeLabels, 'label');
+query.setThemes(themeLabels, QueryParameters.THEMES_LABEL);
 let themeUris = [...];
-query.setThemes(themeUris, 'uri');
+query.setThemes(themeUris, QueryParameters.THEMES_URI);
 
 
 let publisherIds = [...];
@@ -49,7 +55,7 @@ query.setSort('modified,desc');
 query.setSort('modified', 'desc');  //same as previous line
 
 
-let service = new GeoPlatform.JQueryItemService();
+let service = new JQueryItemService();
 service.search(query)
 .then( response => {
    //do something with results

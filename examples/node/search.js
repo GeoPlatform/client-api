@@ -1,12 +1,14 @@
 
+const GPClient = require('../../src/index');
+const Query = GPClient.Query;
+const ItemTypes = GPClient.ItemTypes;
+const QueryParameters = GPClient.QueryParameters;
+const ItemService = GPClient.ItemService;
 
-const QueryFactory = GeoPlatform.QueryFactory;
-const ItemTypes = GeoPlatform.ItemTypes;
-const QueryParameters = GeoPlatform.QueryParameters;
-const JQueryItemService = GeoPlatform.JQueryItemService;
+const URL = 'https://sit-ual.geoplatform.us';
 
 
-let query = QueryFactory()
+let query = new Query()
      .types([ItemTypes.DATASET, ItemTypes.SERVICE])
      .modified(new Date(), true)
      //use labels to search using themes
@@ -19,14 +21,16 @@ let query = QueryFactory()
      .facets(['themes','publishers'])
      .fields(['label','theme', 'publisher'])
      .start(0)
-     .size(50)
+     .pageSize(50)
      .sort('modified', 'desc');
 
-let service = new JQueryItemService();
+let service = new ItemService(URL);
 service.search(query)
 .then( response => {
-   //display results
+    response.results.forEach(result => {
+        console.log(result.label);
+    });
 })
 .catch(e => {
-   //deal with error
+    console.log("Error! " + e.message);
 });

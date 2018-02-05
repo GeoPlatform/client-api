@@ -66,6 +66,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         TYPES: 'type',
         QUERY: 'q',
         KEYWORDS: 'keyword',
+        URI: 'uri',
         CREATED_BY: 'createdBy',
         CONTRIBUTED_BY: 'contributedBy',
         CREATOR: 'creator.id',
@@ -231,6 +232,26 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             key: "getKeywords",
             value: function getKeywords() {
                 return this.getParameter(QueryParameters.KEYWORDS);
+            }
+
+            // -----------------------------------------------------------
+
+
+        }, {
+            key: "uri",
+            value: function uri(_uri) {
+                this.setUri(_uri);
+                return this;
+            }
+        }, {
+            key: "setUri",
+            value: function setUri(uri) {
+                this.setParameter(QueryParameters.URI, uri);
+            }
+        }, {
+            key: "getUri",
+            value: function getUri() {
+                return this.getParameter(QueryParameters.URI);
             }
 
             // -----------------------------------------------------------

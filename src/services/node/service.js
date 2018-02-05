@@ -122,8 +122,8 @@ class NodeServiceService extends NodeItemService {
      */
     liveTest (id, options) {
 
-        return Q.resolve( query )
-        .then( (params) => {
+        return Q.resolve( id )
+        .then( id => {
             let url = this.baseUrl + '/' + id + '/test';
             let opts = this.buildRequest('GET', url, null, options);
             return this.execute(opts);

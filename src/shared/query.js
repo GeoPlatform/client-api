@@ -148,6 +148,23 @@
 
         // -----------------------------------------------------------
 
+        
+        uri (uri) {
+            this.setUri(uri);
+            return this;
+        }
+
+        setUri(uri) {
+            this.setParameter(QueryParameters.URI, uri);
+        }
+
+        getUri() {
+            return this.getParameter(QueryParameters.URI);
+        }
+
+
+        // -----------------------------------------------------------
+
 
         types(types) {
             this.setTypes(types);

@@ -26,6 +26,7 @@
         TYPES            : 'type',
         QUERY            : 'q',
         KEYWORDS         : 'keyword',
+        URI              : 'uri',
         CREATED_BY       : 'createdBy',
         CONTRIBUTED_BY   : 'contributedBy',
         CREATOR          : 'creator.id',

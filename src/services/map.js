@@ -6,9 +6,9 @@
         // Now we're wrapping the factory and assigning the return
         // value to the root (window) and returning it as well to
         // the AMD loader.
-        define(["jquery", "q", "GeoPlatform", "JQueryItemService"],
-            function(jQuery, Q, GeoPlatform, JQueryItemService) {
-                return (root.JQueryMapService = factory(jQuery, Q, GeoPlatform, JQueryItemService));
+        define(["q", "ItemService"],
+            function(Q, ItemService) {
+                return (root.MapService = factory(Q, ItemService));
             });
     } else if(typeof module === "object" && module.exports) {
         // I've not encountered a need for this yet, since I haven't
@@ -16,17 +16,15 @@
         // *and* I happen to be loading in a CJS browser environment
         // but I'm including it for the sake of being thorough
         module.exports = (
-            root.JQueryMapService = factory(
-                require("jquery"),
+            root.MapService = factory(
                 require('q'),
-                require('GeoPlatform'),
-                require('JQueryItemService')
+                require('./item')
             )
         );
     } else {
-        GeoPlatform.JQueryMapService = factory(jQuery, Q, GeoPlatform, GeoPlatform.JQueryItemService);
+        GeoPlatform.MapService = factory(Q, GeoPlatform.ItemService);
     }
-}(this||window, function(jQuery, Q, GeoPlatform, JQueryItemService) {
+}(this||window, function(Q, ItemService) {
 
 
     'use strict';
@@ -36,21 +34,23 @@
      * service for working with the GeoPlatform API to
      * retrieve and manipulate map objects.
      *
-     * @see GeoPlatform.JQueryItemService
+     * @see GeoPlatform.ItemService
      */
 
-    class JQueryMapService extends JQueryItemService {
+    class MapService extends ItemService {
 
-        constructor() {
-            super();
+        constructor(url, httpClient) {
+            super(url, httpClient);
         }
-        
+
         setUrl(baseUrl) {
+            super.setUrl(baseUrl);
             this.baseUrl = baseUrl + '/api/maps';
         }
 
+
     }
 
-    return JQueryMapService;
+    return MapService;
 
 }));

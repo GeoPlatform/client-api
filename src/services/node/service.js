@@ -136,6 +136,26 @@ class NodeServiceService extends NodeItemService {
         });
     }
 
+    /**
+     * @param {string} id - identifier of GP service to fetch statistics about
+     * @param {Object} options - optional set of request options to apply to request
+     * @return {Promise} resolving service statistics
+     */
+    statistics (id, options) {
+        return Q.resolve( id )
+        .then( id => {
+            let url = this.baseUrl + '/' + id + '/statistics';
+            let opts = this.buildRequest('GET', url, null, options);
+            return this.execute(opts);
+        })
+        .then( response => response.body )
+        .catch(e => {
+            let err = new Error(`NodeServiceService.statistics() -
+                Error getting service statistics: ${e.message}`);
+            return Q.reject(err);
+        });
+    }
+
 }
 
 module.exports = NodeServiceService;

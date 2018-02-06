@@ -1,5 +1,7 @@
 "use strict";
 
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
@@ -897,6 +899,91 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         // Now we're wrapping the factory and assigning the return
         // value to the root (window) and returning it as well to
         // the AMD loader.
+        define(["jquery", "q"], function (jQuery, Q) {
+            return root.JQueryHttpClient = factory(jQuery, Q);
+        });
+    } else if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === "object" && module.exports) {
+        // I've not encountered a need for this yet, since I haven't
+        // run into a scenario where plain modules depend on CommonJS
+        // *and* I happen to be loading in a CJS browser environment
+        // but I'm including it for the sake of being thorough
+        module.exports = root.JQueryHttpClient = factory(require("jquery"), require('q'));
+    } else {
+        GeoPlatform.JQueryHttpClient = factory(jQuery, Q);
+    }
+})(undefined || window, function (jQuery, Q) {
+    var JQueryHttpClient = function () {
+        function JQueryHttpClient(timeout) {
+            _classCallCheck(this, JQueryHttpClient);
+
+            this.setTimeout(timeout || 10000);
+        }
+
+        _createClass(JQueryHttpClient, [{
+            key: "setTimeout",
+            value: function setTimeout(timeout) {
+                this.timeout = timeout;
+            }
+        }, {
+            key: "createRequestOpts",
+            value: function createRequestOpts(options) {
+
+                var opts = {
+                    method: options.method,
+                    url: options.url,
+                    timeout: options.timeout || this.timeout
+                };
+
+                if (options.json === true) opts.dataType = 'json';
+
+                if (options.params) {
+                    opts.data = options.params;
+                    opts.processData = true;
+                }
+
+                if (options.data) {
+                    opts.data = options.data;
+                    opts.processData = options.processData || false;
+                    opts.contentType = 'application/json';
+                }
+
+                //copy over user-supplied options
+                if (options.options) {
+                    for (var o in options.options) {
+                        if (options.options.hasOwnProperty(o)) {
+                            opts[o] = options.options[o];
+                        }
+                    }
+                }
+
+                return opts;
+            }
+        }, {
+            key: "execute",
+            value: function execute(opts) {
+                var d = Q.defer();
+                opts.success = function (data) {
+                    d.resolve(data);
+                };
+                opts.error = function (xhr, status, message) {
+                    d.reject(new Error(message));
+                };
+                jQuery.ajax(opts);
+                return d.promise;
+            }
+        }]);
+
+        return JQueryHttpClient;
+    }();
+
+    return JQueryHttpClient;
+});
+
+(function (root, factory) {
+    if (typeof define === "function" && define.amd) {
+        // Now we're wrapping the factory and assigning the return
+        // value to the root (window) and returning it as well to
+        // the AMD loader.
         define(["q"], function (Q) {
             return root.ItemService = factory(Q);
         });
@@ -936,175 +1023,40 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
      *
      */
     var ItemService = function () {
-        function ItemService(url) {
+        function ItemService(url, httpClient) {
             _classCallCheck(this, ItemService);
 
             this.setUrl(url);
+            this.client = httpClient;
             this.timeout = 10000;
+            this.httpMethods = ["GET", "POST", "PUT", "DELETE", "PATCH"];
         }
 
         _createClass(ItemService, [{
             key: "setUrl",
             value: function setUrl(baseUrl) {
+                this.apiBase = baseUrl;
                 this.baseUrl = baseUrl + '/api/items';
             }
 
             /**
-             * @param {number} milliseconds - override environment variable timeout
-             */
-
-        }, {
-            key: "timeout",
-            value: function timeout(milliseconds) {
-                this.timeout = milliseconds;
-            }
-
-            /**
              * @param {string} id - identifier of item to fetch
+             * @param {Object} options - optional set of request options to apply to xhr request
              * @return {Promise} resolving Item object or an error
              */
 
         }, {
-            key: "get",
-            value: function get(id) {
-                return Q.reject(new Error("Must use a subclass of ItemService"));
-            }
-
-            /**
-             * @param {Object} itemObj - item to create or update
-             * @return {Promise} resolving Item object or an error
-             */
-
-        }, {
-            key: "save",
-            value: function save(itemObj) {
-                return Q.reject(new Error("Must use a subclass of ItemService"));
-            }
-
-            /**
-             * @param {string} id - identifier of item to delete
-             * @return {Promise} resolving true if successful or an error
-             */
-
-        }, {
-            key: "remove",
-            value: function remove(id) {
-                return Q.reject(new Error("Must use a subclass of ItemService"));
-            }
-
-            /**
-             * @param {string} id - identifier of item to patch
-             * @param {Object} patch - HTTP-PATCH compliant set of properties to patch
-             * @return {Promise} resolving Item object or an error
-             */
-
-        }, {
-            key: "patch",
-            value: function patch(id, _patch) {
-                return Q.reject(new Error("Must use a subclass of ItemService"));
-            }
-        }, {
-            key: "search",
-            value: function search(arg) {
-                return Q.reject(new Error("Must use a subclass of ItemService"));
-            }
-        }]);
-
-        return ItemService;
-    }();
-
-    return ItemService;
-});
-
-(function (root, factory) {
-    if (typeof define === "function" && define.amd) {
-        // Now we're wrapping the factory and assigning the return
-        // value to the root (window) and returning it as well to
-        // the AMD loader.
-        define(["jquery", "q", "GeoPlatform", "ItemService"], function (jQuery, Q, GeoPlatform, ItemService) {
-            return root.JQueryItemService = factory(jQuery, Q, GeoPlatform, ItemService);
-        });
-    } else if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === "object" && module.exports) {
-        // I've not encountered a need for this yet, since I haven't
-        // run into a scenario where plain modules depend on CommonJS
-        // *and* I happen to be loading in a CJS browser environment
-        // but I'm including it for the sake of being thorough
-        module.exports = root.JQueryItemService = factory(require("jquery"), require('q'), require('GeoPlatform'), require('ItemService'));
-    } else {
-        GeoPlatform.JQueryItemService = factory(jQuery, Q, GeoPlatform, GeoPlatform.ItemService);
-    }
-})(undefined || window, function (jQuery, Q, GeoPlatform, ItemService) {
-
-    var METHODS = ["GET", "POST", "PUT", "DELETE", "PATCH"];
-
-    /**
-     * JQuery ItemService
-     * service for working with the GeoPlatform API to
-     * retrieve and manipulate items.
-     *
-     * Ex Searching Items
-     *      let params = { q: 'test' };
-     *      itemService.search(params).then(response=>{
-     *          console.log(response.results.length + " of " + response.totalResults);
-     *      }).catch(e=>{...});
-     *
-     * Ex Fetch Item:
-     *      itemService.get(itemId).then(item=>{...}).catch(e=>{...});
-     *
-     * Ex Saving Item:
-     *      itemService.save(item).then(item=>{...}).catch(e=>{...});
-     *
-     * Ex Deleting Item:
-     *      itemService.remove(itemId).then(()=>{...}).catch(e=>{...});
-     *
-     * Ex Patching Item:
-     *      itemService.patch(itemId,patch).then(item=>{...}).catch(e=>{...});
-     *
-     *
-     * Example of adding custom request options:
-     *
-     *      let options = {
-     *          headers: { 'X-My-Header': 'myHeaderValue' },
-     *          xhrFields: { withCredentials: true }
-     *      };
-     *      itemService.get(itemId, options).then(item=> {...}).catch(e=>{...});
-     *
-     */
-
-    var JQueryItemService = function (_ItemService) {
-        _inherits(JQueryItemService, _ItemService);
-
-        function JQueryItemService() {
-            _classCallCheck(this, JQueryItemService);
-
-            return _possibleConstructorReturn(this, (JQueryItemService.__proto__ || Object.getPrototypeOf(JQueryItemService)).call(this, GeoPlatform.ualUrl));
-        }
-
-        /**
-         * @param {string} id - identifier of item to fetch
-         * @param {Object} options - optional set of request options to apply to xhr request
-         * @return {Promise} resolving Item object or an error
-         */
-
-
-        _createClass(JQueryItemService, [{
             key: "get",
             value: function get(id, options) {
-                var _this2 = this;
+                var _this = this;
 
-                return Q.resolve(true).then(function () {
-                    var opts = _this2.buildRequest("GET", _this2.baseUrl + '/' + id, null, options);
-                    var d = Q.defer();
-                    opts.success = function (data) {
-                        d.resolve(data);
-                    };
-                    opts.error = function (xhr, status, message) {
-                        d.reject(new Error(message));
-                    };
-                    jQuery.ajax(opts);
-                    return d.promise;
+                return Q.resolve(id).then(function (id) {
+                    var opts = _this.buildRequest({
+                        method: "GET", url: _this.baseUrl + '/' + id, options: options
+                    });
+                    return _this.execute(opts);
                 }).catch(function (e) {
-                    var err = new Error("ItemService.save() - Error fetching item: " + e.message);
+                    var err = new Error("ItemService.save() - Error fetching item " + id + ": " + e.message);
                     return Q.reject(err);
                 });
             }
@@ -1118,28 +1070,19 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "save",
             value: function save(itemObj, options) {
-                var _this3 = this;
+                var _this2 = this;
 
-                return Q.resolve(true).then(function () {
+                return Q.resolve(itemObj).then(function (item) {
 
                     var method = 'POST',
-                        url = _this3.baseUrl;
-                    if (itemObj.id) {
+                        url = _this2.baseUrl;
+                    if (item.id) {
                         method = "PUT";
-                        url += '/' + itemObj.id;
+                        url += '/' + item.id;
                     }
 
-                    var opts = _this3.buildRequest(method, url, itemObj, options);
-
-                    var d = Q.defer();
-                    opts.success = function (data) {
-                        d.resolve(data);
-                    };
-                    opts.error = function (xhr, status, message) {
-                        d.reject(new Error(message));
-                    };
-                    jQuery.ajax(opts);
-                    return d.promise;
+                    var opts = _this2.buildRequest({ method: method, url: url, data: item, options: options });
+                    return _this2.execute(opts);
                 }).catch(function (e) {
                     var err = new Error("ItemService.save() - Error saving item: " + e.message);
                     return Q.reject(err);
@@ -1155,22 +1098,17 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "remove",
             value: function remove(id, options) {
-                var _this4 = this;
+                var _this3 = this;
 
-                return Q.resolve(true).then(function () {
-
-                    var opts = _this4.buildRequest("DELETE", _this4.baseUrl + '/' + id, null, options);
-                    var d = Q.defer();
-                    opts.success = function (data) {
-                        d.resolve(true);
-                    };
-                    opts.error = function (xhr, status, message) {
-                        d.reject(new Error(message));
-                    };
-                    jQuery.ajax(opts);
-                    return d.promise;
+                return Q.resolve(this.baseUrl + '/' + id).then(function (url) {
+                    var opts = _this3.buildRequest({
+                        method: "DELETE", url: url, options: options
+                    });
+                    return _this3.execute(opts);
+                }).then(function (response) {
+                    return true;
                 }).catch(function (e) {
-                    var err = new Error("ItemService.save() - Error deleting item: " + e.message);
+                    var err = new Error("ItemService.remove() - Error deleting item " + id + ": " + e.message);
                     return Q.reject(err);
                 });
             }
@@ -1184,23 +1122,16 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
         }, {
             key: "patch",
-            value: function patch(id, _patch2, options) {
-                var _this5 = this;
+            value: function patch(id, _patch, options) {
+                var _this4 = this;
 
-                return Q.resolve(true).then(function () {
-
-                    var opts = _this5.buildRequest("PATCH", _this5.baseUrl + '/' + id, _patch2, options);
-                    var d = Q.defer();
-                    opts.success = function (data) {
-                        d.resolve(data);
-                    };
-                    opts.error == function (xhr, status, message) {
-                        d.reject(new Error(message));
-                    };
-                    jQuery.ajax(opts);
-                    return d.promise;
+                return Q.resolve(this.baseUrl + '/' + id).then(function (url) {
+                    var opts = _this4.buildRequest({
+                        method: "PATCH", url: url, data: _patch, options: options
+                    });
+                    return _this4.execute(opts);
                 }).catch(function (e) {
-                    var err = new Error("ItemService.save() - Error patching item: " + e.message);
+                    var err = new Error("ItemService.patch() - Error patching item " + id + ": " + e.message);
                     return Q.reject(err);
                 });
             }
@@ -1214,28 +1145,19 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "search",
             value: function search(arg, options) {
-                var _this6 = this;
+                var _this5 = this;
 
-                return Q.resolve(true).then(function () {
+                return Q.resolve(arg).then(function (params) {
 
-                    var params = arg;
-
-                    if (arg && typeof arg.getQuery !== 'undefined') {
+                    if (params && typeof params.getQuery !== 'undefined') {
                         //if passed a GeoPlatform.Query object,
                         // convert to parameters object
-                        params = arg.getQuery();
+                        params = params.getQuery();
                     }
-
-                    var opts = _this6.buildRequest("GET", _this6.baseUrl, params, options);
-                    var d = Q.defer();
-                    opts.success = function (data) {
-                        d.resolve(data);
-                    };
-                    opts.error = function (xhr, status, message) {
-                        d.reject(new Error(message));
-                    };
-                    jQuery.ajax(opts);
-                    return d.promise;
+                    var opts = _this5.buildRequest({
+                        method: "GET", url: _this5.baseUrl, params: params, options: options
+                    });
+                    return _this5.execute(opts);
                 }).catch(function (e) {
                     var err = new Error("ItemService.search() - Error searching items: " + e.message);
                     return Q.reject(err);
@@ -1243,104 +1165,159 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             }
 
             /**
+             * Note: if using a File, first parameter should be an object containing:
+             * {
+             *   stream: BufferedStream (ala, fs.createReadStream(file.path) )
+             *   file: File
+             * }
+             * @param {string} arg - URL to metadata document or File to upload
+             * @param {string} format - metadata format of specified document
+             * @return {Promise} resolving GeoPlatform Item
+             */
+
+        }, {
+            key: "import",
+            value: function _import(arg, format, options) {
+                var _this6 = this;
+
+                return Q.resolve(true).then(function () {
+                    if (!arg || arg.indexOf(http) < 0) {
+                        throw new Error("Must provide a valid URL or File");
+                    }
+                    var url = _this6.apiBase + '/api/import';
+                    var isFile = typeof arg !== 'string';
+                    var ro = {
+                        method: "POST",
+                        url: _this6.url,
+                        processData: true, //for jQuery
+                        formData: true, //for Node (RequestJS)
+                        options: options
+                    };
+                    if (isFile) {
+                        ro.data = {
+                            file: {
+                                value: arg.stream,
+                                options: {
+                                    filename: arg.file.originalFilename
+                                }
+                            },
+                            format: format || 'iso19139'
+                        };
+                    } else {
+                        ro.data = { url: arg, format: format };
+                    }
+                    var opts = _this6.buildRequest(ro);
+                    return _this6.execute(opts);
+                }).catch(function (e) {
+                    var err = new Error("ItemService.import() - Error importing item: " + e.message);
+                    return Q.reject(err);
+                });
+            }
+
+            /**
+             * @param {string} id - identifier of the item to export
+             * @param {format} format - string mime type to export
+             * @return {Promise} resolving HTTP response object for enabling attachment downloading
+             */
+
+        }, {
+            key: "export",
+            value: function _export(id, format, options) {
+                var _this7 = this;
+
+                return Q.resolve(true).then(function () {
+                    var url = _this7.baseUrl + '/' + id + '/export';
+                    var opts = _this7.buildRequest({
+                        method: "GET", url: url,
+                        params: { format: format },
+                        json: false,
+                        options: options
+                    });
+                    return _this7.execute(opts);
+                }).catch(function (e) {
+                    var err = new Error("ItemService.export() - Error exporting item: " + e.message);
+                    return Q.reject(err);
+                });
+            }
+
+            /**
+             * @param {Object} object - GP object definition to generate a URI for
+             * @param {Object} options - optional request options
+             * @return {Promise} resolving string URI
+             */
+
+        }, {
+            key: "getUri",
+            value: function getUri(object, options) {
+                var _this8 = this;
+
+                return Q.resolve(object).then(function (obj) {
+                    if (!obj || !obj.type) throw new Error("Must provide an object with a type property");
+                    var url = _this8.apiBase + '/api/utils/uri';
+                    var opts = _this8.buildRequest({
+                        method: "POST", url: url, data: obj, options: options
+                    });
+                    return _this8.execute(opts);
+                }).catch(function (e) {
+                    var err = new Error("ItemService.getUri() - Error getting URI for item: " + e.message);
+                    return Q.reject(err);
+                });
+            }
+
+            /* ----------------------------------------------------------- */
+
+            /**
              * @param {string} method - one of "GET", "POST", "PUT", "DELETE", "PATCH"
              * @param {string} url - destination of xhr request
-             * @param {Object} data - object to be sent with request
+             * @param {Object} params - object to be sent with request as query parameters
+             * @param {Object} data - object to be sent with request as body
              * @param {Object} options - optional object defining request options
              * @return {Object} request options for xhr
              */
 
         }, {
             key: "buildRequest",
-            value: function buildRequest(method, url, data, options) {
+            value: function buildRequest(options) {
 
-                if (METHODS.indexOf(method) < 0) throw new Error("Unsupported HTTP method " + method);
+                if (this.httpMethods.indexOf(options.method) < 0) throw new Error("Unsupported HTTP method " + options.method);
 
-                if (!url) throw new Error("Must specify a URL for HTTP requests");
+                if (!options.url) throw new Error("Must specify a URL for HTTP requests");
 
                 //define default options
-                var opts = {
-                    method: method,
-                    url: url,
-                    dataType: 'json', //expected response type
-                    timeout: this.timeout
-                };
-                if (data) {
-                    opts.data = data;
-                    if ("POST" === method || "PUT" === method || "PATCH" === method) {
-                        opts.processData = false;
-                        opts.contentType = 'application/json';
-                    }
-                }
-
-                //copy over user-supplied options
-                if (options && (typeof options === "undefined" ? "undefined" : _typeof(options)) === 'object') {
-                    for (var o in options) {
-                        if (options.hasOwnProperty(o)) {
-                            opts[o] = options[o];
-                        }
-                    }
-                }
+                var opts = this.createRequestOpts(options);
 
                 return opts;
             }
-        }]);
-
-        return JQueryItemService;
-    }(ItemService);
-
-    return JQueryItemService;
-});
-
-(function (root, factory) {
-    if (typeof define === "function" && define.amd) {
-        // Now we're wrapping the factory and assigning the return
-        // value to the root (window) and returning it as well to
-        // the AMD loader.
-        define(["jquery", "q", "GeoPlatform", "JQueryItemService"], function (jQuery, Q, GeoPlatform, JQueryItemService) {
-            return root.JQueryMapService = factory(jQuery, Q, GeoPlatform, JQueryItemService);
-        });
-    } else if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === "object" && module.exports) {
-        // I've not encountered a need for this yet, since I haven't
-        // run into a scenario where plain modules depend on CommonJS
-        // *and* I happen to be loading in a CJS browser environment
-        // but I'm including it for the sake of being thorough
-        module.exports = root.JQueryMapService = factory(require("jquery"), require('q'), require('GeoPlatform'), require('JQueryItemService'));
-    } else {
-        GeoPlatform.JQueryMapService = factory(jQuery, Q, GeoPlatform, GeoPlatform.JQueryItemService);
-    }
-})(undefined || window, function (jQuery, Q, GeoPlatform, JQueryItemService) {
-
-    'use strict';
-
-    /**
-     * GeoPlatform Map service
-     * service for working with the GeoPlatform API to
-     * retrieve and manipulate map objects.
-     *
-     * @see GeoPlatform.JQueryItemService
-     */
-
-    var JQueryMapService = function (_JQueryItemService) {
-        _inherits(JQueryMapService, _JQueryItemService);
-
-        function JQueryMapService() {
-            _classCallCheck(this, JQueryMapService);
-
-            return _possibleConstructorReturn(this, (JQueryMapService.__proto__ || Object.getPrototypeOf(JQueryMapService)).call(this));
-        }
-
-        _createClass(JQueryMapService, [{
-            key: "setUrl",
-            value: function setUrl(baseUrl) {
-                this.baseUrl = baseUrl + '/api/maps';
+        }, {
+            key: "createRequestOpts",
+            value: function createRequestOpts(options) {
+                return this.client.createRequestOpts(options);
+                //     let opts = {
+                //         method: method,
+                //         url: url,
+                //         timeout: this.timeout
+                //     };
+                //     // if(data) {
+                //     //     opts.data = data;
+                //     //     if("POST" === method || "PUT" === method || "PATCH" === method) {
+                //     //         opts.processData = false;
+                //     //         opts.contentType = 'application/json';
+                //     //     }
+                //     // }
+                //     return opts;
+            }
+        }, {
+            key: "execute",
+            value: function execute(opts) {
+                return this.client.execute(opts);
+                // return Q.reject(new Error("ItemService - Must provide an execute method"));
             }
         }]);
 
-        return JQueryMapService;
-    }(JQueryItemService);
+        return ItemService;
+    }();
 
-    return JQueryMapService;
+    return ItemService;
 });
 
 (function (root, factory) {
@@ -1348,19 +1325,19 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         // Now we're wrapping the factory and assigning the return
         // value to the root (window) and returning it as well to
         // the AMD loader.
-        define(["jquery", "q", "GeoPlatform", "JQueryItemService"], function (jQuery, Q, GeoPlatform, JQueryItemService) {
-            return root.JQueryLayerService = factory(jQuery, Q, GeoPlatform, JQueryItemService);
+        define(["q", "ItemService"], function (Q, ItemService) {
+            return root.LayerService = factory(Q, ItemService);
         });
     } else if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === "object" && module.exports) {
         // I've not encountered a need for this yet, since I haven't
         // run into a scenario where plain modules depend on CommonJS
         // *and* I happen to be loading in a CJS browser environment
         // but I'm including it for the sake of being thorough
-        module.exports = root.JQueryLayerService = factory(require("jquery"), require('q'), require('GeoPlatform'), require('JQueryItemService'));
+        module.exports = root.LayerService = factory(require('q'), require('./item'));
     } else {
-        GeoPlatform.JQueryLayerService = factory(jQuery, Q, GeoPlatform, GeoPlatform.JQueryItemService);
+        GeoPlatform.LayerService = factory(Q, GeoPlatform.ItemService);
     }
-})(undefined || window, function (jQuery, Q, GeoPlatform, JQueryItemService) {
+})(undefined || window, function (Q, ItemService) {
 
     'use strict';
 
@@ -1369,21 +1346,22 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
      * service for working with the GeoPlatform API to
      * retrieve and manipulate map objects.
      *
-     * @see GeoPlatform.JQueryItemService
+     * @see GeoPlatform.ItemService
      */
 
-    var JQueryLayerService = function (_JQueryItemService2) {
-        _inherits(JQueryLayerService, _JQueryItemService2);
+    var LayerService = function (_ItemService) {
+        _inherits(LayerService, _ItemService);
 
-        function JQueryLayerService() {
-            _classCallCheck(this, JQueryLayerService);
+        function LayerService(url, httpClient) {
+            _classCallCheck(this, LayerService);
 
-            return _possibleConstructorReturn(this, (JQueryLayerService.__proto__ || Object.getPrototypeOf(JQueryLayerService)).call(this));
+            return _possibleConstructorReturn(this, (LayerService.__proto__ || Object.getPrototypeOf(LayerService)).call(this, url, httpClient));
         }
 
-        _createClass(JQueryLayerService, [{
+        _createClass(LayerService, [{
             key: "setUrl",
             value: function setUrl(baseUrl) {
+                _get(LayerService.prototype.__proto__ || Object.getPrototypeOf(LayerService.prototype), "setUrl", this).call(this, baseUrl);
                 this.baseUrl = baseUrl + '/api/layers';
             }
 
@@ -1395,25 +1373,17 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "style",
             value: function style(options) {
-                var _this9 = this;
+                var _this10 = this;
 
                 return Q.resolve(true).then(function () {
 
-                    var d = Q.defer();
-                    var url = _this9.baseUrl + '/' + id + '/style';
-                    var opts = _this9.buildRequest("GET", url, null, options);
-                    opts.success = function (data) {
-                        d.resolve(data);
-                    };
-                    opts.error = function (xhr, status, message) {
-                        var m = "GeoPlatform.LayerService.style() - Error fetching item style: " + message;
-                        var err = new Error(m);
-                        d.reject(err);
-                    };
-                    jQuery.ajax(opts);
-                    return d.promise;
+                    var url = _this10.baseUrl + '/' + id + '/style';
+                    var opts = _this10.buildRequest({
+                        method: "GET", url: url, options: options
+                    });
+                    return _this10.execute(opts);
                 }).catch(function (e) {
-                    var err = new Error("ItemService.save() - Error deleting item: " + e.message);
+                    var err = new Error("LayerService.style() - Error fetching style: " + e.message);
                     return Q.reject(err);
                 });
             }
@@ -1427,9 +1397,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "describe",
             value: function describe(req, options) {
-                var _this10 = this;
+                var _this11 = this;
 
-                return Q.resolve(true).then(function () {
+                return Q.resolve(req).then(function (req) {
 
                     if (!req) {
                         throw new Error("Must provide describe req");
@@ -1455,28 +1425,22 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                         j: req.y //WMS 1.3.0
                     };
 
-                    var d = Q.defer();
-                    var url = _this10.baseUrl + '/' + id + '/describe';
-                    var opts = _this10.buildRequest("GET", url, params, options);
-                    opts.success = function (data) {
-                        d.resolve(data);
-                    };
-                    opts.error = function (xhr, status, message) {
-                        d.reject(new Error(message));
-                    };
-                    jQuery.ajax(opts);
-                    return d.promise;
+                    var url = _this11.baseUrl + '/' + id + '/describe';
+                    var opts = _this11.buildRequest({
+                        method: "GET", url: url, params: params, options: options
+                    });
+                    return _this11.execute(opts);
                 }).catch(function (e) {
-                    var err = new Error("JQueryLayerService.describe() -\n                    Error describing layer feature: " + e.message);
+                    var err = new Error("LayerService.describe() -\n                    Error describing layer feature: " + e.message);
                     return Q.reject(err);
                 });
             }
         }]);
 
-        return JQueryLayerService;
-    }(JQueryItemService);
+        return LayerService;
+    }(ItemService);
 
-    return JQueryLayerService;
+    return LayerService;
 });
 
 (function (root, factory) {
@@ -1484,21 +1448,19 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         // Now we're wrapping the factory and assigning the return
         // value to the root (window) and returning it as well to
         // the AMD loader.
-        define(["jquery", "q", "GeoPlatform", "JQueryItemService"], function (jQuery, Q, GeoPlatform, JQueryItemService) {
-            return root.JQueryServiceService = factory(jQuery, Q, GeoPlatform, JQueryItemService);
+        define(["q", "ItemTypes", "ItemService"], function (Q, ItemTypes, ItemService) {
+            return root.ServiceService = factory(Q, ItemTypes, ItemService);
         });
     } else if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === "object" && module.exports) {
         // I've not encountered a need for this yet, since I haven't
         // run into a scenario where plain modules depend on CommonJS
         // *and* I happen to be loading in a CJS browser environment
         // but I'm including it for the sake of being thorough
-        module.exports = root.JQueryServiceService = factory(require("jquery"), require('q'), require('GeoPlatform'), require('JQueryItemService'));
+        module.exports = root.ServiceService = factory(require('q'), require('../shared/types'), require('./item'));
     } else {
-        GeoPlatform.JQueryServiceService = factory(jQuery, Q, GeoPlatform, GeoPlatform.JQueryItemService);
+        GeoPlatform.ServiceService = factory(Q, GeoPlatform.ItemTypes, GeoPlatform.ItemService);
     }
-})(undefined || window, function (jQuery, Q, GeoPlatform, JQueryItemService) {
-
-    // ( function(jQuery, Q, L/*eaflet*/, GeoPlatform) {
+})(undefined || window, function (Q, ItemTypes, ItemService) {
 
     'use strict';
 
@@ -1507,21 +1469,22 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
      * service for working with the GeoPlatform API to
      * retrieve and manipulate service objects.
      *
-     * @see GeoPlatform.JQueryItemService
+     * @see ItemService
      */
 
-    var JQueryServiceService = function (_JQueryItemService3) {
-        _inherits(JQueryServiceService, _JQueryItemService3);
+    var ServiceService = function (_ItemService2) {
+        _inherits(ServiceService, _ItemService2);
 
-        function JQueryServiceService() {
-            _classCallCheck(this, JQueryServiceService);
+        function ServiceService(url, httpClient) {
+            _classCallCheck(this, ServiceService);
 
-            return _possibleConstructorReturn(this, (JQueryServiceService.__proto__ || Object.getPrototypeOf(JQueryServiceService)).call(this));
+            return _possibleConstructorReturn(this, (ServiceService.__proto__ || Object.getPrototypeOf(ServiceService)).call(this, url, httpClient));
         }
 
-        _createClass(JQueryServiceService, [{
+        _createClass(ServiceService, [{
             key: "setUrl",
             value: function setUrl(baseUrl) {
+                _get(ServiceService.prototype.__proto__ || Object.getPrototypeOf(ServiceService.prototype), "setUrl", this).call(this, baseUrl);
                 this.baseUrl = baseUrl + '/api/services';
             }
 
@@ -1537,35 +1500,143 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "about",
             value: function about(service, options) {
-                var _this12 = this;
+                var _this13 = this;
 
-                return Q.resolve(true).then(function () {
-
-                    if (!service) {
-                        throw new Error("Must provide service to get metadata about");
-                    }
-
-                    var d = Q.defer();
-                    var opts = _this12.buildRequest('POST', _this12.baseUrl + '/about', service, options);
-                    opts.success = function (data) {
-                        d.resolve(data);
-                    };
-                    opts.error = function (xhr, status, message) {
-                        d.reject(new Error(message));
-                    };
-                    jQuery.ajax(opts);
-                    return d.promise;
+                return Q.resolve(service).then(function (svc) {
+                    if (!svc) throw new Error("Must provide service to get metadata about");
+                    var opts = _this13.buildRequest({
+                        method: 'POST', url: _this13.baseUrl + '/about', data: svc, options: options
+                    });
+                    return _this13.execute(opts);
                 }).catch(function (e) {
-                    var err = new Error("JQueryServiceService.about() -\n                    Error describing service: " + e.message);
+                    var err = new Error("ServiceService.about() -\n                    Error describing service: " + e.message);
+                    return Q.reject(err);
+                });
+            }
+
+            /**
+             * @param {Object} options - optional set of request options to apply to request
+             * @return {Promise} resolving service types
+             */
+
+        }, {
+            key: "types",
+            value: function types(options) {
+                var _this14 = this;
+
+                var query = new Query().types(ItemTypes.STANDARD).resourceTypes('ServiceType').pageSize(50).getQuery();
+
+                return Q.resolve(query).then(function (params) {
+                    var url = _this14.apiBase + '/api/items';
+                    var opts = _this14.buildRequest({
+                        method: 'GET', url: url, params: params, options: options
+                    });
+                    return _this14.execute(opts);
+                }).then(function (response) {
+                    return response.results;
+                }).catch(function (e) {
+                    var err = new Error("ServiceService.types() -\n                    Error fetching service types: " + e.message);
+                    return Q.reject(err);
+                });
+            }
+
+            /**
+             * @param {Object} service - GP Service definition
+             * @param {Object} options - optional set of request options to apply to request
+             * @return {Promise} resolving imported service
+             */
+
+        }, {
+            key: "import",
+            value: function _import(service, options) {
+                var _this15 = this;
+
+                return Q.resolve(service).then(function (svc) {
+                    var url = _this15.baseUrl + '/import';
+                    var opts = _this15.buildRequest({
+                        method: 'POST', url: url, data: svc, options: options
+                    });
+                    return _this15.execute(opts);
+                }).catch(function (e) {
+                    var err = new Error("ServiceService.import() -\n                    Error importing service: " + e.message);
+                    return Q.reject(err);
+                });
+            }
+
+            /**
+             * @param {string} id - identifier of GP service to harvest layers for
+             * @param {Object} options - optional set of request options to apply to request
+             * @return {Promise} resolving service layers
+             */
+
+        }, {
+            key: "harvest",
+            value: function harvest(id, options) {
+                var _this16 = this;
+
+                return Q.resolve(id).then(function (id) {
+                    var url = _this16.baseUrl + '/' + id + '/harvest';
+                    var opts = _this16.buildRequest({
+                        method: 'GET', url: url, options: options
+                    });
+                    return _this16.execute(opts);
+                }).catch(function (e) {
+                    var err = new Error("ServiceService.harvest() -\n                    Error harvesting layers from service: " + e.message);
+                    return Q.reject(err);
+                });
+            }
+
+            /**
+             * @param {string} id - identifier of GP service to live test
+             * @param {Object} options - optional set of request options to apply to request
+             * @return {Promise} resolving service statistics
+             */
+
+        }, {
+            key: "liveTest",
+            value: function liveTest(id, options) {
+                var _this17 = this;
+
+                return Q.resolve(id).then(function (id) {
+                    var url = _this17.baseUrl + '/' + id + '/test';
+                    var opts = _this17.buildRequest({
+                        method: 'GET', url: url, options: options
+                    });
+                    return _this17.execute(opts);
+                }).catch(function (e) {
+                    var err = new Error("ServiceService.liveTest() -\n                    Error testing service: " + e.message);
+                    return Q.reject(err);
+                });
+            }
+
+            /**
+             * @param {string} id - identifier of GP service to fetch statistics about
+             * @param {Object} options - optional set of request options to apply to request
+             * @return {Promise} resolving service statistics
+             */
+
+        }, {
+            key: "statistics",
+            value: function statistics(id, options) {
+                var _this18 = this;
+
+                return Q.resolve(id).then(function (id) {
+                    var url = _this18.baseUrl + '/' + id + '/statistics';
+                    var opts = _this18.buildRequest({
+                        method: 'GET', url: url, options: options
+                    });
+                    return _this18.execute(opts);
+                }).catch(function (e) {
+                    var err = new Error("ServiceService.statistics() -\n                    Error getting service statistics: " + e.message);
                     return Q.reject(err);
                 });
             }
         }]);
 
-        return JQueryServiceService;
-    }(JQueryItemService);
+        return ServiceService;
+    }(ItemService);
 
-    return JQueryServiceService;
+    return ServiceService;
 });
 
 (function (root, factory) {
@@ -1573,40 +1644,232 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         // Now we're wrapping the factory and assigning the return
         // value to the root (window) and returning it as well to
         // the AMD loader.
-        define(["ItemTypes", "JQueryItemService", "JQueryLayerService", "JQueryMapService", "JQueryServiceService"], function (ItemTypes, JQueryItemService, JQueryLayerService, JQueryMapService, JQueryServiceService) {
-            return root.JQueryServiceFactory = factory(ItemTypes, JQueryItemService, JQueryLayerService, JQueryMapService, JQueryServiceService);
+        define(["q", "ItemService"], function (Q, ItemService) {
+            return root.GalleryService = factory(Q, ItemService);
         });
     } else if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === "object" && module.exports) {
         // I've not encountered a need for this yet, since I haven't
         // run into a scenario where plain modules depend on CommonJS
         // *and* I happen to be loading in a CJS browser environment
         // but I'm including it for the sake of being thorough
-        module.exports = root.JQueryServiceFactory = factory(require('../../shared/types'), require('./item'), require('./layer'), require('./map'), require('./service'));
+        module.exports = root.GalleryService = factory(require('q'), require('./item'));
     } else {
-        GeoPlatform.JQueryServiceFactory = factory(GeoPlatform.ItemTypes, GeoPlatform.JQueryItemService, GeoPlatform.JQueryLayerService, GeoPlatform.JQueryMapService, GeoPlatform.JQueryServiceService);
+        GeoPlatform.GalleryService = factory(Q, GeoPlatform.ItemService);
     }
-})(undefined || window, function (JQueryItemService, JQueryLayerService, JQueryMapService, JQueryServiceService) {
+})(undefined || window, function (Q, ItemService) {
+
+    'use strict';
+
+    /**
+     * GeoPlatform Map service
+     * service for working with the GeoPlatform API to
+     * retrieve and manipulate map objects.
+     *
+     * @see GeoPlatform.ItemService
+     */
+
+    var GalleryService = function (_ItemService3) {
+        _inherits(GalleryService, _ItemService3);
+
+        function GalleryService(url, httpClient) {
+            _classCallCheck(this, GalleryService);
+
+            return _possibleConstructorReturn(this, (GalleryService.__proto__ || Object.getPrototypeOf(GalleryService)).call(this, url, httpClient));
+        }
+
+        _createClass(GalleryService, [{
+            key: "setUrl",
+            value: function setUrl(baseUrl) {
+                _get(GalleryService.prototype.__proto__ || Object.getPrototypeOf(GalleryService.prototype), "setUrl", this).call(this, baseUrl);
+                this.baseUrl = baseUrl + '/api/galleries';
+            }
+        }, {
+            key: "addItem",
+            value: function addItem(galleryId, itemObj, options) {
+                var _this20 = this;
+
+                return Q.resolve(true).then(function () {
+                    var url = _this20.baseUrl + '/' + galleryId + '/items';
+                    var opts = _this20.buildRequest({
+                        method: 'POST', url: url, data: itemObj, options: options
+                    });
+                    return _this20.execute(opts);
+                }).catch(function (e) {
+                    var err = new Error("GalleryService.addItem() - Error adding item: " + e.message);
+                    return Q.reject(err);
+                });
+            }
+        }, {
+            key: "removeItem",
+            value: function removeItem(galleryId, itemId, options) {
+                var _this21 = this;
+
+                return Q.resolve(this.baseUrl + '/' + galleryId + '/items/' + itemId).then(function (url) {
+                    var opts = _this21.buildRequest({
+                        method: 'DELETE', url: url, options: options
+                    });
+                    return _this21.execute(opts);
+                }).then(function (response) {
+                    return true;
+                }).catch(function (e) {
+                    var err = new Error("GalleryService.addItem() - Error adding item: " + e.message);
+                    return Q.reject(err);
+                });
+            }
+        }]);
+
+        return GalleryService;
+    }(ItemService);
+
+    return GalleryService;
+});
+
+(function (root, factory) {
+    if (typeof define === "function" && define.amd) {
+        // Now we're wrapping the factory and assigning the return
+        // value to the root (window) and returning it as well to
+        // the AMD loader.
+        define(["q", "ItemService"], function (Q, ItemService) {
+            return root.MapService = factory(Q, ItemService);
+        });
+    } else if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === "object" && module.exports) {
+        // I've not encountered a need for this yet, since I haven't
+        // run into a scenario where plain modules depend on CommonJS
+        // *and* I happen to be loading in a CJS browser environment
+        // but I'm including it for the sake of being thorough
+        module.exports = root.MapService = factory(require('q'), require('./item'));
+    } else {
+        GeoPlatform.MapService = factory(Q, GeoPlatform.ItemService);
+    }
+})(undefined || window, function (Q, ItemService) {
+
+    'use strict';
+
+    /**
+     * GeoPlatform Map service
+     * service for working with the GeoPlatform API to
+     * retrieve and manipulate map objects.
+     *
+     * @see GeoPlatform.ItemService
+     */
+
+    var MapService = function (_ItemService4) {
+        _inherits(MapService, _ItemService4);
+
+        function MapService(url, httpClient) {
+            _classCallCheck(this, MapService);
+
+            return _possibleConstructorReturn(this, (MapService.__proto__ || Object.getPrototypeOf(MapService)).call(this, url, httpClient));
+        }
+
+        _createClass(MapService, [{
+            key: "setUrl",
+            value: function setUrl(baseUrl) {
+                _get(MapService.prototype.__proto__ || Object.getPrototypeOf(MapService.prototype), "setUrl", this).call(this, baseUrl);
+                this.baseUrl = baseUrl + '/api/maps';
+            }
+        }]);
+
+        return MapService;
+    }(ItemService);
+
+    return MapService;
+});
+
+(function (root, factory) {
+    if (typeof define === "function" && define.amd) {
+        // Now we're wrapping the factory and assigning the return
+        // value to the root (window) and returning it as well to
+        // the AMD loader.
+        define(["q", "ItemService"], function (Q, ItemService) {
+            return root.DatasetService = factory(Q, ItemService);
+        });
+    } else if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === "object" && module.exports) {
+        // I've not encountered a need for this yet, since I haven't
+        // run into a scenario where plain modules depend on CommonJS
+        // *and* I happen to be loading in a CJS browser environment
+        // but I'm including it for the sake of being thorough
+        module.exports = root.DatasetService = factory(require('q'), require('./item'));
+    } else {
+        GeoPlatform.DatasetService = factory(Q, GeoPlatform.ItemService);
+    }
+})(undefined || window, function (Q, ItemService) {
+
+    'use strict';
+
+    /**
+     * GeoPlatform Map service
+     * service for working with the GeoPlatform API to
+     * retrieve and manipulate map objects.
+     *
+     * @see GeoPlatform.ItemService
+     */
+
+    var DatasetService = function (_ItemService5) {
+        _inherits(DatasetService, _ItemService5);
+
+        function DatasetService(url, httpClient) {
+            _classCallCheck(this, DatasetService);
+
+            return _possibleConstructorReturn(this, (DatasetService.__proto__ || Object.getPrototypeOf(DatasetService)).call(this, url, httpClient));
+        }
+
+        _createClass(DatasetService, [{
+            key: "setUrl",
+            value: function setUrl(baseUrl) {
+                _get(DatasetService.prototype.__proto__ || Object.getPrototypeOf(DatasetService.prototype), "setUrl", this).call(this, baseUrl);
+                this.baseUrl = baseUrl + '/api/datasets';
+            }
+        }]);
+
+        return DatasetService;
+    }(ItemService);
+
+    return DatasetService;
+});
+
+(function (root, factory) {
+    if (typeof define === "function" && define.amd) {
+        // Now we're wrapping the factory and assigning the return
+        // value to the root (window) and returning it as well to
+        // the AMD loader.
+        define(["ItemTypes", "ItemService", "LayerService", "ServiceService", "GalleryService", "DatasetService", "MapService"], function (ItemTypes, ItemService, LayerService, ServiceService, GalleryService, DatasetService, MapService) {
+            return root.ServiceFactory = factory(ItemTypes, ItemService, LayerService, ServiceService, GalleryService, DatasetService, MapService);
+        });
+    } else if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === "object" && module.exports) {
+        // I've not encountered a need for this yet, since I haven't
+        // run into a scenario where plain modules depend on CommonJS
+        // *and* I happen to be loading in a CJS browser environment
+        // but I'm including it for the sake of being thorough
+        module.exports = root.ServiceFactory = factory(require('../shared/types'), require('./item'), require('./layer'), require('./service'), require('./gallery'), require('./dataset'), require('./map'));
+    } else {
+        GeoPlatform.ServiceFactory = factory(GeoPlatform.ItemTypes, GeoPlatform.ItemService, GeoPlatform.LayerService, GeoPlatform.ServiceService, GeoPlatform.GalleryService, GeoPlatform.DatasetService, GeoPlatform.MapService);
+    }
+})(undefined || window, function (ItemTypes, ItemService, LayerService, ServiceService, GalleryService, DatasetService, MapService) {
 
     /**
      * @param {any} arg - string type or object with type property
      * @param {string} baseUrl - base endpoint of GeoPlatform API
      * @return {ItemService}
      */
-    var ServiceFactory = function ServiceFactory(arg, baseUrl) {
+    var ServiceFactory = function ServiceFactory(arg, baseUrl, httpClient) {
         var type = typeof arg === 'string' ? arg : arg && arg.type ? arg.type : null;
         if (!type) throw new Error("Must provide a type or object with a type specified");
         if (!baseUrl) throw new Error("Must provide a base url");
+        if (!httpClient) throw new Error("Must provide an http client to use to make requests");
         switch (type) {
             case Types.LAYER:
-                return new JQueryLayerService(baseUrl);
+                return new LayerService(baseUrl, httpClient);
             case Types.SERVICE:
-                return new JQueryServiceService(baseUrl);
+                return new ServiceService(baseUrl, httpClient);
             case Types.MAP:
-                return new JQueryMapService(baseUrl);
-            // case Types.GALLERY: return new JQueryGalleryService(baseUrl);
-            // case Types.DATASET: return new JQueryDatasetService(baseUrl);
+                return new MapService(baseUrl, httpClient);
+            case Types.GALLERY:
+                return new GalleryService(baseUrl, httpClient);
+            case Types.DATASET:
+                return new DatasetService(baseUrl, httpClient);
             default:
-                return new JQueryItemService(baseUrl);
+                return new ItemService(baseUrl, httpClient);
         }
     };
 

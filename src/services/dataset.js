@@ -6,9 +6,9 @@
         // Now we're wrapping the factory and assigning the return
         // value to the root (window) and returning it as well to
         // the AMD loader.
-        define(["q", "angular", "GeoPlatform", "NGItemService"],
-            function(Q, angular, GeoPlatform, NGItemService) {
-                return (root.NGMapService = factory(Q, angular, GeoPlatform, NGItemService));
+        define(["q", "ItemService"],
+            function(Q, ItemService) {
+                return (root.DatasetService = factory(Q, ItemService));
             });
     } else if(typeof module === "object" && module.exports) {
         // I've not encountered a need for this yet, since I haven't
@@ -16,17 +16,16 @@
         // *and* I happen to be loading in a CJS browser environment
         // but I'm including it for the sake of being thorough
         module.exports = (
-            root.NGMapService = factory(
+            root.DatasetService = factory(
                 require('q'),
-                require("angular"),
-                require('GeoPlatform'),
-                require('NGItemService')
+                require('./item')
             )
         );
     } else {
-        GeoPlatform.NGMapService = factory(Q, angular, GeoPlatform, GeoPlatform.NGItemService);
+        GeoPlatform.DatasetService = factory(Q, GeoPlatform.ItemService);
     }
-}(this||window, function(Q, angular, GeoPlatform, NGItemService) {
+}(this||window, function(Q, ItemService) {
+
 
     'use strict';
 
@@ -35,21 +34,23 @@
      * service for working with the GeoPlatform API to
      * retrieve and manipulate map objects.
      *
-     * @see GeoPlatform.NGItemService
+     * @see GeoPlatform.ItemService
      */
 
-    class NGMapService extends NGItemService {
+    class DatasetService extends ItemService {
 
-        constructor() {
-            super();
+        constructor(url, httpClient) {
+            super(url, httpClient);
         }
 
         setUrl(baseUrl) {
-            this.baseUrl = baseUrl + '/api/maps';
+            super.setUrl(baseUrl);
+            this.baseUrl = baseUrl + '/api/datasets';
         }
+
 
     }
 
-    return NGMapService;
+    return DatasetService;
 
 }));

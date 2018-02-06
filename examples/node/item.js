@@ -3,11 +3,12 @@ const GPClient = require('../../src/index');
 const Query = GPClient.Query;
 const ItemTypes = GPClient.ItemTypes;
 const ItemService = GPClient.ItemService;
+const HttpClient = GPClient.HttpClient;
 
 const URL = 'https://sit-ual.geoplatform.us';
 
 
-let service = new ItemService(URL);
+let service = new ItemService(URL, new HttpClient());
 
 
 //
@@ -17,8 +18,8 @@ let query = new Query().types(ItemTypes.DATASET);
 service.search(query)
 .then( response => response.results[0] )
 .then( item => service.export(item.id) )
-.then( data => {
-    //buffered data
+.then( response => {
+    console.log(response.body);
 })
 .catch(e => {
     console.log(`NodeItemService Test - Error exporting dataset: ${e.message}`);

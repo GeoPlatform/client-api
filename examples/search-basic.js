@@ -3,7 +3,6 @@
 const Query = GeoPlatform.Query;
 const ItemTypes = GeoPlatform.ItemTypes;
 const QueryParameters = GeoPlatform.QueryParameters;
-const JQueryItemService = GeoPlatform.JQueryItemService;
 
 
 let query = new Query();
@@ -53,13 +52,3 @@ query.setStart(0);
 query.setPageSize(50);
 query.setSort('modified,desc');
 query.setSort('modified', 'desc');  //same as previous line
-
-
-let service = new JQueryItemService();
-service.search(query)
-.then( response => {
-   //do something with results
-})
-.catch(e => {
-   //do something with error
-});

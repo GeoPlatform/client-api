@@ -6,9 +6,9 @@
         // Now we're wrapping the factory and assigning the return
         // value to the root (window) and returning it as well to
         // the AMD loader.
-        define(["jquery", "q", "GeoPlatform", "JQueryItemService"],
-            function(jQuery, Q, GeoPlatform, JQueryItemService) {
-                return (root.JQueryLayerService = factory(jQuery, Q, GeoPlatform, JQueryItemService));
+        define(["q", "ItemService"],
+            function(Q, ItemService) {
+                return (root.LayerService = factory(Q, ItemService));
             });
     } else if(typeof module === "object" && module.exports) {
         // I've not encountered a need for this yet, since I haven't
@@ -16,17 +16,15 @@
         // *and* I happen to be loading in a CJS browser environment
         // but I'm including it for the sake of being thorough
         module.exports = (
-            root.JQueryLayerService = factory(
-                require("jquery"),
+            root.LayerService = factory(
                 require('q'),
-                require('GeoPlatform'),
-                require('JQueryItemService')
+                require('./item')
             )
         );
     } else {
-        GeoPlatform.JQueryLayerService = factory(jQuery, Q, GeoPlatform, GeoPlatform.JQueryItemService);
+        GeoPlatform.LayerService = factory(Q, GeoPlatform.ItemService);
     }
-}(this||window, function(jQuery, Q, GeoPlatform, JQueryItemService) {
+}(this||window, function(Q, ItemService) {
 
 
     'use strict';
@@ -36,16 +34,17 @@
      * service for working with the GeoPlatform API to
      * retrieve and manipulate map objects.
      *
-     * @see GeoPlatform.JQueryItemService
+     * @see GeoPlatform.ItemService
      */
 
-    class JQueryLayerService extends JQueryItemService {
+    class LayerService extends ItemService {
 
-        constructor() {
-            super();
+        constructor(url, httpClient) {
+            super(url, httpClient);
         }
 
         setUrl(baseUrl) {
+            super.setUrl(baseUrl);
             this.baseUrl = baseUrl + '/api/layers';
         }
 
@@ -57,20 +56,14 @@
             return Q.resolve( true )
             .then( () => {
 
-                let d = Q.defer();
                 let url = this.baseUrl + '/' + id + '/style';
-                let opts = this.buildRequest("GET", url, null, options);
-                opts.success = function(data) { d.resolve(data); };
-                opts.error = function(xhr, status, message) {
-                    let m = `GeoPlatform.LayerService.style() - Error fetching item style: ${message}`;
-                    let err = new Error(m);
-                    d.reject(err);
-                };
-                jQuery.ajax(opts);
-                return d.promise;
+                let opts = this.buildRequest({
+                    method:"GET", url:url, options:options
+                });
+                return this.execute(opts);
             })
             .catch(e => {
-                let err = new Error(`ItemService.save() - Error deleting item: ${e.message}`);
+                let err = new Error(`LayerService.style() - Error fetching style: ${e.message}`);
                 return Q.reject(err);
             });
         }
@@ -82,8 +75,8 @@
          */
         describe( req, options ) {
 
-            return Q.resolve( true )
-            .then( () => {
+            return Q.resolve( req )
+            .then( (req) => {
 
                 if(!req) {
                     throw new Error("Must provide describe req");
@@ -107,16 +100,14 @@
                     j           : req.y  //WMS 1.3.0
                 };
 
-                let d = Q.defer();
                 let url = this.baseUrl + '/' + id + '/describe';
-                let opts = this.buildRequest("GET", url, params, options);
-                opts.success = function(data) { d.resolve(data); };
-                opts.error = function(xhr, status, message) { d.reject(new Error(message)); };
-                jQuery.ajax(opts);
-                return d.promise;
+                let opts = this.buildRequest({
+                    method:"GET", url:url, params:params, options:options
+                });
+                return this.execute(opts);
             })
             .catch(e => {
-                let err = new Error(`JQueryLayerService.describe() -
+                let err = new Error(`LayerService.describe() -
                     Error describing layer feature: ${e.message}`);
                 return Q.reject(err);
             });
@@ -124,6 +115,6 @@
 
     }
 
-    return JQueryLayerService;
+    return LayerService;
 
 }));

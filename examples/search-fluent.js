@@ -3,8 +3,6 @@
 const QueryFactory = GeoPlatform.QueryFactory;
 const ItemTypes = GeoPlatform.ItemTypes;
 const QueryParameters = GeoPlatform.QueryParameters;
-const JQueryItemService = GeoPlatform.JQueryItemService;
-
 
 let query = QueryFactory()
      .types([ItemTypes.DATASET, ItemTypes.SERVICE])
@@ -19,14 +17,5 @@ let query = QueryFactory()
      .facets(['themes','publishers'])
      .fields(['label','theme', 'publisher'])
      .start(0)
-     .size(50)
+     .pageSize(50)
      .sort('modified', 'desc');
-
-let service = new JQueryItemService();
-service.search(query)
-.then( response => {
-   //display results
-})
-.catch(e => {
-   //deal with error
-});

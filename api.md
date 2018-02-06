@@ -1,24 +1,40 @@
 # GeoPlatform APIs
 
 ## Services
-[ItemService](src/services/base.js) is a base class from which implementations exist that
-allow interacting with GeoPlatform model objects such as Maps, Layers, Services, etc.  
+[ItemService](src/services/item.js) is the primary class for interacting with
+GeoPlatform model objects such as Maps, Layers, Services, etc.  
 Included with the the library's main build file are implementations of ItemService
-which use jQuery to perform AJAX requests against the GeoPlatform API.
+which provide specialized support for specific item types
 
-- [JQueryItemService](src/services/jq/item.js) - extension of ItemService, base class using jQuery
-- [JQueryMapService](src/services/jq/map.js) - extension of JQueryItemService which works with GP Map objects
-- [JQueryLayerService](src/services/jq/layer.js) - extension of JQueryItemService which works with GP Layer objects
-- [JQueryServiceService](src/services/jq/service.js) - extension of JQueryItemService which works with GP Service objects
+- [MapService](src/services/map.js) - extension of ItemService which works with GP Map objects
+- [LayerService](src/services/layer.js) - extension of ItemService which works with GP Layer objects
+- [ServiceService](src/services/service.js) - extension of ItemService which works with GP Service objects
+- [GalleryService](src/services/gallery.js) - extension of ItemService which works with GP Gallery objects
+- [UtilsService](src/services/utils.js) - extension of ItemService for working with non-item API endpoints, such as GeoPlatform capabilities queries.
+
+### Http Providers
+
+To allow using this api library across both front-end and back-end applications, these
+services support different HTTP mechanisms by accepting an HttpClient which contains
+the knowledge of how to construct and transact HTTP requests using specific technologies.
+
+Pass the desired implementation to the service at construction along with the URL to the
+GeoPlatform API:
+
+```javascript
+let url = "https://sit-ual.geoplatform.us";
+let client = new GeoPlatform.JQueryHttpClient();
+let svc = new GeoPlatform.ItemService(url, client);
+```
 
 
-Included with the "ng" build file for Angular 1.x applications are
-implementations of ItemService which use Angular's $http service.
+HttpClients provided by this library are:
 
-- [NGItemService](src/services/ng/item.js) - extension of ItemService, base class using $http  
-- [NGMapService](src/services/ng/map.js) - extension of NGItemService which works with GP Map objects
-- [NGLayerService](src/services/ng/layer.js) - extension of NGItemService which works with GP Layer objects
-- [NGServiceService](src/services/ng/service.js) - extension of NGItemService which works with GP Service objects
+- [JQueryHttpClient](src/http/jq.js) - client capable of using jQuery ajax support
+- [NGHttpClient](src/http/ng.js) - client capable of using Angular 1.x $http
+- [NodeHttpClient](src/http/node.js) - client capable of using [RequestJS](https://github.com/request/request)
+
+__Note:__ `NGHttpClient` is provided by the 'ng' build file of this library ('geoplatform.client.ng.js').
 
 
 _Note:_ Using Angular's $http service allows you to define global behaviors in your application's
@@ -37,45 +53,25 @@ angular.module('myApp', [])
 
 ```
 
-Provided via module.exports and usable within NodeJS applications are implementations
-which use [request](https://github.com/request/request) to perform HTTP calls.
-
-- [NodeItemService](src/services/node/item.js) - extension of ItemService, base class using request
-- [NodeMapService](src/services/node/map.js) - extension of NodeItemService which works with GP Map objects
-- [NodeLayerService](src/services/node/layer.js) - extension of NodeItemService which works with GP Layer objects
-- [NodeServiceService](src/services/node/service.js) - extension of NodeItemService which works with GP Service objects
-- [NodeDatasetService](src/services/node/dataset.js) - extension of NodeItemService which works with GP Dataset objects
-- [NodeGalleryService](src/services/node/gallery.js) - extension of NodeItemService which works with GP Gallery objects
-
-
 
 
 ### Service API
 
-- `ItemService.constructor(:baseUrl)` - creates a new instance of the service and points api calls to the specified GP API
+- `ItemService.constructor(:baseUrl, :httpClient)` - creates a new instance of the service and points api calls to the specified GP API
 - `ItemService.search(:query)` - Searches items using specified query parameters.
 - `ItemService.get(:id)` - Fetch item with specified identifier
 - `ItemService.save(:item)` - Create or update the specified item. If 'item.id' exists, updates with HTTP-PUT. Otherwise, creates using HTTP-POST.
 - `ItemService.patch(:id, :patch)` - Partial update of item with specified identifier using the specified HTTP-PATCH ops.
 - `ItemService.remove(:id)` - Delete item with specified identifier
 
-#### Configuring the GeoPlatform API URL
-The JQuery and Angular versions of `ItemService` and its sub-classes will, by default,
-use the `GeoPlatform` configuration object to direct all API calls using the services
-to that defined by `GeoPlatform.ualUrl` (the location of the GeoPlatform Unified Access Layer service).
-If you wish to override that location, provide the desired UAL base endpoint (without "/api/...")
-when calling the constructor of the service.
-
-__Note:__ Node-based `ItemService` implementations __require__ the base URL to be provided
-in the constructor as there is no `GeoPlatform` configuration object present when
-operating inside a NodeJS app.
 
 ### Examples
 
 #### JQuery
 ```javascript
+let url = "https://sit-ual.geoplatform.us";
 let query = GeoPlatform.QueryFactory().types('Map','Layer');
-let svc = new GeoPlatform.JQueryItemService();
+let svc = new GeoPlatform.ItemService(url, new GeoPlatform.JQueryHttpClient());
 svc.search(query)
 .then( response => {
     if(!response.results.length) {
@@ -92,8 +88,9 @@ svc.search(query)
 #### Angular
 
 ```javascript
+let url = "https://sit-ual.geoplatform.us";
 let query = GeoPlatform.QueryFactory().types('Map','Layer');
-let svc = new GeoPlatform.NGItemService();
+let svc = new GeoPlatform.ItemService(url, new GeoPlatform.NGHttpClient());
 svc.search(query)
 .then( response => {
     if(!response.results.length) {
@@ -114,12 +111,13 @@ const GPAPI = require('geoplatform.client')
 const Query = GPAPI.Query
 const ItemTypes = GPAPI.ItemTypes
 const ItemService = GPAPI.ItemService
+const HttpClient = GPAPI.HttpClient
 
 module.exports = {
     listDatasets: function() {
         let apiUrl = 'https://sit-ual.geoplatform.us'
         let query = new Query().types(ItemTypes.DATASET)
-        return new ItemService(apiUrl).search(query)
+        return new ItemService(apiUrl, new HttpClient()).search(query)
     }
 }
 ```
@@ -131,6 +129,7 @@ The following modules are exposed via `require('geoplatform.client')`:
 - `QueryParameters` - set of supported query parameters
 - `Query` - class used to build queries
 - `QueryFactory` - convenience factory for quickly creating query instances
+- `HttpClient` - default NodeJS http client using RequestJS
 - `ServiceFactory` - convenience factor for quickly creating a service based upon a specified object model item type
 - `ItemService` - default API service, supports all item types
 - `DatasetService` - API service for working with Datasets
@@ -148,12 +147,12 @@ The following modules are exposed via `require('geoplatform.client')`:
 
 Layer-based implementations of `ItemService` additionally provide the following methods:
 
-- `.style(:id)` - requests JSON style content for the FeatureLayer with the specified identifier
-- `.describe(:id, :options)` - requests feature information for RasterLayer with specified identifier using OGC GetFeatureInfo operation (The layer must reference a service of type WMS)
+- `.style(:layerId)` - requests JSON style content for the FeatureLayer with the specified identifier
+- `.describe(:layerId, :options)` - requests feature information for RasterLayer with specified identifier using OGC GetFeatureInfo operation (The layer must reference a service of type WMS)
 
 
 ```javascript
-let svc = new GeoPlatform.JQueryLayerService();
+let svc = new GeoPlatform.LayerService(url, client);
 svc.get(layerId)
 //fetch layer style info (feature layers only)
 .then( layer => {
@@ -174,9 +173,15 @@ svc.get(layerId)
 Service-based implementations of `ItemService` additionally provide the following methods:
 
 - `.about(:service)` - requests updated service information from the remote web service
+- `.types(:serviceId)` - requests the list of supported service types that may be selected from
+- `.import(:service)` - creates a new GeoPlatform Service object using harvested service capabilities and layer information
+- `.harvest(:serviceId)` - re-harvests service layer information and updates the list of Layer objects
+- `.liveTest(:serviceId)` - initiates a performance test against the service and returns updated statistics
+- `.statistics(:serviceId)` - fetches most recent service statistics
+
 
 ```javascript
-let svc = new GeoPlatform.JQueryServiceService();
+let svc = new GeoPlatform.ServiceService(url, client);
 svc.get(serviceId)
 //get service information using Service Harvester
 .then( service => svc.about(service) )

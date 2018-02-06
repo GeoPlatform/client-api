@@ -43,12 +43,6 @@ gulp.task('js', 'Concat, Uglify JavaScript into a single file', function() {
         'src/services/dataset.js',
         'src/services/factory.js'
 
-        // 'src/services/base.js',
-        // 'src/services/jq/item.js',
-        // 'src/services/jq/map.js',
-        // 'src/services/jq/layer.js',
-        // 'src/services/jq/service.js',
-        // 'src/services/jq/factory.js'
         ])
         // .pipe(srcmaps.init())
         .pipe(concat(pkg.name + '.js'))
@@ -63,14 +57,7 @@ gulp.task('js', 'Concat, Uglify JavaScript into a single file', function() {
 
 
         //include module first, then other src files which depend on module
-        gulp.src([
-            'src/http/ng.js'
-            // 'src/services/ng/item.js',
-            // 'src/services/ng/map.js',
-            // 'src/services/ng/layer.js',
-            // 'src/services/ng/service.js',
-            // 'src/services/ng/factory.js'
-            ])
+        gulp.src([ 'src/http/ng.js' ])
             // .pipe(srcmaps.init())
             .pipe(concat(pkg.name + '.ng.js'))
             .pipe(babel({presets: ["es2015"]}))

@@ -10,7 +10,11 @@ which provide specialized support for specific item types
 - [LayerService](src/services/layer.js) - extension of ItemService which works with GP Layer objects
 - [ServiceService](src/services/service.js) - extension of ItemService which works with GP Service objects
 - [GalleryService](src/services/gallery.js) - extension of ItemService which works with GP Gallery objects
-- [UtilsService](src/services/utils.js) - extension of ItemService for working with non-item API endpoints, such as GeoPlatform capabilities queries.
+- [DatasetService](src/services/dataset.js) - extension of ItemService which works with GP Dataset objects
+
+### Non-Item Support
+
+The [UtilsService](src/services/utils.js) class is provided for working with non-item API endpoints, such as GeoPlatform capabilities queries.
 
 ### Http Providers
 
@@ -63,6 +67,9 @@ angular.module('myApp', [])
 - `ItemService.save(:item)` - Create or update the specified item. If 'item.id' exists, updates with HTTP-PUT. Otherwise, creates using HTTP-POST.
 - `ItemService.patch(:id, :patch)` - Partial update of item with specified identifier using the specified HTTP-PATCH ops.
 - `ItemService.remove(:id)` - Delete item with specified identifier
+- `ItemService.import(:arg, :format)` - Create a new Item using either a URL or a File (see implementation for specific requirements)
+- `ItemService.export(:id, :format)` - Export the specified Item in the specified format
+- `ItemService.getUri(:item)` - Given an unpersisted GeoPlatform Item, generate and return a valid URI for it.
 
 
 ### Examples
@@ -132,11 +139,11 @@ The following modules are exposed via `require('geoplatform.client')`:
 - `HttpClient` - default NodeJS http client using RequestJS
 - `ServiceFactory` - convenience factor for quickly creating a service based upon a specified object model item type
 - `ItemService` - default API service, supports all item types
-- `DatasetService` - API service for working with Datasets
 - `MapService` - API service for working with Maps
 - `LayerService` - API service for working with Layers
 - `ServiceService` - API service for working with Services
 - `GalleryService` - API service for working with Galleries
+- `DatasetService` - API service for working with Datasets
 - `UtilsService` - API service for miscellaneous usage not directly tied to any item type, such as API capabilities queries and GeoJSON file parsing
 
 

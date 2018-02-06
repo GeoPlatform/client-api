@@ -298,7 +298,8 @@
             if(!options.url)
                 throw new Error(`Must specify a URL for HTTP requests`);
 
-            //define default options
+            options.timeout = this.timeout;
+
             let opts = this.createRequestOpts(options);
 
             return opts;
@@ -306,24 +307,10 @@
 
         createRequestOpts(options) {
             return this.client.createRequestOpts(options);
-        //     let opts = {
-        //         method: method,
-        //         url: url,
-        //         timeout: this.timeout
-        //     };
-        //     // if(data) {
-        //     //     opts.data = data;
-        //     //     if("POST" === method || "PUT" === method || "PATCH" === method) {
-        //     //         opts.processData = false;
-        //     //         opts.contentType = 'application/json';
-        //     //     }
-        //     // }
-        //     return opts;
         }
 
         execute(opts) {
             return this.client.execute(opts);
-            // return Q.reject(new Error("ItemService - Must provide an execute method"));
         }
 
     }

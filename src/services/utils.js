@@ -132,6 +132,8 @@
             if(!options.url)
                 throw new Error(`Must specify a URL for HTTP requests`);
 
+            options.timeout = this.timeout;
+            
             return this.createRequestOpts(options);
         }
 

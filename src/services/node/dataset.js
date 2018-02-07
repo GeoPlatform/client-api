@@ -1,5 +1,5 @@
 
-const Q = require('Q');
+const Q = require('q');
 const NodeItemService = require('./item');
 
 

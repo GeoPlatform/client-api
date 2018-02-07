@@ -1,5 +1,5 @@
 
-const Q = require('Q');
+const Q = require('q');
 const fs = require('fs');
 const request = require('request');
 // require('request-debug')(request);

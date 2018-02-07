@@ -1,5 +1,5 @@
 
-const Q = require('Q');
+const Q = require('q');
 const NodeItemService = require('./item');
 const Query = require('../../shared/query');
 const ItemTypes = require('../../shared/types');

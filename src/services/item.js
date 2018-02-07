@@ -13,7 +13,7 @@
         // *and* I happen to be loading in a CJS browser environment
         // but I'm including it for the sake of being thorough
         module.exports = (
-            root.ItemService = factory(require('Q'))
+            root.ItemService = factory(require('q'))
         );
     } else {
         GeoPlatform.ItemService = factory(Q);

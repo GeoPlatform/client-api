@@ -75,13 +75,11 @@
          * @return {Promise}
          */
         parseFile (file, format, options) {
-            
+
             var url = this.baseUrl + '/api/utils/parse';
 
             return Q.resolve( url )
             .then( url => {
-
-                let formData = ;
 
                 let opts = this.buildRequest({
                     method:"POST",  url:url,

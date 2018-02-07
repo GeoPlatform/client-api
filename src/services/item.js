@@ -230,7 +230,7 @@
                     json: false,
                     options: options
                 });
-                return this.execute(opts)
+                return this.execute(opts);
             })
             .catch( e => {
                 let err = new Error(`ItemService.export() - Error exporting item: ${e.message}`);

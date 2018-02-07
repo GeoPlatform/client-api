@@ -1,14 +1,14 @@
 
 
 const NodeHttpClient = require('./http/node');
-const Types = require('./shared/types')
-const ItemService = require('./services/item')
-const DatasetService = require('./services/dataset')
-const MapService = require('./services/map')
-const LayerService = require('./services/layer')
-const ServiceService = require('./services/service')
-const GalleryService = require('./services/gallery')
-const UtilsService = require('./services/utils')
+const Types = require('./shared/types');
+const ItemService = require('./services/item');
+const DatasetService = require('./services/dataset');
+const MapService = require('./services/map');
+const LayerService = require('./services/layer');
+const ServiceService = require('./services/service');
+const GalleryService = require('./services/gallery');
+const UtilsService = require('./services/utils');
 
 
 module.exports = {
@@ -27,4 +27,4 @@ module.exports = {
     DatasetService: DatasetService,
     MapService: MapService,
     UtilsService: UtilsService
-}
+};

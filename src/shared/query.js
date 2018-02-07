@@ -22,12 +22,12 @@
 
     const FIELDS_DEFAULT = [
         'created','modified','createdBy','publishers','themes','description'
-    ]
+    ];
 
     const FACETS_DEFAULT = [
         'types','themes','publishers', 'serviceTypes',
         'schemes', 'visibility', 'createdBy'
-    ]
+    ];
 
     const SORT_OPTIONS_DEFAULT = [
         { value:"label,asc",       label: "Name (A-Z)"              },
@@ -37,7 +37,7 @@
         { value:"modified,desc",   label: "Most recently modified"  },
         { value:"modified,asc",    label: "Least recently modified" },
         { value:"_score,desc",     label: "Relevance"               }
-    ]
+    ];
 
 
     class Query {
@@ -51,7 +51,7 @@
                 sort: "modified,desc",
                 fields: FIELDS_DEFAULT.slice(0),
                 includeFacets: FACETS_DEFAULT.slice(0)
-            }
+            };
 
             this.query = {
                 start: 0,
@@ -60,7 +60,7 @@
                 sort: "modified,desc",
                 fields: FIELDS_DEFAULT.slice(0),
                 includeFacets: FACETS_DEFAULT.slice(0)
-            }
+            };
 
         }
 
@@ -679,7 +679,7 @@
          * @return {array} list of key-value pairs of sort options
          */
         getSortOptions() {
-            return SORT_OPTIONS_DEFAULT.slice(0)
+            return SORT_OPTIONS_DEFAULT.slice(0);
         }
 
 

@@ -32,7 +32,7 @@
         CONCEPT         : "skos:Concept",
         CONCEPT_SCHEME  : "skos:ConceptScheme",
         STANDARD        : 'dct:Standard'
-    }
+    };
 
     return ItemTypes;
 

@@ -47,7 +47,7 @@
         BEGINS           : 'startDate.min',
         ENDS             : 'endDate.max',
         RESOURCE_TYPE    : 'resourceType'
-    }
+    };
 
     return Parameters;
 

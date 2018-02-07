@@ -36,9 +36,9 @@ class NodeHttpClient {
                         filename: options.file.originalFilename
                     }
                 }
-            }
+            };
             Object.assign(opts.formData, options.data||{});
-            
+
         } else if(options.data) {
             if(options.formData) {
                 opts.formData = options.data;

@@ -11,7 +11,7 @@ var pkg         = require('./package.json'),
 require('gulp-help')(gulp, { description: 'Help listing.' });
 
 gulp.task('jshint', function () {
-    gulp.src(['src/js/**/*.js'])
+    gulp.src(['src/**/*.js', 'examples/**/*.js'])
         .pipe(jshint({
             // laxbreak: true,
             // laxcomma: true,

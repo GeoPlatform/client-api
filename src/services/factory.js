@@ -7,7 +7,7 @@
         define([
             "ItemTypes", "ItemService", "LayerService",
             "ServiceService","GalleryService", "DatasetService", "MapService"],
-            function(ItemTypes, ItemService, LayerService, 
+            function(ItemTypes, ItemService, LayerService,
                 ServiceService,GalleryService, DatasetService, MapService){
             return (root.ServiceFactory =
                 factory(ItemTypes, ItemService, LayerService,
@@ -61,7 +61,7 @@
             case Types.DATASET: return new DatasetService(baseUrl, httpClient);
             default:            return new ItemService(baseUrl, httpClient);
         }
-    }
+    };
 
     return ServiceFactory;
 

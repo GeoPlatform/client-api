@@ -60,7 +60,7 @@
             .catch(e => {
                 let err = new Error("GalleryService.addItem() - Error adding item: " + e.message);
                 return Q.reject(err);
-            })
+            });
         }
 
         removeItem( galleryId, itemId, options) {
@@ -75,7 +75,7 @@
             .catch(e => {
                 let err = new Error("GalleryService.addItem() - Error adding item: " + e.message);
                 return Q.reject(err);
-            })
+            });
         }
 
     }

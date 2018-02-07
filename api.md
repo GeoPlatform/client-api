@@ -72,6 +72,16 @@ angular.module('myApp', [])
 - `ItemService.getUri(:item)` - Given an unpersisted GeoPlatform Item, generate and return a valid URI for it.
 
 
+#### Importing Files
+The `ItemService.import()` method supports both string URLs and files as the first parameter, but only
+the Node http client implementation can process file arguments for uploading to
+the GeoPlatform.  The jQuery and Angular instances only handle sending URLs at this time.
+
+Similarly, the `UtilsService.parseFile()` method can only upload files when using a
+Node http client.  It's recommended you use native form controls or angular components
+to upload files when not in a server-side environment.
+
+
 ### Examples
 
 #### JQuery

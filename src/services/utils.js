@@ -74,26 +74,20 @@
          * @param {Object} options
          * @return {Promise}
          */
-        parseFile (arg, format, options) {
-            // let err = new Error("UtilsService.parseFile() - Not Supported");
-            // return Q.reject(err);
-
+        parseFile (file, format, options) {
+            
             var url = this.baseUrl + '/api/utils/parse';
 
             return Q.resolve( url )
             .then( url => {
 
-                let formData = {
-                    file: {
-                        value:  arg.stream,
-                        options: { filename: arg.file.originalFilename }
-                    },
-                    format: format || 'iso19139'
-                };
+                let formData = ;
 
                 let opts = this.buildRequest({
                     method:"POST",  url:url,
-                    data: formData, formData: true,   //NodeJS (RequestJS)
+                    data: { format: format },
+                    file: file,
+                    formData: true,   //NodeJS (RequestJS)
                     options: options
                 });
                 return this.execute(opts);
@@ -133,7 +127,7 @@
                 throw new Error(`Must specify a URL for HTTP requests`);
 
             options.timeout = this.timeout;
-            
+
             return this.createRequestOpts(options);
         }
 

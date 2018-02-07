@@ -176,11 +176,7 @@
 
 
         /**
-         * Note: if using a File, first parameter should be an object containing:
-         * {
-         *   stream: BufferedStream (ala, fs.createReadStream(file.path) )
-         *   file: File
-         * }
+         *
          * @param {string} arg - URL to metadata document or File to upload
          * @param {string} format - metadata format of specified document
          * @return {Promise} resolving GeoPlatform Item
@@ -202,15 +198,8 @@
                     options: options
                 };
                 if(isFile) {
-                    ro.data = {
-                        file: {
-                            value:  arg.stream,
-                            options: {
-                                filename: arg.file.originalFilename
-                            }
-                        },
-                        format: format || 'iso19139'
-                    };
+                    ro.file = arg;
+                    ro.data = { format: format };
                 } else {
                     ro.data = { url: arg, format: format };
                 }

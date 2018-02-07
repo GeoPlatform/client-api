@@ -1165,11 +1165,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             }
 
             /**
-             * Note: if using a File, first parameter should be an object containing:
-             * {
-             *   stream: BufferedStream (ala, fs.createReadStream(file.path) )
-             *   file: File
-             * }
+             *
              * @param {string} arg - URL to metadata document or File to upload
              * @param {string} format - metadata format of specified document
              * @return {Promise} resolving GeoPlatform Item
@@ -1194,15 +1190,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                         options: options
                     };
                     if (isFile) {
-                        ro.data = {
-                            file: {
-                                value: arg.stream,
-                                options: {
-                                    filename: arg.file.originalFilename
-                                }
-                            },
-                            format: format || 'iso19139'
-                        };
+                        ro.file = arg;
+                        ro.data = { format: format };
                     } else {
                         ro.data = { url: arg, format: format };
                     }
@@ -1283,7 +1272,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
                 if (!options.url) throw new Error("Must specify a URL for HTTP requests");
 
-                //define default options
+                options.timeout = this.timeout;
+
                 var opts = this.createRequestOpts(options);
 
                 return opts;
@@ -1292,25 +1282,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             key: "createRequestOpts",
             value: function createRequestOpts(options) {
                 return this.client.createRequestOpts(options);
-                //     let opts = {
-                //         method: method,
-                //         url: url,
-                //         timeout: this.timeout
-                //     };
-                //     // if(data) {
-                //     //     opts.data = data;
-                //     //     if("POST" === method || "PUT" === method || "PATCH" === method) {
-                //     //         opts.processData = false;
-                //     //         opts.contentType = 'application/json';
-                //     //     }
-                //     // }
-                //     return opts;
             }
         }, {
             key: "execute",
             value: function execute(opts) {
                 return this.client.execute(opts);
-                // return Q.reject(new Error("ItemService - Must provide an execute method"));
             }
         }]);
 

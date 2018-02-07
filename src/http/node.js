@@ -1,4 +1,5 @@
 
+const fs = require('fs');
 const Q = require('Q');
 const request = require('request');
 // require('request-debug')(request);
@@ -27,7 +28,18 @@ class NodeHttpClient {
             opts.qs = options.params;
         }
 
-        if(options.data) {
+        if(options.file) {
+            opts.formData = {
+                file: {
+                    value:  fs.createReadStream(options.file.path),
+                    options: {
+                        filename: options.file.originalFilename
+                    }
+                }
+            }
+            Object.assign(opts.formData, options.data||{});
+            
+        } else if(options.data) {
             if(options.formData) {
                 opts.formData = options.data;
             } else {

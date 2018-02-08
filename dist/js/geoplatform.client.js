@@ -1365,6 +1365,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             }
 
             /**
+             * @param {string} id - GeoPlatform Layer identifier
              * @param {Object} req identifying extent, x, y
              * @param {Object} options - optional set of request options to apply to xhr request
              * @return {Promise} resolving feature JSON object
@@ -1372,13 +1373,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
         }, {
             key: "describe",
-            value: function describe(req, options) {
+            value: function describe(id, req, options) {
                 var _this11 = this;
 
                 return Q.resolve(req).then(function (req) {
 
                     if (!req) {
-                        throw new Error("Must provide describe req");
+                        throw new Error("Must provide describe parameters to use");
                     }
 
                     var keys = ['bbox', 'height', 'width', 'x', 'y'];
@@ -1406,6 +1407,35 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                         method: "GET", url: url, params: params, options: options
                     });
                     return _this11.execute(opts);
+                }).catch(function (e) {
+                    var err = new Error("LayerService.describe() -\n                    Error describing layer feature: " + e.message);
+                    return Q.reject(err);
+                });
+            }
+
+            /**
+             * @param {string} id - GeoPlatform Layer identifier
+             * @param {Object} params describing layer request to validate
+             * @param {Object} options - optional set of request options to apply to xhr request
+             * @return {Promise} resolving empty if successful or a message if failed
+             */
+
+        }, {
+            key: "validate",
+            value: function validate(id, params, options) {
+                var _this12 = this;
+
+                return Q.resolve(params).then(function (params) {
+
+                    if (!params) {
+                        throw new Error("Must provide parameters to use in layer validation");
+                    }
+
+                    var url = _this12.baseUrl + '/' + id + '/validate';
+                    var opts = _this12.buildRequest({
+                        method: "GET", url: url, params: params, options: options
+                    });
+                    return _this12.execute(opts);
                 }).catch(function (e) {
                     var err = new Error("LayerService.describe() -\n                    Error describing layer feature: " + e.message);
                     return Q.reject(err);
@@ -1476,14 +1506,14 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "about",
             value: function about(service, options) {
-                var _this13 = this;
+                var _this14 = this;
 
                 return Q.resolve(service).then(function (svc) {
                     if (!svc) throw new Error("Must provide service to get metadata about");
-                    var opts = _this13.buildRequest({
-                        method: 'POST', url: _this13.baseUrl + '/about', data: svc, options: options
+                    var opts = _this14.buildRequest({
+                        method: 'POST', url: _this14.baseUrl + '/about', data: svc, options: options
                     });
-                    return _this13.execute(opts);
+                    return _this14.execute(opts);
                 }).catch(function (e) {
                     var err = new Error("ServiceService.about() -\n                    Error describing service: " + e.message);
                     return Q.reject(err);
@@ -1498,16 +1528,16 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "types",
             value: function types(options) {
-                var _this14 = this;
+                var _this15 = this;
 
                 var query = new Query().types(ItemTypes.STANDARD).resourceTypes('ServiceType').pageSize(50).getQuery();
 
                 return Q.resolve(query).then(function (params) {
-                    var url = _this14.apiBase + '/api/items';
-                    var opts = _this14.buildRequest({
+                    var url = _this15.apiBase + '/api/items';
+                    var opts = _this15.buildRequest({
                         method: 'GET', url: url, params: params, options: options
                     });
-                    return _this14.execute(opts);
+                    return _this15.execute(opts);
                 }).then(function (response) {
                     return response.results;
                 }).catch(function (e) {
@@ -1525,14 +1555,14 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "import",
             value: function _import(service, options) {
-                var _this15 = this;
+                var _this16 = this;
 
                 return Q.resolve(service).then(function (svc) {
-                    var url = _this15.baseUrl + '/import';
-                    var opts = _this15.buildRequest({
+                    var url = _this16.baseUrl + '/import';
+                    var opts = _this16.buildRequest({
                         method: 'POST', url: url, data: svc, options: options
                     });
-                    return _this15.execute(opts);
+                    return _this16.execute(opts);
                 }).catch(function (e) {
                     var err = new Error("ServiceService.import() -\n                    Error importing service: " + e.message);
                     return Q.reject(err);
@@ -1548,14 +1578,14 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "harvest",
             value: function harvest(id, options) {
-                var _this16 = this;
+                var _this17 = this;
 
                 return Q.resolve(id).then(function (id) {
-                    var url = _this16.baseUrl + '/' + id + '/harvest';
-                    var opts = _this16.buildRequest({
+                    var url = _this17.baseUrl + '/' + id + '/harvest';
+                    var opts = _this17.buildRequest({
                         method: 'GET', url: url, options: options
                     });
-                    return _this16.execute(opts);
+                    return _this17.execute(opts);
                 }).catch(function (e) {
                     var err = new Error("ServiceService.harvest() -\n                    Error harvesting layers from service: " + e.message);
                     return Q.reject(err);
@@ -1571,14 +1601,14 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "liveTest",
             value: function liveTest(id, options) {
-                var _this17 = this;
+                var _this18 = this;
 
                 return Q.resolve(id).then(function (id) {
-                    var url = _this17.baseUrl + '/' + id + '/test';
-                    var opts = _this17.buildRequest({
+                    var url = _this18.baseUrl + '/' + id + '/test';
+                    var opts = _this18.buildRequest({
                         method: 'GET', url: url, options: options
                     });
-                    return _this17.execute(opts);
+                    return _this18.execute(opts);
                 }).catch(function (e) {
                     var err = new Error("ServiceService.liveTest() -\n                    Error testing service: " + e.message);
                     return Q.reject(err);
@@ -1594,14 +1624,14 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "statistics",
             value: function statistics(id, options) {
-                var _this18 = this;
+                var _this19 = this;
 
                 return Q.resolve(id).then(function (id) {
-                    var url = _this18.baseUrl + '/' + id + '/statistics';
-                    var opts = _this18.buildRequest({
+                    var url = _this19.baseUrl + '/' + id + '/statistics';
+                    var opts = _this19.buildRequest({
                         method: 'GET', url: url, options: options
                     });
-                    return _this18.execute(opts);
+                    return _this19.execute(opts);
                 }).catch(function (e) {
                     var err = new Error("ServiceService.statistics() -\n                    Error getting service statistics: " + e.message);
                     return Q.reject(err);
@@ -1662,14 +1692,14 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "addItem",
             value: function addItem(galleryId, itemObj, options) {
-                var _this20 = this;
+                var _this21 = this;
 
                 return Q.resolve(true).then(function () {
-                    var url = _this20.baseUrl + '/' + galleryId + '/items';
-                    var opts = _this20.buildRequest({
+                    var url = _this21.baseUrl + '/' + galleryId + '/items';
+                    var opts = _this21.buildRequest({
                         method: 'POST', url: url, data: itemObj, options: options
                     });
-                    return _this20.execute(opts);
+                    return _this21.execute(opts);
                 }).catch(function (e) {
                     var err = new Error("GalleryService.addItem() - Error adding item: " + e.message);
                     return Q.reject(err);
@@ -1678,13 +1708,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "removeItem",
             value: function removeItem(galleryId, itemId, options) {
-                var _this21 = this;
+                var _this22 = this;
 
                 return Q.resolve(this.baseUrl + '/' + galleryId + '/items/' + itemId).then(function (url) {
-                    var opts = _this21.buildRequest({
+                    var opts = _this22.buildRequest({
                         method: 'DELETE', url: url, options: options
                     });
-                    return _this21.execute(opts);
+                    return _this22.execute(opts);
                 }).then(function (response) {
                     return true;
                 }).catch(function (e) {

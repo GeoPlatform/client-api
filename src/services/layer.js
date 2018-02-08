@@ -69,17 +69,18 @@
         }
 
         /**
+         * @param {string} id - GeoPlatform Layer identifier
          * @param {Object} req identifying extent, x, y
          * @param {Object} options - optional set of request options to apply to xhr request
          * @return {Promise} resolving feature JSON object
          */
-        describe( req, options ) {
+        describe( id, req, options ) {
 
             return Q.resolve( req )
             .then( (req) => {
 
                 if(!req) {
-                    throw new Error("Must provide describe req");
+                    throw new Error("Must provide describe parameters to use");
                 }
 
                 let keys = ['bbox', 'height', 'width', 'x', 'y'];
@@ -101,6 +102,34 @@
                 };
 
                 let url = this.baseUrl + '/' + id + '/describe';
+                let opts = this.buildRequest({
+                    method:"GET", url:url, params:params, options:options
+                });
+                return this.execute(opts);
+            })
+            .catch(e => {
+                let err = new Error(`LayerService.describe() -
+                    Error describing layer feature: ${e.message}`);
+                return Q.reject(err);
+            });
+        }
+
+        /**
+         * @param {string} id - GeoPlatform Layer identifier
+         * @param {Object} params describing layer request to validate
+         * @param {Object} options - optional set of request options to apply to xhr request
+         * @return {Promise} resolving empty if successful or a message if failed
+         */
+        validate(id, params, options) {
+
+            return Q.resolve( params )
+            .then( params => {
+
+                if(!params) {
+                    throw new Error("Must provide parameters to use in layer validation");
+                }
+
+                let url = this.baseUrl + '/' + id + '/validate';
                 let opts = this.buildRequest({
                     method:"GET", url:url, params:params, options:options
                 });

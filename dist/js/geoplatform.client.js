@@ -992,7 +992,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         // run into a scenario where plain modules depend on CommonJS
         // *and* I happen to be loading in a CJS browser environment
         // but I'm including it for the sake of being thorough
-        module.exports = root.ItemService = factory(require('Q'));
+        module.exports = root.ItemService = factory(require('q'));
     } else {
         GeoPlatform.ItemService = factory(Q);
     }

@@ -54,12 +54,12 @@
         if(!baseUrl) throw new Error("Must provide a base url");
         if(!httpClient) throw new Error("Must provide an http client to use to make requests");
         switch(type) {
-            case Types.LAYER:   return new LayerService(baseUrl, httpClient);
-            case Types.SERVICE: return new ServiceService(baseUrl, httpClient);
-            case Types.MAP:     return new MapService(baseUrl, httpClient);
-            case Types.GALLERY: return new GalleryService(baseUrl, httpClient);
-            case Types.DATASET: return new DatasetService(baseUrl, httpClient);
-            default:            return new ItemService(baseUrl, httpClient);
+            case ItemTypes.LAYER:   return new LayerService(  baseUrl, httpClient);
+            case ItemTypes.SERVICE: return new ServiceService(baseUrl, httpClient);
+            case ItemTypes.MAP:     return new MapService(    baseUrl, httpClient);
+            case ItemTypes.GALLERY: return new GalleryService(baseUrl, httpClient);
+            case ItemTypes.DATASET: return new DatasetService(baseUrl, httpClient);
+            default:                return new ItemService(   baseUrl, httpClient);
         }
     };
 

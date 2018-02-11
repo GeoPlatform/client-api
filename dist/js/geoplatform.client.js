@@ -125,7 +125,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             _classCallCheck(this, Query);
 
             this.defaultQuery = {
-                start: 0,
+                page: 0,
                 size: 10,
                 total: 0,
                 sort: "modified,desc",
@@ -134,7 +134,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             };
 
             this.query = {
-                start: 0,
+                page: 0,
                 size: 10,
                 total: 0,
                 sort: "modified,desc",
@@ -717,30 +717,26 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 return this.query.fields;
             }
 
-            // -----------------------------------------------------------
+            // // -----------------------------------------------------------
+            //
+            //
+            // /**
+            //  * @param {int} start - beginning index of results to request
+            //  */
+            // start (start) {
+            //     this.setStart(start);
+            //     return this;
+            // }
+            //
+            // setStart(start) {
+            //     if(isNaN(start)) return;
+            //     this.query.start = start*1;
+            // }
+            //
+            // getStart() {
+            //     return this.query.start;
+            // }
 
-
-            /**
-             * @param {int} start - beginning index of results to request
-             */
-
-        }, {
-            key: "start",
-            value: function start(_start) {
-                this.setStart(_start);
-                return this;
-            }
-        }, {
-            key: "setStart",
-            value: function setStart(start) {
-                if (isNaN(start)) return;
-                this.query.start = start;
-            }
-        }, {
-            key: "getStart",
-            value: function getStart() {
-                return this.query.start;
-            }
 
             // -----------------------------------------------------------
 
@@ -758,13 +754,23 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "setPage",
             value: function setPage(page) {
-                if (isNaN(page)) return;
-                this.query.start = page * this.query.size;
+                if (isNaN(page) || page * 1 < 0) return;
+                this.query.page = page * 1;
             }
         }, {
             key: "getPage",
             value: function getPage() {
-                return this.query.start;
+                return this.query.page;
+            }
+        }, {
+            key: "nextPage",
+            value: function nextPage() {
+                this.setPage(this.query.page + 1);
+            }
+        }, {
+            key: "previousPage",
+            value: function previousPage() {
+                this.setPage(this.query.page - 1);
             }
 
             // -----------------------------------------------------------
@@ -783,13 +789,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "setPageSize",
             value: function setPageSize(size) {
-                if (isNaN(size)) return;
-                this.query.size = size;
-
-                //find out which page in the new scheme the current first-result of current page
-                // will show up in, and set start so that it shows up with the new page size
-                var page = Math.floor(this.query.start * 1 / this.query.size * 1);
-                this.query.start = page * (this.query.size * 1);
+                if (isNaN(size) || size * 1 < 0) return;
+                this.query.size = size * 1;
             }
         }, {
             key: "getPageSize",

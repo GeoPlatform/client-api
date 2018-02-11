@@ -28,7 +28,7 @@ let query = new Query()
      // .ends(new Date())
      .facets(['themes','publishers'])
      .fields(['label','theme', 'publisher'])
-     .start(0)
+     .page(0)
      .pageSize(50)
      .sort('modified', 'desc');
 

@@ -8,7 +8,10 @@ const ItemService = GeoPlatform.ItemService;
 const JQHttpClient = GeoPlatform.JQueryHttpClient;
 const URL = 'https://sit-ual.geoplatform.us';
 
-let query = QueryFactory()
+let service = new ItemService( URL, new JQHttpClient() );
+
+
+let query1 = QueryFactory()
      .types([ItemTypes.DATASET, ItemTypes.SERVICE, ItemTypes.MAP, ItemTypes.LAYER])
      //use labels to search using themes
      // .themes("Imagery", QueryParameters.THEMES_LABEL)
@@ -20,28 +23,46 @@ let query = QueryFactory()
      // .ends(new Date())
      .facets(['themes','publishers'])
      .fields(['label','theme', 'publisher'])
-     .start(0)
+     // .page(0)
      .pageSize(10)
      .sort('modified', 'desc');
 
-let service = new ItemService( URL, new JQHttpClient() );
-service.search(query)
-.then( response => {
-    let html = response.results.map(result => result.label).join('<br>');
-    jQuery('#results').html(html);
-})
-.catch(e => {
-   jQuery('#results').html(e.message);
-});
+search1(query1);
+
+
+function previousPage() {
+    query1.page(query1.getPage()-1);
+    search1(query1);
+}
+function nextPage() {
+    query1.page(query1.getPage()+1);
+    search1(query1);
+}
+
+function search1(query) {
+    service.search(query)
+    .then( response => {
+        let html = response.results.map(result => {
+            return `<li>[${result.type}] ${result.label}</li>`
+        });
+        jQuery('#results').html(html);
+    })
+    .catch(e => {
+       jQuery('#results').html(e.message);
+    });
+}
 
 
 
 
 
 
-query = QueryFactory()
+
+
+
+let query2 = QueryFactory()
      .types(ItemTypes.DATASET);
-service.search(query)
+service.search(query2)
 .then( response => {
     let id = response.results[0].id;
     return service.export(id);

@@ -45,7 +45,7 @@
         constructor() {
 
             this.defaultQuery = {
-                start: 0,
+                page: 0,
                 size: 10,
                 total: 0,
                 sort: "modified,desc",
@@ -54,7 +54,7 @@
             };
 
             this.query = {
-                start: 0,
+                page: 0,
                 size: 10,
                 total: 0,
                 sort: "modified,desc",
@@ -572,25 +572,25 @@
         }
 
 
-        // -----------------------------------------------------------
-
-
-        /**
-         * @param {int} start - beginning index of results to request
-         */
-        start (start) {
-            this.setStart(start);
-            return this;
-        }
-
-        setStart(start) {
-            if(isNaN(start)) return;
-            this.query.start = start;
-        }
-
-        getStart() {
-            return this.query.start;
-        }
+        // // -----------------------------------------------------------
+        //
+        //
+        // /**
+        //  * @param {int} start - beginning index of results to request
+        //  */
+        // start (start) {
+        //     this.setStart(start);
+        //     return this;
+        // }
+        //
+        // setStart(start) {
+        //     if(isNaN(start)) return;
+        //     this.query.start = start*1;
+        // }
+        //
+        // getStart() {
+        //     return this.query.start;
+        // }
 
 
         // -----------------------------------------------------------
@@ -605,12 +605,20 @@
         }
 
         setPage(page) {
-            if(isNaN(page)) return;
-            this.query.start = page * this.query.size;
+            if(isNaN(page) || page*1<0) return;
+            this.query.page = page*1;
         }
 
         getPage() {
-            return this.query.start;
+            return this.query.page;
+        }
+
+        nextPage() {
+            this.setPage(this.query.page+1);
+        }
+
+        previousPage() {
+            this.setPage(this.query.page-1);
         }
 
 
@@ -626,13 +634,8 @@
         }
 
         setPageSize (size) {
-            if(isNaN(size)) return;
-            this.query.size = size;
-
-            //find out which page in the new scheme the current first-result of current page
-            // will show up in, and set start so that it shows up with the new page size
-            var page = Math.floor(this.query.start*1 / this.query.size*1);
-            this.query.start = page * (this.query.size*1);
+            if(isNaN(size) || size*1<0) return;
+            this.query.size = size*1;
         }
 
         getPageSize() {

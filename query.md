@@ -146,6 +146,12 @@ and `Query.setSortOrder()` methods.
 
 The list of supported default sort options can be retrieved using `Query.getSortOptions()`.
 
+## Paging Results
+
+Use `Query.setPage()` and `Query.setPageSize()` to modify the paging parameters issued
+with queries.  Pages start at 0 and the default page size is 10.
+
+
 ## Clearing Query values
 
 To reset a Query instance, use `Query.clear()`.

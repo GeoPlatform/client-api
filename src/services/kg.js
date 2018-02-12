@@ -23,7 +23,7 @@
             )
         );
     } else {
-        GeoPlatform.KGService = factory(Q, QueryParameters);
+        GeoPlatform.KGService = factory(Q, GeoPlatform.QueryParameters);
     }
 }(this||window, function(Q, QueryParameters) {
 

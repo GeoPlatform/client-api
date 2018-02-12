@@ -904,16 +904,16 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         // value to the root (window) and returning it as well to
         // the AMD loader.
         define([], function () {
-            return root.QueryParameters = factory();
+            return root.KGClassifiers = factory();
         });
     } else if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === "object" && module.exports) {
         // I've not encountered a need for this yet, since I haven't
         // run into a scenario where plain modules depend on CommonJS
         // *and* I happen to be loading in a CJS browser environment
         // but I'm including it for the sake of being thorough
-        module.exports = root.QueryParameters = factory();
+        module.exports = root.KGClassifiers = factory();
     } else {
-        GeoPlatform.QueryParameters = factory();
+        GeoPlatform.KGClassifiers = factory();
     }
 })(undefined || window, function () {
 
@@ -2347,7 +2347,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         // but I'm including it for the sake of being thorough
         module.exports = root.KGService = factory(require('q'), require('../shared/parameters'));
     } else {
-        GeoPlatform.KGService = factory(Q, QueryParameters);
+        GeoPlatform.KGService = factory(Q, GeoPlatform.QueryParameters);
     }
 })(undefined || window, function (Q, QueryParameters) {
 

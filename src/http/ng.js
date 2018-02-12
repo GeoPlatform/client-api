@@ -27,15 +27,22 @@
 
     class NGHttpClient {
 
-        constructor(timeout) {
+        constructor(options) {
             if(typeof(angular) === 'undefined')
                 throw new Error("Angular not defined");
 
-            this.setTimeout(timeout||10000);
+            options = options || {};
+            this.setTimeout(options.timeout||10000);
+            if(options.$http)
+                this.$http = options.$http;
         }
 
         setTimeout(timeout) {
             this.timeout = timeout;
+        }
+
+        setAuth(tokenFn) {
+            this.tokenFn = tokenFn;
         }
 
         createRequestOpts(options) {
@@ -70,8 +77,20 @@
         }
 
         execute(opts) {
-            return Q.resolve( angular.injector(['ng']).get('$http') )
+            let $http = this.$http || angular.injector(['ng']).get('$http');
+            return Q.resolve( $http )
             .then($http => {
+
+                if(this.tokenFn) {
+                    let jwt = this.tokenFn();
+                    if(jwt) {
+                        opts.headers = {
+                            Authorization : 'Bearer ' + jwt
+                        };
+                        opts.useXDomain = true;
+                    }
+                }
+
                 if(typeof($http) === 'undefined')
                     throw new Error("Angular $http not resolved");
 

@@ -1273,10 +1273,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }
 })(undefined || window, function (jQuery, Q) {
     var JQueryHttpClient = function () {
-        function JQueryHttpClient(timeout) {
+        function JQueryHttpClient(options) {
             _classCallCheck(this, JQueryHttpClient);
 
-            this.setTimeout(timeout || 10000);
+            options = options || {};
+            this.setTimeout(options.timeout || 10000);
         }
 
         _createClass(JQueryHttpClient, [{

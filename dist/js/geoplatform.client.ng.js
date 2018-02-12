@@ -25,18 +25,25 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }
 })(undefined || window, function (angular, Q) {
     var NGHttpClient = function () {
-        function NGHttpClient(timeout) {
+        function NGHttpClient(options) {
             _classCallCheck(this, NGHttpClient);
 
             if (typeof angular === 'undefined') throw new Error("Angular not defined");
 
-            this.setTimeout(timeout || 10000);
+            options = options || {};
+            this.setTimeout(options.timeout || 10000);
+            if (options.$http) this.$http = options.$http;
         }
 
         _createClass(NGHttpClient, [{
             key: "setTimeout",
             value: function setTimeout(timeout) {
                 this.timeout = timeout;
+            }
+        }, {
+            key: "setAuth",
+            value: function setAuth(tokenFn) {
+                this.tokenFn = tokenFn;
             }
         }, {
             key: "createRequestOpts",
@@ -72,7 +79,21 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "execute",
             value: function execute(opts) {
-                return Q.resolve(angular.injector(['ng']).get('$http')).then(function ($http) {
+                var _this = this;
+
+                var $http = this.$http || angular.injector(['ng']).get('$http');
+                return Q.resolve($http).then(function ($http) {
+
+                    if (_this.tokenFn) {
+                        var jwt = _this.tokenFn();
+                        if (jwt) {
+                            opts.headers = {
+                                Authorization: 'Bearer ' + jwt
+                            };
+                            opts.useXDomain = true;
+                        }
+                    }
+
                     if (typeof $http === 'undefined') throw new Error("Angular $http not resolved");
 
                     // console.log(opts);

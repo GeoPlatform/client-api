@@ -7,12 +7,17 @@ const request = require('request');
 
 class NodeHttpClient {
 
-    constructor(timeout) {
-        this.setTimeout(timeout||10000);
+    constructor(options) {
+        options = options || {};
+        this.setTimeout(options.timeout||10000);
     }
 
     setTimeout(timeout) {
         this.timeout = timeout;
+    }
+
+    setAuth(tokenFn) {
+        this.tokenFn = tokenFn;
     }
 
     createRequestOpts(options) {
@@ -54,6 +59,12 @@ class NodeHttpClient {
                     opts[o] = options.options[o];
                 }
             }
+        }
+
+        if(this.tokenFn) {
+            options.auth = {
+                bearer: this.tokenFn
+            };
         }
 
         // console.log(JSON.stringify(opts));

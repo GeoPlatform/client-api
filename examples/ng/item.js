@@ -1,4 +1,11 @@
 
+const QueryFactory = GeoPlatform.QueryFactory;
+const ItemTypes = GeoPlatform.ItemTypes;
+const QueryParameters = GeoPlatform.QueryParameters;
+const ItemService = GeoPlatform.ItemService;
+const NGHttpClient = GeoPlatform.NGHttpClient;
+const URL = 'https://sit-ual.geoplatform.us';
+
 
 //define the application's angular module and make sure to include the $httpProvider
 // in the config function
@@ -8,71 +15,109 @@ angular.module('ngExample', []).config(function myAppConfig ($httpProvider) {
 
 
 
-const QueryFactory = GeoPlatform.QueryFactory;
-const ItemTypes = GeoPlatform.ItemTypes;
-const QueryParameters = GeoPlatform.QueryParameters;
-const ItemService = GeoPlatform.ItemService;
-const NGHttpClient = GeoPlatform.NGHttpClient;
-
-const URL = 'https://sit-ual.geoplatform.us';
-
-let service = new ItemService(URL, new NGHttpClient());
-
-let query1 = QueryFactory()
-     .types([ItemTypes.DATASET, ItemTypes.SERVICE, ItemTypes.MAP, ItemTypes.LAYER])
-     //use labels to search using themes
-     // .themes("Imagery", QueryParameters.THEMES_LABEL)
-     //use labels to search using publishers
-     // .publishers('DOI-USGS', QueryParameters.PUBLISHERS_LABEL)
-     // .modified(new Date(), true)
-     // .extent('-120,20,-66,50')
-     // .begins(new Date())
-     // .ends(new Date())
-     .facets(['themes','publishers'])
-     .fields(['label','theme', 'publisher'])
-     .page(0)
-     .pageSize(10)
-     .sort('modified', 'desc');
-
-
-search1(query1);
-
-
-function previousPage() {
-    query1.page(query1.getPage()-1);
-    search1(query1);
-}
-function nextPage() {
-    query1.page(query1.getPage()+1);
-    search1(query1);
-}
-
-function search1(query) {
-    service.search(query)
-    .then( response => {
-        let html = response.results.map(result => {
-            return `<li>[${result.type}] ${result.label}</li>`
-        });
-        jQuery('#results').html(html);
-    })
-    .catch(e => {
-       jQuery('#results').html(e.message);
-    });
-}
+angular.module('ngExample').service('ItemServiceInst', ['$http', function($http) {
+    let httpClient = new NGHttpClient({$http:$http});
+    return new ItemService(URL, httpClient);
+}])
 
 
 
+angular.module('ngExample').component('searchWidget', {
 
-let query2 = QueryFactory()
-     .types(ItemTypes.DATASET);
-service.search(query2)
-.then( response => {
-    let id = response.results[0].id;
-    return service.export(id);
+    controller: function(ItemServiceInst) {
+
+        this.$onInit = function() {
+
+            this.query = QueryFactory()
+                 .types([ItemTypes.DATASET, ItemTypes.SERVICE, ItemTypes.MAP, ItemTypes.LAYER])
+                 //use labels to search using themes
+                 // .themes("Imagery", QueryParameters.THEMES_LABEL)
+                 //use labels to search using publishers
+                 // .publishers('DOI-USGS', QueryParameters.PUBLISHERS_LABEL)
+                 // .modified(new Date(), true)
+                 // .extent('-120,20,-66,50')
+                 // .begins(new Date())
+                 // .ends(new Date())
+                 .facets(['themes','publishers'])
+                 .fields(['label','theme', 'publisher'])
+                 .page(0)
+                 .pageSize(10)
+                 .sort('modified', 'desc');
+        };
+
+        this.$postLink = function() {
+             this.search();
+        };
+
+        this.previousPage = function() {
+            this.query.page(this.query.getPage()-1);
+            this.search(this.query);
+        };
+
+        this.nextPage = function () {
+            this.query.page(this.query.getPage()+1);
+            this.search(this.query);
+        };
+
+        this.search = function(query) {
+            ItemServiceInst.search(query)
+            .then( response => { this.results = response.results; })
+            .catch(e => { this.error = e.message; });
+        };
+
+    },
+
+    template:
+    `
+    <h5>Search</h5>
+    <div>
+        <button type="button" ng-click="$ctrl.previousPage()">prev</button>
+        <button type="button" ng-click="$ctrl.nextPage()">next</button>
+    </div>
+    <ul>
+        <li ng-repeat="result in $ctrl.results track by $index">
+            [{{result.type}}] {{result.label}}</li>
+        </li>
+    </ul>
+    <div>{{$ctrl.error}}</div>
+    `
 })
-.then( response => {
-    jQuery('#export').html(response);
+
+
+
+angular.module('ngExample').component('exportWidget', {
+
+    controller: function(ItemServiceInst) {
+
+        this.$onInit = function() {
+
+            this.query = QueryFactory()
+                 .types(ItemTypes.DATASET);
+
+        };
+
+        this.$postLink = function() {
+            this.export();
+        };
+
+        this.export = function() {
+            ItemServiceInst.search(this.query)
+            .then( response => {
+                let id = response.results[0].id;
+                return ItemServiceInst.export(id);
+            })
+            .then( response => {
+                this.output = response;
+            })
+            .catch(e => { this.error = e.message; });
+        };
+
+    },
+
+    template:
+    `
+    <h5>Export</h5>
+    <pre>{{$ctrl.output}}</pre>
+    <div>{{$ctrl.error}}</div>
+    `
 })
-.catch(e => {
-    jQuery('#export').html(e.message);
-});

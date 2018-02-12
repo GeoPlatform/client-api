@@ -27,8 +27,9 @@
 
     class JQueryHttpClient {
 
-        constructor(timeout) {
-            this.setTimeout(timeout||10000);
+        constructor(options) {
+            options = options || {};
+            this.setTimeout(options.timeout||10000);
         }
 
         setTimeout(timeout) {

@@ -94,6 +94,22 @@ Lastly, include the necessary modules in your application's source code. See the
 To learn how to use the GeoPlatform API to fetch, create, update, and remove
 GeoPlatform Assets, see the [GeoPlatform API](api.md) and [Query](query.md) documentation.
 
+
+## Examples
+
+Look inside the "examples" folder and its sub-folders to see how to use the client API.
+
+
+To run the JQuery and Angular examples, it is recommended you use http-server:
+
+1. Install http-server if it isn't already: `npm install -g http-server`
+2. Run an http server in the root folder of the api project: `http-server -p8080`
+3. Load the desired example in your browser (e.g., http://localhost:8080/examples/jq/item.html)
+
+To run the NodeJS examples, run Node from the api project root folder passing it
+the desired example JS file (e.g., `node examples/node/item.js`)
+
+
 ## Miscellaneous
 
 ### Conventions

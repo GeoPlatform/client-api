@@ -89,7 +89,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         MODIFIED_AFTER: 'modified.min',
         BEGINS: 'startDate.min',
         ENDS: 'endDate.max',
-        RESOURCE_TYPE: 'resourceType'
+        RESOURCE_TYPE: 'resourceType',
+
+        //recommender service-specific 
+        FOR_TYPES: 'for'
     };
 
     return Parameters;
@@ -893,6 +896,362 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     return function () {
         return new Query();
     };
+});
+
+(function (root, factory) {
+    if (typeof define === "function" && define.amd) {
+        // Now we're wrapping the factory and assigning the return
+        // value to the root (window) and returning it as well to
+        // the AMD loader.
+        define([], function () {
+            return root.QueryParameters = factory();
+        });
+    } else if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === "object" && module.exports) {
+        // I've not encountered a need for this yet, since I haven't
+        // run into a scenario where plain modules depend on CommonJS
+        // *and* I happen to be loading in a CJS browser environment
+        // but I'm including it for the sake of being thorough
+        module.exports = root.QueryParameters = factory();
+    } else {
+        GeoPlatform.QueryParameters = factory();
+    }
+})(undefined || window, function () {
+
+    var classifiers = {
+        PURPOSE: 'purposes',
+        FUNCTION: 'functions',
+        TOPIC_PRIMARY: 'primaryTopics',
+        TOPIC_SECONDARY: 'secondaryTopics',
+        SUBJECT_PRIMARY: 'primarySubjects',
+        SUBJECT_SECONDARY: 'secondarySubjects',
+        COMMUNITY: 'communities',
+        AUDIENCE: 'audiences',
+        PLACE: 'places',
+        CATEGORY: 'categories'
+    };
+
+    return classifiers;
+});
+
+(function (root, factory) {
+    if (typeof define === "function" && define.amd) {
+        // Now we're wrapping the factory and assigning the return
+        // value to the root (window) and returning it as well to
+        // the AMD loader.
+        define(['QueryParameters'], function (QueryParameters) {
+            return root.KGQuery = factory(QueryParameters);
+        });
+    } else if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === "object" && module.exports) {
+        // I've not encountered a need for this yet, since I haven't
+        // run into a scenario where plain modules depend on CommonJS
+        // *and* I happen to be loading in a CJS browser environment
+        // but I'm including it for the sake of being thorough
+        module.exports = root.KGQuery = factory(require('./parameters'));
+    } else {
+        GeoPlatform.KGQuery = factory(GeoPlatform.QueryParameters);
+    }
+})(undefined || window, function (QueryParameters) {
+
+    var SORT_OPTIONS_DEFAULT = [{ value: "label,asc", label: "Name (A-Z)" }, { value: "label,desc", label: "Name (Z-A)" }, { value: "type,asc", label: "Type (A-Z)" }, { value: "type,desc", label: "Type (Z-A)" }, { value: "modified,desc", label: "Most recently modified" }, { value: "modified,asc", label: "Least recently modified" }, { value: "_score,desc", label: "Relevance" }];
+
+    var KGQuery = function () {
+        function KGQuery() {
+            _classCallCheck(this, KGQuery);
+
+            this.defaultQuery = {
+                page: 0,
+                size: 10,
+                sort: "modified,desc"
+            };
+
+            this.query = {
+                page: 0,
+                size: 10,
+                sort: "modified,desc"
+            };
+        }
+
+        _createClass(KGQuery, [{
+            key: "getQuery",
+            value: function getQuery() {
+                var result = {};
+                for (var prop in this.query) {
+                    var value = this.query[prop];
+                    if (value !== null && typeof value.push !== 'undefined') {
+                        value = value.join(',');
+                    }
+                    result[prop] = value;
+                }
+                return result;
+            }
+
+            // -----------------------------------------------------------
+
+
+        }, {
+            key: "parameter",
+            value: function parameter(name, value) {
+                this.setParameter(name, value);
+                return this;
+            }
+        }, {
+            key: "setParameter",
+            value: function setParameter(name, value) {
+                if (value === null || value === undefined) delete this.query[name];else this.query[name] = value;
+            }
+        }, {
+            key: "getParameter",
+            value: function getParameter(key) {
+                return this.getParameter(key);
+            }
+        }, {
+            key: "applyParameters",
+            value: function applyParameters(obj) {
+                for (var p in obj) {
+                    if (obj.hasOwnProperty(p)) {
+                        this.setParameter(p, obj[p]);
+                    }
+                }
+            }
+
+            // -----------------------------------------------------------
+
+
+        }, {
+            key: "q",
+            value: function q(text) {
+                this.setQ(text);
+                return this;
+            }
+
+            /**
+             * @param {string} text - free text query
+             */
+
+        }, {
+            key: "setQ",
+            value: function setQ(text) {
+                this.setParameter(QueryParameters.QUERY, text);
+            }
+        }, {
+            key: "getQ",
+            value: function getQ() {
+                return this.getParameter(QueryParameters.QUERY);
+            }
+
+            // -----------------------------------------------------------
+
+
+            /**
+             * @param {array[string]} types - KG classifiers for which concepts should be returned
+             */
+
+        }, {
+            key: "classifiers",
+            value: function classifiers(types) {
+                this.setClassifiers(types);
+                return this;
+            }
+
+            /**
+             * @param {array[string]} types - KG classifiers for which concepts should be returned
+             */
+
+        }, {
+            key: "setClassifiers",
+            value: function setClassifiers(types) {
+                if (types && types.push === 'undefined') types = [types];
+                this.setParameter(QueryParameters.TYPES, types);
+            }
+
+            /**
+             * @return {array[string]} KG classifiers for which concepts should be returned
+             */
+
+        }, {
+            key: "getClassifiers",
+            value: function getClassifiers() {
+                return this.getParameter(QueryParameters.TYPES);
+            }
+
+            // -----------------------------------------------------------
+
+
+            /**
+             * Specify the Item object model type name(s) for which
+             * recommended concepts should be returned. Note: this
+             * query parameter is not the same as the GeoPlatform.Query.types()
+             * query parameter (they map to different HTTP request parameters).
+             * @param {array[string]} objTypes - Item object type names
+             */
+
+        }, {
+            key: "types",
+            value: function types(objTypes) {
+                this.setTypes(objTypes);
+                return this;
+            }
+
+            /**
+             * Specify the Item object model type name(s) for which
+             * recommended concepts should be returned. Note: this
+             * query parameter is not the same as the GeoPlatform.Query.setTypes()
+             * query parameter (they map to different HTTP request parameters).
+             * @param {array[string]} objTypes - Item object type names
+             */
+
+        }, {
+            key: "setTypes",
+            value: function setTypes(objTypes) {
+                if (objTypes && objTypes.push === 'undefined') objTypes = [objTypes];
+                this.setParameter(QueryParameters.FOR_TYPES, objTypes);
+            }
+
+            /**
+             * Get the Item object model type name(s) for which
+             * recommended concepts should be returned. Note: this
+             * query parameter is not the same as the GeoPlatform.Query.getTypes()
+             * query parameter (they map to different HTTP request parameters).
+             * @return {array[string]} Item object type names
+             */
+
+        }, {
+            key: "getTypes",
+            value: function getTypes() {
+                return this.getParameter(QueryParameters.FOR_TYPES);
+            }
+
+            // -----------------------------------------------------------
+
+
+            /**
+             * @param {int} page - page of results to fetch
+             */
+
+        }, {
+            key: "page",
+            value: function page(_page2) {
+                this.setPage(_page2);
+                return this;
+            }
+        }, {
+            key: "setPage",
+            value: function setPage(page) {
+                if (isNaN(page) || page * 1 < 0) return;
+                this.query.page = page * 1;
+            }
+        }, {
+            key: "getPage",
+            value: function getPage() {
+                return this.query.page;
+            }
+        }, {
+            key: "nextPage",
+            value: function nextPage() {
+                this.setPage(this.query.page + 1);
+            }
+        }, {
+            key: "previousPage",
+            value: function previousPage() {
+                this.setPage(this.query.page - 1);
+            }
+
+            // -----------------------------------------------------------
+
+
+            /**
+             * @param {int} size - page size to request
+             */
+
+        }, {
+            key: "pageSize",
+            value: function pageSize(size) {
+                this.setPageSize(size);
+                return this;
+            }
+        }, {
+            key: "setPageSize",
+            value: function setPageSize(size) {
+                if (isNaN(size) || size * 1 < 0) return;
+                this.query.size = size * 1;
+            }
+        }, {
+            key: "getPageSize",
+            value: function getPageSize() {
+                return this.query.size;
+            }
+
+            // -----------------------------------------------------------
+
+
+            /**
+             * @param {string} sort - form of <field>,<dir> or just field name
+             * @param {string} order - optional, either 'asc' or 'desc'
+             */
+
+        }, {
+            key: "sort",
+            value: function sort(_sort2, order) {
+                this.setSort(_sort2, order);
+                return this;
+            }
+
+            /**
+             * @param {string} sort - form of <field>,<dir> or just field name
+             * @param {string} order - optional, either 'asc' or 'desc'
+             */
+
+        }, {
+            key: "setSort",
+            value: function setSort(sort, order) {
+                order = order && (order !== 'asc' || order !== 'desc') ? 'desc' : order;
+                if (sort && sort.indexOf(',') < 0) sort = sort + ',' + order;
+                this.query.sort = sort;
+            }
+        }, {
+            key: "getSort",
+            value: function getSort() {
+                return this.query.sort;
+            }
+        }, {
+            key: "getSortField",
+            value: function getSortField() {
+                return this.query.sort.split(',')[0];
+            }
+        }, {
+            key: "getSortOrder",
+            value: function getSortOrder() {
+                return this.query.sort.split(',')[1] === 'asc';
+            }
+
+            /**
+             * @return {array} list of key-value pairs of sort options
+             */
+
+        }, {
+            key: "getSortOptions",
+            value: function getSortOptions() {
+                return SORT_OPTIONS_DEFAULT.slice(0);
+            }
+
+            // -----------------------------------------------------------
+
+
+            /**
+             *
+             */
+
+        }, {
+            key: "clear",
+            value: function clear() {
+                this.query = this.defaultQuery;
+            }
+        }]);
+
+        return KGQuery;
+    }();
+
+    return KGQuery;
 });
 
 (function (root, factory) {
@@ -1833,6 +2192,295 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }(ItemService);
 
     return DatasetService;
+});
+
+(function (root, factory) {
+    if (typeof define === "function" && define.amd) {
+        // Now we're wrapping the factory and assigning the return
+        // value to the root (window) and returning it as well to
+        // the AMD loader.
+        define(["q"], function (Q) {
+            return root.UtilsService = factory(Q);
+        });
+    } else if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === "object" && module.exports) {
+        // I've not encountered a need for this yet, since I haven't
+        // run into a scenario where plain modules depend on CommonJS
+        // *and* I happen to be loading in a CJS browser environment
+        // but I'm including it for the sake of being thorough
+        module.exports = root.UtilsService = factory(require('q'));
+    } else {
+        GeoPlatform.UtilsService = factory(Q);
+    }
+})(undefined || window, function (Q) {
+
+    'use strict';
+
+    var METHODS = ["GET", "POST", "PUT", "DELETE", "PATCH"];
+
+    var UtilsService = function () {
+        function UtilsService(url, httpClient) {
+            _classCallCheck(this, UtilsService);
+
+            this.setUrl(url);
+            this.client = httpClient;
+            this.timeout = 10000;
+            this.httpMethods = ["GET", "POST", "PUT", "DELETE", "PATCH"];
+        }
+
+        _createClass(UtilsService, [{
+            key: "setUrl",
+            value: function setUrl(baseUrl) {
+                this.baseUrl = baseUrl;
+            }
+
+            /**
+             * @param {string} property - optional capa property to specifically request
+             * @param {Object} query - optional query parameters to include with request
+             * @param {Object} options - optional config to send with http request
+             * @return {Promise} resolving capabilities object
+             */
+
+        }, {
+            key: "capabilities",
+            value: function capabilities(property, query, options) {
+                var _this25 = this;
+
+                var url = this.baseUrl + '/api/capabilities';
+                if (property) url += '/' + property;
+
+                return Q.resolve(url).then(function (url) {
+                    var opts = _this25.buildRequest({
+                        method: "GET", url: url, params: query || {}, options: options
+                    });
+                    return _this25.execute(opts);
+                }).catch(function (e) {
+                    var err = new Error("UtilsService.capabilities() - Error getting capabilities: " + e.message);
+                    return Q.reject(err);
+                });
+            }
+
+            /**
+             * @param {File} file
+             * @param {string} format
+             * @param {Object} options
+             * @return {Promise}
+             */
+
+        }, {
+            key: "parseFile",
+            value: function parseFile(file, format, options) {
+                var _this26 = this;
+
+                var url = this.baseUrl + '/api/utils/parse';
+
+                return Q.resolve(url).then(function (url) {
+
+                    var opts = _this26.buildRequest({
+                        method: "POST", url: url,
+                        data: { format: format },
+                        file: file,
+                        formData: true, //NodeJS (RequestJS)
+                        options: options
+                    });
+                    return _this26.execute(opts);
+                }).then(function (response) {
+                    return response.body;
+                }).catch(function (e) {
+                    var err = new Error("UtilsService.parseFile() - Error parsing file: " + e.message);
+                    return Q.reject(err);
+                });
+            }
+
+            /* ----------------------------------------------------------- */
+
+            /**
+             * @param {string} method - one of "GET", "POST", "PUT", "DELETE", "PATCH"
+             * @param {string} url - destination of xhr request
+             * @param {Object} params - object to be sent with request as query parameters
+             * @param {Object} data - object to be sent with request as body
+             * @param {Object} options - optional object defining request options
+             * @return {Object} request options for xhr
+             */
+
+        }, {
+            key: "buildRequest",
+            value: function buildRequest(options) {
+
+                if (this.httpMethods.indexOf(options.method) < 0) throw new Error("Unsupported HTTP method " + options.method);
+
+                if (!options.url) throw new Error("Must specify a URL for HTTP requests");
+
+                options.timeout = this.timeout;
+
+                return this.createRequestOpts(options);
+            }
+        }, {
+            key: "createRequestOpts",
+            value: function createRequestOpts(options) {
+                return this.client.createRequestOpts(options);
+            }
+        }, {
+            key: "execute",
+            value: function execute(opts) {
+                return this.client.execute(opts);
+            }
+        }]);
+
+        return UtilsService;
+    }();
+
+    return UtilsService;
+});
+
+(function (root, factory) {
+    if (typeof define === "function" && define.amd) {
+        // Now we're wrapping the factory and assigning the return
+        // value to the root (window) and returning it as well to
+        // the AMD loader.
+        define(["q", "QueryParameters"], function (Q, QueryParameters) {
+            return root.KGService = factory(Q, QueryParameters);
+        });
+    } else if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === "object" && module.exports) {
+        // I've not encountered a need for this yet, since I haven't
+        // run into a scenario where plain modules depend on CommonJS
+        // *and* I happen to be loading in a CJS browser environment
+        // but I'm including it for the sake of being thorough
+        module.exports = root.KGService = factory(require('q'), require('../shared/parameters'));
+    } else {
+        GeoPlatform.KGService = factory(Q, QueryParameters);
+    }
+})(undefined || window, function (Q, QueryParameters) {
+
+    'use strict';
+
+    var KGService = function () {
+        function KGService(url, httpClient) {
+            _classCallCheck(this, KGService);
+
+            this.setUrl(url);
+            this.client = httpClient;
+            this.timeout = 10000;
+            this.httpMethods = ["GET", "POST", "PUT", "DELETE", "PATCH"];
+        }
+
+        _createClass(KGService, [{
+            key: "setUrl",
+            value: function setUrl(baseUrl) {
+                this.apiBase = baseUrl;
+                this.baseUrl = baseUrl + '/api/recommender';
+            }
+
+            /**
+             * @param {Object} query - optional query parameters to include with request
+             * @param {Object} options - optional config to send with http request
+             * @return {Promise} resolving recommended concepts as search results
+             */
+
+        }, {
+            key: "suggest",
+            value: function suggest(query, options) {
+                var url = this.baseUrl + '/suggest';
+                return this._search(url, query, options).catch(function (e) {
+                    var err = new Error("KGService.suggest() - Error suggesting concepts: " + e.message);
+                    return Q.reject(err);
+                });
+            }
+
+            /**
+             * @param {Object} query - optional query parameters to include with request
+             * @param {Object} options - optional config to send with http request
+             * @return {Promise} resolving concept types as search results
+             */
+
+        }, {
+            key: "types",
+            value: function types(query, options) {
+                var url = this.baseUrl + '/types';
+                return this._search(url, query, options).catch(function (e) {
+                    var err = new Error("KGService.types() - Error searching types: " + e.message);
+                    return Q.reject(err);
+                });
+            }
+
+            /**
+             * @param {Object} query - optional query parameters to include with request
+             * @param {Object} options - optional config to send with http request
+             * @return {Promise} resolving concept sources as search results
+             */
+
+        }, {
+            key: "sources",
+            value: function sources(query, options) {
+                var url = this.baseUrl + '/sources';
+                return this._search(url, query, options).catch(function (e) {
+                    var err = new Error("KGService.sources() - Error searching sources: " + e.message);
+                    return Q.reject(err);
+                });
+            }
+
+            /* ----------------------------------------------------------- */
+
+            /**
+             * internal method used by exposed methods
+             */
+
+        }, {
+            key: "_search",
+            value: function _search(url, query, options) {
+                var _this27 = this;
+
+                return Q.resolve(true).then(function () {
+
+                    if (query && typeof query.getQuery !== 'undefined') {
+                        //if passed a GeoPlatform.Query object,
+                        // convert to parameters object
+                        query = query.getQuery();
+                    }
+
+                    var opts = _this27.buildRequest({
+                        method: "GET", url: url, params: query, options: options
+                    });
+                    return _this27.execute(opts);
+                });
+            }
+
+            /**
+             * @param {string} method - one of "GET", "POST", "PUT", "DELETE", "PATCH"
+             * @param {string} url - destination of xhr request
+             * @param {Object} params - object to be sent with request as query parameters
+             * @param {Object} data - object to be sent with request as body
+             * @param {Object} options - optional object defining request options
+             * @return {Object} request options for xhr
+             */
+
+        }, {
+            key: "buildRequest",
+            value: function buildRequest(options) {
+
+                if (this.httpMethods.indexOf(options.method) < 0) throw new Error("Unsupported HTTP method " + options.method);
+
+                if (!options.url) throw new Error("Must specify a URL for HTTP requests");
+
+                options.timeout = this.timeout;
+
+                return this.createRequestOpts(options);
+            }
+        }, {
+            key: "createRequestOpts",
+            value: function createRequestOpts(options) {
+                return this.client.createRequestOpts(options);
+            }
+        }, {
+            key: "execute",
+            value: function execute(opts) {
+                return this.client.execute(opts);
+            }
+        }]);
+
+        return KGService;
+    }();
+
+    return KGService;
 });
 
 (function (root, factory) {

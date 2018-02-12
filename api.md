@@ -16,6 +16,10 @@ which provide specialized support for specific item types
 
 The [UtilsService](src/services/utils.js) class is provided for working with non-item API endpoints, such as GeoPlatform capabilities queries.
 
+The [KGService](src/services/kg.js) class is provided for recommending concepts to be associated with GeoPlatform Items.
+Note that you should use a [KGQuery](src/shared/kg-query.js) with the `KGService` instead of the a normal [Query](src/shared/query.js).
+
+
 ### Http Providers
 
 To allow using this api library across both front-end and back-end applications, these

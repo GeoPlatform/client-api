@@ -46,7 +46,10 @@
         MODIFIED_AFTER   : 'modified.min',
         BEGINS           : 'startDate.min',
         ENDS             : 'endDate.max',
-        RESOURCE_TYPE    : 'resourceType'
+        RESOURCE_TYPE    : 'resourceType',
+
+        //recommender service-specific 
+        FOR_TYPES        : 'for'
     };
 
     return Parameters;

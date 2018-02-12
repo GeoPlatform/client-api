@@ -155,3 +155,14 @@ with queries.  Pages start at 0 and the default page size is 10.
 ## Clearing Query values
 
 To reset a Query instance, use `Query.clear()`.
+
+
+## KG Queries
+
+When using a [KGService](src/services/kg.js), you should use an instance of
+[KGQuery](src/shared/kg-query.js).  `KGQuery` provides a shorter list of parameter
+methods as listed below:
+
+- q / setQ / getQ - same as the equivalent `Query` methods
+- classifiers / setClassifiers  / getClassifiers - specifies the type of concepts to search
+- types / setTypes / getTypes - specifies the Item type(s) to constrain concepts by

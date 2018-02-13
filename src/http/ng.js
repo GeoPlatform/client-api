@@ -27,22 +27,37 @@
 
     class NGHttpClient {
 
+        /**
+         * @param {integer} options.timeout
+         * @param {string} options.token - the bearer token or a function to retrieve it
+         * @param {Object} options.$http - angular $http service instance
+         */
         constructor(options) {
             if(typeof(angular) === 'undefined')
                 throw new Error("Angular not defined");
 
             options = options || {};
             this.setTimeout(options.timeout||10000);
+            this.setToken(options.token);
+
             if(options.$http)
                 this.$http = options.$http;
+
         }
 
         setTimeout(timeout) {
             this.timeout = timeout;
         }
 
-        setAuth(tokenFn) {
-            this.tokenFn = tokenFn;
+        /**
+         * @param {string|Function} arg - specify the bearer token or a function to retrieve it
+         */
+        setAuthToken(arg) {
+            if(arg && typeof(arg) === 'string')
+                this.token = function() { return arg; };
+            else if(arg && typeof(arg) === 'function')
+                this.token = arg;
+            //else do nothing
         }
 
         createRequestOpts(options) {
@@ -64,6 +79,16 @@
                 opts.data = options.data;
             }
 
+            //set authorization token if one was provided
+            if(this.token) {
+                let token = this.token();
+                if(token) {
+                    opts.headers = opts.headers || {};
+                    opts.headers.Authorization = 'Bearer ' + token;
+                    opts.useXDomain = true;
+                }
+            }
+
             //copy over user-supplied options
             if(options.options) {
                 for(let o in options.options) {
@@ -80,17 +105,6 @@
             let $http = this.$http || angular.injector(['ng']).get('$http');
             return Q.resolve( $http )
             .then($http => {
-
-                if(this.tokenFn) {
-                    let jwt = this.tokenFn();
-                    if(jwt) {
-                        opts.headers = {
-                            Authorization : 'Bearer ' + jwt
-                        };
-                        opts.useXDomain = true;
-                    }
-                }
-
                 if(typeof($http) === 'undefined')
                     throw new Error("Angular $http not resolved");
 

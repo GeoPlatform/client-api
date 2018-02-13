@@ -27,13 +27,29 @@
 
     class JQueryHttpClient {
 
+        /**
+         * @param {integer} options.timeout
+         * @param {string} options.token - the bearer token or a function to retrieve it
+         */
         constructor(options) {
             options = options || {};
             this.setTimeout(options.timeout||10000);
+            this.setToken(options.token);
         }
 
         setTimeout(timeout) {
             this.timeout = timeout;
+        }
+
+        /**
+         * @param {string|Function} arg - specify the bearer token or a function to retrieve it
+         */
+        setAuthToken(arg) {
+            if(arg && typeof(arg) === 'string')
+                this.token = function() { return arg; };
+            else if(arg && typeof(arg) === 'function')
+                this.token = arg;
+            //else do nothing
         }
 
         createRequestOpts(options) {
@@ -56,6 +72,15 @@
                 opts.data = options.data;
                 opts.processData = options.processData || false;
                 opts.contentType = 'application/json';
+            }
+
+            //set authorization header if one was provided
+            if(this.token) {
+                let token = this.token();
+                if(token) {
+                    opts.headers = opts.headers || {};
+                    opts.headers.Authorization = 'Bearer ' + token;
+                }
             }
 
             //copy over user-supplied options

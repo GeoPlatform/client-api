@@ -1273,17 +1273,36 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }
 })(undefined || window, function (jQuery, Q) {
     var JQueryHttpClient = function () {
+
+        /**
+         * @param {integer} options.timeout
+         * @param {string} options.token - the bearer token or a function to retrieve it
+         */
         function JQueryHttpClient(options) {
             _classCallCheck(this, JQueryHttpClient);
 
             options = options || {};
             this.setTimeout(options.timeout || 10000);
+            this.setToken(options.token);
         }
 
         _createClass(JQueryHttpClient, [{
             key: "setTimeout",
             value: function setTimeout(timeout) {
                 this.timeout = timeout;
+            }
+
+            /**
+             * @param {string|Function} arg - specify the bearer token or a function to retrieve it
+             */
+
+        }, {
+            key: "setAuthToken",
+            value: function setAuthToken(arg) {
+                if (arg && typeof arg === 'string') this.token = function () {
+                    return arg;
+                };else if (arg && typeof arg === 'function') this.token = arg;
+                //else do nothing
             }
         }, {
             key: "createRequestOpts",
@@ -1306,6 +1325,15 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                     opts.data = options.data;
                     opts.processData = options.processData || false;
                     opts.contentType = 'application/json';
+                }
+
+                //set authorization header if one was provided
+                if (this.token) {
+                    var token = this.token();
+                    if (token) {
+                        opts.headers = opts.headers || {};
+                        opts.headers.Authorization = 'Bearer ' + token;
+                    }
                 }
 
                 //copy over user-supplied options

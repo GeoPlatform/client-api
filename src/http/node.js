@@ -7,17 +7,29 @@ const request = require('request');
 
 class NodeHttpClient {
 
+    /**
+     * @param {integer} options.timeout
+     * @param {string} options.token - the bearer token or a function to retrieve it
+     */
     constructor(options) {
         options = options || {};
         this.setTimeout(options.timeout||10000);
+        this.setToken(options.token);
     }
 
     setTimeout(timeout) {
         this.timeout = timeout;
     }
 
-    setAuth(tokenFn) {
-        this.tokenFn = tokenFn;
+    /**
+     * @param {string|Function} arg - specify the bearer token or a function to retrieve it
+     */
+    setAuthToken(arg) {
+        if(arg && typeof(arg) === 'string')
+            this.token = function() { return arg; };
+        else if(arg && typeof(arg) === 'function')
+            this.token = arg;
+        //else do nothing
     }
 
     createRequestOpts(options) {
@@ -52,6 +64,14 @@ class NodeHttpClient {
             }
         }
 
+        //set authorization header if one was provided
+        if(this.token) {
+            let token = this.token();
+            if(token) {
+                opts.auth = { 'bearer': token };
+            }
+        }
+
         //copy over user-supplied options
         if(options.options) {
             for(let o in options.options) {
@@ -59,12 +79,6 @@ class NodeHttpClient {
                     opts[o] = options.options[o];
                 }
             }
-        }
-
-        if(this.tokenFn) {
-            options.auth = {
-                bearer: this.tokenFn
-            };
         }
 
         // console.log(JSON.stringify(opts));

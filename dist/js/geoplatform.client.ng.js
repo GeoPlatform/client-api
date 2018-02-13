@@ -25,6 +25,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }
 })(undefined || window, function (angular, Q) {
     var NGHttpClient = function () {
+
+        /**
+         * @param {integer} options.timeout
+         * @param {string} options.token - the bearer token or a function to retrieve it
+         * @param {Object} options.$http - angular $http service instance
+         */
         function NGHttpClient(options) {
             _classCallCheck(this, NGHttpClient);
 
@@ -32,6 +38,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
             options = options || {};
             this.setTimeout(options.timeout || 10000);
+            this.setToken(options.token);
+
             if (options.$http) this.$http = options.$http;
         }
 
@@ -40,10 +48,18 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             value: function setTimeout(timeout) {
                 this.timeout = timeout;
             }
+
+            /**
+             * @param {string|Function} arg - specify the bearer token or a function to retrieve it
+             */
+
         }, {
-            key: "setAuth",
-            value: function setAuth(tokenFn) {
-                this.tokenFn = tokenFn;
+            key: "setAuthToken",
+            value: function setAuthToken(arg) {
+                if (arg && typeof arg === 'string') this.token = function () {
+                    return arg;
+                };else if (arg && typeof arg === 'function') this.token = arg;
+                //else do nothing
             }
         }, {
             key: "createRequestOpts",
@@ -65,6 +81,16 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                     opts.data = options.data;
                 }
 
+                //set authorization token if one was provided
+                if (this.token) {
+                    var token = this.token();
+                    if (token) {
+                        opts.headers = opts.headers || {};
+                        opts.headers.Authorization = 'Bearer ' + token;
+                        opts.useXDomain = true;
+                    }
+                }
+
                 //copy over user-supplied options
                 if (options.options) {
                     for (var o in options.options) {
@@ -79,21 +105,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "execute",
             value: function execute(opts) {
-                var _this = this;
-
                 var $http = this.$http || angular.injector(['ng']).get('$http');
                 return Q.resolve($http).then(function ($http) {
-
-                    if (_this.tokenFn) {
-                        var jwt = _this.tokenFn();
-                        if (jwt) {
-                            opts.headers = {
-                                Authorization: 'Bearer ' + jwt
-                            };
-                            opts.useXDomain = true;
-                        }
-                    }
-
                     if (typeof $http === 'undefined') throw new Error("Angular $http not resolved");
 
                     // console.log(opts);

@@ -113,6 +113,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                     return $http(opts);
                 }).then(function (response) {
                     return response.data;
+                }).catch(function (response) {
+                    return Q.reject(response.data);
                 });
             }
         }]);

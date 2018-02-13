@@ -74,7 +74,7 @@
                 return this.execute(opts);
             })
             .catch(e => {
-                let err = new Error(`ItemService.save() - Error fetching item ${id}: ${e.message}`);
+                let err = new Error(`ItemService.get() - Error fetching item ${id}: ${e.message}`);
                 return Q.reject(err);
             });
         }

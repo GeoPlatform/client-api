@@ -1445,7 +1445,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                     });
                     return _this.execute(opts);
                 }).catch(function (e) {
-                    var err = new Error("ItemService.save() - Error fetching item " + id + ": " + e.message);
+                    var err = new Error("ItemService.get() - Error fetching item " + id + ": " + e.message);
                     return Q.reject(err);
                 });
             }

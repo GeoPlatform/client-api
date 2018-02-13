@@ -111,7 +111,8 @@
                 // console.log(opts);
                 return $http(opts);
             })
-            .then(response=>response.data);
+            .then(response=>response.data)
+            .catch(response=>Q.reject(response.data));
         }
 
     }

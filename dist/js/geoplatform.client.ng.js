@@ -38,7 +38,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
             options = options || {};
             this.setTimeout(options.timeout || 10000);
-            this.setToken(options.token);
+            this.setAuthToken(options.token);
 
             if (options.$http) this.$http = options.$http;
         }

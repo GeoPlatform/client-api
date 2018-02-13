@@ -14,7 +14,7 @@ class NodeHttpClient {
     constructor(options) {
         options = options || {};
         this.setTimeout(options.timeout||10000);
-        this.setToken(options.token);
+        this.setAuthToken(options.token);
     }
 
     setTimeout(timeout) {

@@ -72,7 +72,7 @@ angular.module('myApp').service('MyService', ['$http',  'AuthenticationService',
 |:----    |:----    |:-------  |
 | timeout | integer | 10000 ms |
 | token   | string or function | _N/A_ |
-| $http   | $http instance | _N/A_ |
+| $http   | $http instance | the 'ng' module $http instance |
 
 
 
@@ -90,7 +90,7 @@ Creates a new instance of the service and points api calls to the specified GP A
 ```javascript
 let url = GeoPlatform.ualUrl;
 let client = new GeoPlatform.JQueryHttpClient();
-let svc = new GeoPlatform.ItemService(url, client);
+let itemSvc = new GeoPlatform.ItemService(url, client);
 ```
 
 #### Search
@@ -102,8 +102,7 @@ Searches items using specified query parameters.
 
 ```javascript
 let query = new GeoPlatform.Query().q('water');
-let svc = new GeoPlatform.ItemService(url, client);
-svc.search(query)
+itemSvc.search(query)
 .then( response => {
     for(let i=0; i<response.results.length; ++i) {
         console.log(response.results[i].label);
@@ -120,8 +119,7 @@ Fetch item with specified identifier
 | id   | true | identifier of GeoPlatform Item to fetch |
 
 ```javascript
-let svc = new GeoPlatform.ItemService(url, client);
-svc.get(itemId)
+itemSvc.get(itemId)
 .then( item => {
     console.log(JSON.stringify(item));
 });
@@ -141,8 +139,7 @@ let item = {
     label: "My New Dataset",
     createdBy: myUserName
 };
-let svc = new GeoPlatform.ItemService(url, client);
-svc.save(item)
+itemSvc.save(item)
 .then( updated => {
     console.log(updated.id + " updated " + new Date(updated.modified));
 });
@@ -162,8 +159,7 @@ Partial update of item with specified identifier using the specified HTTP-PATCH 
 let changes = [
     { op: 'replace', path: '/label', value: "Updated Label" }
 ];
-let svc = new GeoPlatform.ItemService(url, client);
-svc.patch(itemId, changes)
+itemSvc.patch(itemId, changes)
 .then( item => {
     console.log(item.id + " updated " + new Date(item.modified));
 });
@@ -179,8 +175,7 @@ Delete item with specified identifier.
 | id   | true | identifier of GeoPlatform Item to remove |
 
 ```javascript
-let svc = new GeoPlatform.ItemService(url, client);
-svc.remove(itemId)
+itemSvc.remove(itemId)
 .then( () => { console.log("Deleted!"); });
 .catch(e=>{...});
 ```
@@ -201,9 +196,8 @@ Similarly, the `UtilsService.parseFile()` method can only upload files when usin
 | format | true | string id of incoming metadata format |
 
 ```javascript
-let url = "http://www.url.to/metadata/about/item";
-let svc = new GeoPlatform.ItemService(url, client);
-svc.import(url, 'iso19139')
+let metadataUrl = "http://www.url.to/metadata/about/item";
+itemSvc.import(metadataUrl, 'iso19139')
 .then( item => {
     console.log(item.id);
 });
@@ -220,8 +214,7 @@ Export the specified Item in the specified format.
 | format | true | string id of outgoing metadata format |
 
 ```javascript
-let svc = new GeoPlatform.ItemService(url, client);
-svc.export(itemId, 'iso19139')
+itemSvc.export(itemId, 'iso19139')
 .then( response => {
     console.log(response);
 });
@@ -237,85 +230,17 @@ Given an un-persisted GeoPlatform Item, generate and return a valid URI for it.
 |:------    |:---------- |:----------- |
 | item   | true | GeoPlatform Item |
 
-
-
-
-### Examples
-
-#### JQuery
 ```javascript
-let url = "https://sit-ual.geoplatform.us";
-let query = GeoPlatform.QueryFactory().types('Map','Layer');
-let svc = new GeoPlatform.ItemService(url, new GeoPlatform.JQueryHttpClient());
-svc.search(query)
-.then( response => {
-    if(!response.results.length) {
-        console.log("No results");
-        return;
-    }
-    console.log(response.results.length + " of " +
-    response.totalResults + " matches");
-})
-.catch(e=>{...});
-```
-
-
-#### Angular
-
-```javascript
-let url = "https://sit-ual.geoplatform.us";
-let query = GeoPlatform.QueryFactory().types('Map','Layer');
-let svc = new GeoPlatform.ItemService(url, new GeoPlatform.NGHttpClient());
-svc.search(query)
-.then( response => {
-    if(!response.results.length) {
-        console.log("No results");
-        return;
-    }
-    console.log(response.results.length + " of " +
-    response.totalResults + " matches");
-})
-.catch(e=>{...});
-```
-
-
-#### NodeJS
-
-```javascript
-const GPAPI = require('geoplatform.client')
-const Query = GPAPI.Query
-const ItemTypes = GPAPI.ItemTypes
-const ItemService = GPAPI.ItemService
-const HttpClient = GPAPI.HttpClient
-
-module.exports = {
-    listDatasets: function() {
-        let apiUrl = 'https://sit-ual.geoplatform.us'
-        let query = new Query().types(ItemTypes.DATASET)
-        return new ItemService(apiUrl, new HttpClient()).search(query)
-    }
+let item = {
+    type: ...,
+    ...
 }
+itemSvc.getUri(item)
+.then( uri => {
+    console.log(uri);
+});
+.catch(e=>{...});
 ```
-
-
-## NodeJS Modules
-The following modules are exposed via `require('geoplatform.client')`:
-- `ItemTypes` - set of supported GeoPlatform object model item types.
-- `QueryParameters` - set of supported query parameters
-- `Query` - class used to build queries
-- `QueryFactory` - convenience factory for quickly creating query instances
-- `HttpClient` - default NodeJS http client using RequestJS
-- `ServiceFactory` - convenience factor for quickly creating a service based upon a specified object model item type
-- `ItemService` - default API service, supports all item types
-- `MapService` - API service for working with Maps
-- `LayerService` - API service for working with Layers
-- `ServiceService` - API service for working with Services
-- `GalleryService` - API service for working with Galleries
-- `DatasetService` - API service for working with Datasets
-- `UtilsService` - API service for miscellaneous usage not directly tied to any item type, such as API capabilities queries and GeoJSON file parsing
-
-
-
 
 
 ### Layers API
@@ -495,6 +420,83 @@ svc.statistics(serviceId)
 });
 .catch(e=>{...});
 ```
+
+
+## Examples
+
+### JQuery
+```javascript
+let url = "https://sit-ual.geoplatform.us";
+let query = GeoPlatform.QueryFactory().types('Map','Layer');
+let svc = new GeoPlatform.ItemService(url, new GeoPlatform.JQueryHttpClient());
+svc.search(query)
+.then( response => {
+    if(!response.results.length) {
+        console.log("No results");
+        return;
+    }
+    console.log(response.results.length + " of " +
+    response.totalResults + " matches");
+})
+.catch(e=>{...});
+```
+
+
+### Angular
+
+```javascript
+let url = "https://sit-ual.geoplatform.us";
+let query = GeoPlatform.QueryFactory().types('Map','Layer');
+let svc = new GeoPlatform.ItemService(url, new GeoPlatform.NGHttpClient());
+svc.search(query)
+.then( response => {
+    if(!response.results.length) {
+        console.log("No results");
+        return;
+    }
+    console.log(response.results.length + " of " +
+    response.totalResults + " matches");
+})
+.catch(e=>{...});
+```
+
+
+### NodeJS
+
+```javascript
+const GPAPI = require('geoplatform.client')
+const Query = GPAPI.Query
+const ItemTypes = GPAPI.ItemTypes
+const ItemService = GPAPI.ItemService
+const HttpClient = GPAPI.HttpClient
+
+module.exports = {
+    listDatasets: function() {
+        let apiUrl = 'https://sit-ual.geoplatform.us'
+        let query = new Query().types(ItemTypes.DATASET)
+        return new ItemService(apiUrl, new HttpClient()).search(query)
+    }
+}
+```
+
+
+## NodeJS Modules
+When using Client API inside NodeJS, the following modules are exposed via
+`require('geoplatform.client')`:
+- `ItemTypes` - set of supported GeoPlatform object model item types.
+- `QueryParameters` - set of supported query parameters
+- `Query` - class used to build queries
+- `QueryFactory` - convenience factory for quickly creating query instances
+- `HttpClient` - default NodeJS http client using RequestJS
+- `ServiceFactory` - convenience factor for quickly creating a service based upon a specified object model item type
+- `ItemService` - default API service, supports all item types
+- `MapService` - API service for working with Maps
+- `LayerService` - API service for working with Layers
+- `ServiceService` - API service for working with Services
+- `GalleryService` - API service for working with Galleries
+- `DatasetService` - API service for working with Datasets
+- `UtilsService` - API service for miscellaneous usage not directly tied to any item type, such as API capabilities queries and GeoJSON file parsing
+
 
 
 ## Queries

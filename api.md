@@ -20,7 +20,7 @@ The [KGService](src/services/kg.js) class is provided for recommending concepts 
 Note that you should use a [KGQuery](src/shared/kg-query.js) with the `KGService` instead of the a normal [Query](src/shared/query.js).
 
 
-### Http Providers
+### HttpClients
 
 To allow using this api library across both front-end and back-end applications, these
 services support different HTTP mechanisms by accepting an HttpClient which contains
@@ -30,7 +30,7 @@ Pass the desired implementation to the service at construction along with the UR
 GeoPlatform API:
 
 ```javascript
-let url = "https://sit-ual.geoplatform.us";
+let url = GeoPlatform.ualUrl;
 let client = new GeoPlatform.JQueryHttpClient();
 let svc = new GeoPlatform.ItemService(url, client);
 ```
@@ -45,45 +45,199 @@ HttpClients provided by this library are:
 __Note:__ `NGHttpClient` is provided by the 'ng' build file of this library ('geoplatform.client.ng.js').
 
 
-_Note:_ Using Angular's $http service allows you to define global behaviors in your application's
-config file using $httpProvider. This can include forwarding authentication credentials automatically
-or appending parameters and headers to each request.  For example, setting a default timeout for all $http
-service requests:
-
+#### Angular $http defaults
+If you are using GeoPlatform's ng-common library, which updates the $http defaults to include the 'Authorization' header with the user's token, please note that you must still provide the token to the NGHttpClient or you must provide the $http instance. NGClient by default uses the default angular injector to gain access to $http, which results in a different instance than one injected within your application.
 
 ```javascript
+const URL = GeoPlatform.ualUrl;
+angular.module('myApp').service('MyService', ['$http',  'AuthenticationService', function($http, AuthenticationService) {
 
-angular.module('myApp', [])
+    //option 1: provide $http instance
+    let client = new new NGHttpClient({
+        $http: $http
+    });
 
-.config(['$httpProvider', function($httpProvider) {
-    $httpProvider.defaults.timeout = GeoPlatform.timeout || 10000;
-}]);
+    //option 2: set auth token
+    let token = AuthenticationService.getJWTfromLocalStorage();
+    client = new NGHttpClient({
+        token: token
+    })
 
+    return new ItemService(URL, client);
+}])
 ```
+
+### HttpClient Options
+| Name    | Type    | Default  |
+|:----    |:----    |:-------  |
+| timeout | integer | 10000 ms |
+| token   | string or function | _N/A_ |
+| $http   | $http instance | _N/A_ |
+
 
 
 
 ### Service API
 
-- `ItemService.constructor(:baseUrl, :httpClient)` - creates a new instance of the service and points api calls to the specified GP API
-- `ItemService.search(:query)` - Searches items using specified query parameters.
-- `ItemService.get(:id)` - Fetch item with specified identifier
-- `ItemService.save(:item)` - Create or update the specified item. If 'item.id' exists, updates with HTTP-PUT. Otherwise, creates using HTTP-POST.
-- `ItemService.patch(:id, :patch)` - Partial update of item with specified identifier using the specified HTTP-PATCH ops.
-- `ItemService.remove(:id)` - Delete item with specified identifier
-- `ItemService.import(:arg, :format)` - Create a new Item using either a URL or a File (see implementation for specific requirements)
-- `ItemService.export(:id, :format)` - Export the specified Item in the specified format
-- `ItemService.getUri(:item)` - Given an unpersisted GeoPlatform Item, generate and return a valid URI for it.
+#### Constructor
+Creates a new instance of the service and points api calls to the specified GP API
+
+| Parameter | required   | description |
+|:------    |:---------- |:----------- |
+| baseUrl   | true | GeoPlatform API base url |
+| httpClient | true | http provider to use |
+
+```javascript
+let url = GeoPlatform.ualUrl;
+let client = new GeoPlatform.JQueryHttpClient();
+let svc = new GeoPlatform.ItemService(url, client);
+```
+
+#### Search
+Searches items using specified query parameters.
+
+| Parameter | required   | description |
+|:------    |:---------- |:----------- |
+| query     | false | js object or `GeoPlatform.Query` instance |
+
+```javascript
+let query = new GeoPlatform.Query().q('water');
+let svc = new GeoPlatform.ItemService(url, client);
+svc.search(query)
+.then( response => {
+    for(let i=0; i<response.results.length; ++i) {
+        console.log(response.results[i].label);
+    }
+});
+.catch(e=>{...});
+```
+
+#### Get
+Fetch item with specified identifier
+
+| Parameter | required   | description |
+|:------    |:---------- |:----------- |
+| id   | true | identifier of GeoPlatform Item to fetch |
+
+```javascript
+let svc = new GeoPlatform.ItemService(url, client);
+svc.get(itemId)
+.then( item => {
+    console.log(JSON.stringify(item));
+});
+.catch(e=>{...});
+```
+
+#### Save
+Create or update the specified item. If 'item.id' exists, updates with HTTP-PUT. Otherwise, creates using HTTP-POST.
+
+| Parameter | required   | description |
+|:------    |:---------- |:----------- |
+| item   | true | GeoPlatform Item to persist |
+
+```javascript
+let item = {
+    type: GeoPlatform.ItemTypes.DATASET,
+    label: "My New Dataset",
+    createdBy: myUserName
+};
+let svc = new GeoPlatform.ItemService(url, client);
+svc.save(item)
+.then( updated => {
+    console.log(updated.id + " updated " + new Date(updated.modified));
+});
+.catch(e=>{...});
+```
 
 
-#### Importing Files
-The `ItemService.import()` method supports both string URLs and files as the first parameter, but only
-the Node http client implementation can process file arguments for uploading to
-the GeoPlatform.  The jQuery and Angular instances only handle sending URLs at this time.
+#### Patch
+Partial update of item with specified identifier using the specified HTTP-PATCH ops. |
 
-Similarly, the `UtilsService.parseFile()` method can only upload files when using a
-Node http client.  It's recommended you use native form controls or angular components
-to upload files when not in a server-side environment.
+| Parameter | required   | description |
+|:------    |:---------- |:----------- |
+| id   | true | identifier of GeoPlatform Item to update |
+| patch | true | array of HTTP-PATCH ops |
+
+```javascript
+let changes = [
+    { op: 'replace', path: '/label', value: "Updated Label" }
+];
+let svc = new GeoPlatform.ItemService(url, client);
+svc.patch(itemId, changes)
+.then( item => {
+    console.log(item.id + " updated " + new Date(item.modified));
+});
+.catch(e=>{...});
+```
+
+
+#### Remove
+Delete item with specified identifier.
+
+| Parameter | required   | description |
+|:------    |:---------- |:----------- |
+| id   | true | identifier of GeoPlatform Item to remove |
+
+```javascript
+let svc = new GeoPlatform.ItemService(url, client);
+svc.remove(itemId)
+.then( () => { console.log("Deleted!"); });
+.catch(e=>{...});
+```
+
+
+#### Import
+(:arg, :format) |
+Create a new Item using either a URL or a File (see implementation for specific requirements).
+
+This method supports both string URLs and files as the first parameter, but only the Node http client implementation can process file arguments for uploading to the GeoPlatform.  The jQuery and Angular instances only handle sending URLs at this time.
+
+Similarly, the `UtilsService.parseFile()` method can only upload files when using a Node http client.  It's recommended you use native form controls or angular components to upload files when not in a server-side environment.
+
+
+| Parameter | required   | description |
+|:------    |:---------- |:----------- |
+| arg   | true | URL to metadata file or uploaded metadata File |
+| format | true | string id of incoming metadata format |
+
+```javascript
+let url = "http://www.url.to/metadata/about/item";
+let svc = new GeoPlatform.ItemService(url, client);
+svc.import(url, 'iso19139')
+.then( item => {
+    console.log(item.id);
+});
+.catch(e=>{...});
+```
+
+
+#### Export
+Export the specified Item in the specified format.
+
+| Parameter | required   | description |
+|:------    |:---------- |:----------- |
+| id   | true | identifier of GeoPlatform item |
+| format | true | string id of outgoing metadata format |
+
+```javascript
+let svc = new GeoPlatform.ItemService(url, client);
+svc.export(itemId, 'iso19139')
+.then( response => {
+    console.log(response);
+});
+.catch(e=>{...});
+```
+
+
+
+#### Get URI
+Given an un-persisted GeoPlatform Item, generate and return a valid URI for it.
+
+| Parameter | required   | description |
+|:------    |:---------- |:----------- |
+| item   | true | GeoPlatform Item |
+
+
 
 
 ### Examples
@@ -164,19 +318,21 @@ The following modules are exposed via `require('geoplatform.client')`:
 
 
 
-### Layers
+### Layers API
 
 Layer-based implementations of `ItemService` additionally provide the following methods:
 
-- `.style(:layerId)` - requests JSON style content for the FeatureLayer with the specified identifier
-- `.describe(:layerId, :options)` - requests feature information for RasterLayer with specified identifier using OGC GetFeatureInfo operation (The layer must reference a service of type WMS)
+#### Style
+Requests JSON style content for the FeatureLayer with the specified identifier.
 
+| Parameter | Required | Description |
+|:--------- |:-------- |:----------- |
+| layerId   | true | identifier of Layer to request style about |
 
 ```javascript
 let svc = new GeoPlatform.LayerService(url, client);
-svc.get(layerId)
-//fetch layer style info (feature layers only)
-.then( layer => {
+svc.get(layerId).then( layer => {
+    //fetch layer style info (feature layers only)
     if('FeatureLayer' !== layer.layerType) return null;
     return svc.style(layer.id);
 })
@@ -189,16 +345,49 @@ svc.get(layerId)
 ```
 
 
-### Services
+
+#### Describe
+Requests feature information for RasterLayer with specified identifier using OGC GetFeatureInfo operation (The layer must reference a service of type WMS).
+
+| Parameter | Required | Description |
+|:--------- |:-------- |:----------- |
+| layerId   | true | identifier of Layer to request feature information about |
+| options   | true | GetFeatureInfo parameters to use |
+
+
+```javascript
+const WMS_LABEL = 'OGC Web Map Service (WMS)';
+let descOpts = {
+    x: 50,
+    y: 50,
+    width: 500,
+    height: 400,
+    bbox: '-120,20,-66,50'
+};
+let svc = new GeoPlatform.LayerService(url, client);
+svc.get(layerId).then( layer => {
+    //describe layer feature (wms layers only)
+    let serviceLabel = layer.services[0].serviceType.label;
+    if(WMS_LABEL !== serviceLabel) return null;
+    return svc.describe(layerId, descOpts);
+})
+.then( feature => {
+    //do something with resulting feature info
+})
+.catch(e=>{...});
+```
+
+
+### Services API
 
 Service-based implementations of `ItemService` additionally provide the following methods:
 
-- `.about(:service)` - requests updated service information from the remote web service
-- `.types(:serviceId)` - requests the list of supported service types that may be selected from
-- `.import(:service)` - creates a new GeoPlatform Service object using harvested service capabilities and layer information
-- `.harvest(:serviceId)` - re-harvests service layer information and updates the list of Layer objects
-- `.liveTest(:serviceId)` - initiates a performance test against the service and returns updated statistics
-- `.statistics(:serviceId)` - fetches most recent service statistics
+#### About
+requests updated service information from the remote web service
+
+| Parameter | Required | Description |
+|:--------- |:-------- |:----------- |
+| service   | true | GeoPlatform Service to fetch info about |
 
 
 ```javascript
@@ -207,7 +396,103 @@ svc.get(serviceId)
 //get service information using Service Harvester
 .then( service => svc.about(service) )
 //do something with extracted service metadata
-.then( md => {...});
+.then( md => {
+    console.log("Type: " + md.serviceType.label);
+});
+.catch(e=>{...});
+```
+
+
+#### Types
+Requests the list of supported service types that may be selected from, such as OGC Web Map Service (WMS) and ESRI Rest Map Service.
+
+```javascript
+let svc = new GeoPlatform.ServiceService(url, client);
+svc.types()
+//get service information using Service Harvester
+.then( types => {
+    for(let i=0; i<types.length; ++i) {
+        console.log(types[i].label);
+    }
+});
+.catch(e=>{...});
+```
+
+
+#### Import
+Creates a new GeoPlatform Service object using harvested service capabilities and layer information
+
+| Parameter | Required | Description |
+|:--------- |:-------- |:----------- |
+| service   | true | GeoPlatform Service to import |
+
+```javascript
+let service = {
+    href: "http://www.url.to/service/",
+    serviceType: "OGC Web Map Service (WMS)" //or other type
+};
+let svc = new GeoPlatform.ServiceService(url, client);
+svc.import(service)
+//get service information using Service Harvester
+.then( service => {
+    console.log(service.id);
+});
+.catch(e=>{...});
+```
+
+
+#### Harvest
+Re-harvests service layer information and updates the list of Layer objects.
+
+| Parameter | Required | Description |
+|:--------- |:-------- |:----------- |
+| serviceId   | true | identifier of Service to fetch layers from |
+
+```javascript
+let svc = new GeoPlatform.ServiceService(url, client);
+svc.harvest(serviceId)
+//get service information using Service Harvester
+.then( layers => {
+    for(let i=0; i<layers.length; ++i) {
+        console.log(layers[i].label);
+    }
+});
+.catch(e=>{...});
+```
+
+
+#### Live Test
+Initiates a performance test against the service and returns the service with updated statistics.
+
+| Parameter | Required | Description |
+|:--------- |:-------- |:----------- |
+| serviceId   | true | identifier of Service to request style about |
+
+```javascript
+let svc = new GeoPlatform.ServiceService(url, client);
+svc.liveTest(serviceId)
+//get service information using Service Harvester
+.then( service => {
+    console.log(JSON.stringify(service.statistics));
+});
+.catch(e=>{...});
+```
+
+
+#### Statistics
+Fetches most recent service statistics
+
+| Parameter | Required | Description |
+|:--------- |:-------- |:----------- |
+| serviceId   | true | identifier of Service to request statistics for |
+
+```javascript
+let svc = new GeoPlatform.ServiceService(url, client);
+svc.statistics(serviceId)
+//get service information using Service Harvester
+.then( statistics => {
+    console.log(JSON.stringify(statistics));
+});
 .catch(e=>{...});
 ```
 

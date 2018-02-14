@@ -61,7 +61,7 @@ GeoPlatform = {
     "env" : "development",
 
     //REQUIRED: URL to GeoPlatform UAL for API usage
-    "ualUrl" : "https://sit-ual.geoplatform.us",
+    "ualUrl" : "https://www.url.to/geoplatform/api",
 
     //timeout max for requests
     "timeout" : "5000",
@@ -99,7 +99,6 @@ GeoPlatform Assets, see the [GeoPlatform API](api.md) and [Query](query.md) docu
 
 Look inside the "examples" folder and its sub-folders to see how to use the client API.
 
-
 To run the JQuery and Angular examples, it is recommended you use http-server:
 
 1. Install http-server if it isn't already: `npm install -g http-server`
@@ -110,8 +109,67 @@ To run the NodeJS examples, run Node from the api project root folder passing it
 the desired example JS file (e.g., `node examples/node/item.js`)
 
 
+## Authentication and Authorization
+The GeoPlatform API uses OAuth 2.0 to authenticate users and restrict access to data and operations.
+Client API provides a way to specify a valid JWT token to be used with requests, but assumes a
+valid token has already been fetched by another component within your application.
+
+__Important!__ To use any data-modifying portion of this client API, you __must__ provide
+an authentication token or the request will be denied by the GeoPlatform API.
+
+
+```javascript
+let myJwtToken = //fetched previous to this code block
+let client = new GeoPlatform.JQueryHttpClient({
+    token: myJwtToken
+});
+
+//or
+client.setAuthToken(myJwtToken);
+
+//or as a function
+let myTokenFn = function() { return myJwtToken; };
+client.setAuthToken(myTokenFn);
+```
+
+__Note:__ If the token is refreshed or removed, you must make sure to update the client
+with the latest information.
+
+
 ## Miscellaneous
 
 ### Conventions
 If defining a class or object or constant, use upper case. If defining a function,
 use camel case.
+
+### Referencing Classes
+When using inside a browser-based client application, it is recommended you reference
+classes using the GeoPlatform namespace, unless your application uses a bundler
+framework that supports AMD modules.
+
+#### AMD Modules
+```javascript
+define(['ItemService', 'JQueryHttpClient'], function(ItemService, JQueryHttpClient) {
+    const URL = "...";
+    let service = new ItemService(URL, new JQueryHttpClient());
+});
+```
+
+#### Without AMD
+```javascript
+const URL = "...";
+let service = new GeoPlatform.ItemService(URL,
+    new GeoPlatform.JQueryHttpClient());
+```
+
+#### NodeJS / CommonJS
+When inside NodeJS or any CommonJS module-supporting framework...
+
+```javascript
+const GPAPI = require('geoplatform.client');
+const ItemService = GPAPI.ItemService;
+const HttpClient = GPAPI.HttpClient;
+
+const URL = '...';
+let service = new ItemService(URL, new HttpClient());
+```

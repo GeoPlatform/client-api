@@ -90,16 +90,18 @@ let queryB = new GeoPlatform.Query().ends( new Date().getTime() );
 ## Requesting specific result properties
 By default, search result items contain only a limited set of properties:
 
-- ID (`id`) - included automatically
-- URI (`uri`) - included automatically
-- Type (`type`) - included automatically
-- Label (`label`) - included automatically
-- Description (`description`)
-- Created by (`createdBy`)
-- Creation date (`created`)
-- Last modified date (`modified`)
-- Publishing Organizations (`publishers`)
-- Themes (`themes`)
+| Property | Notes |
+|:---------   |:----------- |
+| id          | included automatically |
+| uri         | included automatically |
+| type        | included automatically |
+| label       | included automatically |
+| description | |
+| createdBy   | GeoPlatform username of author |
+| created     | Creation date |
+| modified    | Last modified date |
+| publishers  | Publishing Organizations |
+| themes      | GeoPlatform themes associated |
 
 To request a different set of fields, specify them using `Query.setFields()` or
 `Query.fields()`. To get the current set of fields, use `Query.getFields()`.
@@ -120,13 +122,15 @@ Search results contain facet information specifying how certain values appear
 within the entire repository of data.  By default, the following facets are
 requested with each search:
 
-- Types (`types`)
-- Themes (`themes`)
-- Publishers (`publishers`)
-- Service Types (`serviceTypes`) - only applies to type "regp:Service" items
-- Concept Schemes (`schemes`) - only applies to type "skos:Concept" items
-- Visibility (`visibility`)
-- Created By (`createdBy`)
+| Facet | Notes |
+|:----  |:----- |
+| types      | item types |
+| themes     | GeoPlatform themes associated |
+| publishers | GeoPlatform publishing organizations associated |
+| serviceTypes | only applies to type "regp:Service" items |
+| schemes    | only applies to type "skos:Concept" items |
+| visibility | |
+| createdBy  | GeoPlatform authors |
 
 To omit facet information, use `Query.setFacets(false)`.  To request a different
 set of facets, do the following:

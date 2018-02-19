@@ -3,6 +3,7 @@
 const QueryFactory = GeoPlatform.QueryFactory;
 const ItemTypes = GeoPlatform.ItemTypes;
 const QueryParameters = GeoPlatform.QueryParameters;
+const QueryFacets = GeoPlatform.QueryFacets;
 const ItemService = GeoPlatform.ItemService;
 
 const JQHttpClient = GeoPlatform.JQueryHttpClient;
@@ -21,7 +22,7 @@ let query1 = QueryFactory()
      // .extent('-120,20,-66,50')
      // .begins(new Date())
      // .ends(new Date())
-     .facets(['themes','publishers'])
+     .facets([QueryFacets.THEMES, QueryFacets.PUBLISHERS])
      .fields(['label','theme', 'publisher'])
      // .page(0)
      .pageSize(10)

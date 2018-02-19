@@ -4,8 +4,8 @@
         // Now we're wrapping the factory and assigning the return
         // value to the root (window) and returning it as well to
         // the AMD loader.
-        define(['QueryParameters'], function(QueryParameters) {
-            return (root.Query = factory(QueryParameters));
+        define(['QueryParameters','QueryFacets'], function(QueryParameters, QueryFacets) {
+            return (root.Query = factory(QueryParameters, QueryFacets));
         });
     } else if(typeof module === "object" && module.exports) {
         // I've not encountered a need for this yet, since I haven't
@@ -13,20 +13,27 @@
         // *and* I happen to be loading in a CJS browser environment
         // but I'm including it for the sake of being thorough
         module.exports = (
-            root.Query = factory(require('./parameters'))
+            root.Query = factory(
+                require('./parameters'),
+                require('./facets')
+            )
         );
     } else {
-        GeoPlatform.Query = factory(GeoPlatform.QueryParameters);
+        GeoPlatform.Query = factory(GeoPlatform.QueryParameters, GeoPlatform.QueryFacets);
     }
-}(this||window, function(QueryParameters) {
+}(this||window, function(QueryParameters, QueryFacets) {
 
     const FIELDS_DEFAULT = [
         'created','modified','createdBy','publishers','themes','description'
     ];
 
     const FACETS_DEFAULT = [
-        'types','themes','publishers', 'serviceTypes',
-        'schemes', 'visibility', 'createdBy'
+        QueryFacets.TYPES,
+        QueryFacets.PUBLISHERS,
+        QueryFacets.SERVICE_TYPES,
+        QueryFacets.CONCEPT_SCHEMES,
+        QueryFacets.VISIBILITY,
+        QueryFacets.CREATED_BY
     ];
 
     const SORT_OPTIONS_DEFAULT = [
@@ -305,6 +312,53 @@
 
 
         /**
+         * Specify the identifier of an Agent (Community, Group, etc) that
+         * uses items you wish to find in search results. By
+         * default, values are assumed to be theme identifiers. If using
+         * theme labels or theme uris, specify the optional second parameter
+         * to be either QueryParameters.USED_BY_LABEL or QueryParameters.USED_BY_URI
+         * respectively.
+         * @param {string} parameter - optional, to indicate the parameter to use
+         * @return {Query}
+         */
+        usedBy(ids, parameter) {
+            this.setUsedBy(ids, parameter);
+            return this;
+        }
+
+        /**
+         * Specify the identifier of an Agent (Community, Group, etc) that
+         * uses items you wish to find in search results. By
+         * default, values are assumed to be theme identifiers. If using
+         * theme labels or theme uris, specify the optional second parameter
+         * to be either QueryParameters.USED_BY_LABEL or QueryParameters.USED_BY_URI
+         * respectively.
+         * @param {array[string]} ids - publishing orgs to constrain by
+         */
+        setUsedBy (ids, parameter) {
+            if(ids && ids.push === 'undefined')
+                ids = [ids];
+
+            //clear existing
+            this.setParameter(QueryParameters.USED_BY_ID, null);
+            this.setParameter(QueryParameters.USED_BY_LABEL, null);
+            this.setParameter(QueryParameters.USED_BY_URI, null);
+
+            let param = parameter || QueryParameters.USED_BY_ID;
+            this.setParameter(param, ids);
+        }
+
+        getUsedBy () {
+            return this.getParameter(QueryParameters.USED_BY_ID) ||
+                this.getParameter(QueryParameters.USED_BY_LABEL) ||
+                this.getParameter(QueryParameters.USED_BY_URI);
+        }
+
+
+        // -----------------------------------------------------------
+
+
+        /**
          * Specify a Concept Scheme or set of Concept Schemes to constrain results. By
          * default, values are assumed to be theme identifiers. If using
          * theme labels or theme uris, specify the optional second parameter
@@ -547,6 +601,26 @@
 
         getFacets() {
             return this.query.includeFacets;
+        }
+
+        /**
+         * @param {string} name - name of facet to add
+         */
+        addFacet(name) {
+            let facets = (this.getFacets()||[]).push(name);
+            this.setFacets(facets);
+        }
+
+        /**
+         * @param {string} name - name of facet to remove
+         */
+        removeFacet(name) {
+            let facets = this.getFacets() || [];
+            let idx = facets.indexOf(name);
+            if(idx>=0) {
+                facets.splice(idx, 1);
+                this.setFacets(facets);
+            }
         }
 
 

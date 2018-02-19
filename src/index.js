@@ -19,6 +19,7 @@ module.exports = {
 
     ItemTypes       : Types,
     QueryParameters : require('./shared/parameters'),
+    QueryFacets     : require('./shared/facets'),
     Query           : require('./shared/query'),
     QueryFactory    : require('./shared/query-factory'),
     KGQuery         : KGQuery,

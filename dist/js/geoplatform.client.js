@@ -80,6 +80,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         PUBLISHERS: 'publisher.id',
         PUBLISHERS_LABEL: 'publisher.label',
         PUBLISHERS_URI: 'publisher.uri',
+        USED_BY: 'usedBy.id',
+        USED_BY_LABEL: 'usedBy.label',
+        USED_BY_URI: 'usedBy.uri',
         SCHEMES_ID: 'scheme.id',
         SCHEMES_LABEL: 'scheme.label',
         SCHEMES_URI: 'scheme.uri',
@@ -91,7 +94,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         ENDS: 'endDate.max',
         RESOURCE_TYPE: 'resourceType',
 
-        //recommender service-specific 
+        //recommender service-specific
         FOR_TYPES: 'for'
     };
 
@@ -103,23 +106,56 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         // Now we're wrapping the factory and assigning the return
         // value to the root (window) and returning it as well to
         // the AMD loader.
-        define(['QueryParameters'], function (QueryParameters) {
-            return root.Query = factory(QueryParameters);
+        define([], function () {
+            return root.QueryFacets = factory();
         });
     } else if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === "object" && module.exports) {
         // I've not encountered a need for this yet, since I haven't
         // run into a scenario where plain modules depend on CommonJS
         // *and* I happen to be loading in a CJS browser environment
         // but I'm including it for the sake of being thorough
-        module.exports = root.Query = factory(require('./parameters'));
+        module.exports = root.QueryFacets = factory();
     } else {
-        GeoPlatform.Query = factory(GeoPlatform.QueryParameters);
+        GeoPlatform.QueryFacets = factory();
     }
-})(undefined || window, function (QueryParameters) {
+})(undefined || window, function () {
+
+    var Facets = {
+        TYPES: 'types',
+        THEMES: 'themes',
+        PUBLISHERS: 'publishers',
+        SERVICE_TYPES: 'serviceTypes',
+        CONCEPT_SCHEMES: 'schemes',
+        VISIBILITY: 'visibility',
+        CREATED_BY: 'createdBy',
+        USED_BY: 'usedBy.id'
+    };
+
+    return Facets;
+});
+
+(function (root, factory) {
+    if (typeof define === "function" && define.amd) {
+        // Now we're wrapping the factory and assigning the return
+        // value to the root (window) and returning it as well to
+        // the AMD loader.
+        define(['QueryParameters', 'QueryFacets'], function (QueryParameters, QueryFacets) {
+            return root.Query = factory(QueryParameters, QueryFacets);
+        });
+    } else if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === "object" && module.exports) {
+        // I've not encountered a need for this yet, since I haven't
+        // run into a scenario where plain modules depend on CommonJS
+        // *and* I happen to be loading in a CJS browser environment
+        // but I'm including it for the sake of being thorough
+        module.exports = root.Query = factory(require('./parameters'), require('./facets'));
+    } else {
+        GeoPlatform.Query = factory(GeoPlatform.QueryParameters, GeoPlatform.QueryFacets);
+    }
+})(undefined || window, function (QueryParameters, QueryFacets) {
 
     var FIELDS_DEFAULT = ['created', 'modified', 'createdBy', 'publishers', 'themes', 'description'];
 
-    var FACETS_DEFAULT = ['types', 'themes', 'publishers', 'serviceTypes', 'schemes', 'visibility', 'createdBy'];
+    var FACETS_DEFAULT = [QueryFacets.TYPES, QueryFacets.PUBLISHERS, QueryFacets.SERVICE_TYPES, QueryFacets.CONCEPT_SCHEMES, QueryFacets.VISIBILITY, QueryFacets.CREATED_BY];
 
     var SORT_OPTIONS_DEFAULT = [{ value: "label,asc", label: "Name (A-Z)" }, { value: "label,desc", label: "Name (Z-A)" }, { value: "type,asc", label: "Type (A-Z)" }, { value: "type,desc", label: "Type (Z-A)" }, { value: "modified,desc", label: "Most recently modified" }, { value: "modified,asc", label: "Least recently modified" }, { value: "_score,desc", label: "Relevance" }];
 
@@ -413,6 +449,56 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 
             /**
+             * Specify the identifier of an Agent (Community, Group, etc) that
+             * uses items you wish to find in search results. By
+             * default, values are assumed to be theme identifiers. If using
+             * theme labels or theme uris, specify the optional second parameter
+             * to be either QueryParameters.USED_BY_LABEL or QueryParameters.USED_BY_URI
+             * respectively.
+             * @param {string} parameter - optional, to indicate the parameter to use
+             * @return {Query}
+             */
+
+        }, {
+            key: "usedBy",
+            value: function usedBy(ids, parameter) {
+                this.setUsedBy(ids, parameter);
+                return this;
+            }
+
+            /**
+             * Specify the identifier of an Agent (Community, Group, etc) that
+             * uses items you wish to find in search results. By
+             * default, values are assumed to be theme identifiers. If using
+             * theme labels or theme uris, specify the optional second parameter
+             * to be either QueryParameters.USED_BY_LABEL or QueryParameters.USED_BY_URI
+             * respectively.
+             * @param {array[string]} ids - publishing orgs to constrain by
+             */
+
+        }, {
+            key: "setUsedBy",
+            value: function setUsedBy(ids, parameter) {
+                if (ids && ids.push === 'undefined') ids = [ids];
+
+                //clear existing
+                this.setParameter(QueryParameters.USED_BY_ID, null);
+                this.setParameter(QueryParameters.USED_BY_LABEL, null);
+                this.setParameter(QueryParameters.USED_BY_URI, null);
+
+                var param = parameter || QueryParameters.USED_BY_ID;
+                this.setParameter(param, ids);
+            }
+        }, {
+            key: "getUsedBy",
+            value: function getUsedBy() {
+                return this.getParameter(QueryParameters.USED_BY_ID) || this.getParameter(QueryParameters.USED_BY_LABEL) || this.getParameter(QueryParameters.USED_BY_URI);
+            }
+
+            // -----------------------------------------------------------
+
+
+            /**
              * Specify a Concept Scheme or set of Concept Schemes to constrain results. By
              * default, values are assumed to be theme identifiers. If using
              * theme labels or theme uris, specify the optional second parameter
@@ -692,6 +778,32 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             key: "getFacets",
             value: function getFacets() {
                 return this.query.includeFacets;
+            }
+
+            /**
+             * @param {string} name - name of facet to add
+             */
+
+        }, {
+            key: "addFacet",
+            value: function addFacet(name) {
+                var facets = (this.getFacets() || []).push(name);
+                this.setFacets(facets);
+            }
+
+            /**
+             * @param {string} name - name of facet to remove
+             */
+
+        }, {
+            key: "removeFacet",
+            value: function removeFacet(name) {
+                var facets = this.getFacets() || [];
+                var idx = facets.indexOf(name);
+                if (idx >= 0) {
+                    facets.splice(idx, 1);
+                    this.setFacets(facets);
+                }
             }
 
             // -----------------------------------------------------------

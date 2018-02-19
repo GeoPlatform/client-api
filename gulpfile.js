@@ -31,6 +31,7 @@ gulp.task('js', 'Concat, Uglify JavaScript into a single file', function() {
     gulp.src([
         'src/shared/types.js',
         'src/shared/parameters.js',
+        'src/shared/facets.js',
         'src/shared/query.js',
         'src/shared/query-factory.js',
         'src/shared/classifiers.js',

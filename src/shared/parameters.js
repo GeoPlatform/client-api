@@ -37,6 +37,9 @@
         PUBLISHERS       : 'publisher.id',
         PUBLISHERS_LABEL : 'publisher.label',
         PUBLISHERS_URI   : 'publisher.uri',
+        USED_BY          : 'usedBy.id',
+        USED_BY_LABEL    : 'usedBy.label',
+        USED_BY_URI      : 'usedBy.uri',
         SCHEMES_ID       : 'scheme.id',
         SCHEMES_LABEL    : 'scheme.label',
         SCHEMES_URI      : 'scheme.uri',
@@ -48,7 +51,7 @@
         ENDS             : 'endDate.max',
         RESOURCE_TYPE    : 'resourceType',
 
-        //recommender service-specific 
+        //recommender service-specific
         FOR_TYPES        : 'for'
     };
 

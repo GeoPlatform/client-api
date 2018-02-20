@@ -37,6 +37,14 @@ gulp.task('js', 'Concat, Uglify JavaScript into a single file', function() {
         'src/shared/classifiers.js',
         'src/shared/kg-query.js',
 
+        'src/models/item.js',
+        'src/models/dataset.js',
+        'src/models/service.js',
+        'src/models/layer.js',
+        'src/models/map.js',
+        'src/models/gallery.js',
+        'src/models/factory.js',
+
         'src/http/jq.js',
         'src/services/item.js',
         'src/services/layer.js',

@@ -185,7 +185,7 @@
 
             return Q.resolve( true )
             .then( () => {
-                if(!arg || arg.indexOf(http)<0) {
+                if(!arg || arg.indexOf('http')<0) {
                     throw new Error("Must provide a valid URL or File");
                 }
                 let url = this.apiBase + '/api/import';

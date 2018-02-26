@@ -1678,7 +1678,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 var _this6 = this;
 
                 return Q.resolve(true).then(function () {
-                    if (!arg || arg.indexOf(http) < 0) {
+                    if (!arg || arg.indexOf('http') < 0) {
                         throw new Error("Must provide a valid URL or File");
                     }
                     var url = _this6.apiBase + '/api/import';

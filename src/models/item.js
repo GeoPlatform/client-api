@@ -25,18 +25,31 @@
 
 
     class Base {
+        constructor() {
+            this._data = {};
+        }
+
+        set(property, value) {
+            this._data[property] = value;
+        }
+
+        get(property) {
+            return this._data[property];
+        }
+
         addObject(value, arr) {
-            if(!value || !value.id) return;
+            if(!value) return;
             arr = arr || [];
             arr.push(value);
             return arr;
         }
         removeObject(value, arr) {
-            if(!value || !value.id) return;
+            if(!value || (!value.id && !value.uri)) return;
+            let k = value.id ? 'id' : 'uri';
             arr = arr || [];
             let idx = -1;
             arr.each( (p,i) => {
-                if(p.id === value.id)
+                if(p[k] === value[k])
                     idx = i;
             });
             if(idx>=0) {
@@ -67,159 +80,189 @@
     class ItemModel extends Base {
 
         constructor(data) {
+            super();
             if(data) {
                 for(let prop in data) {
                     if(data.hasOwnProperty(prop)) {
-                        this[prop] = data[prop];
+                        let value = data[prop];
+                        if(!!value){
+                            if(typeof(value.push) !== 'undefined')
+                                this.set(prop, value.slice(0));
+                            else
+                                this.set(prop, value);
+                        }
                     }
                 }
             }
+
+            this._data.keywords = this._data.keywords || [];
+            this._data.themes = this._data.themes || [];
+            this._data.contacts = this._data.contacts || [];
+            this._data.publishers = this._data.publishers || [];
+            this._data.identifiers = this._data.identifiers || [];
+            this._data.resourceTypes = this._data.resourceTypes || [];
         }
 
-        getId() { return this.id; }
-        getType() { return this.type; }
-        getCreated() { return this._created; }
-        getModified() { return this.modified; }
+        getId() { return this.get('id'); }
+        getType() { return this.get('type'); }
+        getCreated() { return this.get('_created'); }
+        getModified() { return this.get('modified'); }
 
         //-----------------------------------------------------------
 
         identifiers(value) { this.setIdentifiers(value); return this; }
-        getIdentifiers() { return this.identifiers; }
+        getIdentifiers() { return this.get('identifiers'); }
         setIdentifiers(value) {
-            if(value && typeof(value.push) === 'undefined')
+            if(!value) value = [];
+            else if(typeof(value.push) === 'undefined')
                 value = [value];
-            this.identifiers = value;
+            this.set('identifiers', value);
         }
         addIdentifier(value) {
             if(!value) return;
-            this.identifiers = this.addValue(value, this.identifiers);
+            value = this.addValue(value, this.get('identifiers'));
+            this.set('identifiers', value);
         }
         removeIdentifier(value) {
             if(!value) return;
-            this.identifiers = this.removeValue(value, this.identifiers);
+            value = this.removeValue(value, this.get('identifiers'));
+            this.set('identifiers', value);
         }
 
         //-----------------------------------------------------------
 
         createdBy(value) { this.setCreatedBy(value); return this; }
-        getCreatedBy() { return this.createdBy; }
-        setCreatedBy(value) { this.createdBy = value; }
+        getCreatedBy() { return this.get('createdBy'); }
+        setCreatedBy(value) { this.set('createdBy', value); }
 
         //-----------------------------------------------------------
 
         label(value) { this.setLabel(value); return this; }
-        getLabel() { return this.label; }
-        setLabel(value) { this.label = value; }
+        getLabel() { return this.get('label'); }
+        setLabel(value) { this.set('label', value); }
 
         //-----------------------------------------------------------
 
         description(value) { this.setDescription(value); return this; }
-        getDescription() { return this.description; }
-        setDescription(value) { this.description = value; }
+        getDescription() { return this.get('description'); }
+        setDescription(value) { this.set('description', value); }
 
         //-----------------------------------------------------------
 
         keywords(value) { this.setKeywords(value); return this; }
-        getKeywords() { return this.keywords; }
+        getKeywords() { return this.get('keywords'); }
         setKeywords(value) {
-            if(value && typeof(value.push) === 'undefined')
+            if(!value) value = [];
+            else if(typeof(value.push) === 'undefined')
                 value = [value];
-            this.keywords = value;
+            this.set('keywords', value);
         }
+
+        //-----------------------------------------------------------
+
+        landingPage(value) { this.setLandingPage(value); return this; }
+        getLandingPage() { return this.get('landingPage'); }
+        setLandingPage(value) { this.set('landingPage', value); }
 
         //-----------------------------------------------------------
 
         status(value) { this.setStatus(value); return this; }
-        getStatus() { return this.status; }
-        setStatus(value) { this.status = value; }
+        getStatus() { return this.get('status'); }
+        setStatus(value) { this.set('status', value); }
 
         //-----------------------------------------------------------
 
         visibility(value) { this.setVisibility(value); return this; }
-        getVisibility() { return this.visibility; }
-        setVisibility(value) { this.visibility = value; }
+        getVisibility() { return this.get('visibility'); }
+        setVisibility(value) { this.set('visibility', value===true); }
 
         //-----------------------------------------------------------
 
         themes(value) { this.setThemes(value); return this; }
-        getThemes() { return this.themes; }
+        getThemes() { return this.get('themes'); }
         setThemes(value) {
-            if(value && typeof(value.push) === 'undefined')
+            if(!value) value = [];
+            else if(typeof(value.push) === 'undefined')
                 value = [value];
-            this.themes = value;
+            this.set('themes', value);
         }
         addTheme(value) {
-            if(!value || !value.id) return;
-            this.themes = this.addObject(value, this.themes);
+            value = this.addObject(value, this.get('themes'));
+            this.set('themes', value);
         }
         removeTheme(value) {
-            if(!value || !value.id) return;
-            this.themes = this.removeObject(value, this.themes);
+            value = this.removeObject(value, this.get('themes'));
+            this.set('themes', value);
         }
 
         //-----------------------------------------------------------
 
         publishers(value) { this.setPublishers(value); return this; }
-        getPublishers() { return this.publishers; }
+        getPublishers() { return this.get('publishers'); }
         setPublishers(value) {
-            if(value && typeof(value.push) === 'undefined')
+            if(!value) value = [];
+            else if(typeof(value.push) === 'undefined')
                 value = [value];
-            this.publishers = value;
+            this.set('publishers', value);
         }
         addPublisher(value) {
-            if(!value || !value.id) return;
-            this.publishers = this.addObject(value, this.publishers);
+            value = this.addObject(value, this.set('publishers'));
+            this.set('publishers', value);
         }
         removePublisher(value) {
-            if(!value || !value.id) return;
-            this.publishers = this.removeObject(value, this.publishers);
+            value = this.removeObject(value, this.get('publishers'));
+            this.set('publishers', value);
         }
 
         //-----------------------------------------------------------
 
         contacts(value) { this.setContacts(value); return this; }
-        getContacts() { return this.contacts; }
+        getContacts() { return this.get('contacts'); }
         setContacts(value) {
-            if(value && typeof(value.push) === 'undefined')
+            if(!value) value = [];
+            else if(typeof(value.push) === 'undefined')
                 value = [value];
-            this.contacts = value;
+            this.set('contacts', value);
         }
         addContact(value) {
-            if(!value || !value.id) return;
-            this.contacts = this.addObject(value, this.contacts);
+            value = this.addObject(value, this.get('contacts'));
+            this.set('contacts', value);
         }
         removeContact(value) {
-            if(!value || !value.id) return;
-            this.contacts = this.removeObject(value, this.contacts);
+            value = this.removeObject(value, this.set('contacts'));
+            this.set('contacts', value);
         }
 
         //-----------------------------------------------------------
 
         resourceTypes(value) { this.setResourceTypes(value); return this; }
-        getResourceTypes() { return this.resourceTypes; }
+        getResourceTypes() { return this.get('resourceTypes'); }
         setResourceTypes(value) {
-            if(value && typeof(value.push) === 'undefined')
+            if(!value) value = [];
+            else if(typeof(value.push) === 'undefined')
                 value = [value];
-            this.resourceTypes = value;
+            this.set('resourceTypes', value);
         }
         addResourceType(value) {
             if(!value) return;
-            this.resourceTypes = this.addValue(value, this.resourceTypes);
+            value = this.addValue(value, this.set('resourceTypes'));
+            this.set('resourceTypes', value);
         }
         removeResourceType(value) {
             if(!value) return;
-            this.resourceTypes = this.removeValue(value, this.resourceTypes);
+            value = this.removeValue(value, this.get('resourceTypes'));
+            this.set('resourceTypes', value);
         }
 
         //-----------------------------------------------------------
 
         classifiers(value) { this.setClassifiers(value); return this; }
-        getClassifiers() { return this.classifiers; }
+        getClassifiers() { return this.get('classifiers'); }
         setClassifiers(value) {
             if(!value || typeof(value) !== 'object') {
-                this.classifiers = {};
+                this.set('classifiers', {});
             } else {
-                this.classifiers = value;
+                this.set('classifiers', value);
             }
         }
 
@@ -232,12 +275,12 @@
 
         toJson() {
             let result = {};
-            for(let prop in this) {
-                if(this.hasOwnProperty(prop) && !!this[prop] &&
-                    typeof(this[prop] !== 'function')) {
-                    if(typeof(this[prop].toJson) !== 'undefined')
-                        result[prop] = this[prop].toJson();
-                    else result[prop] = this[prop];
+            for(let prop in this._data) {
+                if(this.hasOwnProperty(prop) && !!this._data[prop] &&
+                    typeof(this._data[prop] !== 'function')) {
+                    if(typeof(this._data[prop].toJson) !== 'undefined')
+                        result[prop] = this._data[prop].toJson();
+                    else result[prop] = this._data[prop];
                 }
             }
             return result;

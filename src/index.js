@@ -14,6 +14,8 @@ const KGQuery = require('./shared/kg-query');
 const KGService = require('./services/kg');
 const KGClassifiers = require('./shared/classifiers');
 
+const ItemFactory = require('./models/factory');
+
 
 module.exports = {
 
@@ -34,5 +36,7 @@ module.exports = {
     DatasetService  : DatasetService,
     MapService      : MapService,
     UtilsService    : UtilsService,
-    KGService       : KGService
+    KGService       : KGService,
+
+    ItemFactory     : ItemFactory
 };

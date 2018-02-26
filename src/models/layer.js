@@ -32,37 +32,43 @@
 
         constructor(data) {
             super(data);
-            this.type = ItemTypes.LAYER;
+            this._data.type = ItemTypes.LAYER;
+            this._data.services = this._data.services || [];
         }
 
         //-----------------------------------------------------------
 
         layerType(value) { this.setLayerType(value); return this; }
-        getLayerType() { return this.layerType; }
-        setLayerType(value) { this.layerType = value; }
+        getLayerType() { return this._data.layerType; }
+        setLayerType(value) { this._data.layerType = value; }
+
+        //-----------------------------------------------------------
+
+        layerName(value) { this.setLayerName(value); return this; }
+        getLayerName() { return this._data.layerName; }
+        setLayerName(value) { this._data.layerName = value; }
 
         //-----------------------------------------------------------
 
         legend(value) { this.setLegend(value); return this; }
-        getLegend() { return this.legend; }
-        setLegend(value) { this.legend = value; }
+        getLegend() { return this._data.legend; }
+        setLegend(value) { this._data.legend = value; }
 
         //-----------------------------------------------------------
 
         services(value) { this.setServices(value); return this; }
-        getServices() { return this.services; }
+        getServices() { return this._data.services; }
         setServices(value) {
-            if(value && typeof(value.push) === 'undefined')
+            if(!value) value = [];
+            else if(typeof(value.push) === 'undefined')
                 value = [value];
-            this.services = value;
+            this._data.services = value;
         }
         addService(value) {
-            if(!value || !value.id) return;
-            this.services = this.addObject(value, this.services);
+            this._data.services = this.addObject(value, this.get('services'));
         }
         removeService(value) {
-            if(!value || !value.id) return;
-            this.services = this.removeObject(value, this.services);
+            this._data.services = this.removeObject(value, this.get('services'));
         }
 
         //-----------------------------------------------------------

@@ -1371,6 +1371,1203 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         // Now we're wrapping the factory and assigning the return
         // value to the root (window) and returning it as well to
         // the AMD loader.
+        define([], function () {
+            return root.ItemModel = factory();
+        });
+    } else if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === "object" && module.exports) {
+        // I've not encountered a need for this yet, since I haven't
+        // run into a scenario where plain modules depend on CommonJS
+        // *and* I happen to be loading in a CJS browser environment
+        // but I'm including it for the sake of being thorough
+        module.exports = root.ItemModel = factory();
+    } else {
+        GeoPlatform.ItemModel = factory();
+    }
+})(undefined || window, function () {
+    var Base = function () {
+        function Base() {
+            _classCallCheck(this, Base);
+
+            this._data = {};
+        }
+
+        _createClass(Base, [{
+            key: "set",
+            value: function set(property, value) {
+                this._data[property] = value;
+            }
+        }, {
+            key: "get",
+            value: function get(property) {
+                return this._data[property];
+            }
+        }, {
+            key: "addObject",
+            value: function addObject(value, arr) {
+                if (!value) return;
+                arr = arr || [];
+                arr.push(value);
+                return arr;
+            }
+        }, {
+            key: "removeObject",
+            value: function removeObject(value, arr) {
+                if (!value || !value.id && !value.uri) return;
+                var k = value.id ? 'id' : 'uri';
+                arr = arr || [];
+                var idx = -1;
+                arr.each(function (p, i) {
+                    if (p[k] === value[k]) idx = i;
+                });
+                if (idx >= 0) {
+                    arr.splice(idx, 1);
+                }
+                return arr;
+            }
+        }, {
+            key: "addValue",
+            value: function addValue(value, arr) {
+                if (!value) return;
+                arr = arr || [];
+                arr.push(value);
+                return arr;
+            }
+        }, {
+            key: "removeValue",
+            value: function removeValue(value, arr) {
+                if (!value) return;
+                arr = arr || [];
+                var idx = arr.indexOf(value);
+                if (idx >= 0) {
+                    arr.splice(idx, 1);
+                }
+                return arr;
+            }
+        }]);
+
+        return Base;
+    }();
+
+    var ItemModel = function (_Base) {
+        _inherits(ItemModel, _Base);
+
+        function ItemModel(data) {
+            _classCallCheck(this, ItemModel);
+
+            var _this = _possibleConstructorReturn(this, (ItemModel.__proto__ || Object.getPrototypeOf(ItemModel)).call(this));
+
+            if (data) {
+                for (var prop in data) {
+                    if (data.hasOwnProperty(prop)) {
+                        var value = data[prop];
+                        if (!!value) {
+                            if (typeof value.push !== 'undefined') _this.set(prop, value.slice(0));else _this.set(prop, value);
+                        }
+                    }
+                }
+            }
+
+            _this._data.keywords = _this._data.keywords || [];
+            _this._data.themes = _this._data.themes || [];
+            _this._data.contacts = _this._data.contacts || [];
+            _this._data.publishers = _this._data.publishers || [];
+            _this._data.identifiers = _this._data.identifiers || [];
+            _this._data.resourceTypes = _this._data.resourceTypes || [];
+            return _this;
+        }
+
+        _createClass(ItemModel, [{
+            key: "getId",
+            value: function getId() {
+                return this.get('id');
+            }
+        }, {
+            key: "getType",
+            value: function getType() {
+                return this.get('type');
+            }
+        }, {
+            key: "getCreated",
+            value: function getCreated() {
+                return this.get('_created');
+            }
+        }, {
+            key: "getModified",
+            value: function getModified() {
+                return this.get('modified');
+            }
+
+            //-----------------------------------------------------------
+
+        }, {
+            key: "identifiers",
+            value: function identifiers(value) {
+                this.setIdentifiers(value);return this;
+            }
+        }, {
+            key: "getIdentifiers",
+            value: function getIdentifiers() {
+                return this.get('identifiers');
+            }
+        }, {
+            key: "setIdentifiers",
+            value: function setIdentifiers(value) {
+                if (!value) value = [];else if (typeof value.push === 'undefined') value = [value];
+                this.set('identifiers', value);
+            }
+        }, {
+            key: "addIdentifier",
+            value: function addIdentifier(value) {
+                if (!value) return;
+                value = this.addValue(value, this.get('identifiers'));
+                this.set('identifiers', value);
+            }
+        }, {
+            key: "removeIdentifier",
+            value: function removeIdentifier(value) {
+                if (!value) return;
+                value = this.removeValue(value, this.get('identifiers'));
+                this.set('identifiers', value);
+            }
+
+            //-----------------------------------------------------------
+
+        }, {
+            key: "createdBy",
+            value: function createdBy(value) {
+                this.setCreatedBy(value);return this;
+            }
+        }, {
+            key: "getCreatedBy",
+            value: function getCreatedBy() {
+                return this.get('createdBy');
+            }
+        }, {
+            key: "setCreatedBy",
+            value: function setCreatedBy(value) {
+                this.set('createdBy', value);
+            }
+
+            //-----------------------------------------------------------
+
+        }, {
+            key: "label",
+            value: function label(value) {
+                this.setLabel(value);return this;
+            }
+        }, {
+            key: "getLabel",
+            value: function getLabel() {
+                return this.get('label');
+            }
+        }, {
+            key: "setLabel",
+            value: function setLabel(value) {
+                this.set('label', value);
+            }
+
+            //-----------------------------------------------------------
+
+        }, {
+            key: "description",
+            value: function description(value) {
+                this.setDescription(value);return this;
+            }
+        }, {
+            key: "getDescription",
+            value: function getDescription() {
+                return this.get('description');
+            }
+        }, {
+            key: "setDescription",
+            value: function setDescription(value) {
+                this.set('description', value);
+            }
+
+            //-----------------------------------------------------------
+
+        }, {
+            key: "keywords",
+            value: function keywords(value) {
+                this.setKeywords(value);return this;
+            }
+        }, {
+            key: "getKeywords",
+            value: function getKeywords() {
+                return this.get('keywords');
+            }
+        }, {
+            key: "setKeywords",
+            value: function setKeywords(value) {
+                if (!value) value = [];else if (typeof value.push === 'undefined') value = [value];
+                this.set('keywords', value);
+            }
+
+            //-----------------------------------------------------------
+
+        }, {
+            key: "landingPage",
+            value: function landingPage(value) {
+                this.setLandingPage(value);return this;
+            }
+        }, {
+            key: "getLandingPage",
+            value: function getLandingPage() {
+                return this.get('landingPage');
+            }
+        }, {
+            key: "setLandingPage",
+            value: function setLandingPage(value) {
+                this.set('landingPage', value);
+            }
+
+            //-----------------------------------------------------------
+
+        }, {
+            key: "status",
+            value: function status(value) {
+                this.setStatus(value);return this;
+            }
+        }, {
+            key: "getStatus",
+            value: function getStatus() {
+                return this.get('status');
+            }
+        }, {
+            key: "setStatus",
+            value: function setStatus(value) {
+                this.set('status', value);
+            }
+
+            //-----------------------------------------------------------
+
+        }, {
+            key: "visibility",
+            value: function visibility(value) {
+                this.setVisibility(value);return this;
+            }
+        }, {
+            key: "getVisibility",
+            value: function getVisibility() {
+                return this.get('visibility');
+            }
+        }, {
+            key: "setVisibility",
+            value: function setVisibility(value) {
+                this.set('visibility', value === true);
+            }
+
+            //-----------------------------------------------------------
+
+        }, {
+            key: "themes",
+            value: function themes(value) {
+                this.setThemes(value);return this;
+            }
+        }, {
+            key: "getThemes",
+            value: function getThemes() {
+                return this.get('themes');
+            }
+        }, {
+            key: "setThemes",
+            value: function setThemes(value) {
+                if (!value) value = [];else if (typeof value.push === 'undefined') value = [value];
+                this.set('themes', value);
+            }
+        }, {
+            key: "addTheme",
+            value: function addTheme(value) {
+                value = this.addObject(value, this.get('themes'));
+                this.set('themes', value);
+            }
+        }, {
+            key: "removeTheme",
+            value: function removeTheme(value) {
+                value = this.removeObject(value, this.get('themes'));
+                this.set('themes', value);
+            }
+
+            //-----------------------------------------------------------
+
+        }, {
+            key: "publishers",
+            value: function publishers(value) {
+                this.setPublishers(value);return this;
+            }
+        }, {
+            key: "getPublishers",
+            value: function getPublishers() {
+                return this.get('publishers');
+            }
+        }, {
+            key: "setPublishers",
+            value: function setPublishers(value) {
+                if (!value) value = [];else if (typeof value.push === 'undefined') value = [value];
+                this.set('publishers', value);
+            }
+        }, {
+            key: "addPublisher",
+            value: function addPublisher(value) {
+                value = this.addObject(value, this.set('publishers'));
+                this.set('publishers', value);
+            }
+        }, {
+            key: "removePublisher",
+            value: function removePublisher(value) {
+                value = this.removeObject(value, this.get('publishers'));
+                this.set('publishers', value);
+            }
+
+            //-----------------------------------------------------------
+
+        }, {
+            key: "contacts",
+            value: function contacts(value) {
+                this.setContacts(value);return this;
+            }
+        }, {
+            key: "getContacts",
+            value: function getContacts() {
+                return this.get('contacts');
+            }
+        }, {
+            key: "setContacts",
+            value: function setContacts(value) {
+                if (!value) value = [];else if (typeof value.push === 'undefined') value = [value];
+                this.set('contacts', value);
+            }
+        }, {
+            key: "addContact",
+            value: function addContact(value) {
+                value = this.addObject(value, this.get('contacts'));
+                this.set('contacts', value);
+            }
+        }, {
+            key: "removeContact",
+            value: function removeContact(value) {
+                value = this.removeObject(value, this.set('contacts'));
+                this.set('contacts', value);
+            }
+
+            //-----------------------------------------------------------
+
+        }, {
+            key: "resourceTypes",
+            value: function resourceTypes(value) {
+                this.setResourceTypes(value);return this;
+            }
+        }, {
+            key: "getResourceTypes",
+            value: function getResourceTypes() {
+                return this.get('resourceTypes');
+            }
+        }, {
+            key: "setResourceTypes",
+            value: function setResourceTypes(value) {
+                if (!value) value = [];else if (typeof value.push === 'undefined') value = [value];
+                this.set('resourceTypes', value);
+            }
+        }, {
+            key: "addResourceType",
+            value: function addResourceType(value) {
+                if (!value) return;
+                value = this.addValue(value, this.set('resourceTypes'));
+                this.set('resourceTypes', value);
+            }
+        }, {
+            key: "removeResourceType",
+            value: function removeResourceType(value) {
+                if (!value) return;
+                value = this.removeValue(value, this.get('resourceTypes'));
+                this.set('resourceTypes', value);
+            }
+
+            //-----------------------------------------------------------
+
+        }, {
+            key: "classifiers",
+            value: function classifiers(value) {
+                this.setClassifiers(value);return this;
+            }
+        }, {
+            key: "getClassifiers",
+            value: function getClassifiers() {
+                return this.get('classifiers');
+            }
+        }, {
+            key: "setClassifiers",
+            value: function setClassifiers(value) {
+                if (!value || (typeof value === "undefined" ? "undefined" : _typeof(value)) !== 'object') {
+                    this.set('classifiers', {});
+                } else {
+                    this.set('classifiers', value);
+                }
+            }
+
+            //-----------------------------------------------------------
+
+
+            //-----------------------------------------------------------
+
+
+        }, {
+            key: "toJson",
+            value: function toJson() {
+                var result = {};
+                for (var prop in this._data) {
+                    if (this.hasOwnProperty(prop) && !!this._data[prop] && _typeof(this._data[prop] !== 'function')) {
+                        if (typeof this._data[prop].toJson !== 'undefined') result[prop] = this._data[prop].toJson();else result[prop] = this._data[prop];
+                    }
+                }
+                return result;
+            }
+        }]);
+
+        return ItemModel;
+    }(Base);
+
+    return ItemModel;
+});
+
+(function (root, factory) {
+    if (typeof define === "function" && define.amd) {
+        // Now we're wrapping the factory and assigning the return
+        // value to the root (window) and returning it as well to
+        // the AMD loader.
+        define(['ItemModel', 'ItemTypes'], function (ItemModel, ItemTypes) {
+            return root.DatasetModel = factory(ItemModel, ItemTypes);
+        });
+    } else if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === "object" && module.exports) {
+        // I've not encountered a need for this yet, since I haven't
+        // run into a scenario where plain modules depend on CommonJS
+        // *and* I happen to be loading in a CJS browser environment
+        // but I'm including it for the sake of being thorough
+        module.exports = root.DatasetModel = factory(require('./item'), require('../shared/types'));
+    } else {
+        GeoPlatform.DatasetModel = factory(GeoPlatform.ItemModel, GeoPlatform.ItemTypes);
+    }
+})(undefined || window, function (ItemModel, ItemTypes) {
+    var DatasetModel = function (_ItemModel) {
+        _inherits(DatasetModel, _ItemModel);
+
+        function DatasetModel(data) {
+            _classCallCheck(this, DatasetModel);
+
+            var _this2 = _possibleConstructorReturn(this, (DatasetModel.__proto__ || Object.getPrototypeOf(DatasetModel)).call(this, data));
+
+            _this2._data.type = ItemTypes.DATASET;
+            _this2._data.services = _this2._data.services || [];
+            return _this2;
+        }
+
+        //-----------------------------------------------------------
+
+        _createClass(DatasetModel, [{
+            key: "services",
+            value: function services(value) {
+                this.setServices(value);return this;
+            }
+        }, {
+            key: "getServices",
+            value: function getServices() {
+                return this._data.services;
+            }
+        }, {
+            key: "setServices",
+            value: function setServices(value) {
+                if (!value) value = [];else if (typeof value.push === 'undefined') value = [value];
+                this._data.services = value;
+            }
+        }, {
+            key: "addService",
+            value: function addService(value) {
+                this._data.services = this.addObject(value, this.get('services'));
+            }
+        }, {
+            key: "removeService",
+            value: function removeService(value) {
+                this._data.services = this.removeObject(value, this.get('services'));
+            }
+
+            //-----------------------------------------------------------
+
+
+            //-----------------------------------------------------------
+
+
+        }]);
+
+        return DatasetModel;
+    }(ItemModel);
+
+    return DatasetModel;
+});
+
+(function (root, factory) {
+    if (typeof define === "function" && define.amd) {
+        // Now we're wrapping the factory and assigning the return
+        // value to the root (window) and returning it as well to
+        // the AMD loader.
+        define(['ItemModel', 'ItemTypes'], function (ItemModel, ItemTypes) {
+            return root.ServiceModel = factory(ItemModel, ItemTypes);
+        });
+    } else if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === "object" && module.exports) {
+        // I've not encountered a need for this yet, since I haven't
+        // run into a scenario where plain modules depend on CommonJS
+        // *and* I happen to be loading in a CJS browser environment
+        // but I'm including it for the sake of being thorough
+        module.exports = root.ServiceModel = factory(require('./item'), require('../shared/types'));
+    } else {
+        GeoPlatform.ServiceModel = factory(GeoPlatform.ItemModel, GeoPlatform.ItemTypes);
+    }
+})(undefined || window, function (ItemModel, ItemTypes) {
+    var ServiceModel = function (_ItemModel2) {
+        _inherits(ServiceModel, _ItemModel2);
+
+        function ServiceModel(data) {
+            _classCallCheck(this, ServiceModel);
+
+            var _this3 = _possibleConstructorReturn(this, (ServiceModel.__proto__ || Object.getPrototypeOf(ServiceModel)).call(this, data));
+
+            _this3._data.type = ItemTypes.SERVICE;
+            _this3._data.datasets = _this3._data.datasets || [];
+            return _this3;
+        }
+
+        //-----------------------------------------------------------
+
+        _createClass(ServiceModel, [{
+            key: "href",
+            value: function href(value) {
+                this.setHref(value);return this;
+            }
+        }, {
+            key: "getHref",
+            value: function getHref() {
+                return this._data.href;
+            }
+        }, {
+            key: "setHref",
+            value: function setHref(value) {
+                this._data.href = value;
+            }
+
+            //-----------------------------------------------------------
+
+        }, {
+            key: "serviceType",
+            value: function serviceType(value) {
+                this.setServiceType(value);return this;
+            }
+        }, {
+            key: "getServiceType",
+            value: function getServiceType() {
+                return this._data.serviceType;
+            }
+        }, {
+            key: "setServiceType",
+            value: function setServiceType(value) {
+                this._data.serviceType = value;
+            }
+
+            //-----------------------------------------------------------
+
+        }, {
+            key: "datasets",
+            value: function datasets(value) {
+                this.setDatasets(value);return this;
+            }
+        }, {
+            key: "getDatasets",
+            value: function getDatasets() {
+                return this._data.datasets;
+            }
+        }, {
+            key: "setDatasets",
+            value: function setDatasets(value) {
+                if (!value) value = [];else if (typeof value.push === 'undefined') value = [value];
+                this._data.datasets = value;
+            }
+        }, {
+            key: "addDataset",
+            value: function addDataset(value) {
+                this._data.datasets = this.addObject(value, this.get('datasets'));
+            }
+        }, {
+            key: "removeDataset",
+            value: function removeDataset(value) {
+                this._data.datasets = this.removeObject(value, this.get('datasets'));
+            }
+
+            //-----------------------------------------------------------
+
+
+            //-----------------------------------------------------------
+
+
+        }]);
+
+        return ServiceModel;
+    }(ItemModel);
+
+    return ServiceModel;
+});
+
+(function (root, factory) {
+    if (typeof define === "function" && define.amd) {
+        // Now we're wrapping the factory and assigning the return
+        // value to the root (window) and returning it as well to
+        // the AMD loader.
+        define(['ItemModel', 'ItemTypes'], function (ItemModel, ItemTypes) {
+            return root.LayerModel = factory(ItemModel, ItemTypes);
+        });
+    } else if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === "object" && module.exports) {
+        // I've not encountered a need for this yet, since I haven't
+        // run into a scenario where plain modules depend on CommonJS
+        // *and* I happen to be loading in a CJS browser environment
+        // but I'm including it for the sake of being thorough
+        module.exports = root.LayerModel = factory(require('./item'), require('../shared/types'));
+    } else {
+        GeoPlatform.LayerModel = factory(GeoPlatform.ItemModel, GeoPlatform.ItemTypes);
+    }
+})(undefined || window, function (ItemModel, ItemTypes) {
+    var LayerModel = function (_ItemModel3) {
+        _inherits(LayerModel, _ItemModel3);
+
+        function LayerModel(data) {
+            _classCallCheck(this, LayerModel);
+
+            var _this4 = _possibleConstructorReturn(this, (LayerModel.__proto__ || Object.getPrototypeOf(LayerModel)).call(this, data));
+
+            _this4._data.type = ItemTypes.LAYER;
+            _this4._data.services = _this4._data.services || [];
+            return _this4;
+        }
+
+        //-----------------------------------------------------------
+
+        _createClass(LayerModel, [{
+            key: "layerType",
+            value: function layerType(value) {
+                this.setLayerType(value);return this;
+            }
+        }, {
+            key: "getLayerType",
+            value: function getLayerType() {
+                return this._data.layerType;
+            }
+        }, {
+            key: "setLayerType",
+            value: function setLayerType(value) {
+                this._data.layerType = value;
+            }
+
+            //-----------------------------------------------------------
+
+        }, {
+            key: "layerName",
+            value: function layerName(value) {
+                this.setLayerName(value);return this;
+            }
+        }, {
+            key: "getLayerName",
+            value: function getLayerName() {
+                return this._data.layerName;
+            }
+        }, {
+            key: "setLayerName",
+            value: function setLayerName(value) {
+                this._data.layerName = value;
+            }
+
+            //-----------------------------------------------------------
+
+        }, {
+            key: "legend",
+            value: function legend(value) {
+                this.setLegend(value);return this;
+            }
+        }, {
+            key: "getLegend",
+            value: function getLegend() {
+                return this._data.legend;
+            }
+        }, {
+            key: "setLegend",
+            value: function setLegend(value) {
+                this._data.legend = value;
+            }
+
+            //-----------------------------------------------------------
+
+        }, {
+            key: "services",
+            value: function services(value) {
+                this.setServices(value);return this;
+            }
+        }, {
+            key: "getServices",
+            value: function getServices() {
+                return this._data.services;
+            }
+        }, {
+            key: "setServices",
+            value: function setServices(value) {
+                if (!value) value = [];else if (typeof value.push === 'undefined') value = [value];
+                this._data.services = value;
+            }
+        }, {
+            key: "addService",
+            value: function addService(value) {
+                this._data.services = this.addObject(value, this.get('services'));
+            }
+        }, {
+            key: "removeService",
+            value: function removeService(value) {
+                this._data.services = this.removeObject(value, this.get('services'));
+            }
+
+            //-----------------------------------------------------------
+
+
+            //-----------------------------------------------------------
+
+
+        }]);
+
+        return LayerModel;
+    }(ItemModel);
+
+    return LayerModel;
+});
+
+(function (root, factory) {
+    if (typeof define === "function" && define.amd) {
+        // Now we're wrapping the factory and assigning the return
+        // value to the root (window) and returning it as well to
+        // the AMD loader.
+        define(['ItemModel', 'ItemTypes'], function (ItemModel, ItemTypes) {
+            return root.MapModel = factory(ItemModel, ItemTypes);
+        });
+    } else if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === "object" && module.exports) {
+        // I've not encountered a need for this yet, since I haven't
+        // run into a scenario where plain modules depend on CommonJS
+        // *and* I happen to be loading in a CJS browser environment
+        // but I'm including it for the sake of being thorough
+        module.exports = root.MapModel = factory(require('./item'), require('../shared/types'));
+    } else {
+        GeoPlatform.MapModel = factory(GeoPlatform.ItemModel, GeoPlatform.ItemTypes);
+    }
+})(undefined || window, function (ItemModel, ItemTypes) {
+    var MapModel = function (_ItemModel4) {
+        _inherits(MapModel, _ItemModel4);
+
+        function MapModel(data) {
+            _classCallCheck(this, MapModel);
+
+            var _this5 = _possibleConstructorReturn(this, (MapModel.__proto__ || Object.getPrototypeOf(MapModel)).call(this, data));
+
+            _this5._data.type = ItemTypes.MAP;
+            _this5._data.layers = _this5._data.layers || [];
+            return _this5;
+        }
+
+        //-----------------------------------------------------------
+
+        _createClass(MapModel, [{
+            key: "thumbnail",
+            value: function thumbnail(value) {
+                this.setThumbnail(value);return this;
+            }
+        }, {
+            key: "getThumbnail",
+            value: function getThumbnail() {
+                return this._data.thumbnail;
+            }
+        }, {
+            key: "setThumbnail",
+            value: function setThumbnail(value) {
+                this._data.thumbnail = value;
+            }
+
+            //-----------------------------------------------------------
+
+        }, {
+            key: "baseLayer",
+            value: function baseLayer(value) {
+                this.setBaseLayer(value);return this;
+            }
+        }, {
+            key: "getBaseLayer",
+            value: function getBaseLayer() {
+                return this._data.baseLayer;
+            }
+        }, {
+            key: "setBaseLayer",
+            value: function setBaseLayer(value) {
+                this._data.baseLayer = value;
+            }
+
+            //-----------------------------------------------------------
+
+        }, {
+            key: "layers",
+            value: function layers(value) {
+                this.setLayers(value);return this;
+            }
+        }, {
+            key: "getLayers",
+            value: function getLayers() {
+                return this._data.layers;
+            }
+        }, {
+            key: "setLayers",
+            value: function setLayers(value) {
+                if (!value) value = [];else if (typeof value.push === 'undefined') value = [value];
+                this._data.layers = value;
+            }
+        }, {
+            key: "addLayer",
+            value: function addLayer(value) {
+                this._data.layers = this.addObject(value, this.get('layers'));
+            }
+        }, {
+            key: "removeLayer",
+            value: function removeLayer(value) {
+                this._data.layers = this.removeObject(value, this.get('layers'));
+            }
+
+            //-----------------------------------------------------------
+
+        }, {
+            key: "annotations",
+            value: function annotations(value) {
+                this.setAnnotations(value);return this;
+            }
+        }, {
+            key: "getAnnotations",
+            value: function getAnnotations() {
+                return this._data.annotations;
+            }
+        }, {
+            key: "setAnnotations",
+            value: function setAnnotations(value) {
+                this._data.annotations = value;
+            }
+
+            //-----------------------------------------------------------
+
+
+            //-----------------------------------------------------------
+
+
+        }]);
+
+        return MapModel;
+    }(ItemModel);
+
+    return MapModel;
+});
+
+(function (root, factory) {
+    if (typeof define === "function" && define.amd) {
+        // Now we're wrapping the factory and assigning the return
+        // value to the root (window) and returning it as well to
+        // the AMD loader.
+        define(['ItemModel', 'ItemTypes'], function (ItemModel, ItemTypes) {
+            return root.GalleryModel = factory(ItemModel, ItemTypes);
+        });
+    } else if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === "object" && module.exports) {
+        // I've not encountered a need for this yet, since I haven't
+        // run into a scenario where plain modules depend on CommonJS
+        // *and* I happen to be loading in a CJS browser environment
+        // but I'm including it for the sake of being thorough
+        module.exports = root.GalleryModel = factory(require('./item'), require('../shared/types'));
+    } else {
+        GeoPlatform.GalleryModel = factory(GeoPlatform.ItemModel, GeoPlatform.ItemTypes);
+    }
+})(undefined || window, function (ItemModel, ItemTypes) {
+    var GalleryModel = function (_ItemModel5) {
+        _inherits(GalleryModel, _ItemModel5);
+
+        function GalleryModel(data) {
+            _classCallCheck(this, GalleryModel);
+
+            var _this6 = _possibleConstructorReturn(this, (GalleryModel.__proto__ || Object.getPrototypeOf(GalleryModel)).call(this, data));
+
+            _this6._data.type = ItemTypes.GALLERY;
+            _this6._data.items = _this6._data.items || [];
+            return _this6;
+        }
+
+        //-----------------------------------------------------------
+
+        _createClass(GalleryModel, [{
+            key: "items",
+            value: function items(value) {
+                this.setItems(value);return this;
+            }
+        }, {
+            key: "getItems",
+            value: function getItems() {
+                return this._data.items;
+            }
+        }, {
+            key: "setItems",
+            value: function setItems(value) {
+                if (!value) value = [];else if (typeof value.push === 'undefined') value = [value];
+                this._data.items = value;
+            }
+        }, {
+            key: "addItem",
+            value: function addItem(value) {
+                this._data.items = this.addObject(value, this.get('items'));
+            }
+        }, {
+            key: "removeItem",
+            value: function removeItem(value) {
+                this._data.items = this.removeObject(value, this.get('items'));
+            }
+        }, {
+            key: "reorderItem",
+            value: function reorderItem(value, newPosition) {
+                var idx = -1;
+                this._data.items.each(function (p, i) {
+                    if (p.id === value.id) idx = i;
+                });
+                if (idx < 0) return;
+                this._data.items.splice(idx, 1);
+                this._data.items.splice(idx, 0, value);
+            }
+
+            //-----------------------------------------------------------
+
+
+            //-----------------------------------------------------------
+
+
+        }]);
+
+        return GalleryModel;
+    }(ItemModel);
+
+    return GalleryModel;
+});
+
+(function (root, factory) {
+    if (typeof define === "function" && define.amd) {
+        // Now we're wrapping the factory and assigning the return
+        // value to the root (window) and returning it as well to
+        // the AMD loader.
+        define(['ItemTypes', 'DatasetModel', 'ServiceModel', 'LayerModel', 'MapModel', 'GalleryModel'], function (ItemTypes, DatasetModel, ServiceModel, LayerModel, MapModel, GalleryModel) {
+            return root.ItemFactory = factory(ItemTypes, DatasetModel, ServiceModel, LayerModel, MapModel, GalleryModel);
+        });
+    } else if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === "object" && module.exports) {
+        // I've not encountered a need for this yet, since I haven't
+        // run into a scenario where plain modules depend on CommonJS
+        // *and* I happen to be loading in a CJS browser environment
+        // but I'm including it for the sake of being thorough
+        module.exports = root.ItemFactory = factory(require('../shared/types'), require('./dataset'), require('./service'), require('./layer'), require('./map'), require('./gallery'));
+    } else {
+        GeoPlatform.ItemFactory = factory(GeoPlatform.ItemTypes, GeoPlatform.DatasetModel, GeoPlatform.ServiceModel, GeoPlatform.LayerModel, GeoPlatform.MapModel, GeoPlatform.GalleryModel);
+    }
+})(undefined || window, function (ItemTypes, DatasetModel, ServiceModel, LayerModel, MapModel, GalleryModel) {
+
+    function forEach(arr, fn) {
+        if (arr && typeof arr.push !== 'undefined' && arr.length) {
+            for (var i = 0; i < arr.length; ++i) {
+                try {
+                    fn(arr[i], i);
+                } catch (e) {}
+            }
+        }
+    }
+
+    function cloneObj(obj) {
+        return JSON.parse(JSON.stringify(obj));
+    }
+
+    // Base item property parsing support
+    function parseItem(json, item) {
+        if (!json) return;
+        if (json.label) item.label(json.label);
+        if (json.description) item.description(json.description);
+        if (json.keywords) item.keywords(json.keywords);
+        if (json.createdBy) item.createdBy(json.createdBy);
+        if (json.status) item.status(json.status);
+        if (json.visibility) item.visibility(json.visibility);
+        if (json.themes) item.themes(json.themes);
+        if (json.publishers) item.publishers(json.publishers);
+        if (json.contacts) item.contacts(json.contacts);
+        if (json.resourceTypes) item.resourceTypes(json.resourceTypes);
+        if (json.identifiers) item.identifiers(json.identifiers);
+        if (json.landingPage) item.landingPage(json.landingPage);
+        if (json.classifiers) item.classifiers(json.classifiers);
+        // console.log("Parsed Item base");
+    }
+
+    // Dataset item property parsing support
+    function parseDataset(json, item) {
+        if (!json) return;
+        parseItem(json, item);
+        if (json.services) {
+            var svcs = json.services.map(function (s) {
+                return itemFactory(s);
+            });
+            item.services(svcs);
+        }
+    }
+
+    // Service item property parsing support
+    function parseService(json, item) {
+        if (!json) return;
+        parseItem(json, item);
+        if (json.href) item.href(json.href);
+        if (json.serviceType) item.serviceType(json.serviceType);
+    }
+
+    // Layer item property parsing support
+    function parseLayer(json, item) {
+        if (!json) return;
+        parseItem(json, item);
+        if (json.layerName) item.layerName(json.layerName);
+        if (json.layerType) item.layerType(json.layerType);
+        if (json.legend) item.legend(json.legend);
+        if (json.services) {
+            var svcs = json.services.map(function (s) {
+                return itemFactory(s);
+            });
+            item.services(svcs);
+        }
+    }
+
+    // Map item property parsing support
+    function parseMap(json, item) {
+        if (!json) return;
+        parseItem(json, item);
+        if (json.thumbnail) item.thumbnail(json.thumbnail);
+        if (json.annotations) item.annotations(json.annotations);
+
+        if (json.baseLayer) {
+            try {
+                var baseLayer = itemFactory(json.baseLayer);
+                item.baseLayer(baseLayer);
+            } catch (e) {
+                throw new Error("Error parsing map base layer, " + e.message);
+            }
+        }
+
+        if (json.layers && typeof json.layers.push !== 'undefined') {
+            try {
+                var layers = json.layers.map(function (state) {
+                    var result = cloneObj(state);
+                    result.layer = itemFactory(result.layer);
+                    return result;
+                });
+                item.layers(layers);
+            } catch (e) {
+                throw new Error("Error parsing map overlay layers, " + e.message);
+            }
+        }
+    }
+
+    // Gallery item property parsing support
+    function parseGallery(json, item) {
+        if (!json) return;
+        parseItem(json, item);
+        if (json.items) {
+            var items = json.items.map(function (item) {
+                var result = cloneObj(item);
+                result.asset = itemFactory(result.asset);
+                return result;
+            });
+            item.items(json.items);
+        }
+    }
+
+    function itemFactory(arg) {
+
+        var type = null,
+            options = null;
+        if (arg && typeof arg === 'string') type = arg;else if (arg && (typeof arg === "undefined" ? "undefined" : _typeof(arg)) === 'object') {
+            if (arg.type) type = arg.type;else throw new Error("Must specify 'type' in parameter object");
+            options = arg;
+        } else {
+            throw new Error("Illegal argument; must be string type or object definition");
+        }
+
+        var opts = null;
+        if (options) {
+            //handle immutable properties
+            opts = {
+                id: options.id,
+                uri: options.uri,
+                _created: options._created,
+                modified: options.modified
+            };
+        }
+
+        // console.log(`${type}`);
+
+        var item = null;
+        switch (type) {
+            case ItemTypes.DATASET:
+                item = new DatasetModel(opts);
+                try {
+                    parseDataset(options, item);
+                } catch (e) {
+                    console.log("Error parsing dataset " + e.message);
+                }
+                break;
+            case ItemTypes.SERVICE:
+                item = new ServiceModel(opts);
+                try {
+                    parseService(options, item);
+                } catch (e) {
+                    console.log("Error parsing service " + e.message);
+                }
+                break;
+            case ItemTypes.LAYER:
+                item = new LayerModel(opts);
+                try {
+                    parseLayer(options, item);
+                } catch (e) {
+                    console.log("Error parsing layer " + e.message);
+                }
+                break;
+            case ItemTypes.MAP:
+                item = new MapModel(opts);
+                try {
+                    parseMap(options, item);
+                } catch (e) {
+                    console.log("Error parsing map " + e.message);
+                }
+                break;
+            case ItemTypes.GALLERY:
+                item = new GalleryModel(opts);
+                try {
+                    parseGallery(options, item);
+                } catch (e) {
+                    console.log("Error parsing gallery " + e.message);
+                }
+                break;
+            default:
+                throw new Error("Unsupported item type '" + type + "'");
+        }
+
+        // console.log(`ItemFactory - done with ${type}`);
+        return item;
+    }
+
+    return itemFactory;
+});
+
+(function (root, factory) {
+    if (typeof define === "function" && define.amd) {
+        // Now we're wrapping the factory and assigning the return
+        // value to the root (window) and returning it as well to
+        // the AMD loader.
         define(["jquery", "q"], function (jQuery, Q) {
             return root.JQueryHttpClient = factory(jQuery, Q);
         });
@@ -1485,19 +2682,19 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         // Now we're wrapping the factory and assigning the return
         // value to the root (window) and returning it as well to
         // the AMD loader.
-        define(["q"], function (Q) {
-            return root.ItemService = factory(Q);
+        define(["q", 'ItemFactory'], function (Q, ItemFactory) {
+            return root.ItemService = factory(Q, ItemFactory);
         });
     } else if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === "object" && module.exports) {
         // I've not encountered a need for this yet, since I haven't
         // run into a scenario where plain modules depend on CommonJS
         // *and* I happen to be loading in a CJS browser environment
         // but I'm including it for the sake of being thorough
-        module.exports = root.ItemService = factory(require('q'));
+        module.exports = root.ItemService = factory(require('q'), require('../models/factory'));
     } else {
-        GeoPlatform.ItemService = factory(Q);
+        GeoPlatform.ItemService = factory(Q, GeoPlatform.ItemFactory);
     }
-})(undefined || window, function (Q) {
+})(undefined || window, function (Q, ItemFactory) {
 
     /**
      * ItemService
@@ -1549,13 +2746,15 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "get",
             value: function get(id, options) {
-                var _this = this;
+                var _this7 = this;
 
                 return Q.resolve(id).then(function (id) {
-                    var opts = _this.buildRequest({
-                        method: "GET", url: _this.baseUrl + '/' + id, options: options
+                    var opts = _this7.buildRequest({
+                        method: "GET", url: _this7.baseUrl + '/' + id, options: options
                     });
-                    return _this.execute(opts);
+                    return _this7.execute(opts);
+                }).then(function (obj) {
+                    return ItemFactory(obj);
                 }).catch(function (e) {
                     var err = new Error("ItemService.get() - Error fetching item " + id + ": " + e.message);
                     return Q.reject(err);
@@ -1571,19 +2770,26 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "save",
             value: function save(itemObj, options) {
-                var _this2 = this;
+                var _this8 = this;
 
                 return Q.resolve(itemObj).then(function (item) {
 
+                    if (item.toJson) {
+                        //if passed an ItemModel instance, convert to JSON
+                        item = item.toJson();
+                    }
+
                     var method = 'POST',
-                        url = _this2.baseUrl;
+                        url = _this8.baseUrl;
                     if (item.id) {
                         method = "PUT";
                         url += '/' + item.id;
                     }
 
-                    var opts = _this2.buildRequest({ method: method, url: url, data: item, options: options });
-                    return _this2.execute(opts);
+                    var opts = _this8.buildRequest({ method: method, url: url, data: item, options: options });
+                    return _this8.execute(opts);
+                }).then(function (obj) {
+                    return ItemFactory(obj);
                 }).catch(function (e) {
                     var err = new Error("ItemService.save() - Error saving item: " + e.message);
                     return Q.reject(err);
@@ -1599,13 +2805,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "remove",
             value: function remove(id, options) {
-                var _this3 = this;
+                var _this9 = this;
 
                 return Q.resolve(this.baseUrl + '/' + id).then(function (url) {
-                    var opts = _this3.buildRequest({
+                    var opts = _this9.buildRequest({
                         method: "DELETE", url: url, options: options
                     });
-                    return _this3.execute(opts);
+                    return _this9.execute(opts);
                 }).then(function (response) {
                     return true;
                 }).catch(function (e) {
@@ -1624,13 +2830,15 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "patch",
             value: function patch(id, _patch, options) {
-                var _this4 = this;
+                var _this10 = this;
 
                 return Q.resolve(this.baseUrl + '/' + id).then(function (url) {
-                    var opts = _this4.buildRequest({
+                    var opts = _this10.buildRequest({
                         method: "PATCH", url: url, data: _patch, options: options
                     });
-                    return _this4.execute(opts);
+                    return _this10.execute(opts);
+                }).then(function (obj) {
+                    return ItemFactory(obj);
                 }).catch(function (e) {
                     var err = new Error("ItemService.patch() - Error patching item " + id + ": " + e.message);
                     return Q.reject(err);
@@ -1646,7 +2854,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "search",
             value: function search(arg, options) {
-                var _this5 = this;
+                var _this11 = this;
 
                 return Q.resolve(arg).then(function (params) {
 
@@ -1655,10 +2863,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                         // convert to parameters object
                         params = params.getQuery();
                     }
-                    var opts = _this5.buildRequest({
-                        method: "GET", url: _this5.baseUrl, params: params, options: options
+                    var opts = _this11.buildRequest({
+                        method: "GET", url: _this11.baseUrl, params: params, options: options
                     });
-                    return _this5.execute(opts);
+                    return _this11.execute(opts);
                 }).catch(function (e) {
                     var err = new Error("ItemService.search() - Error searching items: " + e.message);
                     return Q.reject(err);
@@ -1675,17 +2883,17 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "import",
             value: function _import(arg, format, options) {
-                var _this6 = this;
+                var _this12 = this;
 
                 return Q.resolve(true).then(function () {
-                    if (!arg || arg.indexOf(http) < 0) {
+                    if (!arg || arg.indexOf('http') < 0) {
                         throw new Error("Must provide a valid URL or File");
                     }
-                    var url = _this6.apiBase + '/api/import';
+                    var url = _this12.apiBase + '/api/import';
                     var isFile = typeof arg !== 'string';
                     var ro = {
                         method: "POST",
-                        url: _this6.url,
+                        url: _this12.url,
                         processData: true, //for jQuery
                         formData: true, //for Node (RequestJS)
                         options: options
@@ -1696,8 +2904,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                     } else {
                         ro.data = { url: arg, format: format };
                     }
-                    var opts = _this6.buildRequest(ro);
-                    return _this6.execute(opts);
+                    var opts = _this12.buildRequest(ro);
+                    return _this12.execute(opts);
                 }).catch(function (e) {
                     var err = new Error("ItemService.import() - Error importing item: " + e.message);
                     return Q.reject(err);
@@ -1713,17 +2921,17 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "export",
             value: function _export(id, format, options) {
-                var _this7 = this;
+                var _this13 = this;
 
                 return Q.resolve(true).then(function () {
-                    var url = _this7.baseUrl + '/' + id + '/export';
-                    var opts = _this7.buildRequest({
+                    var url = _this13.baseUrl + '/' + id + '/export';
+                    var opts = _this13.buildRequest({
                         method: "GET", url: url,
                         params: { format: format },
                         json: false,
                         options: options
                     });
-                    return _this7.execute(opts);
+                    return _this13.execute(opts);
                 }).catch(function (e) {
                     var err = new Error("ItemService.export() - Error exporting item: " + e.message);
                     return Q.reject(err);
@@ -1739,15 +2947,28 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "getUri",
             value: function getUri(object, options) {
-                var _this8 = this;
+                var _this14 = this;
 
                 return Q.resolve(object).then(function (obj) {
-                    if (!obj || !obj.type) throw new Error("Must provide an object with a type property");
-                    var url = _this8.apiBase + '/api/utils/uri';
-                    var opts = _this8.buildRequest({
+
+                    if (!obj) {
+                        throw new Error("Must provide an typed object");
+                    }
+
+                    if (obj.toJson) {
+                        //if passed an ItemModel instance, convert to JSON
+                        obj = obj.toJson();
+                    }
+
+                    if (!obj.type) {
+                        throw new Error("Must provide a valid type on the specified object");
+                    }
+
+                    var url = _this14.apiBase + '/api/utils/uri';
+                    var opts = _this14.buildRequest({
                         method: "POST", url: url, data: obj, options: options
                     });
-                    return _this8.execute(opts);
+                    return _this14.execute(opts);
                 }).catch(function (e) {
                     var err = new Error("ItemService.getUri() - Error getting URI for item: " + e.message);
                     return Q.reject(err);
@@ -1850,15 +3071,15 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "style",
             value: function style(options) {
-                var _this10 = this;
+                var _this16 = this;
 
                 return Q.resolve(true).then(function () {
 
-                    var url = _this10.baseUrl + '/' + id + '/style';
-                    var opts = _this10.buildRequest({
+                    var url = _this16.baseUrl + '/' + id + '/style';
+                    var opts = _this16.buildRequest({
                         method: "GET", url: url, options: options
                     });
-                    return _this10.execute(opts);
+                    return _this16.execute(opts);
                 }).catch(function (e) {
                     var err = new Error("LayerService.style() - Error fetching style: " + e.message);
                     return Q.reject(err);
@@ -1875,7 +3096,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "describe",
             value: function describe(id, req, options) {
-                var _this11 = this;
+                var _this17 = this;
 
                 return Q.resolve(req).then(function (req) {
 
@@ -1903,11 +3124,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                         j: req.y //WMS 1.3.0
                     };
 
-                    var url = _this11.baseUrl + '/' + id + '/describe';
-                    var opts = _this11.buildRequest({
+                    var url = _this17.baseUrl + '/' + id + '/describe';
+                    var opts = _this17.buildRequest({
                         method: "GET", url: url, params: params, options: options
                     });
-                    return _this11.execute(opts);
+                    return _this17.execute(opts);
                 }).catch(function (e) {
                     var err = new Error("LayerService.describe() -\n                    Error describing layer feature: " + e.message);
                     return Q.reject(err);
@@ -1924,7 +3145,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "validate",
             value: function validate(id, params, options) {
-                var _this12 = this;
+                var _this18 = this;
 
                 return Q.resolve(params).then(function (params) {
 
@@ -1932,11 +3153,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                         throw new Error("Must provide parameters to use in layer validation");
                     }
 
-                    var url = _this12.baseUrl + '/' + id + '/validate';
-                    var opts = _this12.buildRequest({
+                    var url = _this18.baseUrl + '/' + id + '/validate';
+                    var opts = _this18.buildRequest({
                         method: "GET", url: url, params: params, options: options
                     });
-                    return _this12.execute(opts);
+                    return _this18.execute(opts);
                 }).catch(function (e) {
                     var err = new Error("LayerService.describe() -\n                    Error describing layer feature: " + e.message);
                     return Q.reject(err);
@@ -1955,19 +3176,19 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         // Now we're wrapping the factory and assigning the return
         // value to the root (window) and returning it as well to
         // the AMD loader.
-        define(["q", "ItemTypes", "ItemService"], function (Q, ItemTypes, ItemService) {
-            return root.ServiceService = factory(Q, ItemTypes, ItemService);
+        define(["q", "ItemTypes", "ItemService", "ItemFactory"], function (Q, ItemTypes, ItemService, ItemFactory) {
+            return root.ServiceService = factory(Q, ItemTypes, ItemService, ItemFactory);
         });
     } else if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === "object" && module.exports) {
         // I've not encountered a need for this yet, since I haven't
         // run into a scenario where plain modules depend on CommonJS
         // *and* I happen to be loading in a CJS browser environment
         // but I'm including it for the sake of being thorough
-        module.exports = root.ServiceService = factory(require('q'), require('../shared/types'), require('./item'));
+        module.exports = root.ServiceService = factory(require('q'), require('../shared/types'), require('./item'), require('../models/factory'));
     } else {
-        GeoPlatform.ServiceService = factory(Q, GeoPlatform.ItemTypes, GeoPlatform.ItemService);
+        GeoPlatform.ServiceService = factory(Q, GeoPlatform.ItemTypes, GeoPlatform.ItemService, GeoPlatform.ItemFactory);
     }
-})(undefined || window, function (Q, ItemTypes, ItemService) {
+})(undefined || window, function (Q, ItemTypes, ItemService, ItemFactory) {
 
     'use strict';
 
@@ -2007,14 +3228,14 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "about",
             value: function about(service, options) {
-                var _this14 = this;
+                var _this20 = this;
 
                 return Q.resolve(service).then(function (svc) {
                     if (!svc) throw new Error("Must provide service to get metadata about");
-                    var opts = _this14.buildRequest({
-                        method: 'POST', url: _this14.baseUrl + '/about', data: svc, options: options
+                    var opts = _this20.buildRequest({
+                        method: 'POST', url: _this20.baseUrl + '/about', data: svc, options: options
                     });
-                    return _this14.execute(opts);
+                    return _this20.execute(opts);
                 }).catch(function (e) {
                     var err = new Error("ServiceService.about() -\n                    Error describing service: " + e.message);
                     return Q.reject(err);
@@ -2029,16 +3250,16 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "types",
             value: function types(options) {
-                var _this15 = this;
+                var _this21 = this;
 
                 var query = new Query().types(ItemTypes.STANDARD).resourceTypes('ServiceType').pageSize(50).getQuery();
 
                 return Q.resolve(query).then(function (params) {
-                    var url = _this15.apiBase + '/api/items';
-                    var opts = _this15.buildRequest({
+                    var url = _this21.apiBase + '/api/items';
+                    var opts = _this21.buildRequest({
                         method: 'GET', url: url, params: params, options: options
                     });
-                    return _this15.execute(opts);
+                    return _this21.execute(opts);
                 }).then(function (response) {
                     return response.results;
                 }).catch(function (e) {
@@ -2056,14 +3277,22 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "import",
             value: function _import(service, options) {
-                var _this16 = this;
+                var _this22 = this;
 
                 return Q.resolve(service).then(function (svc) {
-                    var url = _this16.baseUrl + '/import';
-                    var opts = _this16.buildRequest({
+
+                    if (svc.toJson) {
+                        //if passed an ItemModel instance, convert to JSON
+                        svc = svc.toJson();
+                    }
+
+                    var url = _this22.baseUrl + '/import';
+                    var opts = _this22.buildRequest({
                         method: 'POST', url: url, data: svc, options: options
                     });
-                    return _this16.execute(opts);
+                    return _this22.execute(opts);
+                }).then(function (obj) {
+                    return ItemFactory(obj);
                 }).catch(function (e) {
                     var err = new Error("ServiceService.import() -\n                    Error importing service: " + e.message);
                     return Q.reject(err);
@@ -2079,14 +3308,14 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "harvest",
             value: function harvest(id, options) {
-                var _this17 = this;
+                var _this23 = this;
 
                 return Q.resolve(id).then(function (id) {
-                    var url = _this17.baseUrl + '/' + id + '/harvest';
-                    var opts = _this17.buildRequest({
+                    var url = _this23.baseUrl + '/' + id + '/harvest';
+                    var opts = _this23.buildRequest({
                         method: 'GET', url: url, options: options
                     });
-                    return _this17.execute(opts);
+                    return _this23.execute(opts);
                 }).catch(function (e) {
                     var err = new Error("ServiceService.harvest() -\n                    Error harvesting layers from service: " + e.message);
                     return Q.reject(err);
@@ -2102,14 +3331,14 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "liveTest",
             value: function liveTest(id, options) {
-                var _this18 = this;
+                var _this24 = this;
 
                 return Q.resolve(id).then(function (id) {
-                    var url = _this18.baseUrl + '/' + id + '/test';
-                    var opts = _this18.buildRequest({
+                    var url = _this24.baseUrl + '/' + id + '/test';
+                    var opts = _this24.buildRequest({
                         method: 'GET', url: url, options: options
                     });
-                    return _this18.execute(opts);
+                    return _this24.execute(opts);
                 }).catch(function (e) {
                     var err = new Error("ServiceService.liveTest() -\n                    Error testing service: " + e.message);
                     return Q.reject(err);
@@ -2125,14 +3354,14 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "statistics",
             value: function statistics(id, options) {
-                var _this19 = this;
+                var _this25 = this;
 
                 return Q.resolve(id).then(function (id) {
-                    var url = _this19.baseUrl + '/' + id + '/statistics';
-                    var opts = _this19.buildRequest({
+                    var url = _this25.baseUrl + '/' + id + '/statistics';
+                    var opts = _this25.buildRequest({
                         method: 'GET', url: url, options: options
                     });
-                    return _this19.execute(opts);
+                    return _this25.execute(opts);
                 }).catch(function (e) {
                     var err = new Error("ServiceService.statistics() -\n                    Error getting service statistics: " + e.message);
                     return Q.reject(err);
@@ -2193,14 +3422,14 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "addItem",
             value: function addItem(galleryId, itemObj, options) {
-                var _this21 = this;
+                var _this27 = this;
 
                 return Q.resolve(true).then(function () {
-                    var url = _this21.baseUrl + '/' + galleryId + '/items';
-                    var opts = _this21.buildRequest({
+                    var url = _this27.baseUrl + '/' + galleryId + '/items';
+                    var opts = _this27.buildRequest({
                         method: 'POST', url: url, data: itemObj, options: options
                     });
-                    return _this21.execute(opts);
+                    return _this27.execute(opts);
                 }).catch(function (e) {
                     var err = new Error("GalleryService.addItem() - Error adding item: " + e.message);
                     return Q.reject(err);
@@ -2209,13 +3438,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "removeItem",
             value: function removeItem(galleryId, itemId, options) {
-                var _this22 = this;
+                var _this28 = this;
 
                 return Q.resolve(this.baseUrl + '/' + galleryId + '/items/' + itemId).then(function (url) {
-                    var opts = _this22.buildRequest({
+                    var opts = _this28.buildRequest({
                         method: 'DELETE', url: url, options: options
                     });
-                    return _this22.execute(opts);
+                    return _this28.execute(opts);
                 }).then(function (response) {
                     return true;
                 }).catch(function (e) {
@@ -2384,16 +3613,16 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "capabilities",
             value: function capabilities(property, query, options) {
-                var _this25 = this;
+                var _this31 = this;
 
                 var url = this.baseUrl + '/api/capabilities';
                 if (property) url += '/' + property;
 
                 return Q.resolve(url).then(function (url) {
-                    var opts = _this25.buildRequest({
+                    var opts = _this31.buildRequest({
                         method: "GET", url: url, params: query || {}, options: options
                     });
-                    return _this25.execute(opts);
+                    return _this31.execute(opts);
                 }).catch(function (e) {
                     var err = new Error("UtilsService.capabilities() - Error getting capabilities: " + e.message);
                     return Q.reject(err);
@@ -2410,20 +3639,20 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "parseFile",
             value: function parseFile(file, format, options) {
-                var _this26 = this;
+                var _this32 = this;
 
                 var url = this.baseUrl + '/api/utils/parse';
 
                 return Q.resolve(url).then(function (url) {
 
-                    var opts = _this26.buildRequest({
+                    var opts = _this32.buildRequest({
                         method: "POST", url: url,
                         data: { format: format },
                         file: file,
                         formData: true, //NodeJS (RequestJS)
                         options: options
                     });
-                    return _this26.execute(opts);
+                    return _this32.execute(opts);
                 }).then(function (response) {
                     return response.body;
                 }).catch(function (e) {
@@ -2568,7 +3797,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "_search",
             value: function _search(url, query, options) {
-                var _this27 = this;
+                var _this33 = this;
 
                 return Q.resolve(true).then(function () {
 
@@ -2578,10 +3807,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                         query = query.getQuery();
                     }
 
-                    var opts = _this27.buildRequest({
+                    var opts = _this33.buildRequest({
                         method: "GET", url: url, params: query, options: options
                     });
-                    return _this27.execute(opts);
+                    return _this33.execute(opts);
                 });
             }
 

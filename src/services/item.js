@@ -4,8 +4,8 @@
         // Now we're wrapping the factory and assigning the return
         // value to the root (window) and returning it as well to
         // the AMD loader.
-        define(["q"], function(Q){
-            return (root.ItemService = factory(Q));
+        define(["q", 'ItemFactory'], function(Q, ItemFactory){
+            return (root.ItemService = factory(Q, ItemFactory));
         });
     } else if(typeof module === "object" && module.exports) {
         // I've not encountered a need for this yet, since I haven't
@@ -13,12 +13,15 @@
         // *and* I happen to be loading in a CJS browser environment
         // but I'm including it for the sake of being thorough
         module.exports = (
-            root.ItemService = factory(require('q'))
+            root.ItemService = factory(
+                require('q'),
+                require('../models/factory')
+            )
         );
     } else {
-        GeoPlatform.ItemService = factory(Q);
+        GeoPlatform.ItemService = factory(Q, GeoPlatform.ItemFactory);
     }
-}(this||window, function(Q) {
+}(this||window, function(Q, ItemFactory) {
 
     /**
      * ItemService
@@ -73,6 +76,7 @@
                 });
                 return this.execute(opts);
             })
+            .then( obj => ItemFactory(obj) )
             .catch(e => {
                 let err = new Error(`ItemService.get() - Error fetching item ${id}: ${e.message}`);
                 return Q.reject(err);
@@ -89,6 +93,11 @@
             return Q.resolve( itemObj )
             .then( item => {
 
+                if(item.toJson) {
+                    //if passed an ItemModel instance, convert to JSON
+                    item = item.toJson();
+                }
+
                 let method = 'POST',
                     url = this.baseUrl;
                 if(item.id) {
@@ -100,6 +109,7 @@
                 return this.execute(opts);
 
             })
+            .then(obj => ItemFactory(obj) )
             .catch(e => {
                 let err = new Error(`ItemService.save() - Error saving item: ${e.message}`);
                 return Q.reject(err);
@@ -142,6 +152,7 @@
                 });
                 return this.execute(opts);
             })
+            .then( obj => ItemFactory(obj) )
             .catch(e => {
                 let err = new Error(`ItemService.patch() - Error patching item ${id}: ${e.message}`);
                 return Q.reject(err);
@@ -185,7 +196,7 @@
 
             return Q.resolve( true )
             .then( () => {
-                if(!arg || arg.indexOf(http)<0) {
+                if(!arg || arg.indexOf('http')<0) {
                     throw new Error("Must provide a valid URL or File");
                 }
                 let url = this.apiBase + '/api/import';
@@ -248,8 +259,20 @@
 
             return Q.resolve( object )
             .then( obj => {
-                if(!obj || !obj.type)
-                    throw new Error("Must provide an object with a type property");
+
+                if(!obj) {
+                    throw new Error("Must provide an typed object");
+                }
+
+                if(obj.toJson) {
+                    //if passed an ItemModel instance, convert to JSON
+                    obj = obj.toJson();
+                }
+
+                if(!obj.type) {
+                    throw new Error("Must provide a valid type on the specified object");
+                }
+
                 let url = this.apiBase + '/api/utils/uri';
                 let opts = this.buildRequest({
                     method: "POST", url: url, data: obj, options: options

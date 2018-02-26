@@ -5,7 +5,8 @@
     "main": "src/index.js",
     "scripts": {
         "distro": "gulp",
-        "node": "node examples/search-node.js"
+        "node": "node examples/search-node.js",
+        "test": "mocha"
     },
     "keywords": [
         "GeoPlatform",
@@ -17,7 +18,11 @@
     "license": "ISC",
     "devDependencies": {
         "babel": "^6.5.2",
-        "babel-preset-es2015": "^6.16.0",
+        "babel-cli": "6.18.0",
+        "babel-core": "6.18.0",
+        "babel-preset-es2015": "6.18.0",
+        "babel-preset-stage-2": "6.18.0",
+        "babel-plugin-add-module-exports": "0.2.1",
         "gulp": "^3.9.1",
         "gulp-babel": "^6.1.2",
         "gulp-concat": "^2.6.0",
@@ -33,7 +38,11 @@
         "pre-commit": "^1.2.2",
         "q": "1.1.2",
         "request": "^2.75.0",
-        "request-debug": "^0.2.0"
+        "request-debug": "^0.2.0",
+        "chai": "^3.4.1",
+        "mocha": "3.2.0",
+        "supertest": "^0.15.0",
+        "supertest-as-promised": "4.0.2"
     },
     "pre-commit": [
         "distro"

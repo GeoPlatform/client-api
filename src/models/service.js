@@ -32,37 +32,37 @@
 
         constructor(data) {
             super(data);
-            this.type = ItemTypes.SERVICE;
+            this._data.type = ItemTypes.SERVICE;
+            this._data.datasets = this._data.datasets||[];
         }
 
         //-----------------------------------------------------------
 
         href(value) { this.setHref(value); return this; }
-        getHref() { return this.href; }
-        setHref(value) { this.href = value; }
+        getHref() { return this._data.href; }
+        setHref(value) { this._data.href = value; }
 
         //-----------------------------------------------------------
 
         serviceType(value) { this.setServiceType(value); return this; }
-        getServiceType() { return this.serviceType; }
-        setServiceType(value) { this.serviceType = value; }
+        getServiceType() { return this._data.serviceType; }
+        setServiceType(value) { this._data.serviceType = value; }
 
         //-----------------------------------------------------------
 
         datasets(value) { this.setDatasets(value); return this; }
-        getDatasets() { return this.datasets; }
+        getDatasets() { return this._data.datasets; }
         setDatasets(value) {
-            if(value && typeof(value.push) === 'undefined')
+            if(!value) value = [];
+            else if(typeof(value.push) === 'undefined')
                 value = [value];
-            this.datasets = value;
+            this._data.datasets = value;
         }
         addDataset(value) {
-            if(!value || !value.id) return;
-            this.datasets = this.addObject(value, this.datasets);
+            this._data.datasets = this.addObject(value, this.get('datasets'));
         }
         removeDataset(value) {
-            if(!value || !value.id) return;
-            this.datasets = this.removeObject(value, this.datasets);
+            this._data.datasets = this.removeObject(value, this.get('datasets'));
         }
 
         //-----------------------------------------------------------

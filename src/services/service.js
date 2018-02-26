@@ -6,10 +6,10 @@
         // Now we're wrapping the factory and assigning the return
         // value to the root (window) and returning it as well to
         // the AMD loader.
-        define(["q", "ItemTypes", "ItemService"],
-            function(Q, ItemTypes, ItemService) {
+        define(["q", "ItemTypes", "ItemService", "ItemFactory"],
+            function(Q, ItemTypes, ItemService, ItemFactory) {
                 return (root.ServiceService =
-                    factory(Q, ItemTypes, ItemService));
+                    factory(Q, ItemTypes, ItemService, ItemFactory));
             });
     } else if(typeof module === "object" && module.exports) {
         // I've not encountered a need for this yet, since I haven't
@@ -20,15 +20,18 @@
             root.ServiceService = factory(
                 require('q'),
                 require('../shared/types'),
-                require('./item')
+                require('./item'),
+                require('../models/factory')
             )
         );
     } else {
         GeoPlatform.ServiceService = factory(
             Q, GeoPlatform.ItemTypes,
-            GeoPlatform.ItemService);
+            GeoPlatform.ItemService,
+            GeoPlatform.ItemFactory
+        );
     }
-}(this||window, function(Q, ItemTypes, ItemService) {
+}(this||window, function(Q, ItemTypes, ItemService, ItemFactory) {
 
     'use strict';
 
@@ -118,12 +121,19 @@
 
             return Q.resolve( service )
             .then( svc => {
+
+                if(svc.toJson) {
+                    //if passed an ItemModel instance, convert to JSON
+                    svc = svc.toJson();
+                }
+
                 let url = this.baseUrl + '/import';
                 let opts = this.buildRequest({
                     method:'POST', url:url, data:svc, options:options
                 });
                 return this.execute(opts);
             })
+            .then(obj => ItemFactory(obj))
             .catch(e => {
                 let err = new Error(`ServiceService.import() -
                     Error importing service: ${e.message}`);

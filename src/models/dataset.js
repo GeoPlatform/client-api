@@ -32,30 +32,30 @@
 
         constructor(data) {
             super(data);
-            this.type = ItemTypes.DATASET;
+            this._data.type = ItemTypes.DATASET;
+            this._data.services = this._data.services||[];
         }
 
         //-----------------------------------------------------------
 
         services(value) { this.setServices(value); return this; }
-        getServices() { return this.services; }
+        getServices() { return this._data.services; }
         setServices(value) {
-            if(value && typeof(value.push) === 'undefined')
+            if(!value) value = [];
+            else if(typeof(value.push) === 'undefined')
                 value = [value];
-            this.services = value;
+            this._data.services = value;
         }
         addService(value) {
-            if(!value || !value.id) return;
-            this.services = this.addObject(value, this.services);
+            this._data.services = this.addObject(value, this.get('services'));
         }
         removeService(value) {
-            if(!value || !value.id) return;
-            this.services = this.removeObject(value, this.services);
+            this._data.services = this.removeObject(value, this.get('services'));
         }
 
         //-----------------------------------------------------------
 
-        
+
 
         //-----------------------------------------------------------
 

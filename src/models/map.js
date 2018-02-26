@@ -32,50 +32,51 @@
 
         constructor(data) {
             super(data);
-            this.type = ItemTypes.MAP;
+            this._data.type = ItemTypes.MAP;
+            this._data.layers = this._data.layers || [];
         }
 
         //-----------------------------------------------------------
 
         thumbnail(value) { this.setThumbnail(value); return this; }
-        getThumbnail() { return this.thumbnail; }
-        setThumbnail(value) { this.thumbnail = value; }
+        getThumbnail() { return this._data.thumbnail; }
+        setThumbnail(value) { this._data.thumbnail = value; }
 
         //-----------------------------------------------------------
 
         baseLayer(value) { this.setBaseLayer(value); return this; }
-        getBaseLayer() { return this.baseLayer; }
-        setBaseLayer(value) { this.baseLayer = value; }
+        getBaseLayer() { return this._data.baseLayer; }
+        setBaseLayer(value) { this._data.baseLayer = value; }
 
         //-----------------------------------------------------------
 
         layers(value) { this.setLayers(value); return this; }
-        getLayers() { return this.layers; }
+        getLayers() { return this._data.layers; }
         setLayers(value) {
-            if(value && typeof(value.push) === 'undefined')
+            if(!value) value = [];
+            else if(typeof(value.push) === 'undefined')
                 value = [value];
-            this.layers = value;
+            this._data.layers = value;
         }
         addLayer(value) {
-            if(!value || !value.id) return;
-            this.layers = this.addObject(value, this.layers);
+            this._data.layers = this.addObject(value, this.get('layers'));
         }
         removeLayer(value) {
-            if(!value || !value.id) return;
-            this.layers = this.removeObject(value, this.layers);
+            this._data.layers = this.removeObject(value, this.get('layers'));
         }
 
         //-----------------------------------------------------------
 
         annotations(value) { this.setAnnotations(value); return this; }
-        getAnnotations() { return this.annotations; }
-        setAnnotations(value) { this.annotations = value; }
+        getAnnotations() { return this._data.annotations; }
+        setAnnotations(value) { this._data.annotations = value; }
 
         //-----------------------------------------------------------
 
 
 
         //-----------------------------------------------------------
+
 
 
     }

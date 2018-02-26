@@ -32,36 +32,35 @@
 
         constructor(data) {
             super(data);
-            this.type = ItemTypes.GALLERY;
+            this._data.type = ItemTypes.GALLERY;
+            this._data.items = this._data.items || [];
         }
 
         //-----------------------------------------------------------
 
         items(value) { this.setItems(value); return this; }
-        getItems() { return this.items; }
+        getItems() { return this._data.items; }
         setItems(value) {
-            if(value && typeof(value.push) === 'undefined')
+            if(!value) value = [];
+            else if(typeof(value.push) === 'undefined')
                 value = [value];
-            this.items = value;
+            this._data.items = value;
         }
         addItem(value) {
-            if(!value || !value.id) return;
-            this.items = this.addObject(value, this.items);
+            this._data.items = this.addObject(value, this.get('items'));
         }
         removeItem(value) {
-            if(!value || !value.id) return;
-            this.items = this.removeObject(value, this.items);
+            this._data.items = this.removeObject(value, this.get('items'));
         }
         reorderItem(value, newPosition) {
             let idx = -1;
-            let idx = -1;
-            this.items.each( (p,i) => {
+            this._data.items.each( (p,i) => {
                 if(p.id === value.id)
                     idx = i;
             });
             if(idx < 0) return;
-            this.items.splice(idx, 1);
-            this.items.splice(idx, 0, value);
+            this._data.items.splice(idx, 1);
+            this._data.items.splice(idx, 0, value);
         }
 
         //-----------------------------------------------------------

@@ -1699,6 +1699,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                     return _this6.execute(opts);
                 }).catch(function (e) {
                     var err = new Error("ItemService.import() - Error importing item: " + e.message);
+                    if (e.status === 409 || ~e.message.indexOf('Item already exists')) err.status = 409;
+                    if (e.item) err.item = e.item;
                     return Q.reject(err);
                 });
             }

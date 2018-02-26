@@ -188,11 +188,10 @@
                 if(!arg || arg.indexOf('http')<0) {
                     throw new Error("Must provide a valid URL or File");
                 }
-                let url = this.apiBase + '/api/import';
                 let isFile = typeof(arg) !== 'string';
                 let ro = {
                     method:"POST",
-                    url: this.baseUrl,
+                    url: this.apiBase + '/api/import',
                     processData: true,  //for jQuery
                     formData: true,     //for Node (RequestJS)
                     options: options

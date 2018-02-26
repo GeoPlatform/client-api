@@ -1681,11 +1681,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                     if (!arg || arg.indexOf('http') < 0) {
                         throw new Error("Must provide a valid URL or File");
                     }
-                    var url = _this6.apiBase + '/api/import';
                     var isFile = typeof arg !== 'string';
                     var ro = {
                         method: "POST",
-                        url: _this6.baseUrl,
+                        url: _this6.apiBase + '/api/import',
                         processData: true, //for jQuery
                         formData: true, //for Node (RequestJS)
                         options: options

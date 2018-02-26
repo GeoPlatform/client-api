@@ -192,7 +192,7 @@
                 let isFile = typeof(arg) !== 'string';
                 let ro = {
                     method:"POST",
-                    url: this.url,
+                    url: this.baseUrl,
                     processData: true,  //for jQuery
                     formData: true,     //for Node (RequestJS)
                     options: options

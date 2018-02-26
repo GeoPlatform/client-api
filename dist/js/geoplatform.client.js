@@ -1685,7 +1685,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                     var isFile = typeof arg !== 'string';
                     var ro = {
                         method: "POST",
-                        url: _this6.url,
+                        url: _this6.baseUrl,
                         processData: true, //for jQuery
                         formData: true, //for Node (RequestJS)
                         options: options

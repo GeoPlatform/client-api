@@ -5,7 +5,8 @@
     "main": "src/index.js",
     "scripts": {
         "distro": "gulp",
-        "node": "node examples/search-node.js"
+        "node": "node examples/search-node.js",
+        "test": "mocha"
     },
     "keywords": [
         "GeoPlatform",
@@ -33,7 +34,11 @@
         "pre-commit": "^1.2.2",
         "q": "1.1.2",
         "request": "^2.75.0",
-        "request-debug": "^0.2.0"
+        "request-debug": "^0.2.0",
+        "chai": "^3.4.1",
+        "mocha": "3.2.0",
+        "supertest": "^0.15.0",
+        "supertest-as-promised": "4.0.2"
     },
     "pre-commit": [
         "distro"

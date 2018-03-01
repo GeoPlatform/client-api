@@ -38,6 +38,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         MAP: "Map",
         GALLERY: "Gallery",
         ORGANIZATION: "org:Organization",
+        COMMUNITY: 'Community',
         CONCEPT: "skos:Concept",
         CONCEPT_SCHEME: "skos:ConceptScheme",
         STANDARD: 'dct:Standard'
@@ -80,7 +81,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         PUBLISHERS: 'publisher.id',
         PUBLISHERS_LABEL: 'publisher.label',
         PUBLISHERS_URI: 'publisher.uri',
-        USED_BY: 'usedBy.id',
+        USED_BY_ID: 'usedBy.id',
         USED_BY_LABEL: 'usedBy.label',
         USED_BY_URI: 'usedBy.uri',
         SCHEMES_ID: 'scheme.id',

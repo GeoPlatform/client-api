@@ -1,6 +1,14 @@
 # GeoPlatform API Client Library
-This library provides functionality used to work with GeoPlatform Map, Layer,
-Service and other objects through the GeoPlatform API.
+This library provides components which provide easier usage of the GeoPlatform API.
+It is not required to interact with the GeoPlatform API, but offers services and helper
+functionality to speed up your application's integration with the GeoPlatform.
+
+This library is written in JavaScript and is framework _flexible_. The default implementations
+require JQuery to facilitate AJAX XHR requests with the GeoPlatform API hosts.
+Alternatively, implementations for Angular 1.x and NodeJS are provided.
+
+__Note:__ The JQuery and Angular implementations require an Internet browser environment
+and the NodeJS implementation requires a NodeJS environment of at least 6.9 or later.
 
 ## Dependencies
 This library requires the following dependencies be present in your application:

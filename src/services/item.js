@@ -185,7 +185,7 @@
 
             return Q.resolve( true )
             .then( () => {
-                if(!arg || arg.indexOf('http')<0) {
+                if(arg===null || arg === undefined) {
                     throw new Error("Must provide a valid URL or File");
                 }
                 let isFile = typeof(arg) !== 'string';
@@ -199,7 +199,7 @@
                 if(isFile) {
                     ro.file = arg;
                     ro.data = { format: format };
-                } else {
+                } else if(isUrl) {
                     ro.data = { url: arg, format: format };
                 }
                 let opts = this.buildRequest(ro);

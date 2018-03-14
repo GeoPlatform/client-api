@@ -1679,7 +1679,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 var _this6 = this;
 
                 return Q.resolve(true).then(function () {
-                    if (!arg || arg.indexOf('http') < 0) {
+                    if (arg === null || arg === undefined) {
                         throw new Error("Must provide a valid URL or File");
                     }
                     var isFile = typeof arg !== 'string';
@@ -1693,7 +1693,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                     if (isFile) {
                         ro.file = arg;
                         ro.data = { format: format };
-                    } else {
+                    } else if (isUrl) {
                         ro.data = { url: arg, format: format };
                     }
                     var opts = _this6.buildRequest(ro);

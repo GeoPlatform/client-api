@@ -10,13 +10,20 @@
         define([
             'ItemTypes',
             'DatasetModel', 'ServiceModel', 'LayerModel',
-            'MapModel', 'GalleryModel'
+            'MapModel', 'GalleryModel',
+            'LayerStateModel', 'GalleryItemModel'
         ], function(
-            ItemTypes, DatasetModel, ServiceModel,
-            LayerModel, MapModel, GalleryModel) {
+            ItemTypes,
+            DatasetModel, ServiceModel,
+            LayerModel, MapModel, GalleryModel,
+            LayerStateModel, GalleryItemModel
+        ) {
             return (root.ItemFactory = factory(
-                ItemTypes, DatasetModel, ServiceModel,
-                LayerModel, MapModel, GalleryModel));
+                ItemTypes,
+                DatasetModel, ServiceModel,
+                LayerModel, MapModel, GalleryModel,
+                LayerStateModel, GalleryItemModel
+            ));
         });
     } else if(typeof module === "object" && module.exports) {
         // I've not encountered a need for this yet, since I haven't
@@ -30,7 +37,9 @@
                 require('./service'),
                 require('./layer'),
                 require('./map'),
-                require('./gallery')
+                require('./gallery'),
+                require('./layer-state'),
+                require('./gallery-item')
             )
         );
     } else {
@@ -40,44 +49,20 @@
             GeoPlatform.ServiceModel,
             GeoPlatform.LayerModel,
             GeoPlatform.MapModel,
-            GeoPlatform.GalleryModel
+            GeoPlatform.GalleryModel,
+            GeoPlatform.LayerStateModel,
+            GeoPlatform.GalleryItemModel
         );
     }
 }(this||window, function(
-    ItemTypes, DatasetModel, ServiceModel,
-    LayerModel, MapModel, GalleryModel
+    ItemTypes,
+    DatasetModel, ServiceModel,
+    LayerModel, MapModel, GalleryModel,
+    LayerStateModel, GalleryItemModel
 ) {
 
 
-    function itemFactory(arg) {
-
-        // console.log("ItemFactory() - " + JSON.stringify(arg));
-
-        let type = null, options = null;
-        if(arg && typeof(arg) === 'string')
-            type = arg;
-        else if(arg && typeof(arg) === 'object') {
-
-            if(typeof(arg.toJson) !== 'undefined') {
-                // console.log(arg.getType() + " is already an Item");
-                return arg; //already an Item instance
-            }
-
-            if(arg.type)
-                type = arg.type;
-            else
-                throw new Error("ItemFactory() - Must specify 'type' in parameter object");
-
-            options = arg;
-        } else {
-            throw new Error("Illegal argument; must be string type or object definition");
-        }
-
-        return createItem(type, options);
-
-    }
-
-    function createItem(type, options) {
+    function itemFactory(type, options) {
         let item = null;
 
         // console.log(" ");
@@ -103,6 +88,12 @@
                 case ItemTypes.GALLERY:
                     item = new GalleryModel(options);
                     break;
+
+                case DataTypes.LAYER_STATE:
+                    return new LayerStateModel(options);
+                case DataTypes.GALLERY_ITEM:
+                    return new GalleryItemModel(options);
+
                 default: throw new Error(`Unsupported item type '${type}'`);
             }
 
@@ -115,11 +106,40 @@
                 " : " + e.message);
         }
 
-        // console.log(`ItemFactory - done with ${item.getType()}`);
+        // console.log(`ItemFactory - done with ${type}`);
         // console.log(" ");
         return item;
     }
 
-    return itemFactory;
+
+
+
+    return function (arg) {
+
+        // console.log("ItemFactory() - " + JSON.stringify(arg));
+
+        let type = null, options = null;
+        if(arg && typeof(arg) === 'string')
+            type = arg;
+        else if(arg && typeof(arg) === 'object') {
+
+            if(typeof(arg.toJson) !== 'undefined') {
+                // console.log(arg.getType() + " is already an Item");
+                return arg; //already an Item instance
+            }
+
+            if(arg.type)
+                type = arg.type;
+            else
+                throw new Error("ItemFactory() - Must specify 'type' in parameter object");
+
+            options = arg;
+        } else {
+            throw new Error("Illegal argument; must be string type or object definition");
+        }
+
+        return itemFactory(type, options);
+
+    };
 
 }));

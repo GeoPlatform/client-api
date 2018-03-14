@@ -31,7 +31,12 @@
         ORGANIZATION    : "org:Organization",
         CONCEPT         : "skos:Concept",
         CONCEPT_SCHEME  : "skos:ConceptScheme",
-        STANDARD        : 'dct:Standard'
+        STANDARD        : 'dct:Standard',
+
+        //Non-item types
+        LAYER_STATE         : "LayerState",
+        GALLERY_ITEM        : "GalleryItem",
+        CLASSIFIERS         : "Classifiers"
     };
 
     return ItemTypes;

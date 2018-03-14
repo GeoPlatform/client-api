@@ -58,11 +58,21 @@
         SERVICES        : { key: 'services',        multi: true, type: 'item' },
 
         BASE_LAYER      : { key: 'baseLayer',       multi: false, type: 'item' },
-        MAP_LAYERS      : { key: 'layers',          multi: true, type: 'object' },
+        MAP_LAYERS      : {
+            key: 'layers',
+            multi: true,
+            type: 'object',
+            itemType: 'LAYER_STATE'
+        },
         THUMBNAIL       : { key: 'thumbnail',       multi: false, type: "object" },
         ANNOTATIONS     : { key: 'annotations',     multi: false, type: 'object' },
 
-        GALLERY_ITEMS   : { key: 'items',           multi: true, type: 'object' }
+        GALLERY_ITEMS   : {
+            key: 'items',
+            multi: true,
+            type: 'object',
+            itemType: 'GALLERY_ITEM' 
+        }
     };
 
     return ItemProperties;

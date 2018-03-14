@@ -40,6 +40,9 @@ module.exports = {
     UtilsService    : UtilsService,
     KGService       : KGService,
 
+    //the list of properties that are availabled for Item and Item sub-classes
     ItemProperties  : ItemProperties,
+
+    //factory for creating Items
     ItemFactory     : ItemFactory
 };

@@ -1371,19 +1371,33 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         // Now we're wrapping the factory and assigning the return
         // value to the root (window) and returning it as well to
         // the AMD loader.
-        define([], function () {
-            return root.ItemModel = factory();
+        define(['ItemProperties'], function (ItemProperties) {
+            return root.ItemModel = factory(ItemProperties);
         });
     } else if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === "object" && module.exports) {
         // I've not encountered a need for this yet, since I haven't
         // run into a scenario where plain modules depend on CommonJS
         // *and* I happen to be loading in a CJS browser environment
         // but I'm including it for the sake of being thorough
-        module.exports = root.ItemModel = factory();
+        module.exports = root.ItemModel = factory(require('./properties'));
     } else {
-        GeoPlatform.ItemModel = factory();
+        GeoPlatform.ItemModel = factory(GeoPlatform.ItemProperties);
     }
-})(undefined || window, function () {
+})(undefined || window, function (ItemProperties) {
+
+    function mapArray(arr, fn) {
+        var len = arr.length,
+            res = [];
+        for (var i = 0; i < len; ++i) {
+            res[i] = fn(arr[i]);
+        }
+        return res;
+    }
+
+    /**
+     *
+     */
+
     var Base = function () {
         function Base() {
             _classCallCheck(this, Base);
@@ -1394,12 +1408,98 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         _createClass(Base, [{
             key: "set",
             value: function set(property, value) {
-                this._data[property] = value;
+                var _this = this;
+
+                // console.log(' ');
+                // console.log('-------------------');
+                // console.log(`Item.set() - ${property.key} = ${typeof(value)}` );
+                // console.log(`Item.set() - ${property.type} / ${property.multi}`);
+
+                if (value === null || value === undefined) delete this._data[property.key];else {
+                    var newValue = value;
+                    var isItem = 'item' === property.type;
+                    if (property.multi) {
+                        if (typeof value.push === 'undefined') {
+                            // console.log('Item.set() - ' + key + ' has many but is singular: ' + typeof(value.push));
+                            newValue = isItem ? [this.toItem(value)] : [value];
+                        } else {
+                            newValue = mapArray(value, function (v) {
+                                return isItem ? _this.toItem(v) : v;
+                            });
+                        }
+                    } else if (isItem) {
+                        newValue = this.toItem(value);
+                    } else {
+                        newValue = JSON.parse(JSON.stringify(value));
+                    }
+
+                    this._data[property.key] = newValue;
+                }
+                // console.log('---------------------');
+                // console.log(' ');
             }
         }, {
             key: "get",
             value: function get(property) {
-                return this._data[property];
+                return this._data[property.key];
+            }
+        }, {
+            key: "addTo",
+            value: function addTo(property, value) {
+                var _this2 = this;
+
+                if (value === null || value === undefined) return;
+                if (property.multi) {
+                    if (!this._data[property.key]) this._data[property.key] = [];
+
+                    if (typeof value.push !== 'undefined') {
+                        if ('item' === property.type) {
+                            value = mapArray(value, function (v) {
+                                return _this2.toItem(v);
+                            });
+                        } else {
+                            value = value.slice(0);
+                        }
+                        this._data[property.key] = this._data[property.key].concat(value);
+                    } else {
+                        if ('item' === property.type) {
+                            value = this.toItem(value);
+                        }
+                        this._data[property.key].push(value);
+                    }
+                }
+            }
+        }, {
+            key: "removeFrom",
+            value: function removeFrom(property, value) {
+                if (value === null || value === undefined) return;
+                if (property.multi) {
+
+                    var isObj = 'object' === property.type;
+                    var current = this.get(property);
+                    if (!current) return;
+
+                    if (typeof value.push !== 'undefined') {
+
+                        // this._data[property.key] = current.concat(value);
+                        for (var i = 0; i < value.length; ++i) {
+                            if (isObj) {
+                                current = this.removeObject(value, current);
+                            } else {
+                                current = this.removeValue(value, current);
+                            }
+                        }
+                        this._data[property.key] = current;
+                    } else {
+
+                        if (isObj) {
+                            current = this.removeObject(value, current);
+                        } else {
+                            current = this.removeValue(value, current);
+                        }
+                        this._data[property.key] = current;
+                    }
+                }
             }
         }, {
             key: "addObject",
@@ -1443,10 +1543,54 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 }
                 return arr;
             }
+        }, {
+            key: "default",
+            value: function _default(property, value) {
+                var current = this.get(property);
+                if (current === null || current === undefined) this.set(property, value);
+            }
+        }, {
+            key: "toItem",
+            value: function toItem(obj) {
+                // console.log(" ");
+                if (!obj) {
+                    // console.log(`Item[${this._data.type}].toItem() - Value is null`);
+                    return null;
+                }
+
+                var itemFactory = this.getFactory();
+                if (itemFactory) {
+                    // console.log(`Item[${this._data.type}].toItem() - INPUT: ${JSON.stringify(obj)}`);
+                    var result = itemFactory(obj);
+                    // console.log(`Item[${this._data.type}].toItem() - ITEMIZED: ${JSON.stringify(result)}`);
+                    return result;
+                } else {
+                    console.log("WARN: Item[" + this._data.type + "].toItem() - No Factory!");
+                    return JSON.parse(JSON.stringify(obj));
+                }
+            }
+        }, {
+            key: "getFactory",
+            value: function getFactory() {
+                if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === "object" && module.exports) {
+                    return require('./factory');
+                } else if (GeoPlatform.ItemFactory) {
+                    return GeoPlatform.ItemFactory;
+                }
+                //TODO: the 'define' case
+                // console.log("Factory unable to be resolved");
+                return null;
+            }
         }]);
 
         return Base;
     }();
+
+    /**
+     * Item
+     * base class for GeoPlatform objects
+     */
+
 
     var ItemModel = function (_Base) {
         _inherits(ItemModel, _Base);
@@ -1454,47 +1598,79 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         function ItemModel(data) {
             _classCallCheck(this, ItemModel);
 
-            var _this = _possibleConstructorReturn(this, (ItemModel.__proto__ || Object.getPrototypeOf(ItemModel)).call(this));
+            var _this3 = _possibleConstructorReturn(this, (ItemModel.__proto__ || Object.getPrototypeOf(ItemModel)).call(this));
 
             if (data) {
-                for (var prop in data) {
-                    if (data.hasOwnProperty(prop)) {
-                        var value = data[prop];
-                        if (!!value) {
-                            if (typeof value.push !== 'undefined') _this.set(prop, value.slice(0));else _this.set(prop, value);
-                        }
+
+                // console.log(' ');
+                // console.log('-------------------------------');
+                // console.log('Item() - initializing using ' + JSON.stringify(data));
+
+                for (var p in ItemProperties) {
+                    var property = ItemProperties[p];
+                    var _key = property.key;
+                    var value = data[_key];
+                    if (value !== null && value !== undefined) {
+                        _this3.set(property, value);
                     }
                 }
+                // console.log('-------------------------------');
+                // console.log(' ');
             }
 
-            _this._data.keywords = _this._data.keywords || [];
-            _this._data.themes = _this._data.themes || [];
-            _this._data.contacts = _this._data.contacts || [];
-            _this._data.publishers = _this._data.publishers || [];
-            _this._data.identifiers = _this._data.identifiers || [];
-            _this._data.resourceTypes = _this._data.resourceTypes || [];
-            return _this;
+            _this3.default(ItemProperties.KEYWORDS, []);
+            _this3.default(ItemProperties.IDENTIFIERS, []);
+            _this3.default(ItemProperties.ALTERNATE_TITLES, []);
+            _this3.default(ItemProperties.THEMES, []);
+            _this3.default(ItemProperties.CONTACTS, []);
+            _this3.default(ItemProperties.PUBLISHERS, []);
+            _this3.default(ItemProperties.CONTRIBUTORS, []);
+            _this3.default(ItemProperties.RESOURCE_TYPES, []);
+            return _this3;
         }
 
         _createClass(ItemModel, [{
             key: "getId",
             value: function getId() {
-                return this.get('id');
+                return this.get(ItemProperties.ID);
             }
         }, {
             key: "getType",
             value: function getType() {
-                return this.get('type');
+                return this.get(ItemProperties.TYPE);
             }
         }, {
             key: "getCreated",
             value: function getCreated() {
-                return this.get('_created');
+                return this.get(ItemProperties.CREATED);
             }
         }, {
             key: "getModified",
             value: function getModified() {
-                return this.get('modified');
+                return this.get(ItemProperties.MODIFIED);
+            }
+        }, {
+            key: "getLastModifiedBy",
+            value: function getLastModifiedBy() {
+                return this.get(ItemProperties.LAST_MODIFIED_BY);
+            }
+
+            //-----------------------------------------------------------
+
+        }, {
+            key: "uri",
+            value: function uri(value) {
+                this.setUri(value);return this;
+            }
+        }, {
+            key: "getUri",
+            value: function getUri() {
+                return this.get(ItemProperties.URI);
+            }
+        }, {
+            key: "setUri",
+            value: function setUri(value) {
+                this.set(ItemProperties.URI, value);
             }
 
             //-----------------------------------------------------------
@@ -1507,27 +1683,50 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "getIdentifiers",
             value: function getIdentifiers() {
-                return this.get('identifiers');
+                return this.get(ItemProperties.IDENTIFIERS);
             }
         }, {
             key: "setIdentifiers",
             value: function setIdentifiers(value) {
-                if (!value) value = [];else if (typeof value.push === 'undefined') value = [value];
-                this.set('identifiers', value);
+                this.set(ItemProperties.IDENTIFIERS, value);
             }
         }, {
             key: "addIdentifier",
             value: function addIdentifier(value) {
-                if (!value) return;
-                value = this.addValue(value, this.get('identifiers'));
-                this.set('identifiers', value);
+                this.addTo(ItemProperties.IDENTIFIERS, value);
             }
         }, {
             key: "removeIdentifier",
             value: function removeIdentifier(value) {
-                if (!value) return;
-                value = this.removeValue(value, this.get('identifiers'));
-                this.set('identifiers', value);
+                this.removeFrom(ItemProperties.IDENTIFIERS, value);
+            }
+
+            //-----------------------------------------------------------
+
+        }, {
+            key: "alternateTitles",
+            value: function alternateTitles(value) {
+                this.setAlternateTitles(value);return this;
+            }
+        }, {
+            key: "getAlternateTitles",
+            value: function getAlternateTitles() {
+                return this.get(ItemProperties.ALTERNATE_TITLES);
+            }
+        }, {
+            key: "setAlternateTitles",
+            value: function setAlternateTitles(value) {
+                this.set(ItemProperties.ALTERNATE_TITLES, value);
+            }
+        }, {
+            key: "addAlternateTitle",
+            value: function addAlternateTitle(value) {
+                this.addTo(ItemProperties.ALTERNATE_TITLES, value);
+            }
+        }, {
+            key: "removeAlternateTitle",
+            value: function removeAlternateTitle(value) {
+                this.removeFrom(ItemProperties.ALTERNATE_TITLES, value);
             }
 
             //-----------------------------------------------------------
@@ -1540,12 +1739,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "getCreatedBy",
             value: function getCreatedBy() {
-                return this.get('createdBy');
+                return this.get(ItemProperties.CREATED_BY);
             }
         }, {
             key: "setCreatedBy",
             value: function setCreatedBy(value) {
-                this.set('createdBy', value);
+                this.set(ItemProperties.CREATED_BY, value);
             }
 
             //-----------------------------------------------------------
@@ -1558,12 +1757,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "getLabel",
             value: function getLabel() {
-                return this.get('label');
+                return this.get(ItemProperties.LABEL);
             }
         }, {
             key: "setLabel",
             value: function setLabel(value) {
-                this.set('label', value);
+                this.set(ItemProperties.LABEL, value);
             }
 
             //-----------------------------------------------------------
@@ -1576,12 +1775,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "getDescription",
             value: function getDescription() {
-                return this.get('description');
+                return this.get(ItemProperties.DESCRIPTION);
             }
         }, {
             key: "setDescription",
             value: function setDescription(value) {
-                this.set('description', value);
+                this.set(ItemProperties.DESCRIPTION, value);
             }
 
             //-----------------------------------------------------------
@@ -1594,13 +1793,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "getKeywords",
             value: function getKeywords() {
-                return this.get('keywords');
+                return this.get(ItemProperties.KEYWORDS);
             }
         }, {
             key: "setKeywords",
             value: function setKeywords(value) {
-                if (!value) value = [];else if (typeof value.push === 'undefined') value = [value];
-                this.set('keywords', value);
+                this.set(ItemProperties.KEYWORDS, value);
             }
 
             //-----------------------------------------------------------
@@ -1613,12 +1811,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "getLandingPage",
             value: function getLandingPage() {
-                return this.get('landingPage');
+                return this.get(ItemProperties.LANDING_PAGE);
             }
         }, {
             key: "setLandingPage",
             value: function setLandingPage(value) {
-                this.set('landingPage', value);
+                this.set(ItemProperties.LANDING_PAGE, value);
             }
 
             //-----------------------------------------------------------
@@ -1631,12 +1829,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "getStatus",
             value: function getStatus() {
-                return this.get('status');
+                return this.get(ItemProperties.STATUS);
             }
         }, {
             key: "setStatus",
             value: function setStatus(value) {
-                this.set('status', value);
+                this.set(ItemProperties.STATUS, value);
             }
 
             //-----------------------------------------------------------
@@ -1649,12 +1847,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "getVisibility",
             value: function getVisibility() {
-                return this.get('visibility');
+                return this.get(ItemProperties.VISIBILITY);
             }
         }, {
             key: "setVisibility",
             value: function setVisibility(value) {
-                this.set('visibility', value === true);
+                this.set(ItemProperties.VISIBILITY, value === true);
             }
 
             //-----------------------------------------------------------
@@ -1667,25 +1865,22 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "getThemes",
             value: function getThemes() {
-                return this.get('themes');
+                return this.get(ItemProperties.THEMES);
             }
         }, {
             key: "setThemes",
             value: function setThemes(value) {
-                if (!value) value = [];else if (typeof value.push === 'undefined') value = [value];
-                this.set('themes', value);
+                this.set(ItemProperties.THEMES, value);
             }
         }, {
             key: "addTheme",
             value: function addTheme(value) {
-                value = this.addObject(value, this.get('themes'));
-                this.set('themes', value);
+                this.addTo(ItemProperties.THEMES, value);
             }
         }, {
             key: "removeTheme",
             value: function removeTheme(value) {
-                value = this.removeObject(value, this.get('themes'));
-                this.set('themes', value);
+                this.removeFrom(ItemProperties.THEMES, value);
             }
 
             //-----------------------------------------------------------
@@ -1698,25 +1893,22 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "getPublishers",
             value: function getPublishers() {
-                return this.get('publishers');
+                return this.get(ItemProperties.PUBLISHERS);
             }
         }, {
             key: "setPublishers",
             value: function setPublishers(value) {
-                if (!value) value = [];else if (typeof value.push === 'undefined') value = [value];
-                this.set('publishers', value);
+                this.set(ItemProperties.PUBLISHERS, value);
             }
         }, {
             key: "addPublisher",
             value: function addPublisher(value) {
-                value = this.addObject(value, this.set('publishers'));
-                this.set('publishers', value);
+                this.addTo(ItemProperties.PUBLISHERS, value);
             }
         }, {
             key: "removePublisher",
             value: function removePublisher(value) {
-                value = this.removeObject(value, this.get('publishers'));
-                this.set('publishers', value);
+                this.removeFrom(ItemProperties.PUBLISHERS, value);
             }
 
             //-----------------------------------------------------------
@@ -1729,25 +1921,50 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "getContacts",
             value: function getContacts() {
-                return this.get('contacts');
+                return this.get(ItemProperties.CONTACTS);
             }
         }, {
             key: "setContacts",
             value: function setContacts(value) {
-                if (!value) value = [];else if (typeof value.push === 'undefined') value = [value];
-                this.set('contacts', value);
+                this.set(ItemProperties.CONTACTS, value);
             }
         }, {
             key: "addContact",
             value: function addContact(value) {
-                value = this.addObject(value, this.get('contacts'));
-                this.set('contacts', value);
+                this.addTo(ItemProperties.CONTACTS, value);
             }
         }, {
             key: "removeContact",
             value: function removeContact(value) {
-                value = this.removeObject(value, this.set('contacts'));
-                this.set('contacts', value);
+                this.removeFrom(ItemProperties.CONTACTS, value);
+            }
+
+            //-----------------------------------------------------------
+
+        }, {
+            key: "contributors",
+            value: function contributors(value) {
+                this.setContributors(value);return this;
+            }
+        }, {
+            key: "getContributors",
+            value: function getContributors() {
+                return this.get(ItemProperties.CONTRIBUTORS);
+            }
+        }, {
+            key: "setContributors",
+            value: function setContributors(value) {
+                this.set(ItemProperties.CONTRIBUTORS, value);
+            }
+        }, {
+            key: "addContributor",
+            value: function addContributor(value) {
+                this.addTo(ItemProperties.CONTRIBUTORS, value);
+            }
+        }, {
+            key: "removeContributor",
+            value: function removeContributor(value) {
+                this.removeFrom(ItemProperties.CONTRIBUTORS, value);
             }
 
             //-----------------------------------------------------------
@@ -1760,27 +1977,50 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "getResourceTypes",
             value: function getResourceTypes() {
-                return this.get('resourceTypes');
+                return this.get(ItemProperties.RESOURCE_TYPES);
             }
         }, {
             key: "setResourceTypes",
             value: function setResourceTypes(value) {
-                if (!value) value = [];else if (typeof value.push === 'undefined') value = [value];
-                this.set('resourceTypes', value);
+                this.set(ItemProperties.RESOURCE_TYPES, value);
             }
         }, {
             key: "addResourceType",
             value: function addResourceType(value) {
-                if (!value) return;
-                value = this.addValue(value, this.set('resourceTypes'));
-                this.set('resourceTypes', value);
+                this.addTo(ItemProperties.RESOURCE_TYPES, value);
             }
         }, {
             key: "removeResourceType",
             value: function removeResourceType(value) {
-                if (!value) return;
-                value = this.removeValue(value, this.get('resourceTypes'));
-                this.set('resourceTypes', value);
+                this.removeFrom(ItemProperties.RESOURCE_TYPES, value);
+            }
+
+            //-----------------------------------------------------------
+
+        }, {
+            key: "distributions",
+            value: function distributions(value) {
+                this.setDistributions(value);return this;
+            }
+        }, {
+            key: "getDistributions",
+            value: function getDistributions() {
+                return this.get(ItemProperties.DISTRIBUTIONS);
+            }
+        }, {
+            key: "setDistributions",
+            value: function setDistributions(value) {
+                this.set(ItemProperties.DISTRIBUTIONS, value);
+            }
+        }, {
+            key: "addDistribution",
+            value: function addDistribution(value) {
+                this.addTo(ItemProperties.DISTRIBUTIONS, value);
+            }
+        }, {
+            key: "removeDistribution",
+            value: function removeDistribution(value) {
+                this.removeFrom(ItemProperties.DISTRIBUTIONS, value);
             }
 
             //-----------------------------------------------------------
@@ -1793,32 +2033,80 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "getClassifiers",
             value: function getClassifiers() {
-                return this.get('classifiers');
+                return this.get(ItemProperties.CLASSIFIERS);
             }
         }, {
             key: "setClassifiers",
             value: function setClassifiers(value) {
                 if (!value || (typeof value === "undefined" ? "undefined" : _typeof(value)) !== 'object') {
-                    this.set('classifiers', {});
+                    this.set(ItemProperties.CLASSIFIERS, {});
                 } else {
-                    this.set('classifiers', value);
+                    this.set(ItemProperties.CLASSIFIERS, value);
                 }
             }
 
             //-----------------------------------------------------------
 
+            /**
+             * @return {boolean} true if the required fields are provided
+             */
+
+        }, {
+            key: "isValid",
+            value: function isValid() {
+                return this.getType() && this.getLabel();
+            }
 
             //-----------------------------------------------------------
 
 
         }, {
+            key: "arrToJson",
+            value: function arrToJson(property, value) {
+                if (!value || typeof value.push === 'undefined' || !value.length) return [];
+
+                var isItem = 'item' === property.type;
+                if (isItem) {
+                    return value.map(function (v) {
+                        if (typeof v.toJson !== 'undefined') return v.toJson();else console.log("Invalid item in " + key + " : " + (typeof value === "undefined" ? "undefined" : _typeof(value)));
+                        return null;
+                    }).filter(function (v) {
+                        return v !== null;
+                    });
+                } else {
+                    return value.slice(0);
+                }
+            }
+        }, {
+            key: "propertyToJson",
+            value: function propertyToJson(property, value, parentJson) {
+                var key = property.key;
+                var isObj = 'object' === property.type;
+                var isItem = 'item' === property.type;
+                var isMulti = property.multi;
+                if (value !== null && value !== undefined) {
+
+                    if (isMulti) {
+                        parentJson[key] = this.arrToJson(property, value);
+                    } else if (isItem) {
+                        if (typeof v.toJson !== 'undefined') {
+                            parentJson[key] = value.toJson();
+                        } else {
+                            console.log("Invalid item in " + key + " : " + (typeof value === "undefined" ? "undefined" : _typeof(value)));
+                        }
+                    } else {
+                        parentJson[key] = value;
+                    }
+                }
+            }
+        }, {
             key: "toJson",
             value: function toJson() {
                 var result = {};
-                for (var prop in this._data) {
-                    if (this.hasOwnProperty(prop) && !!this._data[prop] && _typeof(this._data[prop] !== 'function')) {
-                        if (typeof this._data[prop].toJson !== 'undefined') result[prop] = this._data[prop].toJson();else result[prop] = this._data[prop];
-                    }
+                for (var p in ItemProperties) {
+                    var property = ItemProperties[p];
+                    var value = this.get(property);
+                    this.propertyToJson(property, value, result);
                 }
                 return result;
             }
@@ -1835,30 +2123,30 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         // Now we're wrapping the factory and assigning the return
         // value to the root (window) and returning it as well to
         // the AMD loader.
-        define(['ItemModel', 'ItemTypes'], function (ItemModel, ItemTypes) {
-            return root.DatasetModel = factory(ItemModel, ItemTypes);
+        define(['ItemModel', 'ItemTypes', 'ItemProperties'], function (ItemModel, ItemTypes, ItemProperties) {
+            return root.DatasetModel = factory(ItemModel, ItemTypes, ItemProperties);
         });
     } else if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === "object" && module.exports) {
         // I've not encountered a need for this yet, since I haven't
         // run into a scenario where plain modules depend on CommonJS
         // *and* I happen to be loading in a CJS browser environment
         // but I'm including it for the sake of being thorough
-        module.exports = root.DatasetModel = factory(require('./item'), require('../shared/types'));
+        module.exports = root.DatasetModel = factory(require('./item'), require('../shared/types'), require('./properties'));
     } else {
-        GeoPlatform.DatasetModel = factory(GeoPlatform.ItemModel, GeoPlatform.ItemTypes);
+        GeoPlatform.DatasetModel = factory(GeoPlatform.ItemModel, GeoPlatform.ItemTypes, GeoPlatform.ItemProperties);
     }
-})(undefined || window, function (ItemModel, ItemTypes) {
+})(undefined || window, function (ItemModel, ItemTypes, ItemProperties) {
     var DatasetModel = function (_ItemModel) {
         _inherits(DatasetModel, _ItemModel);
 
         function DatasetModel(data) {
             _classCallCheck(this, DatasetModel);
 
-            var _this2 = _possibleConstructorReturn(this, (DatasetModel.__proto__ || Object.getPrototypeOf(DatasetModel)).call(this, data));
+            var _this4 = _possibleConstructorReturn(this, (DatasetModel.__proto__ || Object.getPrototypeOf(DatasetModel)).call(this, data));
 
-            _this2._data.type = ItemTypes.DATASET;
-            _this2._data.services = _this2._data.services || [];
-            return _this2;
+            _this4.set(ItemProperties.TYPE, ItemTypes.DATASET);
+            _this4.default(ItemProperties.SERVICES, []);
+            return _this4;
         }
 
         //-----------------------------------------------------------
@@ -1871,27 +2159,23 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "getServices",
             value: function getServices() {
-                return this._data.services;
+                return this.get(ItemProperties.SERVICES);
             }
         }, {
             key: "setServices",
             value: function setServices(value) {
-                if (!value) value = [];else if (typeof value.push === 'undefined') value = [value];
-                this._data.services = value;
+                this.set(ItemProperties.SERVICES, value);
             }
         }, {
             key: "addService",
             value: function addService(value) {
-                this._data.services = this.addObject(value, this.get('services'));
+                this.addTo(ItemProperties.SERVICES, value);
             }
         }, {
             key: "removeService",
             value: function removeService(value) {
-                this._data.services = this.removeObject(value, this.get('services'));
+                this.removeFrom(ItemProperties.SERVICES, value);
             }
-
-            //-----------------------------------------------------------
-
 
             //-----------------------------------------------------------
 
@@ -1909,30 +2193,30 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         // Now we're wrapping the factory and assigning the return
         // value to the root (window) and returning it as well to
         // the AMD loader.
-        define(['ItemModel', 'ItemTypes'], function (ItemModel, ItemTypes) {
-            return root.ServiceModel = factory(ItemModel, ItemTypes);
+        define(['ItemModel', 'ItemTypes', 'ItemProperties'], function (ItemModel, ItemTypes, ItemProperties) {
+            return root.ServiceModel = factory(ItemModel, ItemTypes, ItemProperties);
         });
     } else if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === "object" && module.exports) {
         // I've not encountered a need for this yet, since I haven't
         // run into a scenario where plain modules depend on CommonJS
         // *and* I happen to be loading in a CJS browser environment
         // but I'm including it for the sake of being thorough
-        module.exports = root.ServiceModel = factory(require('./item'), require('../shared/types'));
+        module.exports = root.ServiceModel = factory(require('./item'), require('../shared/types'), require('./properties'));
     } else {
-        GeoPlatform.ServiceModel = factory(GeoPlatform.ItemModel, GeoPlatform.ItemTypes);
+        GeoPlatform.ServiceModel = factory(GeoPlatform.ItemModel, GeoPlatform.ItemTypes, GeoPlatform.ItemProperties);
     }
-})(undefined || window, function (ItemModel, ItemTypes) {
+})(undefined || window, function (ItemModel, ItemTypes, ItemProperties) {
     var ServiceModel = function (_ItemModel2) {
         _inherits(ServiceModel, _ItemModel2);
 
         function ServiceModel(data) {
             _classCallCheck(this, ServiceModel);
 
-            var _this3 = _possibleConstructorReturn(this, (ServiceModel.__proto__ || Object.getPrototypeOf(ServiceModel)).call(this, data));
+            var _this5 = _possibleConstructorReturn(this, (ServiceModel.__proto__ || Object.getPrototypeOf(ServiceModel)).call(this, data));
 
-            _this3._data.type = ItemTypes.SERVICE;
-            _this3._data.datasets = _this3._data.datasets || [];
-            return _this3;
+            _this5.set(ItemProperties.TYPE, ItemTypes.SERVICE);
+            _this5.default(ItemProperties.DATASETS, []);
+            return _this5;
         }
 
         //-----------------------------------------------------------
@@ -1945,12 +2229,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "getHref",
             value: function getHref() {
-                return this._data.href;
+                return this.get(ItemProperties.HREF);
             }
         }, {
             key: "setHref",
             value: function setHref(value) {
-                this._data.href = value;
+                this.set(ItemProperties.HREF, value);
             }
 
             //-----------------------------------------------------------
@@ -1963,12 +2247,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "getServiceType",
             value: function getServiceType() {
-                return this._data.serviceType;
+                return this.get(ItemProperties.SERVICE_TYPE);
             }
         }, {
             key: "setServiceType",
             value: function setServiceType(value) {
-                this._data.serviceType = value;
+                this.set(ItemProperties.SERVICE_TYPE, value);
             }
 
             //-----------------------------------------------------------
@@ -1981,27 +2265,23 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "getDatasets",
             value: function getDatasets() {
-                return this._data.datasets;
+                return this.get(ItemProperties.DATASETS);
             }
         }, {
             key: "setDatasets",
             value: function setDatasets(value) {
-                if (!value) value = [];else if (typeof value.push === 'undefined') value = [value];
-                this._data.datasets = value;
+                this.set(ItemProperties.DATASETS, value);
             }
         }, {
             key: "addDataset",
             value: function addDataset(value) {
-                this._data.datasets = this.addObject(value, this.get('datasets'));
+                this.addTo(ItemProperties.DATASETS, value);
             }
         }, {
             key: "removeDataset",
             value: function removeDataset(value) {
-                this._data.datasets = this.removeObject(value, this.get('datasets'));
+                this.removeFrom(ItemProperties.DATASETS, value);
             }
-
-            //-----------------------------------------------------------
-
 
             //-----------------------------------------------------------
 
@@ -2019,30 +2299,30 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         // Now we're wrapping the factory and assigning the return
         // value to the root (window) and returning it as well to
         // the AMD loader.
-        define(['ItemModel', 'ItemTypes'], function (ItemModel, ItemTypes) {
-            return root.LayerModel = factory(ItemModel, ItemTypes);
+        define(['ItemModel', 'ItemTypes', 'ItemProperties'], function (ItemModel, ItemTypes, ItemProperties) {
+            return root.LayerModel = factory(ItemModel, ItemTypes, ItemProperties);
         });
     } else if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === "object" && module.exports) {
         // I've not encountered a need for this yet, since I haven't
         // run into a scenario where plain modules depend on CommonJS
         // *and* I happen to be loading in a CJS browser environment
         // but I'm including it for the sake of being thorough
-        module.exports = root.LayerModel = factory(require('./item'), require('../shared/types'));
+        module.exports = root.LayerModel = factory(require('./item'), require('../shared/types'), require('./properties'));
     } else {
-        GeoPlatform.LayerModel = factory(GeoPlatform.ItemModel, GeoPlatform.ItemTypes);
+        GeoPlatform.LayerModel = factory(GeoPlatform.ItemModel, GeoPlatform.ItemTypes, GeoPlatform.ItemProperties);
     }
-})(undefined || window, function (ItemModel, ItemTypes) {
+})(undefined || window, function (ItemModel, ItemTypes, ItemProperties) {
     var LayerModel = function (_ItemModel3) {
         _inherits(LayerModel, _ItemModel3);
 
         function LayerModel(data) {
             _classCallCheck(this, LayerModel);
 
-            var _this4 = _possibleConstructorReturn(this, (LayerModel.__proto__ || Object.getPrototypeOf(LayerModel)).call(this, data));
+            var _this6 = _possibleConstructorReturn(this, (LayerModel.__proto__ || Object.getPrototypeOf(LayerModel)).call(this, data));
 
-            _this4._data.type = ItemTypes.LAYER;
-            _this4._data.services = _this4._data.services || [];
-            return _this4;
+            _this6.set(ItemProperties.TYPE, ItemTypes.LAYER);
+            _this6.default(ItemProperties.SERVICES, []);
+            return _this6;
         }
 
         //-----------------------------------------------------------
@@ -2055,12 +2335,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "getLayerType",
             value: function getLayerType() {
-                return this._data.layerType;
+                return this.get(ItemProperties.LAYER_TYPE);
             }
         }, {
             key: "setLayerType",
             value: function setLayerType(value) {
-                this._data.layerType = value;
+                this.set(ItemProperties.LAYER_TYPE, value);
             }
 
             //-----------------------------------------------------------
@@ -2073,12 +2353,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "getLayerName",
             value: function getLayerName() {
-                return this._data.layerName;
+                return this.get(ItemProperties.LAYER_NAME);
             }
         }, {
             key: "setLayerName",
             value: function setLayerName(value) {
-                this._data.layerName = value;
+                this.set(ItemProperties.LAYER_NAME, value);
             }
 
             //-----------------------------------------------------------
@@ -2091,12 +2371,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "getLegend",
             value: function getLegend() {
-                return this._data.legend;
+                return this.get(ItemProperties.LEGEND);
             }
         }, {
             key: "setLegend",
             value: function setLegend(value) {
-                this._data.legend = value;
+                this.set(ItemProperties.LEGEND, value);
             }
 
             //-----------------------------------------------------------
@@ -2109,30 +2389,25 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "getServices",
             value: function getServices() {
-                return this._data.services;
+                return this.get(ItemProperties.SERVICES);
             }
         }, {
             key: "setServices",
             value: function setServices(value) {
-                if (!value) value = [];else if (typeof value.push === 'undefined') value = [value];
-                this._data.services = value;
+                this.set(ItemProperties.SERVICES);
             }
         }, {
             key: "addService",
             value: function addService(value) {
-                this._data.services = this.addObject(value, this.get('services'));
+                this.addTo(ItemProperties.SERVICES, value);
             }
         }, {
             key: "removeService",
             value: function removeService(value) {
-                this._data.services = this.removeObject(value, this.get('services'));
+                this.removeFrom(ItemProperties.SERVICES, value);
             }
 
             //-----------------------------------------------------------
-
-
-            //-----------------------------------------------------------
-
 
         }]);
 
@@ -2147,30 +2422,39 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         // Now we're wrapping the factory and assigning the return
         // value to the root (window) and returning it as well to
         // the AMD loader.
-        define(['ItemModel', 'ItemTypes'], function (ItemModel, ItemTypes) {
-            return root.MapModel = factory(ItemModel, ItemTypes);
+        define(['ItemModel', 'ItemTypes', 'ItemProperties'], function (ItemModel, ItemTypes, ItemProperties) {
+            return root.MapModel = factory(ItemModel, ItemTypes, ItemProperties);
         });
     } else if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === "object" && module.exports) {
         // I've not encountered a need for this yet, since I haven't
         // run into a scenario where plain modules depend on CommonJS
         // *and* I happen to be loading in a CJS browser environment
         // but I'm including it for the sake of being thorough
-        module.exports = root.MapModel = factory(require('./item'), require('../shared/types'));
+        module.exports = root.MapModel = factory(require('./item'), require('../shared/types'), require('./properties'));
     } else {
-        GeoPlatform.MapModel = factory(GeoPlatform.ItemModel, GeoPlatform.ItemTypes);
+        GeoPlatform.MapModel = factory(GeoPlatform.ItemModel, GeoPlatform.ItemTypes, GeoPlatform.ItemProperties);
     }
-})(undefined || window, function (ItemModel, ItemTypes) {
+})(undefined || window, function (ItemModel, ItemTypes, ItemProperties) {
     var MapModel = function (_ItemModel4) {
         _inherits(MapModel, _ItemModel4);
 
         function MapModel(data) {
             _classCallCheck(this, MapModel);
 
-            var _this5 = _possibleConstructorReturn(this, (MapModel.__proto__ || Object.getPrototypeOf(MapModel)).call(this, data));
+            //manually re-set the overlays because each objectc
+            // has a nested Item (layer) which needs to be item-ized
+            // and the initializer used in the constructor isn't tied
+            // to any specific instance's logic.
+            var _this7 = _possibleConstructorReturn(this, (MapModel.__proto__ || Object.getPrototypeOf(MapModel)).call(this, data));
 
-            _this5._data.type = ItemTypes.MAP;
-            _this5._data.layers = _this5._data.layers || [];
-            return _this5;
+            var layers = _this7.getLayers();
+            if (layers) {
+                _this7.setLayers(layers);
+            }
+
+            _this7.set(ItemProperties.TYPE, ItemTypes.MAP);
+            _this7.default(ItemProperties.MAP_LAYERS, []);
+            return _this7;
         }
 
         //-----------------------------------------------------------
@@ -2183,12 +2467,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "getThumbnail",
             value: function getThumbnail() {
-                return this._data.thumbnail;
+                return this.get(ItemProperties.THUMBNAIL);
             }
         }, {
             key: "setThumbnail",
             value: function setThumbnail(value) {
-                this._data.thumbnail = value;
+                this.set(ItemProperties.THUMBNAIL, value);
             }
 
             //-----------------------------------------------------------
@@ -2201,12 +2485,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "getBaseLayer",
             value: function getBaseLayer() {
-                return this._data.baseLayer;
+                return this.get(ItemProperties.BASE_LAYER);
             }
         }, {
             key: "setBaseLayer",
             value: function setBaseLayer(value) {
-                this._data.baseLayer = value;
+                this.set(ItemProperties.BASE_LAYER, value);
             }
 
             //-----------------------------------------------------------
@@ -2219,23 +2503,63 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "getLayers",
             value: function getLayers() {
-                return this._data.layers;
+                return this.get(ItemProperties.MAP_LAYERS);
             }
         }, {
             key: "setLayers",
             value: function setLayers(value) {
-                if (!value) value = [];else if (typeof value.push === 'undefined') value = [value];
-                this._data.layers = value;
+                if (value && value.length) {
+                    for (var i = 0; i < value.length; ++i) {
+
+                        //adding layer state wrapping a layer
+                        if (value[i].layer) {
+                            value[i].layer = this.toItem(value[i].layer);
+                        } else {
+                            //adding layer, needs to be wrapped in state
+                            value[i] = {
+                                layer_id: value[i].id,
+                                layer: this.toItem(value[i]),
+                                opacity: 1.0,
+                                visibility: true
+                            };
+                        }
+                    }
+                }
+                this.set(ItemProperties.MAP_LAYERS, value);
             }
         }, {
             key: "addLayer",
             value: function addLayer(value) {
-                this._data.layers = this.addObject(value, this.get('layers'));
+                if (!value) return;
+                if (value.layer) {
+                    //adding layer already wrapped by state
+                    value.layer = this.toItem(value.layer);
+                } else {
+                    //adding layer, needs to be wrapped in state
+                    value = {
+                        layer_id: value.id,
+                        layer: this.toItem(value),
+                        opacity: 1.0,
+                        visibility: true
+                    };
+                }
+                this.addTo(ItemProperties.MAP_LAYERS, value);
             }
         }, {
             key: "removeLayer",
             value: function removeLayer(value) {
-                this._data.layers = this.removeObject(value, this.get('layers'));
+                if (!value) return;
+                //get id of layer to be removed
+                var layerId = value.id;
+                if (!layerId && value.layer) {
+                    layerId = value.layer.id;
+                }
+                if (!layerId) return; //can't remove unpersisted layers
+                //filter out selected layer from current layers and update 
+                var layers = this.getLayers().filter(function (ls) {
+                    return ls.layer.id !== layerId;
+                });
+                this.set(ItemProperties.MAP_LAYERS, layers);
             }
 
             //-----------------------------------------------------------
@@ -2248,20 +2572,40 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "getAnnotations",
             value: function getAnnotations() {
-                return this._data.annotations;
+                return this.get(ItemProperties.ANNOTATIONS);
             }
         }, {
             key: "setAnnotations",
             value: function setAnnotations(value) {
-                this._data.annotations = value;
+                this.set(ItemProperties.ANNOTATIONS, value);
             }
 
             //-----------------------------------------------------------
 
 
-            //-----------------------------------------------------------
+            /*
+             * In order to properly handle Layers nested within plain PoJSos
+             * @override ItemModel.propertyToJson
+             */
 
+        }, {
+            key: "propertyToJson",
+            value: function propertyToJson(property, value, parentJson) {
+                if (property === ItemProperties.MAP_LAYERS && value && value.length) {
 
+                    var json = value.map(function (v) {
+                        return {
+                            layer_id: v.layer.getId(),
+                            layer: v.layer.toJson(),
+                            opacity: v.opacity,
+                            visibility: v.visibility
+                        };
+                    });
+                    parentJson[property.key] = json;
+                } else {
+                    _get(MapModel.prototype.__proto__ || Object.getPrototypeOf(MapModel.prototype), "propertyToJson", this).call(this, property, value, parentJson);
+                }
+            }
         }]);
 
         return MapModel;
@@ -2275,30 +2619,39 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         // Now we're wrapping the factory and assigning the return
         // value to the root (window) and returning it as well to
         // the AMD loader.
-        define(['ItemModel', 'ItemTypes'], function (ItemModel, ItemTypes) {
-            return root.GalleryModel = factory(ItemModel, ItemTypes);
+        define(['ItemModel', 'ItemTypes', 'ItemProperties'], function (ItemModel, ItemTypes, ItemProperties) {
+            return root.GalleryModel = factory(ItemModel, ItemTypes, ItemProperties);
         });
     } else if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === "object" && module.exports) {
         // I've not encountered a need for this yet, since I haven't
         // run into a scenario where plain modules depend on CommonJS
         // *and* I happen to be loading in a CJS browser environment
         // but I'm including it for the sake of being thorough
-        module.exports = root.GalleryModel = factory(require('./item'), require('../shared/types'));
+        module.exports = root.GalleryModel = factory(require('./item'), require('../shared/types'), require('./properties'));
     } else {
-        GeoPlatform.GalleryModel = factory(GeoPlatform.ItemModel, GeoPlatform.ItemTypes);
+        GeoPlatform.GalleryModel = factory(GeoPlatform.ItemModel, GeoPlatform.ItemTypes, GeoPlatform.ItemProperties);
     }
-})(undefined || window, function (ItemModel, ItemTypes) {
+})(undefined || window, function (ItemModel, ItemTypes, ItemProperties) {
     var GalleryModel = function (_ItemModel5) {
         _inherits(GalleryModel, _ItemModel5);
 
         function GalleryModel(data) {
             _classCallCheck(this, GalleryModel);
 
-            var _this6 = _possibleConstructorReturn(this, (GalleryModel.__proto__ || Object.getPrototypeOf(GalleryModel)).call(this, data));
+            //manually re-set the overlays because each objectc
+            // has a nested Item (layer) which needs to be item-ized
+            // and the initializer used in the constructor isn't tied
+            // to any specific instance's logic.
+            var _this8 = _possibleConstructorReturn(this, (GalleryModel.__proto__ || Object.getPrototypeOf(GalleryModel)).call(this, data));
 
-            _this6._data.type = ItemTypes.GALLERY;
-            _this6._data.items = _this6._data.items || [];
-            return _this6;
+            var items = _this8.getItems();
+            if (items) {
+                _this8.setItems(items);
+            }
+
+            _this8.set(ItemProperties.TYPE, ItemTypes.GALLERY);
+            _this8.default(ItemProperties.GALLERY_ITEMS, []);
+            return _this8;
         }
 
         //-----------------------------------------------------------
@@ -2311,42 +2664,83 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "getItems",
             value: function getItems() {
-                return this._data.items;
+                return this.get(ItemProperties.GALLERY_ITEMS);
             }
         }, {
             key: "setItems",
             value: function setItems(value) {
-                if (!value) value = [];else if (typeof value.push === 'undefined') value = [value];
-                this._data.items = value;
+                //ensure that items being set contain Item-ized assets
+                if (value && value.length) {
+                    for (var i = 0; i < value.length; ++i) {
+                        if (value[i].asset) {
+                            value[i].asset = this.toItem(value[i].asset);
+                        }
+                    }
+                }
+                this.set(ItemProperties.GALLERY_ITEMS, value);
             }
         }, {
             key: "addItem",
             value: function addItem(value) {
-                this._data.items = this.addObject(value, this.get('items'));
+                if (!value || typeof value.toJson === 'undefined') return;
+                var gi = {
+                    assetId: value.getId(),
+                    assetType: value.getType(),
+                    asset: value
+                };
+                this.addTo(ItemProperties.GALLERY_ITEMS, gi);
             }
         }, {
             key: "removeItem",
             value: function removeItem(value) {
-                this._data.items = this.removeObject(value, this.get('items'));
+                if (!value || typeof value.toJson === 'undefined') return;
+                var items = this.getItems().filter(function (i) {
+                    return i.assetId !== value.getId();
+                });
+                this.setItems(items);
             }
         }, {
             key: "reorderItem",
             value: function reorderItem(value, newPosition) {
                 var idx = -1;
-                this._data.items.each(function (p, i) {
+                var arr = this.getItems();
+                arr.each(function (p, i) {
                     if (p.id === value.id) idx = i;
                 });
                 if (idx < 0) return;
-                this._data.items.splice(idx, 1);
-                this._data.items.splice(idx, 0, value);
+                arr.splice(idx, 1);
+                arr.splice(idx, 0, value);
+                this.setItems(arr);
             }
 
             //-----------------------------------------------------------
 
+            /*
+             * In order to properly handle Items nested within plain PoJSos
+             * @override ItemModel.propertyToJson
+             */
 
-            //-----------------------------------------------------------
+        }, {
+            key: "propertyToJson",
+            value: function propertyToJson(property, value, parentJson) {
+                if (property === ItemProperties.GALLERY_ITEMS && value && value.length) {
 
+                    var json = value.map(function (v) {
+                        if (!v.asset) return null;
+                        return {
+                            assetId: v.asset.getId(),
+                            assetType: v.asset.getType(),
+                            asset: v.asset.toJson()
+                        };
+                    }).filter(function (v) {
+                        return v !== null;
+                    });
 
+                    parentJson[property.key] = json;
+                } else {
+                    _get(GalleryModel.prototype.__proto__ || Object.getPrototypeOf(GalleryModel.prototype), "propertyToJson", this).call(this, property, value, parentJson);
+                }
+            }
         }]);
 
         return GalleryModel;
@@ -2374,189 +2768,65 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }
 })(undefined || window, function (ItemTypes, DatasetModel, ServiceModel, LayerModel, MapModel, GalleryModel) {
 
-    function forEach(arr, fn) {
-        if (arr && typeof arr.push !== 'undefined' && arr.length) {
-            for (var i = 0; i < arr.length; ++i) {
-                try {
-                    fn(arr[i], i);
-                } catch (e) {}
-            }
-        }
-    }
-
-    function cloneObj(obj) {
-        return JSON.parse(JSON.stringify(obj));
-    }
-
-    // Base item property parsing support
-    function parseItem(json, item) {
-        if (!json) return;
-        if (json.label) item.label(json.label);
-        if (json.description) item.description(json.description);
-        if (json.keywords) item.keywords(json.keywords);
-        if (json.createdBy) item.createdBy(json.createdBy);
-        if (json.status) item.status(json.status);
-        if (json.visibility) item.visibility(json.visibility);
-        if (json.themes) item.themes(json.themes);
-        if (json.publishers) item.publishers(json.publishers);
-        if (json.contacts) item.contacts(json.contacts);
-        if (json.resourceTypes) item.resourceTypes(json.resourceTypes);
-        if (json.identifiers) item.identifiers(json.identifiers);
-        if (json.landingPage) item.landingPage(json.landingPage);
-        if (json.classifiers) item.classifiers(json.classifiers);
-        // console.log("Parsed Item base");
-    }
-
-    // Dataset item property parsing support
-    function parseDataset(json, item) {
-        if (!json) return;
-        parseItem(json, item);
-        if (json.services) {
-            var svcs = json.services.map(function (s) {
-                return itemFactory(s);
-            });
-            item.services(svcs);
-        }
-    }
-
-    // Service item property parsing support
-    function parseService(json, item) {
-        if (!json) return;
-        parseItem(json, item);
-        if (json.href) item.href(json.href);
-        if (json.serviceType) item.serviceType(json.serviceType);
-    }
-
-    // Layer item property parsing support
-    function parseLayer(json, item) {
-        if (!json) return;
-        parseItem(json, item);
-        if (json.layerName) item.layerName(json.layerName);
-        if (json.layerType) item.layerType(json.layerType);
-        if (json.legend) item.legend(json.legend);
-        if (json.services) {
-            var svcs = json.services.map(function (s) {
-                return itemFactory(s);
-            });
-            item.services(svcs);
-        }
-    }
-
-    // Map item property parsing support
-    function parseMap(json, item) {
-        if (!json) return;
-        parseItem(json, item);
-        if (json.thumbnail) item.thumbnail(json.thumbnail);
-        if (json.annotations) item.annotations(json.annotations);
-
-        if (json.baseLayer) {
-            try {
-                var baseLayer = itemFactory(json.baseLayer);
-                item.baseLayer(baseLayer);
-            } catch (e) {
-                throw new Error("Error parsing map base layer, " + e.message);
-            }
-        }
-
-        if (json.layers && typeof json.layers.push !== 'undefined') {
-            try {
-                var layers = json.layers.map(function (state) {
-                    var result = cloneObj(state);
-                    result.layer = itemFactory(result.layer);
-                    return result;
-                });
-                item.layers(layers);
-            } catch (e) {
-                throw new Error("Error parsing map overlay layers, " + e.message);
-            }
-        }
-    }
-
-    // Gallery item property parsing support
-    function parseGallery(json, item) {
-        if (!json) return;
-        parseItem(json, item);
-        if (json.items) {
-            var items = json.items.map(function (item) {
-                var result = cloneObj(item);
-                result.asset = itemFactory(result.asset);
-                return result;
-            });
-            item.items(json.items);
-        }
-    }
-
     function itemFactory(arg) {
+
+        // console.log("ItemFactory() - " + JSON.stringify(arg));
 
         var type = null,
             options = null;
         if (arg && typeof arg === 'string') type = arg;else if (arg && (typeof arg === "undefined" ? "undefined" : _typeof(arg)) === 'object') {
-            if (arg.type) type = arg.type;else throw new Error("Must specify 'type' in parameter object");
+
+            if (typeof arg.toJson !== 'undefined') {
+                // console.log(arg.getType() + " is already an Item");
+                return arg; //already an Item instance
+            }
+
+            if (arg.type) type = arg.type;else throw new Error("ItemFactory() - Must specify 'type' in parameter object");
+
             options = arg;
         } else {
             throw new Error("Illegal argument; must be string type or object definition");
         }
 
-        var opts = null;
-        if (options) {
-            //handle immutable properties
-            opts = {
-                id: options.id,
-                uri: options.uri,
-                _created: options._created,
-                modified: options.modified
-            };
-        }
+        return createItem(type, options);
+    }
 
-        // console.log(`${type}`);
-
+    function createItem(type, options) {
         var item = null;
-        switch (type) {
-            case ItemTypes.DATASET:
-                item = new DatasetModel(opts);
-                try {
-                    parseDataset(options, item);
-                } catch (e) {
-                    console.log("Error parsing dataset " + e.message);
-                }
-                break;
-            case ItemTypes.SERVICE:
-                item = new ServiceModel(opts);
-                try {
-                    parseService(options, item);
-                } catch (e) {
-                    console.log("Error parsing service " + e.message);
-                }
-                break;
-            case ItemTypes.LAYER:
-                item = new LayerModel(opts);
-                try {
-                    parseLayer(options, item);
-                } catch (e) {
-                    console.log("Error parsing layer " + e.message);
-                }
-                break;
-            case ItemTypes.MAP:
-                item = new MapModel(opts);
-                try {
-                    parseMap(options, item);
-                } catch (e) {
-                    console.log("Error parsing map " + e.message);
-                }
-                break;
-            case ItemTypes.GALLERY:
-                item = new GalleryModel(opts);
-                try {
-                    parseGallery(options, item);
-                } catch (e) {
-                    console.log("Error parsing gallery " + e.message);
-                }
-                break;
-            default:
-                throw new Error("Unsupported item type '" + type + "'");
+
+        // console.log(" ");
+        // console.log(`ItemFactory() - Creating ${type} Item`);
+        // console.log(" using... " + JSON.stringify(options));
+        // console.log("-------------------------------");
+
+        try {
+
+            switch (type) {
+                case ItemTypes.DATASET:
+                    item = new DatasetModel(options);
+                    break;
+                case ItemTypes.SERVICE:
+                    item = new ServiceModel(options);
+                    break;
+                case ItemTypes.LAYER:
+                    item = new LayerModel(options);
+                    break;
+                case ItemTypes.MAP:
+                    item = new MapModel(options);
+                    break;
+                case ItemTypes.GALLERY:
+                    item = new GalleryModel(options);
+                    break;
+                default:
+                    throw new Error("Unsupported item type '" + type + "'");
+            }
+        } catch (e) {
+            console.log("ItemFactory.parse() - Error creating " + type + " using " + JSON.stringify(options) + " : " + e.message);
+            throw new Error("ItemFactory.parse() - Error creating " + type + " using " + JSON.stringify(options) + " : " + e.message);
         }
 
-        // console.log(`ItemFactory - done with ${type}`);
+        // console.log(`ItemFactory - done with ${item.getType()}`);
+        // console.log(" ");
         return item;
     }
 
@@ -2568,20 +2838,21 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         // Now we're wrapping the factory and assigning the return
         // value to the root (window) and returning it as well to
         // the AMD loader.
-        define(["jquery", "q"], function (jQuery, Q) {
-            return root.JQueryHttpClient = factory(jQuery, Q);
+        define(["jquery", "q", "HttpClientBase"], function (jQuery, Q, HttpClientBase) {
+            return root.JQueryHttpClient = factory(jQuery, Q, HttpClientBase);
         });
     } else if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === "object" && module.exports) {
         // I've not encountered a need for this yet, since I haven't
         // run into a scenario where plain modules depend on CommonJS
         // *and* I happen to be loading in a CJS browser environment
         // but I'm including it for the sake of being thorough
-        module.exports = root.JQueryHttpClient = factory(require("jquery"), require('q'));
+        module.exports = root.JQueryHttpClient = factory(require("jquery"), require('q'), require('./client'));
     } else {
-        GeoPlatform.JQueryHttpClient = factory(jQuery, Q);
+        GeoPlatform.JQueryHttpClient = factory(jQuery, Q, GeoPlatform.HttpClientBase);
     }
-})(undefined || window, function (jQuery, Q) {
-    var JQueryHttpClient = function () {
+})(undefined || window, function (jQuery, Q, HttpClientBase) {
+    var JQueryHttpClient = function (_HttpClientBase) {
+        _inherits(JQueryHttpClient, _HttpClientBase);
 
         /**
          * @param {integer} options.timeout
@@ -2590,30 +2861,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         function JQueryHttpClient(options) {
             _classCallCheck(this, JQueryHttpClient);
 
-            options = options || {};
-            this.setTimeout(options.timeout || 10000);
-            this.setAuthToken(options.token);
+            return _possibleConstructorReturn(this, (JQueryHttpClient.__proto__ || Object.getPrototypeOf(JQueryHttpClient)).call(this, options));
         }
 
         _createClass(JQueryHttpClient, [{
-            key: "setTimeout",
-            value: function setTimeout(timeout) {
-                this.timeout = timeout;
-            }
-
-            /**
-             * @param {string|Function} arg - specify the bearer token or a function to retrieve it
-             */
-
-        }, {
-            key: "setAuthToken",
-            value: function setAuthToken(arg) {
-                if (arg && typeof arg === 'string') this.token = function () {
-                    return arg;
-                };else if (arg && typeof arg === 'function') this.token = arg;
-                //else do nothing
-            }
-        }, {
             key: "createRequestOpts",
             value: function createRequestOpts(options) {
 
@@ -2672,7 +2923,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }]);
 
         return JQueryHttpClient;
-    }();
+    }(HttpClientBase);
 
     return JQueryHttpClient;
 });
@@ -2746,13 +2997,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "get",
             value: function get(id, options) {
-                var _this7 = this;
+                var _this10 = this;
 
                 return Q.resolve(id).then(function (id) {
-                    var opts = _this7.buildRequest({
-                        method: "GET", url: _this7.baseUrl + '/' + id, options: options
+                    var opts = _this10.buildRequest({
+                        method: "GET", url: _this10.baseUrl + '/' + id, options: options
                     });
-                    return _this7.execute(opts);
+                    return _this10.execute(opts);
                 }).then(function (obj) {
                     return ItemFactory(obj);
                 }).catch(function (e) {
@@ -2770,7 +3021,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "save",
             value: function save(itemObj, options) {
-                var _this8 = this;
+                var _this11 = this;
 
                 return Q.resolve(itemObj).then(function (item) {
 
@@ -2780,14 +3031,14 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                     }
 
                     var method = 'POST',
-                        url = _this8.baseUrl;
+                        url = _this11.baseUrl;
                     if (item.id) {
                         method = "PUT";
                         url += '/' + item.id;
                     }
 
-                    var opts = _this8.buildRequest({ method: method, url: url, data: item, options: options });
-                    return _this8.execute(opts);
+                    var opts = _this11.buildRequest({ method: method, url: url, data: item, options: options });
+                    return _this11.execute(opts);
                 }).then(function (obj) {
                     return ItemFactory(obj);
                 }).catch(function (e) {
@@ -2805,13 +3056,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "remove",
             value: function remove(id, options) {
-                var _this9 = this;
+                var _this12 = this;
 
                 return Q.resolve(this.baseUrl + '/' + id).then(function (url) {
-                    var opts = _this9.buildRequest({
+                    var opts = _this12.buildRequest({
                         method: "DELETE", url: url, options: options
                     });
-                    return _this9.execute(opts);
+                    return _this12.execute(opts);
                 }).then(function (response) {
                     return true;
                 }).catch(function (e) {
@@ -2830,13 +3081,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "patch",
             value: function patch(id, _patch, options) {
-                var _this10 = this;
+                var _this13 = this;
 
                 return Q.resolve(this.baseUrl + '/' + id).then(function (url) {
-                    var opts = _this10.buildRequest({
+                    var opts = _this13.buildRequest({
                         method: "PATCH", url: url, data: _patch, options: options
                     });
-                    return _this10.execute(opts);
+                    return _this13.execute(opts);
                 }).then(function (obj) {
                     return ItemFactory(obj);
                 }).catch(function (e) {
@@ -2854,7 +3105,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "search",
             value: function search(arg, options) {
-                var _this11 = this;
+                var _this14 = this;
 
                 return Q.resolve(arg).then(function (params) {
 
@@ -2863,10 +3114,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                         // convert to parameters object
                         params = params.getQuery();
                     }
-                    var opts = _this11.buildRequest({
-                        method: "GET", url: _this11.baseUrl, params: params, options: options
+                    var opts = _this14.buildRequest({
+                        method: "GET", url: _this14.baseUrl, params: params, options: options
                     });
-                    return _this11.execute(opts);
+                    return _this14.execute(opts);
                 }).catch(function (e) {
                     var err = new Error("ItemService.search() - Error searching items: " + e.message);
                     return Q.reject(err);
@@ -2883,17 +3134,17 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "import",
             value: function _import(arg, format, options) {
-                var _this12 = this;
+                var _this15 = this;
 
                 return Q.resolve(true).then(function () {
                     if (!arg || arg.indexOf('http') < 0) {
                         throw new Error("Must provide a valid URL or File");
                     }
-                    var url = _this12.apiBase + '/api/import';
+                    var url = _this15.apiBase + '/api/import';
                     var isFile = typeof arg !== 'string';
                     var ro = {
                         method: "POST",
-                        url: _this12.url,
+                        url: _this15.url,
                         processData: true, //for jQuery
                         formData: true, //for Node (RequestJS)
                         options: options
@@ -2904,8 +3155,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                     } else {
                         ro.data = { url: arg, format: format };
                     }
-                    var opts = _this12.buildRequest(ro);
-                    return _this12.execute(opts);
+                    var opts = _this15.buildRequest(ro);
+                    return _this15.execute(opts);
                 }).catch(function (e) {
                     var err = new Error("ItemService.import() - Error importing item: " + e.message);
                     return Q.reject(err);
@@ -2921,17 +3172,17 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "export",
             value: function _export(id, format, options) {
-                var _this13 = this;
+                var _this16 = this;
 
                 return Q.resolve(true).then(function () {
-                    var url = _this13.baseUrl + '/' + id + '/export';
-                    var opts = _this13.buildRequest({
+                    var url = _this16.baseUrl + '/' + id + '/export';
+                    var opts = _this16.buildRequest({
                         method: "GET", url: url,
                         params: { format: format },
                         json: false,
                         options: options
                     });
-                    return _this13.execute(opts);
+                    return _this16.execute(opts);
                 }).catch(function (e) {
                     var err = new Error("ItemService.export() - Error exporting item: " + e.message);
                     return Q.reject(err);
@@ -2947,7 +3198,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "getUri",
             value: function getUri(object, options) {
-                var _this14 = this;
+                var _this17 = this;
 
                 return Q.resolve(object).then(function (obj) {
 
@@ -2964,11 +3215,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                         throw new Error("Must provide a valid type on the specified object");
                     }
 
-                    var url = _this14.apiBase + '/api/utils/uri';
-                    var opts = _this14.buildRequest({
+                    var url = _this17.apiBase + '/api/utils/uri';
+                    var opts = _this17.buildRequest({
                         method: "POST", url: url, data: obj, options: options
                     });
-                    return _this14.execute(opts);
+                    return _this17.execute(opts);
                 }).catch(function (e) {
                     var err = new Error("ItemService.getUri() - Error getting URI for item: " + e.message);
                     return Q.reject(err);
@@ -3071,15 +3322,15 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "style",
             value: function style(options) {
-                var _this16 = this;
+                var _this19 = this;
 
                 return Q.resolve(true).then(function () {
 
-                    var url = _this16.baseUrl + '/' + id + '/style';
-                    var opts = _this16.buildRequest({
+                    var url = _this19.baseUrl + '/' + id + '/style';
+                    var opts = _this19.buildRequest({
                         method: "GET", url: url, options: options
                     });
-                    return _this16.execute(opts);
+                    return _this19.execute(opts);
                 }).catch(function (e) {
                     var err = new Error("LayerService.style() - Error fetching style: " + e.message);
                     return Q.reject(err);
@@ -3096,7 +3347,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "describe",
             value: function describe(id, req, options) {
-                var _this17 = this;
+                var _this20 = this;
 
                 return Q.resolve(req).then(function (req) {
 
@@ -3124,11 +3375,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                         j: req.y //WMS 1.3.0
                     };
 
-                    var url = _this17.baseUrl + '/' + id + '/describe';
-                    var opts = _this17.buildRequest({
+                    var url = _this20.baseUrl + '/' + id + '/describe';
+                    var opts = _this20.buildRequest({
                         method: "GET", url: url, params: params, options: options
                     });
-                    return _this17.execute(opts);
+                    return _this20.execute(opts);
                 }).catch(function (e) {
                     var err = new Error("LayerService.describe() -\n                    Error describing layer feature: " + e.message);
                     return Q.reject(err);
@@ -3145,7 +3396,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "validate",
             value: function validate(id, params, options) {
-                var _this18 = this;
+                var _this21 = this;
 
                 return Q.resolve(params).then(function (params) {
 
@@ -3153,11 +3404,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                         throw new Error("Must provide parameters to use in layer validation");
                     }
 
-                    var url = _this18.baseUrl + '/' + id + '/validate';
-                    var opts = _this18.buildRequest({
+                    var url = _this21.baseUrl + '/' + id + '/validate';
+                    var opts = _this21.buildRequest({
                         method: "GET", url: url, params: params, options: options
                     });
-                    return _this18.execute(opts);
+                    return _this21.execute(opts);
                 }).catch(function (e) {
                     var err = new Error("LayerService.describe() -\n                    Error describing layer feature: " + e.message);
                     return Q.reject(err);
@@ -3228,14 +3479,14 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "about",
             value: function about(service, options) {
-                var _this20 = this;
+                var _this23 = this;
 
                 return Q.resolve(service).then(function (svc) {
                     if (!svc) throw new Error("Must provide service to get metadata about");
-                    var opts = _this20.buildRequest({
-                        method: 'POST', url: _this20.baseUrl + '/about', data: svc, options: options
+                    var opts = _this23.buildRequest({
+                        method: 'POST', url: _this23.baseUrl + '/about', data: svc, options: options
                     });
-                    return _this20.execute(opts);
+                    return _this23.execute(opts);
                 }).catch(function (e) {
                     var err = new Error("ServiceService.about() -\n                    Error describing service: " + e.message);
                     return Q.reject(err);
@@ -3250,16 +3501,16 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "types",
             value: function types(options) {
-                var _this21 = this;
+                var _this24 = this;
 
                 var query = new Query().types(ItemTypes.STANDARD).resourceTypes('ServiceType').pageSize(50).getQuery();
 
                 return Q.resolve(query).then(function (params) {
-                    var url = _this21.apiBase + '/api/items';
-                    var opts = _this21.buildRequest({
+                    var url = _this24.apiBase + '/api/items';
+                    var opts = _this24.buildRequest({
                         method: 'GET', url: url, params: params, options: options
                     });
-                    return _this21.execute(opts);
+                    return _this24.execute(opts);
                 }).then(function (response) {
                     return response.results;
                 }).catch(function (e) {
@@ -3277,7 +3528,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "import",
             value: function _import(service, options) {
-                var _this22 = this;
+                var _this25 = this;
 
                 return Q.resolve(service).then(function (svc) {
 
@@ -3286,11 +3537,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                         svc = svc.toJson();
                     }
 
-                    var url = _this22.baseUrl + '/import';
-                    var opts = _this22.buildRequest({
+                    var url = _this25.baseUrl + '/import';
+                    var opts = _this25.buildRequest({
                         method: 'POST', url: url, data: svc, options: options
                     });
-                    return _this22.execute(opts);
+                    return _this25.execute(opts);
                 }).then(function (obj) {
                     return ItemFactory(obj);
                 }).catch(function (e) {
@@ -3308,14 +3559,14 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "harvest",
             value: function harvest(id, options) {
-                var _this23 = this;
+                var _this26 = this;
 
                 return Q.resolve(id).then(function (id) {
-                    var url = _this23.baseUrl + '/' + id + '/harvest';
-                    var opts = _this23.buildRequest({
+                    var url = _this26.baseUrl + '/' + id + '/harvest';
+                    var opts = _this26.buildRequest({
                         method: 'GET', url: url, options: options
                     });
-                    return _this23.execute(opts);
+                    return _this26.execute(opts);
                 }).catch(function (e) {
                     var err = new Error("ServiceService.harvest() -\n                    Error harvesting layers from service: " + e.message);
                     return Q.reject(err);
@@ -3331,14 +3582,14 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "liveTest",
             value: function liveTest(id, options) {
-                var _this24 = this;
+                var _this27 = this;
 
                 return Q.resolve(id).then(function (id) {
-                    var url = _this24.baseUrl + '/' + id + '/test';
-                    var opts = _this24.buildRequest({
+                    var url = _this27.baseUrl + '/' + id + '/test';
+                    var opts = _this27.buildRequest({
                         method: 'GET', url: url, options: options
                     });
-                    return _this24.execute(opts);
+                    return _this27.execute(opts);
                 }).catch(function (e) {
                     var err = new Error("ServiceService.liveTest() -\n                    Error testing service: " + e.message);
                     return Q.reject(err);
@@ -3354,14 +3605,14 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "statistics",
             value: function statistics(id, options) {
-                var _this25 = this;
+                var _this28 = this;
 
                 return Q.resolve(id).then(function (id) {
-                    var url = _this25.baseUrl + '/' + id + '/statistics';
-                    var opts = _this25.buildRequest({
+                    var url = _this28.baseUrl + '/' + id + '/statistics';
+                    var opts = _this28.buildRequest({
                         method: 'GET', url: url, options: options
                     });
-                    return _this25.execute(opts);
+                    return _this28.execute(opts);
                 }).catch(function (e) {
                     var err = new Error("ServiceService.statistics() -\n                    Error getting service statistics: " + e.message);
                     return Q.reject(err);
@@ -3422,14 +3673,14 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "addItem",
             value: function addItem(galleryId, itemObj, options) {
-                var _this27 = this;
+                var _this30 = this;
 
                 return Q.resolve(true).then(function () {
-                    var url = _this27.baseUrl + '/' + galleryId + '/items';
-                    var opts = _this27.buildRequest({
+                    var url = _this30.baseUrl + '/' + galleryId + '/items';
+                    var opts = _this30.buildRequest({
                         method: 'POST', url: url, data: itemObj, options: options
                     });
-                    return _this27.execute(opts);
+                    return _this30.execute(opts);
                 }).catch(function (e) {
                     var err = new Error("GalleryService.addItem() - Error adding item: " + e.message);
                     return Q.reject(err);
@@ -3438,13 +3689,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "removeItem",
             value: function removeItem(galleryId, itemId, options) {
-                var _this28 = this;
+                var _this31 = this;
 
                 return Q.resolve(this.baseUrl + '/' + galleryId + '/items/' + itemId).then(function (url) {
-                    var opts = _this28.buildRequest({
+                    var opts = _this31.buildRequest({
                         method: 'DELETE', url: url, options: options
                     });
-                    return _this28.execute(opts);
+                    return _this31.execute(opts);
                 }).then(function (response) {
                     return true;
                 }).catch(function (e) {
@@ -3613,16 +3864,16 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "capabilities",
             value: function capabilities(property, query, options) {
-                var _this31 = this;
+                var _this34 = this;
 
                 var url = this.baseUrl + '/api/capabilities';
                 if (property) url += '/' + property;
 
                 return Q.resolve(url).then(function (url) {
-                    var opts = _this31.buildRequest({
+                    var opts = _this34.buildRequest({
                         method: "GET", url: url, params: query || {}, options: options
                     });
-                    return _this31.execute(opts);
+                    return _this34.execute(opts);
                 }).catch(function (e) {
                     var err = new Error("UtilsService.capabilities() - Error getting capabilities: " + e.message);
                     return Q.reject(err);
@@ -3639,20 +3890,20 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "parseFile",
             value: function parseFile(file, format, options) {
-                var _this32 = this;
+                var _this35 = this;
 
                 var url = this.baseUrl + '/api/utils/parse';
 
                 return Q.resolve(url).then(function (url) {
 
-                    var opts = _this32.buildRequest({
+                    var opts = _this35.buildRequest({
                         method: "POST", url: url,
                         data: { format: format },
                         file: file,
                         formData: true, //NodeJS (RequestJS)
                         options: options
                     });
-                    return _this32.execute(opts);
+                    return _this35.execute(opts);
                 }).then(function (response) {
                     return response.body;
                 }).catch(function (e) {
@@ -3797,7 +4048,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: "_search",
             value: function _search(url, query, options) {
-                var _this33 = this;
+                var _this36 = this;
 
                 return Q.resolve(true).then(function () {
 
@@ -3807,10 +4058,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                         query = query.getQuery();
                     }
 
-                    var opts = _this33.buildRequest({
+                    var opts = _this36.buildRequest({
                         method: "GET", url: url, params: query, options: options
                     });
-                    return _this33.execute(opts);
+                    return _this36.execute(opts);
                 });
             }
 

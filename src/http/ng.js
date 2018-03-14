@@ -5,8 +5,8 @@
         // Now we're wrapping the factory and assigning the return
         // value to the root (window) and returning it as well to
         // the AMD loader.
-        define(["angular", "q"], function(jQuery, Q){
-            return (root.NGHttpClient = factory(angular, Q));
+        define(["angular", "q", 'HttpClientBase'], function(jQuery, Q, HttpClientBase){
+            return (root.NGHttpClient = factory(angular, Q, HttpClientBase));
         });
     } else if(typeof module === "object" && module.exports) {
         // I've not encountered a need for this yet, since I haven't
@@ -16,16 +16,17 @@
         module.exports = (
             root.NGHttpClient = factory(
                 require("angular"),
-                require('q')
+                require('q'),
+                require('./client')
             )
         );
     } else {
-        GeoPlatform.NGHttpClient = factory(angular, Q);
+        GeoPlatform.NGHttpClient = factory(angular, Q, HttpClientBase);
     }
-}(this||window, function(angular, Q) {
+}(this||window, function(angular, Q, HttpClientBase) {
 
 
-    class NGHttpClient {
+    class NGHttpClient extends HttpClientBase {
 
         /**
          * @param {integer} options.timeout
@@ -33,31 +34,11 @@
          * @param {Object} options.$http - angular $http service instance
          */
         constructor(options) {
+            super(options);
             if(typeof(angular) === 'undefined')
                 throw new Error("Angular not defined");
-
-            options = options || {};
-            this.setTimeout(options.timeout||10000);
-            this.setAuthToken(options.token);
-
             if(options.$http)
                 this.$http = options.$http;
-
-        }
-
-        setTimeout(timeout) {
-            this.timeout = timeout;
-        }
-
-        /**
-         * @param {string|Function} arg - specify the bearer token or a function to retrieve it
-         */
-        setAuthToken(arg) {
-            if(arg && typeof(arg) === 'string')
-                this.token = function() { return arg; };
-            else if(arg && typeof(arg) === 'function')
-                this.token = arg;
-            //else do nothing
         }
 
         createRequestOpts(options) {

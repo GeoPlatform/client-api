@@ -5,8 +5,8 @@
         // Now we're wrapping the factory and assigning the return
         // value to the root (window) and returning it as well to
         // the AMD loader.
-        define(["jquery", "q"], function(jQuery, Q){
-            return (root.JQueryHttpClient = factory(jQuery, Q));
+        define(["jquery", "q", "HttpClientBase"], function(jQuery, Q, HttpClientBase){
+            return (root.JQueryHttpClient = factory(jQuery, Q, HttpClientBase));
         });
     } else if(typeof module === "object" && module.exports) {
         // I've not encountered a need for this yet, since I haven't
@@ -16,40 +16,24 @@
         module.exports = (
             root.JQueryHttpClient = factory(
                 require("jquery"),
-                require('q')
+                require('q'),
+                require('./client')
             )
         );
     } else {
-        GeoPlatform.JQueryHttpClient = factory(jQuery, Q);
+        GeoPlatform.JQueryHttpClient = factory(jQuery, Q, GeoPlatform.HttpClientBase);
     }
-}(this||window, function(jQuery, Q) {
+}(this||window, function(jQuery, Q, HttpClientBase) {
 
 
-    class JQueryHttpClient {
+    class JQueryHttpClient extends HttpClientBase {
 
         /**
          * @param {integer} options.timeout
          * @param {string} options.token - the bearer token or a function to retrieve it
          */
         constructor(options) {
-            options = options || {};
-            this.setTimeout(options.timeout||10000);
-            this.setAuthToken(options.token);
-        }
-
-        setTimeout(timeout) {
-            this.timeout = timeout;
-        }
-
-        /**
-         * @param {string|Function} arg - specify the bearer token or a function to retrieve it
-         */
-        setAuthToken(arg) {
-            if(arg && typeof(arg) === 'string')
-                this.token = function() { return arg; };
-            else if(arg && typeof(arg) === 'function')
-                this.token = arg;
-            //else do nothing
+            super(options);
         }
 
         createRequestOpts(options) {

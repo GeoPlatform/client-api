@@ -12,14 +12,16 @@ chai.config.includeStack = true;
 
 describe('# ItemModel Factory', function() {
 
-    it('should return parse a Map', function(done) {
+    it('should parse a Map', function(done) {
 
-        let item = ItemFactory(SampleMap);
+        let sampleMap = JSON.parse(JSON.stringify(SampleMap));
+        let item = ItemFactory(sampleMap);
 
         expect(item.toJson).to.be.ok;
         expect(item.getLabel()).to.equal(SampleMap.label, "Map label was incorrect");
         expect(item.getDescription()).to.equal(SampleMap.description, "Map desc was incorrect");
-        expect(item.getKeywords()).to.equal(SampleMap.keywords, "Map keys were incorrect");
+        expect(item.getKeywords().length).to.equal(SampleMap.keywords.length, "Map keys were incorrect");
+        expect(item.getKeywords()[0]).to.equal(SampleMap.keywords[0]);
 
         let bl = item.getBaseLayer();
         expect(bl).to.exist;
@@ -28,10 +30,10 @@ describe('# ItemModel Factory', function() {
         expect(bl.getResourceTypes().length).to.equal(1, "Incorrect resource types on base layer");
 
         expect(item.getLayers().length).to.equal(SampleMap.layers.length, "incorrect # of layers on map");
-        item.getLayers().forEach( function(state,li) {
+        item.getLayers().forEach( (state,li) => {
 
             let l1 = SampleMap.layers[li].layer;
-
+            
             expect(state.layer).to.exist;
             expect(state.layer.toJson).to.be.ok;
             expect(state.layer.getLabel()).to.equal(l1.label, "layer label was incorrect");

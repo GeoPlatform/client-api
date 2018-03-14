@@ -7,8 +7,9 @@
         // Now we're wrapping the factory and assigning the return
         // value to the root (window) and returning it as well to
         // the AMD loader.
-        define(['ItemModel','ItemTypes'], function(ItemModel, ItemTypes) {
-            return (root.ServiceModel = factory(ItemModel, ItemTypes));
+        define(['ItemModel','ItemTypes', 'ItemProperties'],
+        function(ItemModel, ItemTypes, ItemProperties) {
+            return (root.ServiceModel = factory(ItemModel, ItemTypes, ItemProperties));
         });
     } else if(typeof module === "object" && module.exports) {
         // I've not encountered a need for this yet, since I haven't
@@ -18,56 +19,44 @@
         module.exports = (
             root.ServiceModel = factory(
                 require('./item'),
-                require('../shared/types')
+                require('../shared/types'),
+                require('./properties')
             )
         );
     } else {
         GeoPlatform.ServiceModel = factory(GeoPlatform.ItemModel,
-            GeoPlatform.ItemTypes);
+            GeoPlatform.ItemTypes, GeoPlatform.ItemProperties);
     }
-}(this||window, function(ItemModel, ItemTypes) {
+}(this||window, function(ItemModel, ItemTypes, ItemProperties) {
 
 
     class ServiceModel extends ItemModel {
 
         constructor(data) {
             super(data);
-            this._data.type = ItemTypes.SERVICE;
-            this._data.datasets = this._data.datasets||[];
+            this.set(ItemProperties.TYPE, ItemTypes.SERVICE);
+            this.default(ItemProperties.DATASETS, []);
         }
 
         //-----------------------------------------------------------
 
         href(value) { this.setHref(value); return this; }
-        getHref() { return this._data.href; }
-        setHref(value) { this._data.href = value; }
+        getHref() { return this.get(ItemProperties.HREF); }
+        setHref(value) { this.set(ItemProperties.HREF, value); }
 
         //-----------------------------------------------------------
 
         serviceType(value) { this.setServiceType(value); return this; }
-        getServiceType() { return this._data.serviceType; }
-        setServiceType(value) { this._data.serviceType = value; }
+        getServiceType() { return this.get(ItemProperties.SERVICE_TYPE); }
+        setServiceType(value) { this.set(ItemProperties.SERVICE_TYPE, value); }
 
         //-----------------------------------------------------------
 
         datasets(value) { this.setDatasets(value); return this; }
-        getDatasets() { return this._data.datasets; }
-        setDatasets(value) {
-            if(!value) value = [];
-            else if(typeof(value.push) === 'undefined')
-                value = [value];
-            this._data.datasets = value;
-        }
-        addDataset(value) {
-            this._data.datasets = this.addObject(value, this.get('datasets'));
-        }
-        removeDataset(value) {
-            this._data.datasets = this.removeObject(value, this.get('datasets'));
-        }
-
-        //-----------------------------------------------------------
-
-
+        getDatasets() { return this.get(ItemProperties.DATASETS); }
+        setDatasets(value) { this.set(ItemProperties.DATASETS, value); }
+        addDataset(value) { this.addTo(ItemProperties.DATASETS, value); }
+        removeDataset(value) { this.removeFrom(ItemProperties.DATASETS, value); }
 
         //-----------------------------------------------------------
 

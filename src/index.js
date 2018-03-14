@@ -1,5 +1,5 @@
 
-
+const HttpClientBase = require('./http/client');
 const NodeHttpClient = require('./http/node');
 const Types = require('./shared/types');
 const ItemService = require('./services/item');
@@ -14,6 +14,7 @@ const KGQuery = require('./shared/kg-query');
 const KGService = require('./services/kg');
 const KGClassifiers = require('./shared/classifiers');
 
+const ItemProperties = require('./models/properties');
 const ItemFactory = require('./models/factory');
 
 
@@ -27,6 +28,7 @@ module.exports = {
     KGQuery         : KGQuery,
     KGClassifiers   : KGClassifiers,
 
+    HttpClientBase  : HttpClientBase,
     HttpClient      : NodeHttpClient,
     ServiceFactory  : require('./services/factory'),
     ItemService     : ItemService,
@@ -38,5 +40,6 @@ module.exports = {
     UtilsService    : UtilsService,
     KGService       : KGService,
 
+    ItemProperties  : ItemProperties,
     ItemFactory     : ItemFactory
 };

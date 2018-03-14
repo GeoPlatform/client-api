@@ -7,8 +7,9 @@
         // Now we're wrapping the factory and assigning the return
         // value to the root (window) and returning it as well to
         // the AMD loader.
-        define(['ItemModel','ItemTypes'], function(ItemModel, ItemTypes) {
-            return (root.DatasetModel = factory(ItemModel, ItemTypes));
+        define(['ItemModel','ItemTypes', 'ItemProperties'],
+        function(ItemModel, ItemTypes, ItemProperties) {
+            return (root.DatasetModel = factory(ItemModel, ItemTypes, ItemProperties));
         });
     } else if(typeof module === "object" && module.exports) {
         // I've not encountered a need for this yet, since I haven't
@@ -18,44 +19,32 @@
         module.exports = (
             root.DatasetModel = factory(
                 require('./item'),
-                require('../shared/types')
+                require('../shared/types'),
+                require('./properties')
             )
         );
     } else {
         GeoPlatform.DatasetModel = factory(GeoPlatform.ItemModel,
-            GeoPlatform.ItemTypes);
+            GeoPlatform.ItemTypes, GeoPlatform.ItemProperties);
     }
-}(this||window, function(ItemModel, ItemTypes) {
+}(this||window, function(ItemModel, ItemTypes, ItemProperties) {
 
 
     class DatasetModel extends ItemModel {
 
         constructor(data) {
             super(data);
-            this._data.type = ItemTypes.DATASET;
-            this._data.services = this._data.services||[];
+            this.set(ItemProperties.TYPE, ItemTypes.DATASET);
+            this.default(ItemProperties.SERVICES, []);
         }
 
         //-----------------------------------------------------------
 
         services(value) { this.setServices(value); return this; }
-        getServices() { return this._data.services; }
-        setServices(value) {
-            if(!value) value = [];
-            else if(typeof(value.push) === 'undefined')
-                value = [value];
-            this._data.services = value;
-        }
-        addService(value) {
-            this._data.services = this.addObject(value, this.get('services'));
-        }
-        removeService(value) {
-            this._data.services = this.removeObject(value, this.get('services'));
-        }
-
-        //-----------------------------------------------------------
-
-
+        getServices() { return this.get(ItemProperties.SERVICES); }
+        setServices(value) { this.set(ItemProperties.SERVICES, value); }
+        addService(value) { this.addTo(ItemProperties.SERVICES, value); }
+        removeService(value) { this.removeFrom(ItemProperties.SERVICES, value); }
 
         //-----------------------------------------------------------
 

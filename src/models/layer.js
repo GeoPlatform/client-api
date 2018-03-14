@@ -7,8 +7,9 @@
         // Now we're wrapping the factory and assigning the return
         // value to the root (window) and returning it as well to
         // the AMD loader.
-        define(['ItemModel','ItemTypes'], function(ItemModel, ItemTypes) {
-            return (root.LayerModel = factory(ItemModel, ItemTypes));
+        define(['ItemModel','ItemTypes', 'ItemProperties'],
+        function(ItemModel, ItemTypes, ItemProperties) {
+            return (root.LayerModel = factory(ItemModel, ItemTypes, ItemProperties));
         });
     } else if(typeof module === "object" && module.exports) {
         // I've not encountered a need for this yet, since I haven't
@@ -18,65 +19,52 @@
         module.exports = (
             root.LayerModel = factory(
                 require('./item'),
-                require('../shared/types')
+                require('../shared/types'),
+                require('./properties')
             )
         );
     } else {
         GeoPlatform.LayerModel = factory(GeoPlatform.ItemModel,
-            GeoPlatform.ItemTypes);
+            GeoPlatform.ItemTypes, GeoPlatform.ItemProperties);
     }
-}(this||window, function(ItemModel, ItemTypes) {
+}(this||window, function(ItemModel, ItemTypes, ItemProperties) {
 
 
     class LayerModel extends ItemModel {
 
         constructor(data) {
             super(data);
-            this._data.type = ItemTypes.LAYER;
-            this._data.services = this._data.services || [];
+            this.set(ItemProperties.TYPE, ItemTypes.LAYER);
+            this.default(ItemProperties.SERVICES, []);
         }
 
         //-----------------------------------------------------------
 
         layerType(value) { this.setLayerType(value); return this; }
-        getLayerType() { return this._data.layerType; }
-        setLayerType(value) { this._data.layerType = value; }
+        getLayerType() { return this.get(ItemProperties.LAYER_TYPE); }
+        setLayerType(value) { this.set(ItemProperties.LAYER_TYPE, value); }
 
         //-----------------------------------------------------------
 
         layerName(value) { this.setLayerName(value); return this; }
-        getLayerName() { return this._data.layerName; }
-        setLayerName(value) { this._data.layerName = value; }
+        getLayerName() { return this.get(ItemProperties.LAYER_NAME); }
+        setLayerName(value) { this.set(ItemProperties.LAYER_NAME, value); }
 
         //-----------------------------------------------------------
 
         legend(value) { this.setLegend(value); return this; }
-        getLegend() { return this._data.legend; }
-        setLegend(value) { this._data.legend = value; }
+        getLegend() { return this.get(ItemProperties.LEGEND); }
+        setLegend(value) { this.set(ItemProperties.LEGEND, value); }
 
         //-----------------------------------------------------------
 
         services(value) { this.setServices(value); return this; }
-        getServices() { return this._data.services; }
-        setServices(value) {
-            if(!value) value = [];
-            else if(typeof(value.push) === 'undefined')
-                value = [value];
-            this._data.services = value;
-        }
-        addService(value) {
-            this._data.services = this.addObject(value, this.get('services'));
-        }
-        removeService(value) {
-            this._data.services = this.removeObject(value, this.get('services'));
-        }
+        getServices() { return this.get(ItemProperties.SERVICES); }
+        setServices(value) { this.set(ItemProperties.SERVICES); }
+        addService(value) { this.addTo(ItemProperties.SERVICES, value); }
+        removeService(value) { this.removeFrom(ItemProperties.SERVICES, value); }
 
         //-----------------------------------------------------------
-
-
-
-        //-----------------------------------------------------------
-
 
     }
 

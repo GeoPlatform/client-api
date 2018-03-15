@@ -61,7 +61,7 @@
                         newValue = isItem ? [ this.toItem(value) ] : [ value ];
                     } else {
                         newValue = mapArray(value, v => {
-                            return isItem ? this.toItem(v) : v
+                            return isItem ? this.toItem(v) : v;
                         });
                     }
 

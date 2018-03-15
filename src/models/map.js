@@ -30,6 +30,14 @@
 }(this||window, function(ItemModel, ItemTypes, ItemProperties) {
 
 
+    const LayerStateProperties = {
+        LAYER_ID    : { key: "layer_id"     },
+        LAYER       : { key: "layer"        },
+        OPACITY     : { key: "opacity"      },
+        VISIBILITY  : { key: "visibility"   }
+    };
+
+
     class MapModel extends ItemModel {
 
         constructor(data) {
@@ -65,42 +73,19 @@
         layers(value) { this.setLayers(value); return this; }
         getLayers() { return this.get(ItemProperties.MAP_LAYERS); }
         setLayers(value) {
-            if(value && value.length) {
-                for(let i=0; i<value.length; ++i) {
-
-                    //adding layer state wrapping a layer
-                    if(value[i].layer) {
-                        value[i].layer = this.toItem(value[i].layer);
-
-                    } else {
-                        //adding layer, needs to be wrapped in state
-                        value[i] = {
-                            layer_id: value[i].id,
-                            layer: this.toItem(value[i]),
-                            opacity: 1.0,
-                            visibility: true
-                        };
-                    }
-
+            let states = [];
+            if(value) {
+                if(typeof(value.push) === 'undefined') {
+                    value = [value];
                 }
+                states = value.map( v => this.toLayerState(v) );
             }
-            this.set(ItemProperties.MAP_LAYERS, value);
+            this.set(ItemProperties.MAP_LAYERS, states);
         }
         addLayer(value) {
             if(!value) return;
-            if(value.layer) {
-                //adding layer already wrapped by state
-                value.layer = this.toItem(value.layer);
-            } else {
-                //adding layer, needs to be wrapped in state
-                value = {
-                    layer_id: value.id,
-                    layer: this.toItem(value),
-                    opacity: 1.0,
-                    visibility: true
-                };
-            }
-            this.addTo(ItemProperties.MAP_LAYERS, value);
+            let state = this.toLayerState(value);
+            this.addTo(ItemProperties.MAP_LAYERS, state);
         }
         removeLayer(value) {
             if(!value) return;
@@ -110,7 +95,7 @@
                 layerId = value.layer.id;
             }
             if(!layerId) return;    //can't remove unpersisted layers
-            //filter out selected layer from current layers and update 
+            //filter out selected layer from current layers and update
             let layers = this.getLayers().filter(ls => ls.layer.id !== layerId );
             this.set(ItemProperties.MAP_LAYERS, layers);
         }
@@ -129,24 +114,64 @@
          * @override ItemModel.propertyToJson
          */
         propertyToJson(property, value, parentJson) {
-            if(property === ItemProperties.MAP_LAYERS &&
-                value && value.length) {
-
-                let json = value.map(v => {
-                    return {
-                        layer_id: v.layer.getId(),
-                        layer: v.layer.toJson(),
-                        opacity: v.opacity,
-                        visibility: v.visibility
-                    };
-                });
+            if(property === ItemProperties.MAP_LAYERS && value && value.length) {
+                let json = value.map(v => this.fromLayerState(v) );
                 parentJson[property.key] = json;
-
             } else {
                 super.propertyToJson(property, value, parentJson);
             }
         }
 
+        /**
+         * @param {Object} object
+         * @return {Object} layer state representation of the input
+         */
+        toLayerState(object) {
+            if(!object) {
+                // console.log("MapModel.toLayerState() - input was null");
+                return null;
+            }
+
+            let result = {};
+
+            if(object.layer) {
+                // console.log("MapModel.toLayerState() - input was already a state");
+                let layer = this.toItem(object.layer);
+                if(!layer) return null;
+                result[LayerStateProperties.LAYER.key] = layer;
+                result[LayerStateProperties.LAYER_ID.key] = layer.getId() || object.layer_id;
+                result[LayerStateProperties.OPACITY.key] = object.opacity || 1.0;
+                result[LayerStateProperties.VISIBILITY.key] =
+                    object.visibility !== undefined ? object.visibility : true;
+
+            } else if(!object.layer) {
+                // console.log("MapModel.toLayerState() - input was a layer");
+                let layer = this.toItem(object);
+                if(!layer) return null;
+                result[LayerStateProperties.LAYER.key] = layer;
+                result[LayerStateProperties.LAYER_ID.key] = layer.getId();
+                result[LayerStateProperties.OPACITY.key] = 1.0;
+                result[LayerStateProperties.VISIBILITY.key] = true;
+            }
+
+            return result;
+        }
+
+        /**
+         * @param {Object} state -
+         * @return {Object} JSON representation
+         */
+        fromLayerState(state) {
+            let result = {};
+            for(let p in state) {
+                let value = state[p];
+                if(LayerStateProperties.LAYER.key === p) {
+                    value = value.toJson();
+                }
+                result[p] = value;
+            }
+            return result;
+        }
 
     }
 

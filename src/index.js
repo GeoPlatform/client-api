@@ -8,6 +8,7 @@ const MapService = require('./services/map');
 const LayerService = require('./services/layer');
 const ServiceService = require('./services/service');
 const GalleryService = require('./services/gallery');
+const CommunityService = require('./services/community');
 const UtilsService = require('./services/utils');
 
 const KGQuery = require('./shared/kg-query');
@@ -30,11 +31,13 @@ module.exports = {
 
     HttpClientBase  : HttpClientBase,
     HttpClient      : NodeHttpClient,
+
     ServiceFactory  : require('./services/factory'),
     ItemService     : ItemService,
     LayerService    : LayerService,
     ServiceService  : ServiceService,
     GalleryService  : GalleryService,
+    CommunityService: CommunityService,
     DatasetService  : DatasetService,
     MapService      : MapService,
     UtilsService    : UtilsService,

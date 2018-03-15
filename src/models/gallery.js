@@ -30,6 +30,16 @@
 }(this||window, function(ItemModel, ItemTypes, ItemProperties) {
 
 
+    const GalleryItemProperties = {
+        ASSET_ID    : { key: "assetId"   },
+        ASSET       : { key: "asset"     },
+        ASSET_TYPE  : { key: "assetType" }
+    };
+
+
+    /**
+     * Gallery
+     */
     class GalleryModel extends ItemModel {
 
         constructor(data) {
@@ -53,24 +63,20 @@
         items(value) { this.setItems(value); return this; }
         getItems() { return this.get(ItemProperties.GALLERY_ITEMS); }
         setItems(value) {
+            let items = [];
             //ensure that items being set contain Item-ized assets
-            if(value && value.length) {
-                for(let i=0; i<value.length; ++i) {
-                    if(value[i].asset) {
-                        value[i].asset = this.toItem(value[i].asset);
-                    }
+            if(value) {
+                if(typeof(value.push) === 'undefined') {
+                    value = [value];
                 }
+                items = value.map(v=>this.toGalleryItem(v));
             }
-            this.set(ItemProperties.GALLERY_ITEMS, value);
+            this.set(ItemProperties.GALLERY_ITEMS, items);
         }
         addItem(value) {
-            if(!value || typeof(value.toJson) === 'undefined') return;
-            let gi = {
-                assetId: value.getId(),
-                assetType: value.getType(),
-                asset: value
-            };
-            this.addTo(ItemProperties.GALLERY_ITEMS, gi);
+            if(!value) return;
+            let item = this.toGalleryItem(value);
+            this.addTo(ItemProperties.GALLERY_ITEMS, item);
         }
         removeItem(value) {
             if(!value || typeof(value.toJson) === 'undefined') return;
@@ -97,23 +103,56 @@
          * @override ItemModel.propertyToJson
          */
         propertyToJson(property, value, parentJson) {
-            if(property === ItemProperties.GALLERY_ITEMS &&
-                value && value.length) {
-
-                let json = value.map(v => {
-                    if(!v.asset) return null;
-                    return {
-                        assetId: v.asset.getId(),
-                        assetType: v.asset.getType(),
-                        asset: v.asset.toJson()
-                    };
-                }).filter(v=>v!==null);
-
+            if(property === ItemProperties.GALLERY_ITEMS && value && value.length) {
+                let json = value.map(v => this.fromGalleryItem(v) ).filter(v=>v!==null);
                 parentJson[property.key] = json;
-
             } else {
                 super.propertyToJson(property, value, parentJson);
             }
+        }
+
+
+
+
+        toGalleryItem(object) {
+            if(!object) return null;
+
+            let result = {};
+
+            if(object.asset) {
+                // console.log("GalleryModel.toGalleryItem() - input was already an item");
+                let asset = this.toItem(object.asset);
+                if(!asset) return null;
+                result[GalleryItemProperties.ASSET.key] = asset;
+                result[GalleryItemProperties.ASSET_ID.key] =
+                    asset.getId() || object[GalleryItemProperties.ASSET_ID.key];
+                result[GalleryItemProperties.ASSET_TYPE.key] =
+                    asset.getType() || object[GalleryItemProperties.ASSET_TYPE.key];
+
+
+            } else {
+                // console.log("GalleryModel.toGalleryItem() - input was an asset");
+                let asset = this.toItem(object);
+                if(!asset) return null;
+                result[GalleryItemProperties.ASSET.key] = asset;
+                result[GalleryItemProperties.ASSET_ID.key] = asset.getId();
+                result[GalleryItemProperties.ASSET_TYPE.key] = asset.getType();
+
+            }
+
+            return result;
+        }
+
+        fromGalleryItem(item) {
+            let result = {};
+            for(let p in item) {
+                let value = item[p];
+                if(GalleryItemProperties.ASSET.key === p) {
+                    value = value.toJson();
+                }
+                result[p] = value;
+            }
+            return result;
         }
 
     }

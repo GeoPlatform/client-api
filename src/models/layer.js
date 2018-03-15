@@ -60,7 +60,7 @@
 
         services(value) { this.setServices(value); return this; }
         getServices() { return this.get(ItemProperties.SERVICES); }
-        setServices(value) { this.set(ItemProperties.SERVICES); }
+        setServices(value) { this.set(ItemProperties.SERVICES, value); }
         addService(value) { this.addTo(ItemProperties.SERVICES, value); }
         removeService(value) { this.removeFrom(ItemProperties.SERVICES, value); }
 

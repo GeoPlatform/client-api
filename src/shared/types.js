@@ -28,15 +28,11 @@
         LAYER           : "Layer",
         MAP             : "Map",
         GALLERY         : "Gallery",
+        COMMUNITY       : 'Community',
         ORGANIZATION    : "org:Organization",
         CONCEPT         : "skos:Concept",
         CONCEPT_SCHEME  : "skos:ConceptScheme",
-        STANDARD        : 'dct:Standard',
-
-        //Non-item types
-        LAYER_STATE         : "LayerState",
-        GALLERY_ITEM        : "GalleryItem",
-        CLASSIFIERS         : "Classifiers"
+        STANDARD        : 'dct:Standard'
     };
 
     return ItemTypes;

@@ -6,8 +6,8 @@
         // Now we're wrapping the factory and assigning the return
         // value to the root (window) and returning it as well to
         // the AMD loader.
-        define([], function() {
-            return (root.ItemModel = factory());
+        define(['ItemTypes'], function(ItemTypes) {
+            return (root.ItemModel = factory(ItemTypes));
         });
     } else if(typeof module === "object" && module.exports) {
         // I've not encountered a need for this yet, since I haven't
@@ -15,64 +15,56 @@
         // *and* I happen to be loading in a CJS browser environment
         // but I'm including it for the sake of being thorough
         module.exports = (
-            root.ItemModel = factory()
+            root.ItemModel = factory(require('../shared/types'))
         );
     } else {
-        GeoPlatform.ItemModel = factory();
+        GeoPlatform.ItemModel = factory(GeoPlatform.ItemTypes);
     }
-}(this||window, function() {
+}(this||window, function(ItemTypes) {
 
 
     const ItemProperties = {
-        ID              : { key: 'id',              multi: false },
-        URI             : { key: 'uri',             multi: false },
-        TYPE            : { key: 'type',            multi: false },
-        CREATED         : { key: '_created',        multi: false },
-        MODIFIED        : { key: 'modified',        multi: false },
-        LAST_MODIFIED_BY: { key: 'lastModifiedBy',  multi: false },
+        ID              : { key: 'id' },
+        URI             : { key: 'uri' },
+        TYPE            : { key: 'type' },
+        CREATED         : { key: '_created' },
+        MODIFIED        : { key: 'modified' },
+        LAST_MODIFIED_BY: { key: 'lastModifiedBy' },
         IDENTIFIERS     : { key: 'identifiers',     multi: true },
         ALTERNATE_TITLES: { key: 'alternateTitles', multi: true },
-        CREATED_BY      : { key: 'createdBy',       multi: false },
-        LABEL           : { key: 'label',           multi: false },
-        TITLE           : { key: 'title',           multi: false },
-        DESCRIPTION     : { key: 'description',     multi: false },
+        CREATED_BY      : { key: 'createdBy' },
+        LABEL           : { key: 'label' },
+        TITLE           : { key: 'title' },
+        DESCRIPTION     : { key: 'description' },
         KEYWORDS        : { key: 'keywords',        multi: true },
-        LANDING_PAGE    : { key: 'landingPage',     multi: false },
-        STATUS          : { key: 'status',          multi: false },
-        VISIBILITY      : { key: 'visibility',      multi: false },
-        THEMES          : { key: 'themes',          multi: true, type: 'item' },
-        PUBLISHERS      : { key: 'publishers',      multi: true, type: 'item' },
-        CONTACTS        : { key: 'contacts',        multi: true, type: 'item' },
-        CONTRIBUTORS    : { key: 'contributors',    multi: true, type: 'item' },
-        DISTRIBUTIONS   : { key: 'distributions',   multi: true, type: 'object' },
-        RESOURCE_TYPES  : { key: 'resourceTypes',   multi: true, type: 'object' },
-        CLASSIFIERS     : { key: 'classifiers',     multi: false, type: 'object' },
+        LANDING_PAGE    : { key: 'landingPage' },
+        STATUS          : { key: 'status' },
+        VISIBILITY      : { key: 'visibility' },
+        THEMES          : { key: 'themes',          multi: true,    type: 'item'    },
+        PUBLISHERS      : { key: 'publishers',      multi: true,    type: 'item'    },
+        CONTACTS        : { key: 'contacts',        multi: true,    type: 'item'    },
+        CONTRIBUTORS    : { key: 'contributors',    multi: true,    type: 'item'    },
+        DISTRIBUTIONS   : { key: 'distributions',   multi: true,    type: 'object'  },
+        RESOURCE_TYPES  : { key: 'resourceTypes',   multi: true,    type: 'object'  },
+        CLASSIFIERS     : { key: 'classifiers',     multi: false,   type: 'object'  },
 
-        HREF            : { key: 'href',            multi: false },
+        HREF            : { key: 'href' },
         SERVICE_TYPE    : { key: 'serviceType',     multi: false, type: 'object' },
         DATASETS        : { key: 'datasets',        multi: true, type: 'item' },
 
-        LAYER_TYPE      : { key: 'layerType',       multi: false },
-        LAYER_NAME      : { key: 'layerName',       multi: false },
-        LEGEND          : { key: 'legend',          multi: false, type: 'object' },
-        SERVICES        : { key: 'services',        multi: true, type: 'item' },
+        LAYER_TYPE      : { key: 'layerType' },
+        LAYER_NAME      : { key: 'layerName' },
+        LEGEND          : { key: 'legend',          multi: false,   type: 'object'  },
+        SERVICES        : { key: 'services',        multi: true,    type: 'item'    },
 
-        BASE_LAYER      : { key: 'baseLayer',       multi: false, type: 'item' },
-        MAP_LAYERS      : {
-            key: 'layers',
-            multi: true,
-            type: 'object',
-            itemType: 'LAYER_STATE'
-        },
-        THUMBNAIL       : { key: 'thumbnail',       multi: false, type: "object" },
-        ANNOTATIONS     : { key: 'annotations',     multi: false, type: 'object' },
+        BASE_LAYER      : { key: 'baseLayer',       multi: false,   type: 'item'    },
+        MAP_LAYERS      : { key: 'layers',          multi: true,    type: 'object'  },
+        THUMBNAIL       : { key: 'thumbnail',       multi: false,   type: "object"  },
+        ANNOTATIONS     : { key: 'annotations',     multi: false,   type: 'object'  },
 
-        GALLERY_ITEMS   : {
-            key: 'items',
-            multi: true,
-            type: 'object',
-            itemType: 'GALLERY_ITEM' 
-        }
+        GALLERY_ITEMS   : { key: 'items',           multi: true,    type: 'object'  },
+
+        CONCEPT_SCHEME  : { key: 'scheme',          multi: false,   type: 'item'    }
     };
 
     return ItemProperties;

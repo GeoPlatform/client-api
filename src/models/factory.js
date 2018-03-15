@@ -10,19 +10,19 @@
         define([
             'ItemTypes',
             'DatasetModel', 'ServiceModel', 'LayerModel',
-            'MapModel', 'GalleryModel',
-            'LayerStateModel', 'GalleryItemModel'
+            'MapModel', 'GalleryModel', 'CommunityModel',
+            'ConceptModel', 'ConceptSchemeModel'
         ], function(
             ItemTypes,
-            DatasetModel, ServiceModel,
-            LayerModel, MapModel, GalleryModel,
-            LayerStateModel, GalleryItemModel
+            DatasetModel, ServiceModel, LayerModel,
+            MapModel, GalleryModel, CommunityModel,
+            ConceptModel, ConceptSchemeModel
         ) {
             return (root.ItemFactory = factory(
                 ItemTypes,
-                DatasetModel, ServiceModel,
-                LayerModel, MapModel, GalleryModel,
-                LayerStateModel, GalleryItemModel
+                DatasetModel, ServiceModel, LayerModel,
+                MapModel, GalleryModel, CommunityModel,
+                ConceptModel, ConceptSchemeModel
             ));
         });
     } else if(typeof module === "object" && module.exports) {
@@ -38,8 +38,9 @@
                 require('./layer'),
                 require('./map'),
                 require('./gallery'),
-                require('./layer-state'),
-                require('./gallery-item')
+                require('./community'),
+                require('./concept'),
+                require('./concept-scheme')
             )
         );
     } else {
@@ -50,15 +51,16 @@
             GeoPlatform.LayerModel,
             GeoPlatform.MapModel,
             GeoPlatform.GalleryModel,
-            GeoPlatform.LayerStateModel,
-            GeoPlatform.GalleryItemModel
+            GeoPlatform.CommunityModel,
+            GeoPlatform.ConceptModel,
+            GeoPlatform.ConceptSchemeModel
         );
     }
 }(this||window, function(
     ItemTypes,
-    DatasetModel, ServiceModel,
-    LayerModel, MapModel, GalleryModel,
-    LayerStateModel, GalleryItemModel
+    DatasetModel, ServiceModel, LayerModel,
+    MapModel, GalleryModel, CommunityModel,
+    ConceptModel, ConceptSchemeModel
 ) {
 
 
@@ -88,12 +90,15 @@
                 case ItemTypes.GALLERY:
                     item = new GalleryModel(options);
                     break;
-
-                case DataTypes.LAYER_STATE:
-                    return new LayerStateModel(options);
-                case DataTypes.GALLERY_ITEM:
-                    return new GalleryItemModel(options);
-
+                case ItemTypes.COMMUNITY:
+                    item = new CommunityModel(options);
+                    break;
+                case ItemTypes.CONCEPT:
+                    item = new ConceptModel(options);
+                    break;
+                case ItemTypes.CONCEPT_SCHEME:
+                    item = new ConceptSchemeModel(options);
+                    break;
                 default: throw new Error(`Unsupported item type '${type}'`);
             }
 
@@ -106,7 +111,7 @@
                 " : " + e.message);
         }
 
-        // console.log(`ItemFactory - done with ${type}`);
+        // console.log(`ItemFactory - done with ${item.getType()}`);
         // console.log(" ");
         return item;
     }

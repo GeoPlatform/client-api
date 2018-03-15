@@ -209,6 +209,34 @@
             // console.log("Factory unable to be resolved");
             return null;
         }
+
+        /**
+         * @param {ItemProperty} property - property to be written to output JSON object
+         * @param {any} value - value associated with the property
+         * @param {Object} parentJson - parent object to write the property's value to
+         */
+        propertyToJson(property, value, parentJson) {
+
+            if(value !== null && value !== undefined) {
+
+                let isItem = 'item' === property.type;
+                let isMulti = property.multi;
+                let result = null;
+
+                if(isMulti && isItem) {
+                    result = value.map( v => v.toJson() );
+                } else if(isMulti) {
+                    result = value.slice(0);
+                } else if(isItem) {
+                    result = value.toJson();
+                } else {
+                    result = value;
+                }
+
+                parentJson[property.key] = result;
+            }
+
+        }
     }
 
 

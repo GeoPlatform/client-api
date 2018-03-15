@@ -58,6 +58,9 @@ describe('# ItemService', function() {
 
             } else if(opts.method === 'DELETE') {
                 return Q.resolve();
+
+            } else if(opts.method === 'PATCH') {
+                return Q.resolve(this.item);
             }
             let response = {};
             return Q.resolve(response);

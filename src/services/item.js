@@ -212,6 +212,7 @@
                     ro.file = arg;
                     ro.data = { format: format };
                 } else {
+                    ro.formData = false; //prevent multi-part form/data encoding
                     ro.data = { url: arg, format: format };
                 }
                 let opts = this.buildRequest(ro);

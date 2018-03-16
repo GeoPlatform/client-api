@@ -1694,6 +1694,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                         ro.file = arg;
                         ro.data = { format: format };
                     } else {
+                        ro.formData = false; //must be false for data to not be multi-part formdata
                         ro.data = { url: arg, format: format };
                     }
                     var opts = _this6.buildRequest(ro);

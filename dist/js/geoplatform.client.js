@@ -1693,7 +1693,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                     if (isFile) {
                         ro.file = arg;
                         ro.data = { format: format };
-                    } else if (isUrl) {
+                    } else {
                         ro.data = { url: arg, format: format };
                     }
                     var opts = _this6.buildRequest(ro);

@@ -199,7 +199,7 @@
                 if(isFile) {
                     ro.file = arg;
                     ro.data = { format: format };
-                } else if(isUrl) {
+                } else {
                     ro.data = { url: arg, format: format };
                 }
                 let opts = this.buildRequest(ro);

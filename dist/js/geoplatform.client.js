@@ -3279,19 +3279,19 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         // Now we're wrapping the factory and assigning the return
         // value to the root (window) and returning it as well to
         // the AMD loader.
-        define(["q", "ItemTypes", "ItemService", "ItemFactory"], function (Q, ItemTypes, ItemService, ItemFactory) {
-            return root.ServiceService = factory(Q, ItemTypes, ItemService, ItemFactory);
+        define(["q", "ItemTypes", "ItemService", "ItemFactory", "QueryFactory"], function (Q, ItemTypes, ItemService, ItemFactory, QueryFactory) {
+            return root.ServiceService = factory(Q, ItemTypes, ItemService, ItemFactory, QueryFactory);
         });
     } else if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === "object" && module.exports) {
         // I've not encountered a need for this yet, since I haven't
         // run into a scenario where plain modules depend on CommonJS
         // *and* I happen to be loading in a CJS browser environment
         // but I'm including it for the sake of being thorough
-        module.exports = root.ServiceService = factory(require('q'), require('../shared/types'), require('./item'), require('../models/factory'));
+        module.exports = root.ServiceService = factory(require('q'), require('../shared/types'), require('./item'), require('../models/factory'), require('../shared/query-factory'));
     } else {
-        GeoPlatform.ServiceService = factory(Q, GeoPlatform.ItemTypes, GeoPlatform.ItemService, GeoPlatform.ItemFactory);
+        GeoPlatform.ServiceService = factory(Q, GeoPlatform.ItemTypes, GeoPlatform.ItemService, GeoPlatform.ItemFactory, GeoPlatform.QueryFactory);
     }
-})(undefined || window, function (Q, ItemTypes, ItemService, ItemFactory) {
+})(undefined || window, function (Q, ItemTypes, ItemService, ItemFactory, QueryFactory) {
 
     'use strict';
 
@@ -3355,7 +3355,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             value: function types(options) {
                 var _this26 = this;
 
-                var query = new Query().types(ItemTypes.STANDARD).resourceTypes('ServiceType').pageSize(50).getQuery();
+                var query = QueryFactory().types(ItemTypes.STANDARD).resourceTypes('ServiceType').pageSize(50).getQuery();
 
                 return Q.resolve(query).then(function (params) {
                     var url = _this26.apiBase + '/api/items';
@@ -3757,7 +3757,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                     });
                     return _this37.execute(opts);
                 }).then(function (response) {
-                    return response.body;
+                    return response;
                 }).catch(function (e) {
                     var err = new Error("UtilsService.parseFile() - Error parsing file: " + e.message);
                     return Q.reject(err);

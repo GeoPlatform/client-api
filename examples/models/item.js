@@ -42,9 +42,8 @@ map.addLayer({
 });
 
 //create without factory and with initial values
-let gopts = {
-    type: Types.GALLERY, 
+let gallery = new GeoPlatform.Gallery({
+    type: Types.GALLERY,
     label: "My Gallery"
-};
-let gallery = new GeoPlatform.Gallery(gopts);
+});
 gallery.addItem(map);

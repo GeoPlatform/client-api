@@ -41,6 +41,8 @@ describe('# ItemService', function() {
         execute(opts) {
 
             if(opts.method === "GET") {
+                if(~opts.url.indexOf("/export"))
+                    return Q.resolve("<metadata></metadata>");
                 if(~opts.url.indexOf('items/test'))
                     return Q.resolve(this.item);
                 else
@@ -92,19 +94,19 @@ describe('# ItemService', function() {
     /*
      * TEST IMPORT
      */
-    // it('should export items', function(done) {
-    //
-    //     let query = new Query().types(ItemTypes.DATASET);
-    //     service.search(query)
-    //     .then( response => response.results[0] )
-    //     .then( item => service.export(item.id) )
-    //     .then( response => {
-    //         expect(response.body).to.be.ok;
-    //         done();
-    //     })
-    //     .catch(e => done(e));
-    //
-    // });
+    it('should export items', function(done) {
+
+        let query = new Query().types(ItemTypes.DATASET);
+        service.search(query)
+        .then( response => response.results[0] )
+        .then( item => service.export(item.id) )
+        .then( output => {
+            expect(output).to.be.ok;
+            done();
+        })
+        .catch(e => done(e));
+
+    });
 
 
     /*

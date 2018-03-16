@@ -6,10 +6,10 @@
         // Now we're wrapping the factory and assigning the return
         // value to the root (window) and returning it as well to
         // the AMD loader.
-        define(["q", "ItemTypes", "ItemService", "ItemFactory"],
-            function(Q, ItemTypes, ItemService, ItemFactory) {
+        define(["q", "ItemTypes", "ItemService", "ItemFactory", "QueryFactory"],
+            function(Q, ItemTypes, ItemService, ItemFactory, QueryFactory) {
                 return (root.ServiceService =
-                    factory(Q, ItemTypes, ItemService, ItemFactory));
+                    factory(Q, ItemTypes, ItemService, ItemFactory, QueryFactory));
             });
     } else if(typeof module === "object" && module.exports) {
         // I've not encountered a need for this yet, since I haven't
@@ -21,17 +21,19 @@
                 require('q'),
                 require('../shared/types'),
                 require('./item'),
-                require('../models/factory')
+                require('../models/factory'),
+                require('../shared/query-factory')
             )
         );
     } else {
         GeoPlatform.ServiceService = factory(
             Q, GeoPlatform.ItemTypes,
             GeoPlatform.ItemService,
-            GeoPlatform.ItemFactory
+            GeoPlatform.ItemFactory,
+            GeoPlatform.QueryFactory
         );
     }
-}(this||window, function(Q, ItemTypes, ItemService, ItemFactory) {
+}(this||window, function(Q, ItemTypes, ItemService, ItemFactory, QueryFactory) {
 
     'use strict';
 
@@ -89,7 +91,7 @@
          */
         types (options) {
 
-            let query = new Query()
+            let query = QueryFactory()
             .types(ItemTypes.STANDARD)
             .resourceTypes('ServiceType')
             .pageSize(50)

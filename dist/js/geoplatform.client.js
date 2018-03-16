@@ -2427,7 +2427,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                     });
                     return _this26.execute(opts);
                 }).then(function (response) {
-                    return response.body;
+                    return response;
                 }).catch(function (e) {
                     var err = new Error("UtilsService.parseFile() - Error parsing file: " + e.message);
                     return Q.reject(err);

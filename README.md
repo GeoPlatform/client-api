@@ -57,6 +57,13 @@ If you are using Angular 1.x, import the client.ng.js file to get access to
 <script src="geoplatform.client.ng.js"></script>
 ```
 
+It can also be loaded over CDN:
+```html
+<script src="http://dyk46gk69472z.cloudfront.net/geoplatform.client/0.0.1/js/geoplatform.client.js"></script>
+```
+
+
+
 #### Environment Variables
 An example of the `GeoPlatform` object and environment variables contained
 within is shown below.

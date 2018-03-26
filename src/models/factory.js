@@ -3,29 +3,7 @@
 
 
 (function (root, factory) {
-    if(typeof define === "function" && define.amd) {
-        // Now we're wrapping the factory and assigning the return
-        // value to the root (window) and returning it as well to
-        // the AMD loader.
-        define([
-            'ItemTypes',
-            'DatasetModel', 'ServiceModel', 'LayerModel',
-            'MapModel', 'GalleryModel', 'CommunityModel',
-            'ConceptModel', 'ConceptSchemeModel'
-        ], function(
-            ItemTypes,
-            DatasetModel, ServiceModel, LayerModel,
-            MapModel, GalleryModel, CommunityModel,
-            ConceptModel, ConceptSchemeModel
-        ) {
-            return (root.ItemFactory = factory(
-                ItemTypes,
-                DatasetModel, ServiceModel, LayerModel,
-                MapModel, GalleryModel, CommunityModel,
-                ConceptModel, ConceptSchemeModel
-            ));
-        });
-    } else if(typeof module === "object" && module.exports) {
+    if(typeof module === "object" && module.exports) {
         // I've not encountered a need for this yet, since I haven't
         // run into a scenario where plain modules depend on CommonJS
         // *and* I happen to be loading in a CJS browser environment
@@ -43,6 +21,28 @@
                 require('./concept-scheme')
             )
         );
+    } else if(typeof define === "function" && define.amd) {
+        // Now we're wrapping the factory and assigning the return
+        // value to the root (window) and returning it as well to
+        // the AMD loader.
+        define('ItemFactory', [
+            '../shared/types',
+            './dataset', './service', './layer',
+            './map', './gallery', './community',
+            './concept', './concept-scheme'
+        ], function(
+            ItemTypes,
+            DatasetModel, ServiceModel, LayerModel,
+            MapModel, GalleryModel, CommunityModel,
+            ConceptModel, ConceptSchemeModel
+        ) {
+            return (root.ItemFactory = factory(
+                ItemTypes,
+                DatasetModel, ServiceModel, LayerModel,
+                MapModel, GalleryModel, CommunityModel,
+                ConceptModel, ConceptSchemeModel
+            ));
+        });
     } else {
         GeoPlatform.ItemFactory = factory(
             GeoPlatform.ItemTypes,

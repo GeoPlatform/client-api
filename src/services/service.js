@@ -2,16 +2,7 @@
 
 
 (function (root, factory) {
-    if(typeof define === "function" && define.amd) {
-        // Now we're wrapping the factory and assigning the return
-        // value to the root (window) and returning it as well to
-        // the AMD loader.
-        define(["q", "ItemTypes", "ItemService", "ItemFactory", "QueryFactory"],
-            function(Q, ItemTypes, ItemService, ItemFactory, QueryFactory) {
-                return (root.ServiceService =
-                    factory(Q, ItemTypes, ItemService, ItemFactory, QueryFactory));
-            });
-    } else if(typeof module === "object" && module.exports) {
+    if(typeof module === "object" && module.exports) {
         // I've not encountered a need for this yet, since I haven't
         // run into a scenario where plain modules depend on CommonJS
         // *and* I happen to be loading in a CJS browser environment
@@ -25,6 +16,15 @@
                 require('../shared/query-factory')
             )
         );
+    } else if(typeof define === "function" && define.amd) {
+        // Now we're wrapping the factory and assigning the return
+        // value to the root (window) and returning it as well to
+        // the AMD loader.
+        define('ServiceService', ["q", "../shared/types", "./item", "../models/factory", "../shared/query-factory"],
+            function(Q, ItemTypes, ItemService, ItemFactory, QueryFactory) {
+                return (root.ServiceService =
+                    factory(Q, ItemTypes, ItemService, ItemFactory, QueryFactory));
+            });
     } else {
         GeoPlatform.ServiceService = factory(
             Q, GeoPlatform.ItemTypes,
@@ -69,18 +69,18 @@
 
             return Q.resolve( service )
             .then( svc => {
-                if(!svc)
-                    throw new Error("Must provide service to get metadata about");
+                if(!svc) {
+                    let err = new Error("Must provide service to get metadata about");
+                    err.status = 400;
+                    err.error = "Bad Request";
+                    throw err;
+                }
                 let opts = this.buildRequest({
                     method:'POST', url:this.baseUrl + '/about', data:svc, options:options
                 });
                 return this.execute(opts);
             })
-            .catch(e => {
-                let err = new Error(`ServiceService.about() -
-                    Error describing service: ${e.message}`);
-                return Q.reject(err);
-            });
+            .catch(e => this._onError(e, "ServiceService.about() - Error describing service") );
         }
 
 
@@ -106,11 +106,7 @@
                 return this.execute(opts);
             })
             .then(response => response.results)
-            .catch(e => {
-                let err = new Error(`ServiceService.types() -
-                    Error fetching service types: ${e.message}`);
-                return Q.reject(err);
-            });
+            .catch(e => this._onError(e, "ServiceService.types() - Error fetching service types") );
         }
 
 
@@ -136,11 +132,7 @@
                 return this.execute(opts);
             })
             .then(obj => ItemFactory(obj))
-            .catch(e => {
-                let err = new Error(`ServiceService.import() -
-                    Error importing service: ${e.message}`);
-                return Q.reject(err);
-            });
+            .catch(e => this._onError(e, "ServiceService.import() - Error importing service") );
         }
 
 
@@ -159,11 +151,7 @@
                 });
                 return this.execute(opts);
             })
-            .catch(e => {
-                let err = new Error(`ServiceService.harvest() -
-                    Error harvesting layers from service: ${e.message}`);
-                return Q.reject(err);
-            });
+            .catch(e => this._onError(e, "ServiceService.harvest() - Error harvesting layers from service") );
 
         }
 
@@ -182,11 +170,7 @@
                 });
                 return this.execute(opts);
             })
-            .catch(e => {
-                let err = new Error(`ServiceService.liveTest() -
-                    Error testing service: ${e.message}`);
-                return Q.reject(err);
-            });
+            .catch(e => this._onError(e, "ServiceService.liveTest() - Error testing service") );
         }
 
         /**
@@ -203,11 +187,7 @@
                 });
                 return this.execute(opts);
             })
-            .catch(e => {
-                let err = new Error(`ServiceService.statistics() -
-                    Error getting service statistics: ${e.message}`);
-                return Q.reject(err);
-            });
+            .catch(e => this._onError(e, "ServiceService.statistics() - Error getting service statistics") );
         }
 
     }

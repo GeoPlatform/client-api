@@ -1,13 +1,6 @@
 
 (function (root, factory) {
-    if(typeof define === "function" && define.amd) {
-        // Now we're wrapping the factory and assigning the return
-        // value to the root (window) and returning it as well to
-        // the AMD loader.
-        define(["q", 'ItemFactory'], function(Q, ItemFactory){
-            return (root.ItemService = factory(Q, ItemFactory));
-        });
-    } else if(typeof module === "object" && module.exports) {
+    if(typeof module === "object" && module.exports) {
         // I've not encountered a need for this yet, since I haven't
         // run into a scenario where plain modules depend on CommonJS
         // *and* I happen to be loading in a CJS browser environment
@@ -18,6 +11,13 @@
                 require('../models/factory')
             )
         );
+    } else if(typeof define === "function" && define.amd) {
+        // Now we're wrapping the factory and assigning the return
+        // value to the root (window) and returning it as well to
+        // the AMD loader.
+        define('ItemService', ["q", '../models/factory'], function(Q, ItemFactory){
+            return (root.ItemService = factory(Q, ItemFactory));
+        });
     } else {
         GeoPlatform.ItemService = factory(Q, GeoPlatform.ItemFactory);
     }
@@ -77,10 +77,7 @@
                 return this.execute(opts);
             })
             .then( obj => ItemFactory(obj) )
-            .catch(e => {
-                let err = new Error(`ItemService.get() - Error fetching item ${id}: ${e.message}`);
-                return Q.reject(err);
-            });
+            .catch(e => this._onError(e, `ItemService.get() - Error fetching item ${id}`) );
         }
 
         /**
@@ -110,10 +107,7 @@
 
             })
             .then(obj => ItemFactory(obj) )
-            .catch(e => {
-                let err = new Error(`ItemService.save() - Error saving item: ${e.message}`);
-                return Q.reject(err);
-            });
+            .catch(e => this._onError(e, `ItemService.save() - Error saving item`) );
         }
 
         /**
@@ -131,10 +125,7 @@
                 return this.execute(opts);
             })
             .then(response => true)
-            .catch(e => {
-                let err = new Error(`ItemService.remove() - Error deleting item ${id}: ${e.message}`);
-                return Q.reject(err);
-            });
+            .catch(e => this._onError(e, `ItemService.remove() - Error deleting item ${id}`) );
         }
 
         /**
@@ -153,10 +144,7 @@
                 return this.execute(opts);
             })
             .then( obj => ItemFactory(obj) )
-            .catch(e => {
-                let err = new Error(`ItemService.patch() - Error patching item ${id}: ${e.message}`);
-                return Q.reject(err);
-            });
+            .catch(e => this._onError(e, `ItemService.patch() - Error patching item ${id}`) );
         }
 
         /**
@@ -179,10 +167,7 @@
                 });
                 return this.execute(opts);
             })
-            .catch(e => {
-                let err = new Error(`ItemService.search() - Error searching items: ${e.message}`);
-                return Q.reject(err);
-            });
+            .catch(e => this._onError(e, `ItemService.search() - Error searching items`) );
         }
 
 
@@ -218,10 +203,7 @@
                 let opts = this.buildRequest(ro);
                 return this.execute(opts);
             })
-            .catch( e => {
-                let err = new Error(`ItemService.import() - Error importing item: ${e.message}`);
-                return Q.reject(err);
-            });
+            .catch( e => this._onError(e, `ItemService.import() - Error importing item`) );
         }
 
 
@@ -244,10 +226,7 @@
                 });
                 return this.execute(opts);
             })
-            .catch( e => {
-                let err = new Error(`ItemService.export() - Error exporting item: ${e.message}`);
-                return Q.reject(err);
-            });
+            .catch( e => this._onError(e, `ItemService.export() - Error exporting item`) );
         }
 
 
@@ -262,7 +241,10 @@
             .then( obj => {
 
                 if(!obj) {
-                    throw new Error("Must provide an typed object");
+                    let err = new Error("Must provide an typed object");
+                    err.status = 400;
+                    err.error = "Bad Request";
+                    throw err;
                 }
 
                 if(obj.toJson) {
@@ -271,7 +253,9 @@
                 }
 
                 if(!obj.type) {
-                    throw new Error("Must provide a valid type on the specified object");
+                    let err = new Error("Must provide a valid type on the specified object");
+                    err.status = 400;
+                    err.error = "Bad Request";
                 }
 
                 let url = this.apiBase + '/api/utils/uri';
@@ -280,10 +264,7 @@
                 });
                 return this.execute(opts);
             })
-            .catch( e => {
-                let err = new Error(`ItemService.getUri() - Error getting URI for item: ${e.message}`);
-                return Q.reject(err);
-            });
+            .catch( e => this._onError(e, `ItemService.getUri() - Error getting URI for item`) );
 
         }
 
@@ -305,11 +286,19 @@
          */
         buildRequest (options) {
 
-            if(this.httpMethods.indexOf(options.method)<0)
-                throw new Error(`Unsupported HTTP method ${options.method}`);
+            if(this.httpMethods.indexOf(options.method)<0) {
+                let err = new Error(`Unsupported HTTP method ${options.method}`);
+                err.status = 400;
+                err.error = "Bad Request";
+                throw err;
+            }
 
-            if(!options.url)
-                throw new Error(`Must specify a URL for HTTP requests`);
+            if(!options.url) {
+                let err = new Error(`Must specify a URL for HTTP requests`);
+                err.status = 400;
+                err.error = "Bad Request";
+                throw err;
+            }
 
             options.timeout = this.timeout;
 

@@ -1,13 +1,6 @@
 
 (function (root, factory) {
-    if(typeof define === "function" && define.amd) {
-        // Now we're wrapping the factory and assigning the return
-        // value to the root (window) and returning it as well to
-        // the AMD loader.
-        define(['QueryParameters','QueryFacets'], function(QueryParameters, QueryFacets) {
-            return (root.Query = factory(QueryParameters, QueryFacets));
-        });
-    } else if(typeof module === "object" && module.exports) {
+    if(typeof module === "object" && module.exports) {
         // I've not encountered a need for this yet, since I haven't
         // run into a scenario where plain modules depend on CommonJS
         // *and* I happen to be loading in a CJS browser environment
@@ -18,6 +11,13 @@
                 require('./facets')
             )
         );
+    } else if(typeof define === "function" && define.amd) {
+        // Now we're wrapping the factory and assigning the return
+        // value to the root (window) and returning it as well to
+        // the AMD loader.
+        define('Query', ['./parameters','./facets'], function(QueryParameters, QueryFacets) {
+            return (root.Query = factory(QueryParameters, QueryFacets));
+        });
     } else {
         GeoPlatform.Query = factory(GeoPlatform.QueryParameters, GeoPlatform.QueryFacets);
     }
@@ -77,10 +77,13 @@
             let result = {};
             for(let prop in this.query) {
                 let value = this.query[prop];
-                if(value !== null && typeof(value.push) !== 'undefined') {
+                if(value === null || value === undefined)
+                    continue;
+                if(typeof(value.push) !== 'undefined') {
                     value = value.join(',');
                 }
-                result[prop] = value;
+                if(typeof(value) !== 'string' || value.length > 0)
+                    result[prop] = value;
             }
             return result;
         }

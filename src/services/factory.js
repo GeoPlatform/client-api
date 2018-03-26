@@ -1,22 +1,6 @@
 
 (function (root, factory) {
-    if(typeof define === "function" && define.amd) {
-        // Now we're wrapping the factory and assigning the return
-        // value to the root (window) and returning it as well to
-        // the AMD loader.
-        define([
-            "ItemTypes", "ItemService", "LayerService",
-            "ServiceService", "GalleryService", "CommunityService",
-            "DatasetService", "MapService" ],
-            function(ItemTypes, ItemService, LayerService,
-                ServiceService,GalleryService, CommunityService,
-                DatasetService, MapService){
-            return (root.ServiceFactory =
-                factory(ItemTypes, ItemService, LayerService,
-                    ServiceService,GalleryService, CommunityService,
-                    DatasetService, MapService));
-        });
-    } else if(typeof module === "object" && module.exports) {
+    if(typeof module === "object" && module.exports) {
         // I've not encountered a need for this yet, since I haven't
         // run into a scenario where plain modules depend on CommonJS
         // *and* I happen to be loading in a CJS browser environment
@@ -33,6 +17,22 @@
                 require('./map')
             )
         );
+    } else if(typeof define === "function" && define.amd) {
+        // Now we're wrapping the factory and assigning the return
+        // value to the root (window) and returning it as well to
+        // the AMD loader.
+        define('ServiceFactory', [
+            "../shared/types", "./item", "./layer",
+            "./service", "./gallery", "./community",
+            "./dataset", "./map" ],
+            function(ItemTypes, ItemService, LayerService,
+                ServiceService,GalleryService, CommunityService,
+                DatasetService, MapService){
+            return (root.ServiceFactory =
+                factory(ItemTypes, ItemService, LayerService,
+                    ServiceService,GalleryService, CommunityService,
+                    DatasetService, MapService));
+        });
     } else {
         GeoPlatform.ServiceFactory = factory(
             GeoPlatform.ItemTypes,

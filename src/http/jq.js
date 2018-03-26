@@ -1,14 +1,7 @@
 
 
 (function (root, factory) {
-    if(typeof define === "function" && define.amd) {
-        // Now we're wrapping the factory and assigning the return
-        // value to the root (window) and returning it as well to
-        // the AMD loader.
-        define(["jquery", "q", "HttpClientBase"], function(jQuery, Q, HttpClientBase){
-            return (root.JQueryHttpClient = factory(jQuery, Q, HttpClientBase));
-        });
-    } else if(typeof module === "object" && module.exports) {
+    if(typeof module === "object" && module.exports) {
         // I've not encountered a need for this yet, since I haven't
         // run into a scenario where plain modules depend on CommonJS
         // *and* I happen to be loading in a CJS browser environment
@@ -20,6 +13,13 @@
                 require('./client')
             )
         );
+    } else if(typeof define === "function" && define.amd) {
+        // Now we're wrapping the factory and assigning the return
+        // value to the root (window) and returning it as well to
+        // the AMD loader.
+        define('JQueryHttpClient', ["jquery", "q", "./client"], function(jQuery, Q, HttpClientBase){
+            return (root.JQueryHttpClient = factory(jQuery, Q, HttpClientBase));
+        });
     } else {
         GeoPlatform.JQueryHttpClient = factory(jQuery, Q, GeoPlatform.HttpClientBase);
     }

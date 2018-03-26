@@ -2,15 +2,7 @@
 
 
 (function (root, factory) {
-    if(typeof define === "function" && define.amd) {
-        // Now we're wrapping the factory and assigning the return
-        // value to the root (window) and returning it as well to
-        // the AMD loader.
-        define(["q", "ItemService"],
-            function(Q, ItemService) {
-                return (root.GalleryService = factory(Q, ItemService));
-            });
-    } else if(typeof module === "object" && module.exports) {
+    if(typeof module === "object" && module.exports) {
         // I've not encountered a need for this yet, since I haven't
         // run into a scenario where plain modules depend on CommonJS
         // *and* I happen to be loading in a CJS browser environment
@@ -21,6 +13,14 @@
                 require('./item')
             )
         );
+    } else if(typeof define === "function" && define.amd) {
+        // Now we're wrapping the factory and assigning the return
+        // value to the root (window) and returning it as well to
+        // the AMD loader.
+        define('GalleryService', ["q", "./item"],
+            function(Q, ItemService) {
+                return (root.GalleryService = factory(Q, ItemService));
+            });
     } else {
         GeoPlatform.GalleryService = factory(Q, GeoPlatform.ItemService);
     }
@@ -57,10 +57,7 @@
                 });
                 return this.execute(opts);
             })
-            .catch(e => {
-                let err = new Error("GalleryService.addItem() - Error adding item: " + e.message);
-                return Q.reject(err);
-            });
+            .catch(e => this._onError(e, "GalleryService.addItem() - Error adding item") );
         }
 
         removeItem( galleryId, itemId, options) {
@@ -72,10 +69,7 @@
                 return this.execute(opts);
             })
             .then(response=>true)
-            .catch(e => {
-                let err = new Error("GalleryService.addItem() - Error adding item: " + e.message);
-                return Q.reject(err);
-            });
+            .catch(e => this._onError(e, "GalleryService.addItem() - Error adding item") );
         }
 
     }

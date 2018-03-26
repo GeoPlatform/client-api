@@ -11,19 +11,19 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 (function (root, factory) {
-    if (typeof define === "function" && define.amd) {
-        // Now we're wrapping the factory and assigning the return
-        // value to the root (window) and returning it as well to
-        // the AMD loader.
-        define(["angular", "q", 'HttpClientBase'], function (jQuery, Q, HttpClientBase) {
-            return root.NGHttpClient = factory(angular, Q, HttpClientBase);
-        });
-    } else if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === "object" && module.exports) {
+    if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === "object" && module.exports) {
         // I've not encountered a need for this yet, since I haven't
         // run into a scenario where plain modules depend on CommonJS
         // *and* I happen to be loading in a CJS browser environment
         // but I'm including it for the sake of being thorough
         module.exports = root.NGHttpClient = factory(require("angular"), require('q'), require('./client'));
+    } else if (typeof define === "function" && define.amd) {
+        // Now we're wrapping the factory and assigning the return
+        // value to the root (window) and returning it as well to
+        // the AMD loader.
+        define('NGHttpClient', ["angular", "q", './client'], function (jQuery, Q, HttpClientBase) {
+            return root.NGHttpClient = factory(angular, Q, HttpClientBase);
+        });
     } else {
         GeoPlatform.NGHttpClient = factory(angular, Q, HttpClientBase);
     }

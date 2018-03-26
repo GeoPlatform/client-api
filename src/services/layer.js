@@ -2,15 +2,7 @@
 
 
 (function (root, factory) {
-    if(typeof define === "function" && define.amd) {
-        // Now we're wrapping the factory and assigning the return
-        // value to the root (window) and returning it as well to
-        // the AMD loader.
-        define(["q", "ItemService"],
-            function(Q, ItemService) {
-                return (root.LayerService = factory(Q, ItemService));
-            });
-    } else if(typeof module === "object" && module.exports) {
+    if(typeof module === "object" && module.exports) {
         // I've not encountered a need for this yet, since I haven't
         // run into a scenario where plain modules depend on CommonJS
         // *and* I happen to be loading in a CJS browser environment
@@ -21,6 +13,14 @@
                 require('./item')
             )
         );
+    } else if(typeof define === "function" && define.amd) {
+        // Now we're wrapping the factory and assigning the return
+        // value to the root (window) and returning it as well to
+        // the AMD loader.
+        define('LayerService', ["q", "./item"],
+            function(Q, ItemService) {
+                return (root.LayerService = factory(Q, ItemService));
+            });
     } else {
         GeoPlatform.LayerService = factory(Q, GeoPlatform.ItemService);
     }
@@ -62,10 +62,7 @@
                 });
                 return this.execute(opts);
             })
-            .catch(e => {
-                let err = new Error(`LayerService.style() - Error fetching style: ${e.message}`);
-                return Q.reject(err);
-            });
+            .catch(e => this._onError(e, "LayerService.style() - Error fetching style") );
         }
 
         /**
@@ -80,13 +77,19 @@
             .then( (req) => {
 
                 if(!req) {
-                    throw new Error("Must provide describe parameters to use");
+                    let err = new Error("Must provide describe parameters to use");
+                    err.status = 400;
+                    err.error = "Bad Request";
+                    throw err;
                 }
 
                 let keys = ['bbox', 'height', 'width', 'x', 'y'];
                 let missing = keys.find(key => !req[key]);
                 if(missing) {
-                    throw new Error(`Must specify ${missing} in describe req`);
+                    let err = new Error(`Must specify ${missing} in describe req`);
+                    err.status = 400;
+                    err.error = "Bad Request";
+                    throw err;
                 }
 
                 let params = {
@@ -107,11 +110,7 @@
                 });
                 return this.execute(opts);
             })
-            .catch(e => {
-                let err = new Error(`LayerService.describe() -
-                    Error describing layer feature: ${e.message}`);
-                return Q.reject(err);
-            });
+            .catch(e => this._onError(e, "LayerService.describe() - Error describing layer feature") );
         }
 
         /**
@@ -126,7 +125,10 @@
             .then( params => {
 
                 if(!params) {
-                    throw new Error("Must provide parameters to use in layer validation");
+                    let err = new Error("Must provide parameters to use in layer validation");
+                    err.status = 400;
+                    err.error = "Bad Request";
+                    throw err;
                 }
 
                 let url = this.baseUrl + '/' + id + '/validate';
@@ -135,11 +137,7 @@
                 });
                 return this.execute(opts);
             })
-            .catch(e => {
-                let err = new Error(`LayerService.describe() -
-                    Error describing layer feature: ${e.message}`);
-                return Q.reject(err);
-            });
+            .catch(e => this._onError(e, "LayerService.describe() - Error describing layer feature") );
         }
 
     }

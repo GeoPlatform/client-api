@@ -1,13 +1,6 @@
 
 (function (root, factory) {
-    if(typeof define === "function" && define.amd) {
-        // Now we're wrapping the factory and assigning the return
-        // value to the root (window) and returning it as well to
-        // the AMD loader.
-        define(['QueryParameters','QueryFacets'], function(QueryParameters, QueryFacets) {
-            return (root.Query = factory(QueryParameters, QueryFacets));
-        });
-    } else if(typeof module === "object" && module.exports) {
+    if(typeof module === "object" && module.exports) {
         // I've not encountered a need for this yet, since I haven't
         // run into a scenario where plain modules depend on CommonJS
         // *and* I happen to be loading in a CJS browser environment
@@ -18,6 +11,13 @@
                 require('./facets')
             )
         );
+    } else if(typeof define === "function" && define.amd) {
+        // Now we're wrapping the factory and assigning the return
+        // value to the root (window) and returning it as well to
+        // the AMD loader.
+        define('Query', ['./parameters','./facets'], function(QueryParameters, QueryFacets) {
+            return (root.Query = factory(QueryParameters, QueryFacets));
+        });
     } else {
         GeoPlatform.Query = factory(GeoPlatform.QueryParameters, GeoPlatform.QueryFacets);
     }
@@ -644,27 +644,6 @@
         getFields() {
             return this.query.fields;
         }
-
-
-        // // -----------------------------------------------------------
-        //
-        //
-        // /**
-        //  * @param {int} start - beginning index of results to request
-        //  */
-        // start (start) {
-        //     this.setStart(start);
-        //     return this;
-        // }
-        //
-        // setStart(start) {
-        //     if(isNaN(start)) return;
-        //     this.query.start = start*1;
-        // }
-        //
-        // getStart() {
-        //     return this.query.start;
-        // }
 
 
         // -----------------------------------------------------------

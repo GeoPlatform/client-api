@@ -7,19 +7,19 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 (function (root, factory) {
-    if (typeof define === "function" && define.amd) {
-        // Now we're wrapping the factory and assigning the return
-        // value to the root (window) and returning it as well to
-        // the AMD loader.
-        define(["angular", "q"], function (jQuery, Q) {
-            return root.NGHttpClient = factory(angular, Q);
-        });
-    } else if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === "object" && module.exports) {
+    if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === "object" && module.exports) {
         // I've not encountered a need for this yet, since I haven't
         // run into a scenario where plain modules depend on CommonJS
         // *and* I happen to be loading in a CJS browser environment
         // but I'm including it for the sake of being thorough
         module.exports = root.NGHttpClient = factory(require("angular"), require('q'));
+    } else if (typeof define === "function" && define.amd) {
+        // Now we're wrapping the factory and assigning the return
+        // value to the root (window) and returning it as well to
+        // the AMD loader.
+        define('NGHttpClient', ["angular", "q"], function (jQuery, Q) {
+            return root.NGHttpClient = factory(angular, Q);
+        });
     } else {
         GeoPlatform.NGHttpClient = factory(angular, Q);
     }

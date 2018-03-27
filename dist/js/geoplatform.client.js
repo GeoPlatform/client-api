@@ -13,19 +13,19 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 (function (root, factory) {
-    if (typeof define === "function" && define.amd) {
-        // Now we're wrapping the factory and assigning the return
-        // value to the root (window) and returning it as well to
-        // the AMD loader.
-        define([], function () {
-            return root.ItemTypes = factory();
-        });
-    } else if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === "object" && module.exports) {
+    if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === "object" && module.exports) {
         // I've not encountered a need for this yet, since I haven't
         // run into a scenario where plain modules depend on CommonJS
         // *and* I happen to be loading in a CJS browser environment
         // but I'm including it for the sake of being thorough
         module.exports = root.ItemTypes = factory();
+    } else if (typeof define === "function" && define.amd) {
+        // Now we're wrapping the factory and assigning the return
+        // value to the root (window) and returning it as well to
+        // the AMD loader.
+        define('ItemTypes', function () {
+            return root.ItemTypes = factory();
+        });
     } else {
         GeoPlatform.ItemTypes = factory();
     }
@@ -48,19 +48,19 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 });
 
 (function (root, factory) {
-    if (typeof define === "function" && define.amd) {
-        // Now we're wrapping the factory and assigning the return
-        // value to the root (window) and returning it as well to
-        // the AMD loader.
-        define([], function () {
-            return root.QueryParameters = factory();
-        });
-    } else if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === "object" && module.exports) {
+    if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === "object" && module.exports) {
         // I've not encountered a need for this yet, since I haven't
         // run into a scenario where plain modules depend on CommonJS
         // *and* I happen to be loading in a CJS browser environment
         // but I'm including it for the sake of being thorough
         module.exports = root.QueryParameters = factory();
+    } else if (typeof define === "function" && define.amd) {
+        // Now we're wrapping the factory and assigning the return
+        // value to the root (window) and returning it as well to
+        // the AMD loader.
+        define('QueryParameters', function () {
+            return root.QueryParameters = factory();
+        });
     } else {
         GeoPlatform.QueryParameters = factory();
     }
@@ -103,19 +103,19 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 });
 
 (function (root, factory) {
-    if (typeof define === "function" && define.amd) {
-        // Now we're wrapping the factory and assigning the return
-        // value to the root (window) and returning it as well to
-        // the AMD loader.
-        define([], function () {
-            return root.QueryFacets = factory();
-        });
-    } else if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === "object" && module.exports) {
+    if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === "object" && module.exports) {
         // I've not encountered a need for this yet, since I haven't
         // run into a scenario where plain modules depend on CommonJS
         // *and* I happen to be loading in a CJS browser environment
         // but I'm including it for the sake of being thorough
         module.exports = root.QueryFacets = factory();
+    } else if (typeof define === "function" && define.amd) {
+        // Now we're wrapping the factory and assigning the return
+        // value to the root (window) and returning it as well to
+        // the AMD loader.
+        define('QueryFacets', function () {
+            return root.QueryFacets = factory();
+        });
     } else {
         GeoPlatform.QueryFacets = factory();
     }
@@ -136,19 +136,19 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 });
 
 (function (root, factory) {
-    if (typeof define === "function" && define.amd) {
-        // Now we're wrapping the factory and assigning the return
-        // value to the root (window) and returning it as well to
-        // the AMD loader.
-        define(['QueryParameters', 'QueryFacets'], function (QueryParameters, QueryFacets) {
-            return root.Query = factory(QueryParameters, QueryFacets);
-        });
-    } else if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === "object" && module.exports) {
+    if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === "object" && module.exports) {
         // I've not encountered a need for this yet, since I haven't
         // run into a scenario where plain modules depend on CommonJS
         // *and* I happen to be loading in a CJS browser environment
         // but I'm including it for the sake of being thorough
         module.exports = root.Query = factory(require('./parameters'), require('./facets'));
+    } else if (typeof define === "function" && define.amd) {
+        // Now we're wrapping the factory and assigning the return
+        // value to the root (window) and returning it as well to
+        // the AMD loader.
+        define('Query', ['./parameters', './facets'], function (QueryParameters, QueryFacets) {
+            return root.Query = factory(QueryParameters, QueryFacets);
+        });
     } else {
         GeoPlatform.Query = factory(GeoPlatform.QueryParameters, GeoPlatform.QueryFacets);
     }
@@ -833,27 +833,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 return this.query.fields;
             }
 
-            // // -----------------------------------------------------------
-            //
-            //
-            // /**
-            //  * @param {int} start - beginning index of results to request
-            //  */
-            // start (start) {
-            //     this.setStart(start);
-            //     return this;
-            // }
-            //
-            // setStart(start) {
-            //     if(isNaN(start)) return;
-            //     this.query.start = start*1;
-            // }
-            //
-            // getStart() {
-            //     return this.query.start;
-            // }
-
-
             // -----------------------------------------------------------
 
 
@@ -988,19 +967,19 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 });
 
 (function (root, factory) {
-    if (typeof define === "function" && define.amd) {
-        // Now we're wrapping the factory and assigning the return
-        // value to the root (window) and returning it as well to
-        // the AMD loader.
-        define(["Query"], function (Query) {
-            return root.QueryFactory = factory(Query);
-        });
-    } else if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === "object" && module.exports) {
+    if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === "object" && module.exports) {
         // I've not encountered a need for this yet, since I haven't
         // run into a scenario where plain modules depend on CommonJS
         // *and* I happen to be loading in a CJS browser environment
         // but I'm including it for the sake of being thorough
         module.exports = root.QueryFactory = factory(require('./query'));
+    } else if (typeof define === "function" && define.amd) {
+        // Now we're wrapping the factory and assigning the return
+        // value to the root (window) and returning it as well to
+        // the AMD loader.
+        define('QueryFactory', ["./query"], function (Query) {
+            return root.QueryFactory = factory(Query);
+        });
     } else {
         GeoPlatform.QueryFactory = factory(GeoPlatform.Query);
     }
@@ -1012,19 +991,19 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 });
 
 (function (root, factory) {
-    if (typeof define === "function" && define.amd) {
-        // Now we're wrapping the factory and assigning the return
-        // value to the root (window) and returning it as well to
-        // the AMD loader.
-        define([], function () {
-            return root.KGClassifiers = factory();
-        });
-    } else if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === "object" && module.exports) {
+    if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === "object" && module.exports) {
         // I've not encountered a need for this yet, since I haven't
         // run into a scenario where plain modules depend on CommonJS
         // *and* I happen to be loading in a CJS browser environment
         // but I'm including it for the sake of being thorough
         module.exports = root.KGClassifiers = factory();
+    } else if (typeof define === "function" && define.amd) {
+        // Now we're wrapping the factory and assigning the return
+        // value to the root (window) and returning it as well to
+        // the AMD loader.
+        define('KGClassifiers', function () {
+            return root.KGClassifiers = factory();
+        });
     } else {
         GeoPlatform.KGClassifiers = factory();
     }
@@ -1047,19 +1026,19 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 });
 
 (function (root, factory) {
-    if (typeof define === "function" && define.amd) {
-        // Now we're wrapping the factory and assigning the return
-        // value to the root (window) and returning it as well to
-        // the AMD loader.
-        define(['QueryParameters'], function (QueryParameters) {
-            return root.KGQuery = factory(QueryParameters);
-        });
-    } else if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === "object" && module.exports) {
+    if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === "object" && module.exports) {
         // I've not encountered a need for this yet, since I haven't
         // run into a scenario where plain modules depend on CommonJS
         // *and* I happen to be loading in a CJS browser environment
         // but I'm including it for the sake of being thorough
         module.exports = root.KGQuery = factory(require('./parameters'));
+    } else if (typeof define === "function" && define.amd) {
+        // Now we're wrapping the factory and assigning the return
+        // value to the root (window) and returning it as well to
+        // the AMD loader.
+        define('KGQuery', ['./parameters'], function (QueryParameters) {
+            return root.KGQuery = factory(QueryParameters);
+        });
     } else {
         GeoPlatform.KGQuery = factory(GeoPlatform.QueryParameters);
     }
@@ -1368,19 +1347,19 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 });
 
 (function (root, factory) {
-    if (typeof define === "function" && define.amd) {
-        // Now we're wrapping the factory and assigning the return
-        // value to the root (window) and returning it as well to
-        // the AMD loader.
-        define(["jquery", "q"], function (jQuery, Q) {
-            return root.JQueryHttpClient = factory(jQuery, Q);
-        });
-    } else if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === "object" && module.exports) {
+    if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === "object" && module.exports) {
         // I've not encountered a need for this yet, since I haven't
         // run into a scenario where plain modules depend on CommonJS
         // *and* I happen to be loading in a CJS browser environment
         // but I'm including it for the sake of being thorough
         module.exports = root.JQueryHttpClient = factory(require("jquery"), require('q'));
+    } else if (typeof define === "function" && define.amd) {
+        // Now we're wrapping the factory and assigning the return
+        // value to the root (window) and returning it as well to
+        // the AMD loader.
+        define('JQueryHttpClient', ["jquery", "q"], function (jQuery, Q) {
+            return root.JQueryHttpClient = factory(jQuery, Q);
+        });
     } else {
         GeoPlatform.JQueryHttpClient = factory(jQuery, Q);
     }
@@ -1482,19 +1461,19 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 });
 
 (function (root, factory) {
-    if (typeof define === "function" && define.amd) {
-        // Now we're wrapping the factory and assigning the return
-        // value to the root (window) and returning it as well to
-        // the AMD loader.
-        define(["q"], function (Q) {
-            return root.ItemService = factory(Q);
-        });
-    } else if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === "object" && module.exports) {
+    if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === "object" && module.exports) {
         // I've not encountered a need for this yet, since I haven't
         // run into a scenario where plain modules depend on CommonJS
         // *and* I happen to be loading in a CJS browser environment
         // but I'm including it for the sake of being thorough
         module.exports = root.ItemService = factory(require('q'));
+    } else if (typeof define === "function" && define.amd) {
+        // Now we're wrapping the factory and assigning the return
+        // value to the root (window) and returning it as well to
+        // the AMD loader.
+        define('ItemService', ["q"], function (Q) {
+            return root.ItemService = factory(Q);
+        });
     } else {
         GeoPlatform.ItemService = factory(Q);
     }
@@ -1801,19 +1780,19 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 });
 
 (function (root, factory) {
-    if (typeof define === "function" && define.amd) {
-        // Now we're wrapping the factory and assigning the return
-        // value to the root (window) and returning it as well to
-        // the AMD loader.
-        define(["q", "ItemService"], function (Q, ItemService) {
-            return root.LayerService = factory(Q, ItemService);
-        });
-    } else if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === "object" && module.exports) {
+    if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === "object" && module.exports) {
         // I've not encountered a need for this yet, since I haven't
         // run into a scenario where plain modules depend on CommonJS
         // *and* I happen to be loading in a CJS browser environment
         // but I'm including it for the sake of being thorough
         module.exports = root.LayerService = factory(require('q'), require('./item'));
+    } else if (typeof define === "function" && define.amd) {
+        // Now we're wrapping the factory and assigning the return
+        // value to the root (window) and returning it as well to
+        // the AMD loader.
+        define('LayerService', ["q", "./item"], function (Q, ItemService) {
+            return root.LayerService = factory(Q, ItemService);
+        });
     } else {
         GeoPlatform.LayerService = factory(Q, GeoPlatform.ItemService);
     }
@@ -1954,19 +1933,19 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 });
 
 (function (root, factory) {
-    if (typeof define === "function" && define.amd) {
-        // Now we're wrapping the factory and assigning the return
-        // value to the root (window) and returning it as well to
-        // the AMD loader.
-        define(["q", "ItemTypes", "ItemService"], function (Q, ItemTypes, ItemService) {
-            return root.ServiceService = factory(Q, ItemTypes, ItemService);
-        });
-    } else if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === "object" && module.exports) {
+    if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === "object" && module.exports) {
         // I've not encountered a need for this yet, since I haven't
         // run into a scenario where plain modules depend on CommonJS
         // *and* I happen to be loading in a CJS browser environment
         // but I'm including it for the sake of being thorough
         module.exports = root.ServiceService = factory(require('q'), require('../shared/types'), require('./item'));
+    } else if (typeof define === "function" && define.amd) {
+        // Now we're wrapping the factory and assigning the return
+        // value to the root (window) and returning it as well to
+        // the AMD loader.
+        define('ServiceService', ["q", "../shared/types", "./item"], function (Q, ItemTypes, ItemService) {
+            return root.ServiceService = factory(Q, ItemTypes, ItemService);
+        });
     } else {
         GeoPlatform.ServiceService = factory(Q, GeoPlatform.ItemTypes, GeoPlatform.ItemService);
     }
@@ -2150,19 +2129,19 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 });
 
 (function (root, factory) {
-    if (typeof define === "function" && define.amd) {
-        // Now we're wrapping the factory and assigning the return
-        // value to the root (window) and returning it as well to
-        // the AMD loader.
-        define(["q", "ItemService"], function (Q, ItemService) {
-            return root.GalleryService = factory(Q, ItemService);
-        });
-    } else if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === "object" && module.exports) {
+    if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === "object" && module.exports) {
         // I've not encountered a need for this yet, since I haven't
         // run into a scenario where plain modules depend on CommonJS
         // *and* I happen to be loading in a CJS browser environment
         // but I'm including it for the sake of being thorough
         module.exports = root.GalleryService = factory(require('q'), require('./item'));
+    } else if (typeof define === "function" && define.amd) {
+        // Now we're wrapping the factory and assigning the return
+        // value to the root (window) and returning it as well to
+        // the AMD loader.
+        define('GalleryService', ["q", "./item"], function (Q, ItemService) {
+            return root.GalleryService = factory(Q, ItemService);
+        });
     } else {
         GeoPlatform.GalleryService = factory(Q, GeoPlatform.ItemService);
     }
@@ -2235,19 +2214,19 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 });
 
 (function (root, factory) {
-    if (typeof define === "function" && define.amd) {
-        // Now we're wrapping the factory and assigning the return
-        // value to the root (window) and returning it as well to
-        // the AMD loader.
-        define(["q", "ItemService"], function (Q, ItemService) {
-            return root.MapService = factory(Q, ItemService);
-        });
-    } else if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === "object" && module.exports) {
+    if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === "object" && module.exports) {
         // I've not encountered a need for this yet, since I haven't
         // run into a scenario where plain modules depend on CommonJS
         // *and* I happen to be loading in a CJS browser environment
         // but I'm including it for the sake of being thorough
         module.exports = root.MapService = factory(require('q'), require('./item'));
+    } else if (typeof define === "function" && define.amd) {
+        // Now we're wrapping the factory and assigning the return
+        // value to the root (window) and returning it as well to
+        // the AMD loader.
+        define('MapService', ["q", "./item"], function (Q, ItemService) {
+            return root.MapService = factory(Q, ItemService);
+        });
     } else {
         GeoPlatform.MapService = factory(Q, GeoPlatform.ItemService);
     }
@@ -2287,19 +2266,19 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 });
 
 (function (root, factory) {
-    if (typeof define === "function" && define.amd) {
-        // Now we're wrapping the factory and assigning the return
-        // value to the root (window) and returning it as well to
-        // the AMD loader.
-        define(["q", "ItemService"], function (Q, ItemService) {
-            return root.DatasetService = factory(Q, ItemService);
-        });
-    } else if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === "object" && module.exports) {
+    if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === "object" && module.exports) {
         // I've not encountered a need for this yet, since I haven't
         // run into a scenario where plain modules depend on CommonJS
         // *and* I happen to be loading in a CJS browser environment
         // but I'm including it for the sake of being thorough
         module.exports = root.DatasetService = factory(require('q'), require('./item'));
+    } else if (typeof define === "function" && define.amd) {
+        // Now we're wrapping the factory and assigning the return
+        // value to the root (window) and returning it as well to
+        // the AMD loader.
+        define('DatasetService', ["q", "./item"], function (Q, ItemService) {
+            return root.DatasetService = factory(Q, ItemService);
+        });
     } else {
         GeoPlatform.DatasetService = factory(Q, GeoPlatform.ItemService);
     }
@@ -2339,19 +2318,19 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 });
 
 (function (root, factory) {
-    if (typeof define === "function" && define.amd) {
-        // Now we're wrapping the factory and assigning the return
-        // value to the root (window) and returning it as well to
-        // the AMD loader.
-        define(["q"], function (Q) {
-            return root.UtilsService = factory(Q);
-        });
-    } else if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === "object" && module.exports) {
+    if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === "object" && module.exports) {
         // I've not encountered a need for this yet, since I haven't
         // run into a scenario where plain modules depend on CommonJS
         // *and* I happen to be loading in a CJS browser environment
         // but I'm including it for the sake of being thorough
         module.exports = root.UtilsService = factory(require('q'));
+    } else if (typeof define === "function" && define.amd) {
+        // Now we're wrapping the factory and assigning the return
+        // value to the root (window) and returning it as well to
+        // the AMD loader.
+        define('UtilsService', ["q"], function (Q) {
+            return root.UtilsService = factory(Q);
+        });
     } else {
         GeoPlatform.UtilsService = factory(Q);
     }
@@ -2477,19 +2456,19 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 });
 
 (function (root, factory) {
-    if (typeof define === "function" && define.amd) {
-        // Now we're wrapping the factory and assigning the return
-        // value to the root (window) and returning it as well to
-        // the AMD loader.
-        define(["q", "QueryParameters"], function (Q, QueryParameters) {
-            return root.KGService = factory(Q, QueryParameters);
-        });
-    } else if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === "object" && module.exports) {
+    if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === "object" && module.exports) {
         // I've not encountered a need for this yet, since I haven't
         // run into a scenario where plain modules depend on CommonJS
         // *and* I happen to be loading in a CJS browser environment
         // but I'm including it for the sake of being thorough
         module.exports = root.KGService = factory(require('q'), require('../shared/parameters'));
+    } else if (typeof define === "function" && define.amd) {
+        // Now we're wrapping the factory and assigning the return
+        // value to the root (window) and returning it as well to
+        // the AMD loader.
+        define('KGService', ["q", "../shared/parameters"], function (Q, QueryParameters) {
+            return root.KGService = factory(Q, QueryParameters);
+        });
     } else {
         GeoPlatform.KGService = factory(Q, GeoPlatform.QueryParameters);
     }
@@ -2628,19 +2607,19 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 });
 
 (function (root, factory) {
-    if (typeof define === "function" && define.amd) {
-        // Now we're wrapping the factory and assigning the return
-        // value to the root (window) and returning it as well to
-        // the AMD loader.
-        define(["ItemTypes", "ItemService", "LayerService", "ServiceService", "GalleryService", "DatasetService", "MapService"], function (ItemTypes, ItemService, LayerService, ServiceService, GalleryService, DatasetService, MapService) {
-            return root.ServiceFactory = factory(ItemTypes, ItemService, LayerService, ServiceService, GalleryService, DatasetService, MapService);
-        });
-    } else if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === "object" && module.exports) {
+    if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === "object" && module.exports) {
         // I've not encountered a need for this yet, since I haven't
         // run into a scenario where plain modules depend on CommonJS
         // *and* I happen to be loading in a CJS browser environment
         // but I'm including it for the sake of being thorough
         module.exports = root.ServiceFactory = factory(require('../shared/types'), require('./item'), require('./layer'), require('./service'), require('./gallery'), require('./dataset'), require('./map'));
+    } else if (typeof define === "function" && define.amd) {
+        // Now we're wrapping the factory and assigning the return
+        // value to the root (window) and returning it as well to
+        // the AMD loader.
+        define('ServiceFactory', ["../shared/types", "./item", "./layer", "./service", "./gallery", "./dataset", "./map"], function (ItemTypes, ItemService, LayerService, ServiceService, GalleryService, DatasetService, MapService) {
+            return root.ServiceFactory = factory(ItemTypes, ItemService, LayerService, ServiceService, GalleryService, DatasetService, MapService);
+        });
     } else {
         GeoPlatform.ServiceFactory = factory(GeoPlatform.ItemTypes, GeoPlatform.ItemService, GeoPlatform.LayerService, GeoPlatform.ServiceService, GeoPlatform.GalleryService, GeoPlatform.DatasetService, GeoPlatform.MapService);
     }

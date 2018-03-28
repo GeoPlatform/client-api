@@ -34,5 +34,8 @@ module.exports = {
     DatasetService  : DatasetService,
     MapService      : MapService,
     UtilsService    : UtilsService,
-    KGService       : KGService
+    KGService       : KGService,
+
+
+    Config          : require('./shared/config')
 };

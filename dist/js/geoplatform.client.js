@@ -279,7 +279,7 @@
             let deferred = Q.defer();
 
             const request = require('request');
-            if(!!request) {
+            if(!request) {
                 throw new Error("Module 'request' not available");
             }
             // require('request-debug')(request);

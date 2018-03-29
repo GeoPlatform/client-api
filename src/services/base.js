@@ -1,5 +1,5 @@
 
-import Q from 'q'
+import Q from 'q';
 
 /**
  * BaseService

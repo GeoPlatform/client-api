@@ -13,11 +13,10 @@ and the NodeJS implementation requires a NodeJS environment of at least 6.9 or l
 ## Dependencies and Requirements
 This library requires the following dependencies be present in your application:
 
-- [jQuery](https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js) - version 2.1+
 - [Q](https://cdnjs.cloudflare.com/ajax/libs/q.js/1.5.1/q.js) - version 1.5+
+- [jQuery](https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js) - version 2.1+
+- [AngularJS 1.x](http://...) - optional, used by the NGHttpClient component
 
-### Angular (v1.x)
-This library provides an Angular-based http component which uses Angular's $http service in order to communicate with the GeoPlatform API endpoints.  This component is not bundled with the default build file ("geoplatform.client.js"), but is available using the additional build file: "geoplatform.client.ng.js".
 
 ## Using GeoPlatform API Client in your app...
 
@@ -43,14 +42,11 @@ If not using a build tool like WebPack or Browserify, make sure to include the d
 
 ```html
 <script src="geoplatform.client.js"></script>
-<!-- optionally include angular component too -->
-<script src="geoplatform.client.ng.js"></script>
 ```
 
 __Note:__ You can also load the library from a CDN:
 ```html
 <script src="http://dyk46gk69472z.cloudfront.net/geoplatform.client/_VERSION_/js/geoplatform.client.js"></script>
-<script src="http://dyk46gk69472z.cloudfront.net/geoplatform.client/_VERSION_/js/geoplatform.client.ng.js"></script>
 ```
 
 ### Referencing Components in your App
@@ -58,28 +54,27 @@ __Note:__ You can also load the library from a CDN:
 #### Using 'require()'
 ```javascript
 //include the config export used to define API properties needed later
-const ItemService = require('geoplatform.client/src/services/item');
-
-//or if inside NodeJS, simpler syntax:
 const ItemService = require('geoplatform.client').ItemService;
 ```
 #### Using ES6 'import ... from'
 ```javascript
 //include the config export used to define API properties needed later
-import ItemService from 'geoplatform.client/src/services/item';
+import { ItemService } from 'geoplatform.client';
 ```
-#### Using the GeoPlatform Global
+#### Using the "GeoPlatformClient" Global
 ```javascript
 //include the config export used to define API properties needed later
-const ItemService = GeoPlatform.ItemService;
+const ItemService = GeoPlatformClient.ItemService;
 ```
 
 #### Environment Variables
-An example of the `GeoPlatform` object and environment variables contained
-within is shown below.
+The `Config` object exposed by GeoPlatform Client API allows configuration of
+environment variables necessary to interact with the GeoPlatform API. Below is
+an example of how to configure this object.
 
 ```javascript
-GeoPlatform = {
+import { Config } from 'geoplatform.client';
+Config.configure({
 
     //REQUIRED: environment the application is deployed within
     // one of "development", "sit", "stg", "prd", or "production"
@@ -94,10 +89,13 @@ GeoPlatform = {
     //{env}-{id} of application deployed
     "appId" : "development-mv"
 
-};
+});
+
+let url = Config.ualUrl;    //will now be set as configured above
 ```
 
-
+__Note:__ You must configure this before importing other GeoPlatform libraries which use this
+library, such as GeoPlatform.MapCore.
 
 ### Service and Query Documentation
 To learn how to use the GeoPlatform API to fetch, create, update, and remove
@@ -128,8 +126,15 @@ an authentication token or the request will be denied by the GeoPlatform API.
 
 
 ```javascript
+//es6 import
+import { JQueryHttpClient } from 'geoplatform.client';
+//or using require()
+//const JQueryHttpClient = require('geoplatform.client').JQueryHttpClient;
+//or using global
+//const JQueryHttpClient = GeoPlatformClient.JQueryHttpClient;
+
 let myJwtToken = //fetched previous to this code block
-let client = new GeoPlatform.JQueryHttpClient({
+let client = new JQueryHttpClient({
     token: myJwtToken
 });
 
@@ -143,7 +148,6 @@ client.setAuthToken(myTokenFn);
 
 __Note:__ If the token is refreshed or removed, you must make sure to update the client
 with the latest information.
-
 
 ## Miscellaneous
 

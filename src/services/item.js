@@ -184,11 +184,10 @@
                 if(!arg || arg.indexOf('http')<0) {
                     throw new Error("Must provide a valid URL or File");
                 }
-                let url = this.apiBase + '/api/import';
                 let isFile = typeof(arg) !== 'string';
                 let ro = {
                     method:"POST",
-                    url: this.url,
+                    url: this.apiBase + '/api/import',
                     processData: true,  //for jQuery
                     formData: true,     //for Node (RequestJS)
                     options: options
@@ -203,7 +202,12 @@
                 let opts = this.buildRequest(ro);
                 return this.execute(opts);
             })
-            .catch( e => this._onError(e, `ItemService.import() - Error importing item`) );
+            .catch( e => {
+                let err = new Error(`ItemService.import() - Error importing item: ${e.message}`);
+                if(e.status === 409 || ~e.message.indexOf('Item already exists')) err.status = 409;
+                if(e.item) err.item = e.item;
+                return Q.reject(err);
+            });
         }
 
 

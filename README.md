@@ -1,52 +1,77 @@
 # GeoPlatform API Client Library
-This library provides functionality used to work with GeoPlatform Map, Layer,
-Service and other objects through the GeoPlatform API.
+This library provides components which provide easier usage of the GeoPlatform API.
+It is not required to interact with the GeoPlatform API, but offers services and helper
+functionality to speed up your application's integration with the GeoPlatform.
 
-## Dependencies
+This library is framework _flexible_. The default implementations
+require JQuery to facilitate AJAX XHR requests with the GeoPlatform API hosts.
+Alternatively, implementations for Angular 1.x and NodeJS are provided.
+
+__Note:__ The JQuery and Angular implementations require an Internet browser environment
+and the NodeJS implementation requires a NodeJS environment of at least 6.9 or later.
+
+## Dependencies and Requirements
 This library requires the following dependencies be present in your application:
-
-### Third Party Dependencies
 
 - [jQuery](https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js) - version 2.1+
 - [Q](https://cdnjs.cloudflare.com/ajax/libs/q.js/1.5.1/q.js) - version 1.5+
 
+### Angular (v1.x)
+This library provides an Angular-based http component which uses Angular's $http service in order to communicate with the GeoPlatform API endpoints.  This component is not bundled with the default build file ("geoplatform.client.js"), but is available using the additional build file: "geoplatform.client.ng.js".
 
-## NG-Common
-The ng-common GeoPlatform library provides Angular 1.x components, services,
-filters, and other resources for interacting with the GeoPlatform API and Object Model
-from within the UI of an application. It does not rely upon this library,
-nor does this library rely upon it.
+## Using GeoPlatform API Client in your app...
 
-This library contains Angular-based services for invoking the GeoPlatform API,
-but nothing more. If you need visual components or support for more than just
-API calling, it is recommended that you use ng-common in your application.
+### Include as a Dependency
+Include Client-API as a dependency of your application inside the package.json file (or similar dependency definition file).
 
-It is possible to utilize both libraries; ng-common at the front-end UI layer and
-this library within the backend NodeJS server layer. See the NodeJS section on how
-to use client-api in a NodeJS application.
-
-
-## Including GeoPlatform API Client in your app...
-
-### Within a front-end application
-This dependency should be included in your app _after_ you provided environment-specific
-configuration variables. It expects `window.GeoPlatform` to exist at runtime.
-See Environment Variables below for details on what is expected to be provided.
-
-```html
-<!-- define 'GeoPlatform' namespace and set env variables-->
-<script src="env.js"></script>
-<!-- include ng-common -->
-<script src="geoplatform.common.js"></script>
-<!-- include map core -->
-<script src="geoplatform.client.js"></script>
+```
+   ...
+   "dependencies": {
+       ...,
+       "geoplatform.client": "git+https://github.com/GeoPlatform/client-api.git",
+       ...
+   }
+   ...
 ```
 
-If you are using Angular 1.x, import the client.ng.js file to get access to
-"NG" services which leverage Angular's $http service when fetching data.
+and then run `npm install geoplatform.client` or `yarn add geoplatform.client`.  
+
+_Note:_ You can try installing using the --save option but NPM sometimes has issues with installing and updating GIT repo-hosted modules. It's better to explicitly add it to your package.json and then install it.
+
+
+If not using a build tool like WebPack or Browserify, make sure to include the distribution in your application's HTML file(s):
 
 ```html
+<script src="geoplatform.client.js"></script>
+<!-- optionally include angular component too -->
 <script src="geoplatform.client.ng.js"></script>
+```
+
+__Note:__ You can also load the library from a CDN:
+```html
+<script src="http://dyk46gk69472z.cloudfront.net/geoplatform.client/_VERSION_/js/geoplatform.client.js"></script>
+<script src="http://dyk46gk69472z.cloudfront.net/geoplatform.client/_VERSION_/js/geoplatform.client.ng.js"></script>
+```
+
+### Referencing Components in your App
+
+#### Using 'require()'
+```javascript
+//include the config export used to define API properties needed later
+const ItemService = require('geoplatform.client/src/services/item');
+
+//or if inside NodeJS, simpler syntax:
+const ItemService = require('geoplatform.client').ItemService;
+```
+#### Using ES6 'import ... from'
+```javascript
+//include the config export used to define API properties needed later
+import ItemService from 'geoplatform.client/src/services/item';
+```
+#### Using the GeoPlatform Global
+```javascript
+//include the config export used to define API properties needed later
+const ItemService = GeoPlatform.ItemService;
 ```
 
 #### Environment Variables
@@ -73,29 +98,13 @@ GeoPlatform = {
 ```
 
 
-### Within a NodeJS Server-side application
 
-First, add this library as a run-time dependency to your server's package.json file:
-
-```json
-"geoplatform.client": "git+https://github.com/GeoPlatform/client-api.git",
-```
-
-Then, install the library using NPM
-
-```
-$>npm install geoplatform.client
-```
-
-Lastly, include the necessary modules in your application's source code. See the [GeoPlatform API](api.md) documentation for details.
-
-
-## Using GeoPlatform API Client
+### Service and Query Documentation
 To learn how to use the GeoPlatform API to fetch, create, update, and remove
 GeoPlatform Assets, see the [GeoPlatform API](api.md) and [Query](query.md) documentation.
 
 
-## Examples
+### Examples
 
 Look inside the "examples" folder and its sub-folders to see how to use the client API.
 
@@ -139,37 +148,4 @@ with the latest information.
 ## Miscellaneous
 
 ### Conventions
-If defining a class or object or constant, use upper case. If defining a function,
-use camel case.
-
-### Referencing Classes
-When using inside a browser-based client application, it is recommended you reference
-classes using the GeoPlatform namespace, unless your application uses a bundler
-framework that supports AMD modules.
-
-#### AMD Modules
-```javascript
-define(['ItemService', 'JQueryHttpClient'], function(ItemService, JQueryHttpClient) {
-    const URL = "...";
-    let service = new ItemService(URL, new JQueryHttpClient());
-});
-```
-
-#### Without AMD
-```javascript
-const URL = "...";
-let service = new GeoPlatform.ItemService(URL,
-    new GeoPlatform.JQueryHttpClient());
-```
-
-#### NodeJS / CommonJS
-When inside NodeJS or any CommonJS module-supporting framework...
-
-```javascript
-const GPAPI = require('geoplatform.client');
-const ItemService = GPAPI.ItemService;
-const HttpClient = GPAPI.HttpClient;
-
-const URL = '...';
-let service = new ItemService(URL, new HttpClient());
-```
+If defining a class or object or constant, use upper case. If defining a function, use camel case.

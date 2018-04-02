@@ -6,7 +6,7 @@
         // *and* I happen to be loading in a CJS browser environment
         // but I'm including it for the sake of being thorough
         module.exports = (
-            root.ItemService = factory(require('q'))
+            root.BaseService = factory(require('q'))
         );
     } else if(typeof define === "function" && define.amd) {
         // Now we're wrapping the factory and assigning the return
@@ -16,12 +16,12 @@
             return (root.ItemService = factory(Q));
         });
     } else {
-        GeoPlatform.ItemService = factory(Q);
+        GeoPlatform.BaseService = factory(Q);
     }
 }(this||window, function(Q) {
 
     /**
-     * ItemService
+     * BaseService
      * service for working with the GeoPlatform API to
      * retrieve and manipulate items.
      *
@@ -44,7 +44,7 @@
      *      itemService.patch(itemId,patch).then(item=>{...}).catch(e=>{...});
      *
      */
-    class ItemService {
+    class BaseService {
 
         constructor(url) {
             this.setUrl(url);
@@ -67,7 +67,7 @@
          * @return {Promise} resolving Item object or an error
          */
         get (id) {
-            return Q.reject(new Error("Must use a subclass of ItemService"));
+            return Q.reject(new Error("Must use a subclass of BaseService"));
         }
 
         /**
@@ -75,7 +75,7 @@
          * @return {Promise} resolving Item object or an error
          */
         save (itemObj) {
-            return Q.reject(new Error("Must use a subclass of ItemService"));
+            return Q.reject(new Error("Must use a subclass of BaseService"));
         }
 
         /**
@@ -83,7 +83,7 @@
          * @return {Promise} resolving true if successful or an error
          */
         remove (id) {
-            return Q.reject(new Error("Must use a subclass of ItemService"));
+            return Q.reject(new Error("Must use a subclass of BaseService"));
         }
 
         /**
@@ -92,11 +92,11 @@
          * @return {Promise} resolving Item object or an error
          */
         patch (id, patch) {
-            return Q.reject(new Error("Must use a subclass of ItemService"));
+            return Q.reject(new Error("Must use a subclass of BaseService"));
         }
 
         search (arg) {
-            return Q.reject(new Error("Must use a subclass of ItemService"));
+            return Q.reject(new Error("Must use a subclass of BaseService"));
         }
 
 
@@ -126,6 +126,6 @@
         }
     }
 
-    return ItemService;
+    return BaseService;
 
 }));

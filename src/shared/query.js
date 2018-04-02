@@ -649,27 +649,6 @@
         }
 
 
-        // // -----------------------------------------------------------
-        //
-        //
-        // /**
-        //  * @param {int} start - beginning index of results to request
-        //  */
-        // start (start) {
-        //     this.setStart(start);
-        //     return this;
-        // }
-        //
-        // setStart(start) {
-        //     if(isNaN(start)) return;
-        //     this.query.start = start*1;
-        // }
-        //
-        // getStart() {
-        //     return this.query.start;
-        // }
-
-
         // -----------------------------------------------------------
 
 

@@ -37,7 +37,7 @@
         PUBLISHERS       : 'publisher.id',
         PUBLISHERS_LABEL : 'publisher.label',
         PUBLISHERS_URI   : 'publisher.uri',
-        USED_BY          : 'usedBy.id',
+        USED_BY_ID       : 'usedBy.id',
         USED_BY_LABEL    : 'usedBy.label',
         USED_BY_URI      : 'usedBy.uri',
         SCHEMES_ID       : 'scheme.id',

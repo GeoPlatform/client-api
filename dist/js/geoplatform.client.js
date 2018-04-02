@@ -12,6 +12,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 (function (root, factory) {
     if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === "object" && module.exports) {
         // I've not encountered a need for this yet, since I haven't
@@ -30,19 +32,17 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         GeoPlatform.ItemTypes = factory();
     }
 })(undefined || window, function () {
+    var _ItemTypes;
 
-    var ItemTypes = {
+    var ItemTypes = (_ItemTypes = {
         DATASET: "dcat:Dataset",
         SERVICE: "regp:Service",
         LAYER: "Layer",
         MAP: "Map",
         GALLERY: "Gallery",
         COMMUNITY: 'Community',
-        ORGANIZATION: "org:Organization",
-        CONCEPT: "skos:Concept",
-        CONCEPT_SCHEME: "skos:ConceptScheme",
-        STANDARD: 'dct:Standard'
-    };
+        ORGANIZATION: "org:Organization"
+    }, _defineProperty(_ItemTypes, "COMMUNITY", 'Community'), _defineProperty(_ItemTypes, "CONCEPT", "skos:Concept"), _defineProperty(_ItemTypes, "CONCEPT_SCHEME", "skos:ConceptScheme"), _defineProperty(_ItemTypes, "STANDARD", 'dct:Standard'), _ItemTypes);
 
     return ItemTypes;
 });
@@ -81,7 +81,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         PUBLISHERS: 'publisher.id',
         PUBLISHERS_LABEL: 'publisher.label',
         PUBLISHERS_URI: 'publisher.uri',
-        USED_BY: 'usedBy.id',
+        USED_BY_ID: 'usedBy.id',
         USED_BY_LABEL: 'usedBy.label',
         USED_BY_URI: 'usedBy.uri',
         SCHEMES_ID: 'scheme.id',
@@ -189,10 +189,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 var result = {};
                 for (var prop in this.query) {
                     var value = this.query[prop];
-                    if (value !== null && typeof value.push !== 'undefined') {
+                    if (value === null || value === undefined) continue;
+                    if (typeof value.push !== 'undefined') {
                         value = value.join(',');
                     }
-                    result[prop] = value;
+                    if (typeof value !== 'string' || value.length > 0) result[prop] = value;
                 }
                 return result;
             }
@@ -832,27 +833,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             value: function getFields() {
                 return this.query.fields;
             }
-
-            // // -----------------------------------------------------------
-            //
-            //
-            // /**
-            //  * @param {int} start - beginning index of results to request
-            //  */
-            // start (start) {
-            //     this.setStart(start);
-            //     return this;
-            // }
-            //
-            // setStart(start) {
-            //     if(isNaN(start)) return;
-            //     this.query.start = start*1;
-            // }
-            //
-            // getStart() {
-            //     return this.query.start;
-            // }
-
 
             // -----------------------------------------------------------
 
@@ -2987,11 +2967,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                     if (!arg || arg.indexOf('http') < 0) {
                         throw new Error("Must provide a valid URL or File");
                     }
-                    var url = _this17.apiBase + '/api/import';
                     var isFile = typeof arg !== 'string';
                     var ro = {
                         method: "POST",
-                        url: _this17.url,
+                        url: _this17.apiBase + '/api/import',
                         processData: true, //for jQuery
                         formData: true, //for Node (RequestJS)
                         options: options
@@ -3006,7 +2985,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                     var opts = _this17.buildRequest(ro);
                     return _this17.execute(opts);
                 }).catch(function (e) {
-                    return _this17._onError(e, "ItemService.import() - Error importing item");
+                    var err = new Error("ItemService.import() - Error importing item: " + e.message);
+                    if (e.status === 409 || ~e.message.indexOf('Item already exists')) err.status = 409;
+                    if (e.item) err.item = e.item;
+                    return Q.reject(err);
                 });
             }
 
@@ -3769,7 +3751,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 }).then(function (response) {
                     return response;
                 }).catch(function (e) {
-                    return _this37._onError(e, "UtilsService.parseFile() - Error parsing file");
+                    var err = new Error("UtilsService.parseFile() - Error parsing file: " + e.message);
+                    return Q.reject(err);
                 });
             }
 

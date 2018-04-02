@@ -1,5 +1,4 @@
 
-
 (function (root, factory) {
     if(typeof module === "object" && module.exports) {
         // I've not encountered a need for this yet, since I haven't
@@ -7,35 +6,26 @@
         // *and* I happen to be loading in a CJS browser environment
         // but I'm including it for the sake of being thorough
         module.exports = (
-            root.ItemTypes = factory()
+            root.GeoPlatform = factory()
         );
     } else if(typeof define === "function" && define.amd) {
         // Now we're wrapping the factory and assigning the return
         // value to the root (window) and returning it as well to
         // the AMD loader.
-        define([], function() {
-            return (root.ItemTypes = factory());
+        define('GeoPlatform', function() {
+            return (root.GeoPlatform = factory());
         });
     } else {
-        GeoPlatform.ItemTypes = factory();
+        root.GeoPlatform = factory();
     }
 }(this||window, function() {
 
-
-    const ItemTypes = {
-        DATASET         : "dcat:Dataset",
-        SERVICE         : "regp:Service",
-        LAYER           : "Layer",
-        MAP             : "Map",
-        GALLERY         : "Gallery",
-        COMMUNITY       : 'Community',
-        ORGANIZATION    : "org:Organization",
-        COMMUNITY       : 'Community',
-        CONCEPT         : "skos:Concept",
-        CONCEPT_SCHEME  : "skos:ConceptScheme",
-        STANDARD        : 'dct:Standard'
+    return {
+        //ualUrl: '...',
+        //appId: '...',
+        configure: function(options) {
+            Object.assign(this, options);
+        }
     };
-
-    return ItemTypes;
 
 }));

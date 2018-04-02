@@ -88,7 +88,10 @@
                 return this.execute(opts);
             })
             .then( response => response )
-            .catch(e => this._onError(e, "UtilsService.parseFile() - Error parsing file") );
+            .catch(e => {
+                let err = new Error(`UtilsService.parseFile() - Error parsing file: ${e.message}`);
+                return Q.reject(err);
+            });
         }
 
 

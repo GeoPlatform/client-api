@@ -1,12 +1,12 @@
 
-const Client = require('../../dist/geoplatform.client.rollup.min');
+const Client = require('../../dist/js/geoplatform.client');
 const Query = Client.Query;
 const ItemTypes = Client.ItemTypes;
 const QueryParameters = Client.QueryParameters;
 const ItemService = Client.ItemService;
 const HttpClient = Client.NodeHttpClient;
 
-const URL = 'https://sit-ual.geoplatform.us';
+const URL = 'https://ual.geoplatform.gov';
 
 
 let service = new ItemService(URL, new HttpClient());

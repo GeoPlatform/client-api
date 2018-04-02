@@ -9,6 +9,12 @@ var pkg         = require('./package.json'),
     srcmaps     = require('gulp-sourcemaps'),
     rollup      = require('rollup');
 
+const rollupBabel = require('rollup-plugin-babel');
+const resolve = require('rollup-plugin-node-resolve');
+const commonjs = require('rollup-plugin-commonjs');
+const builtIns = require('rollup-plugin-node-builtins');
+
+
 require('gulp-help')(gulp, { description: 'Help listing.' });
 
 gulp.task('jshint', function () {
@@ -28,62 +34,31 @@ gulp.task('jshint', function () {
 
 gulp.task('js', 'Concat, Uglify JavaScript into a single file', function() {
 
-    return rollup.rollup({ input: './src/index.js', plugins: [] })
+    return rollup.rollup({
+        input: './src/index.js',
+        external: ['Q', 'q'],
+        plugins: [
+            builtIns(),
+            resolve({
+                jsnext: true,
+                main: true,
+                browser: true,
+            }),
+            rollupBabel({ exclude: 'node_modules/**' })
+        ]
+    })
     .then(bundle => {
         return bundle.write({
           file: './dist/js/' + pkg.name + '.js',
           format: 'umd',
           name: 'GeoPlatformClient',
+          banner: '/* This software has been approved for release by the U.S. Department of the Interior. Although the software has been subjected to rigorous review, the DOI reserves the right to update the software as needed pursuant to further analysis and review. No warranty, expressed or implied, is made by the DOI or the U.S. Government as to the functionality of the software and related material nor shall the fact of release constitute any such warranty. Furthermore, the software is released on condition that neither the DOI nor the U.S. Government shall be held liable for any damages resulting from its authorized or unauthorized use. */',
+          globals: {
+              'Q': 'q'
+          },
           sourcemap: true
         });
     });
-
-
-    //include module first, then other src files which depend on module
-    // gulp.src([
-    //     'src/shared/types.js',
-    //     'src/shared/parameters.js',
-    //     'src/shared/facets.js',
-    //     'src/shared/query.js',
-    //     'src/shared/query-factory.js',
-    //     'src/shared/classifiers.js',
-    //     'src/shared/kg-query.js',
-    //
-    //     'src/http/jq.js',
-    //     'src/services/item.js',
-    //     'src/services/layer.js',
-    //     'src/services/service.js',
-    //     'src/services/gallery.js',
-    //     'src/services/map.js',
-    //     'src/services/dataset.js',
-    //     'src/services/utils.js',
-    //     'src/services/kg.js',
-    //     'src/services/factory.js'
-    //
-    //     ])
-    //     // .pipe(srcmaps.init())
-    //     .pipe(concat(pkg.name + '.js'))
-    //     .pipe(babel({presets: ["es2015"]}))
-    //     .pipe(gulp.dest('dist/js'))
-    //     .pipe(uglify()).on('error', notify.onError("Error: <%= error.message %>"))
-    //     .pipe(rename({extname: ".min.js"}))
-    //     // .pipe(srcmaps.write('./'))
-    //     .pipe(gulp.dest('dist/js'))
-    //     .pipe(notify('Uglified JavaScript'));
-    //
-    //
-    //
-    //     //include module first, then other src files which depend on module
-    //     gulp.src([ 'src/http/ng.js' ])
-    //         // .pipe(srcmaps.init())
-    //         .pipe(concat(pkg.name + '.ng.js'))
-    //         .pipe(babel({presets: ["es2015"]}))
-    //         .pipe(gulp.dest('dist/js'))
-    //         .pipe(uglify()).on('error', notify.onError("Error: <%= error.message %>"))
-    //         .pipe(rename({extname: ".min.js"}))
-    //         // .pipe(srcmaps.write('./'))
-    //         .pipe(gulp.dest('dist/js'))
-    //         .pipe(notify('Uglified JavaScript'));
 });
 
 

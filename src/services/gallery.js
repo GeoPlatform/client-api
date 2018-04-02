@@ -1,6 +1,4 @@
 
-
-
 import Q from 'q';
 import ItemService from './item';
 

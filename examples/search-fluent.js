@@ -1,8 +1,8 @@
 
 
-const QueryFactory = GeoPlatform.QueryFactory;
-const ItemTypes = GeoPlatform.ItemTypes;
-const QueryParameters = GeoPlatform.QueryParameters;
+const QueryFactory = GeoPlatformClient.QueryFactory;
+const ItemTypes = GeoPlatformClient.ItemTypes;
+const QueryParameters = GeoPlatformClient.QueryParameters;
 
 let query = QueryFactory()
      .types([ItemTypes.DATASET, ItemTypes.SERVICE])

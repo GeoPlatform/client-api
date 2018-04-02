@@ -1,11 +1,11 @@
 
-const GPClient = require('../../src/index');
+const GPClient = require('../../dist/js/geoplatform.client');
 const Query = GPClient.Query;
 const ItemTypes = GPClient.ItemTypes;
 const ItemService = GPClient.ItemService;
-const HttpClient = GPClient.HttpClient;
+const HttpClient = GPClient.NodeHttpClient;
 
-const URL = 'https://sit-ual.geoplatform.us';
+const URL = 'https://ual.geoplatform.gov';
 
 
 let service = new ItemService(URL, new HttpClient());

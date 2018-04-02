@@ -1,15 +1,20 @@
 
+const Config = GeoPlatformClient.Config;
 
-const QueryFactory = GeoPlatform.QueryFactory;
-const ItemTypes = GeoPlatform.ItemTypes;
-const QueryParameters = GeoPlatform.QueryParameters;
-const QueryFacets = GeoPlatform.QueryFacets;
-const ItemService = GeoPlatform.ItemService;
+//configure env vars
+Config.configure({
+    ualUrl : 'https://ual.geoplatform.gov'
+});
 
-const JQHttpClient = GeoPlatform.JQueryHttpClient;
-const URL = 'https://sit-ual.geoplatform.us';
 
-let service = new ItemService( URL, new JQHttpClient() );
+const QueryFactory = GeoPlatformClient.QueryFactory;
+const ItemTypes = GeoPlatformClient.ItemTypes;
+const QueryParameters = GeoPlatformClient.QueryParameters;
+const QueryFacets = GeoPlatformClient.QueryFacets;
+const ItemService = GeoPlatformClient.ItemService;
+const JQHttpClient = GeoPlatformClient.JQueryHttpClient;
+
+let service = new ItemService( Config.ualUrl, new JQHttpClient() );
 
 
 let query1 = QueryFactory()

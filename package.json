@@ -2,7 +2,7 @@
     "name": "geoplatform.client",
     "version": "0.0.2",
     "description": "",
-    "main": "src/geoplatform.client.js",
+    "main": "dist/js/geoplatform.client.js",
     "scripts": {
         "distro": "gulp",
         "node": "node examples/search-node.js",
@@ -10,9 +10,7 @@
     },
     "keywords": [
         "GeoPlatform",
-        "Map",
-        "Layer",
-        "Service"
+        "API"
     ],
     "author": "Patrick Neal",
     "license": "ISC",

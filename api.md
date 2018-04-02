@@ -30,26 +30,41 @@ Pass the desired implementation to the service at construction along with the UR
 GeoPlatform API:
 
 ```javascript
-let url = GeoPlatform.ualUrl;
-let client = new GeoPlatform.JQueryHttpClient();
-let svc = new GeoPlatform.ItemService(url, client);
+import { Config, JQueryHttpClient, ItemService } from 'geoplatform.client';
+
+//or using require()
+//const GeoPlatformClient = require('geoplatform.client');
+//const Config = GeoPlatformClient.Config;
+//const JQueryHttpClient = GeoPlatformClient.JQueryHttpClient;
+//const ItemService = GeoPlatformClient.ItemService;
+
+//or using global
+//const Config = GeoPlatformClient.Config;
+//const JQueryHttpClient = GeoPlatformClient.JQueryHttpClient;
+//const ItemService = GeoPlatformClient.ItemService;
+
+let url = Config.ualUrl;
+let client = new JQueryHttpClient();
+let svc = new ItemService(url, client);
 ```
 
 
 HttpClients provided by this library are:
 
 - [JQueryHttpClient](src/http/jq.js) - client capable of using jQuery ajax support
+  - _requires jQuery v3.x to be included in your application._
 - [NGHttpClient](src/http/ng.js) - client capable of using Angular 1.x $http
+  - _requires Angular v1.x to be included in your application._
 - [NodeHttpClient](src/http/node.js) - client capable of using [RequestJS](https://github.com/request/request)
-
-__Note:__ `NGHttpClient` is provided by the 'ng' build file of this library ('geoplatform.client.ng.js').
+  - _requires requestJS version ? to be included in your application_
 
 
 #### Angular $http defaults
 If you are using GeoPlatform's ng-common library, which updates the $http defaults to include the 'Authorization' header with the user's token, please note that you must still provide the token to the NGHttpClient or you must provide the $http instance. NGClient by default uses the default angular injector to gain access to $http, which results in a different instance than one injected within your application.
 
 ```javascript
-const URL = GeoPlatform.ualUrl;
+//Note: using the "GeoPlatformClient" global variable in this example
+const URL = GeoPlatformClient.Config.ualUrl;
 angular.module('myApp').service('MyService', ['$http',  'AuthenticationService', function($http, AuthenticationService) {
 
     //option 1: provide $http instance
@@ -59,11 +74,11 @@ angular.module('myApp').service('MyService', ['$http',  'AuthenticationService',
 
     //option 2: set auth token
     let token = AuthenticationService.getJWTfromLocalStorage();
-    client = new NGHttpClient({
+    client = new GeoPlatformClient.NGHttpClient({
         token: token
     })
 
-    return new ItemService(URL, client);
+    return new GeoPlatformClient.ItemService(URL, client);
 }])
 ```
 
@@ -88,9 +103,11 @@ Creates a new instance of the service and points api calls to the specified GP A
 | httpClient | true | http provider to use |
 
 ```javascript
-let url = GeoPlatform.ualUrl;
-let client = new GeoPlatform.JQueryHttpClient();
-let itemSvc = new GeoPlatform.ItemService(url, client);
+//using es6 import in this example
+import { Config, JQueryHttpClient, ItemService } from 'geoplatform.client';
+let url = Config.ualUrl;
+let client = new JQueryHttpClient();
+let itemSvc = new ItemService(url, client);
 ```
 
 #### Search
@@ -101,7 +118,9 @@ Searches items using specified query parameters.
 | query     | false | js object or `GeoPlatform.Query` instance |
 
 ```javascript
-let query = new GeoPlatform.Query().q('water');
+//continuing from example above...
+import { Query } from 'geoplatform.client';
+let query = new Query().q('water');
 itemSvc.search(query)
 .then( response => {
     for(let i=0; i<response.results.length; ++i) {
@@ -134,8 +153,10 @@ Create or update the specified item. If 'item.id' exists, updates with HTTP-PUT.
 | item   | true | GeoPlatform Item to persist |
 
 ```javascript
+//continuing from examples above
+import { ItemTypes } from 'geoplatform.client';
 let item = {
-    type: GeoPlatform.ItemTypes.DATASET,
+    type: ItemTypes.DATASET,
     label: "My New Dataset",
     createdBy: myUserName
 };
@@ -255,7 +276,11 @@ Requests JSON style content for the FeatureLayer with the specified identifier.
 | layerId   | true | identifier of Layer to request style about |
 
 ```javascript
-let svc = new GeoPlatform.LayerService(url, client);
+//using es6 import in this example
+import { Config, JQueryHttpClient, LayerService } from 'geoplatform.client';
+const url = Config.ualUrl;
+let client = new JQueryHttpClient();
+let svc = new LayerService(url, client);
 svc.get(layerId).then( layer => {
     //fetch layer style info (feature layers only)
     if('FeatureLayer' !== layer.layerType) return null;
@@ -281,6 +306,9 @@ Requests feature information for RasterLayer with specified identifier using OGC
 
 
 ```javascript
+//using es6 import in this example
+import { Config, JQueryHttpClient, LayerService } from 'geoplatform.client';
+
 const WMS_LABEL = 'OGC Web Map Service (WMS)';
 let descOpts = {
     x: 50,
@@ -289,7 +317,8 @@ let descOpts = {
     height: 400,
     bbox: '-120,20,-66,50'
 };
-let svc = new GeoPlatform.LayerService(url, client);
+
+let svc = new LayerService(url, client);
 svc.get(layerId).then( layer => {
     //describe layer feature (wms layers only)
     let serviceLabel = layer.services[0].serviceType.label;
@@ -316,7 +345,9 @@ requests updated service information from the remote web service
 
 
 ```javascript
-let svc = new GeoPlatform.ServiceService(url, client);
+//using es6 import in this example
+import { Config, JQueryHttpClient, ServiceService } from 'geoplatform.client';
+let svc = new ServiceService(url, client);
 svc.get(serviceId)
 //get service information using Service Harvester
 .then( service => svc.about(service) )
@@ -332,7 +363,9 @@ svc.get(serviceId)
 Requests the list of supported service types that may be selected from, such as OGC Web Map Service (WMS) and ESRI Rest Map Service.
 
 ```javascript
-let svc = new GeoPlatform.ServiceService(url, client);
+//using es6 import in this example
+import { Config, JQueryHttpClient, ServiceService } from 'geoplatform.client';
+let svc = new ServiceService(url, client);
 svc.types()
 //get service information using Service Harvester
 .then( types => {
@@ -352,11 +385,13 @@ Creates a new GeoPlatform Service object using harvested service capabilities an
 | service   | true | GeoPlatform Service to import |
 
 ```javascript
+//using es6 import in this example
+import { Config, JQueryHttpClient, ServiceService } from 'geoplatform.client';
 let service = {
     href: "http://www.url.to/service/",
     serviceType: "OGC Web Map Service (WMS)" //or other type
 };
-let svc = new GeoPlatform.ServiceService(url, client);
+let svc = new ServiceService(url, client);
 svc.import(service)
 //get service information using Service Harvester
 .then( service => {
@@ -374,7 +409,9 @@ Re-harvests service layer information and updates the list of Layer objects.
 | serviceId   | true | identifier of Service to fetch layers from |
 
 ```javascript
-let svc = new GeoPlatform.ServiceService(url, client);
+//using es6 import in this example
+import { Config, JQueryHttpClient, ServiceService } from 'geoplatform.client';
+let svc = new ServiceService(url, client);
 svc.harvest(serviceId)
 //get service information using Service Harvester
 .then( layers => {
@@ -394,7 +431,9 @@ Initiates a performance test against the service and returns the service with up
 | serviceId   | true | identifier of Service to request style about |
 
 ```javascript
-let svc = new GeoPlatform.ServiceService(url, client);
+//using es6 import in this example
+import { Config, JQueryHttpClient, ServiceService } from 'geoplatform.client';
+let svc = new ServiceService(url, client);
 svc.liveTest(serviceId)
 //get service information using Service Harvester
 .then( service => {
@@ -412,7 +451,9 @@ Fetches most recent service statistics
 | serviceId   | true | identifier of Service to request statistics for |
 
 ```javascript
-let svc = new GeoPlatform.ServiceService(url, client);
+//using es6 import in this example
+import { Config, JQueryHttpClient, ServiceService } from 'geoplatform.client';
+let svc = new ServiceService(url, client);
 svc.statistics(serviceId)
 //get service information using Service Harvester
 .then( statistics => {
@@ -426,9 +467,12 @@ svc.statistics(serviceId)
 
 ### JQuery
 ```javascript
-let url = "https://sit-ual.geoplatform.us";
-let query = GeoPlatform.QueryFactory().types('Map','Layer');
-let svc = new GeoPlatform.ItemService(url, new GeoPlatform.JQueryHttpClient());
+//using es6 import in this example
+import { Config, JQueryHttpClient, ItemService, QueryFactory } from 'geoplatform.client';
+
+let url = Config.ualUrl;
+let query = QueryFactory().types('Map','Layer');
+let svc = new ItemService(url, new JQueryHttpClient());
 svc.search(query)
 .then( response => {
     if(!response.results.length) {
@@ -445,9 +489,11 @@ svc.search(query)
 ### Angular
 
 ```javascript
-let url = "https://sit-ual.geoplatform.us";
-let query = GeoPlatform.QueryFactory().types('Map','Layer');
-let svc = new GeoPlatform.ItemService(url, new GeoPlatform.NGHttpClient());
+//using es6 import in this example
+import { Config, NGHttpClient, ItemService, QueryFactory } from 'geoplatform.client';
+let url = Config.ualUrl;
+let query = QueryFactory().types('Map','Layer');
+let svc = new ItemService(url, new NGHttpClient());
 svc.search(query)
 .then( response => {
     if(!response.results.length) {
@@ -464,17 +510,14 @@ svc.search(query)
 ### NodeJS
 
 ```javascript
-const GPAPI = require('geoplatform.client')
-const Query = GPAPI.Query
-const ItemTypes = GPAPI.ItemTypes
-const ItemService = GPAPI.ItemService
-const HttpClient = GPAPI.HttpClient
+//using es6 import in this example
+import { Config, NodeHttpClient, ItemService, Query } from 'geoplatform.client';
 
 module.exports = {
     listDatasets: function() {
-        let apiUrl = 'https://sit-ual.geoplatform.us'
-        let query = new Query().types(ItemTypes.DATASET)
-        return new ItemService(apiUrl, new HttpClient()).search(query)
+        let apiUrl = Config.ualUrl;
+        let query = new Query().types(ItemTypes.DATASET);
+        return new ItemService(apiUrl, new NodeHttpClient()).search(query);
     }
 }
 ```

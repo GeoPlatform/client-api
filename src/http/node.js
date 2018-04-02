@@ -1,11 +1,6 @@
 
-const fs = require('fs');
-const Q = require('q');
-const request = require('request');
-// require('request-debug')(request);
-
-const HttpClientBase = require('./client');
-
+import Q from 'q';
+import HttpClientBase from './client';
 
 class NodeHttpClient extends HttpClientBase {
 
@@ -31,6 +26,8 @@ class NodeHttpClient extends HttpClientBase {
         }
 
         if(options.file) {
+            const fs = require('fs');
+            if(!fs) throw new Error("Module 'fs' not available");
             opts.formData = {
                 file: {
                     value:  fs.createReadStream(options.file.path),
@@ -78,6 +75,13 @@ class NodeHttpClient extends HttpClientBase {
      */
     execute(options) {
         let deferred = Q.defer();
+
+        const request = require('request');
+        if(!request) {
+            throw new Error("Module 'request' not available");
+        }
+        // require('request-debug')(request);
+
         request(options, (error, response, body) => {
             this.checkAndHandleError(error, response)
             .then( () =>  {
@@ -212,4 +216,4 @@ class NodeHttpClient extends HttpClientBase {
 }
 
 
-module.exports = NodeHttpClient;
+export default NodeHttpClient;

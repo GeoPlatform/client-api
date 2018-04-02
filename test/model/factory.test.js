@@ -2,7 +2,7 @@
 const chai = require('chai');
 const expect = chai.expect;
 
-const API = require('../../src/index');
+const API = require('../../dist/js/geoplatform.client');
 const Types = API.ItemTypes;
 const ItemFactory = API.ItemFactory;
 
@@ -33,7 +33,7 @@ describe('# ItemModel Factory', function() {
         item.getLayers().forEach( (state,li) => {
 
             let l1 = SampleMap.layers[li].layer;
-            
+
             expect(state.layer).to.exist;
             expect(state.layer.toJson).to.be.ok;
             expect(state.layer.getLabel()).to.equal(l1.label, "layer label was incorrect");

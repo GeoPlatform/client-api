@@ -1,25 +1,27 @@
 
-// const request = require('request');
-// require('request-debug')(request);
+const Config = GeoPlatformClient.Config;
+
+//configure env vars
+Config.configure({
+    ualUrl : 'https://ual.geoplatform.gov'
+});
 
 
-const KGQuery = GeoPlatform.KGQuery;
-const KGClassifiers = GeoPlatform.KGClassifiers;
-const ItemTypes = GeoPlatform.ItemTypes;
-const QueryParameters = GeoPlatform.QueryParameters;
-const KGService = GeoPlatform.KGService;
-const JQHttpClient = GeoPlatform.JQueryHttpClient;
-
-const URL = 'https://sit-ual.geoplatform.us';
+const KGQuery = GeoPlatformClient.KGQuery;
+const KGClassifiers = GeoPlatformClient.KGClassifiers;
+const ItemTypes = GeoPlatformClient.ItemTypes;
+const QueryParameters = GeoPlatformClient.QueryParameters;
+const KGService = GeoPlatformClient.KGService;
+const JQHttpClient = GeoPlatformClient.JQueryHttpClient;
 
 
-let service = new KGService(URL, new JQHttpClient());
+let service = new KGService(Config.ualUrl, new JQHttpClient());
 
 
 let query = new KGQuery()
      .types(ItemTypes.MAP)  //constrain to those used for Maps
      .classifiers(KGClassifiers.PLACE)    //constrain to those defining purpose
-     .q("paris")
+     .q("Paris")
      .page(0)
      .pageSize(50)
      .sort('modified', 'desc');
@@ -28,9 +30,10 @@ let query = new KGQuery()
 
 service.suggest(query)
 .then( response => {
-    let html = response.results.map(result => {
-        return `<li>${result.label}</li>`
-    });
+    let html = 'No results';
+    if(response.results.length) {
+        html = response.results.map(result => `<li>${result.label}</li>` );
+    }
     jQuery('#results').html(html);
 })
 .catch(e => {

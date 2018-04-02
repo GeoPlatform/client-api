@@ -3,15 +3,15 @@
 // require('request-debug')(request);
 
 
-const GPClient = require('../../src/index');
+const GPClient = require('../../dist/js/geoplatform.client');
 const KGQuery = GPClient.KGQuery;
 const ItemTypes = GPClient.ItemTypes;
 const QueryParameters = GPClient.QueryParameters;
 const KGClassifiers = GPClient.KGClassifiers;
 const KGService = GPClient.KGService;
-const HttpClient = GPClient.HttpClient;
+const HttpClient = GPClient.NodeHttpClient;
 
-const URL = 'https://sit-ual.geoplatform.us';
+const URL = 'https://ual.geoplatform.gov';
 
 
 let service = new KGService(URL, new HttpClient());
@@ -20,7 +20,7 @@ let service = new KGService(URL, new HttpClient());
 let query = new KGQuery()
      .types(ItemTypes.MAP)  //constrain to those used for Maps
      .classifiers(KGClassifiers.PLACE)    //constrain to those defining purpose
-     .q("paris")
+     .q("Paris")
      .page(0)
      .pageSize(50)
      .sort('modified', 'desc');
@@ -29,6 +29,7 @@ let query = new KGQuery()
 
 service.suggest(query)
 .then( response => {
+    if(!response.results.length) console.log("No results");
     response.results.forEach(result => {
         console.log(result.label);
     });

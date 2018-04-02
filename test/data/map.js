@@ -1,4 +1,4 @@
-const API = require('../../src/index');
+const API = require('../../dist/js/geoplatform.client');
 const Types = API.ItemTypes;
 
 module.exports = {

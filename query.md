@@ -1,8 +1,8 @@
 # Queries
 
-The 'search' method of `ItemService` implementations accepts both generic
-JS objects, containing parameter name and value combinations, and GeoPlatform.Query objects.
-`Query` provides methods for quickly building search criteria based upon the GeoPlatform object model.
+The `ItemService.search()` method accepts both generic JS objects, containing
+parameter name and value combinations, and `Query` objects. The `Query` class
+provides methods for quickly building search criteria based upon the GeoPlatform object model.
 
 ## Creating a Query
 You can instantiate `Query` directly or use `QueryFactory` to get a new `Query` instance.
@@ -10,19 +10,21 @@ You can instantiate `Query` directly or use `QueryFactory` to get a new `Query` 
 ### Client-side
 
 ```javascript
-let queryA = new GeoPlatform.Query();
+//using global variable
+let queryA = new GeoPlatformClient.Query();
 queryA.setQ("testing");
 
-let queryB = GeoPlatform.QueryFactory();
+let queryB = GeoPlatformClient.QueryFactory();
 queryB.setQ("testing");
 ```
 
 ### Server-side
 
 ```javascript
-const GPAPI = require('geoplatform.client')
-const Query = GPAPI.Query
-const QueryFactory = GPAPI.QueryFactory
+//using require
+const GeoPlatformClient = require('geoplatform.client')
+const Query = GeoPlatformClient.Query
+const QueryFactory = GeoPlatformClient.QueryFactory
 
 let queryA = new Query();
 queryA.setQ("testing");
@@ -40,11 +42,11 @@ method calls.
 
 ```javascript
 //Both of these are equivalent
-let queryA = new GeoPlatform.Query();
+let queryA = new GeoPlatformClient.Query();
 queryA.setTypes( 'Layer' );
 queryA.setEndDate( new Date().getTime() );
 
-let queryB = new GeoPlatform.Query()
+let queryB = new GeoPlatformClient.Query()
     .types( 'Layer' )
     .ends( new Date().getTime() );
 ```
@@ -56,7 +58,7 @@ You can get a list of the predefined query parameters supported by the
 
 ### Client-side
 ```javascript
-const PARAMS = GeoPlatform.QueryParameters;
+const PARAMS = GeoPlatformClient.QueryParameters;
 ```
 
 ### Server-side
@@ -77,14 +79,14 @@ Values with spaces are treated as multiple, OR'ed constraints. To search for a s
 phrase, wrap the value with double quotes.
 
 ```javascript
-let query = new GeoPlatform.Query().q('"This is a phrase"');
+let query = new GeoPlatformClient.Query().q('"This is a phrase"');
 ```
 
 ## Date Parameters
 Date values should be passed to `Query` methods as their millisecond representation.
 
 ```javascript
-let queryB = new GeoPlatform.Query().ends( new Date().getTime() );
+let queryB = new GeoPlatformClient.Query().ends( new Date().getTime() );
 ```
 
 ## Requesting specific result properties
@@ -110,7 +112,7 @@ _Note:_ You must specify the property name to use. For example, to also request
 the geographic extent for each item in the search results, do the following:
 
 ```javascript
-let query = new GeoPlatform.Query();
+let query = new GeoPlatformClient.Query();
 let fields = query.getFields();
 fields.push('extent'); //'extent' is the property to use in this case
 query.setFields(fields);
@@ -136,7 +138,7 @@ To omit facet information, use `Query.setFacets(false)`.  To request a different
 set of facets, do the following:
 
 ```javascript
-let query = new GeoPlatform.Query();
+let query = new GeoPlatformClient.Query();
 let facets = query.getFacets();
 facets.push('layerType'); //Layer.layerType facet info requested
 query.setFacets(facets);

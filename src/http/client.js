@@ -38,4 +38,4 @@ class HttpClientBase {
 
 }
 
-return HttpClientBase;
+export default HttpClientBase;

@@ -1,11 +1,11 @@
 
-const GPClient = require('../../src/index');
+const GPClient = require('../../dist/js/geoplatform.client');
 const Query = GPClient.Query;
 const ItemTypes = GPClient.ItemTypes;
 const ItemService = GPClient.ItemService;
-const HttpClient = GPClient.HttpClient;
+const HttpClient = GPClient.NodeHttpClient;
 
-const URL = 'https://sit-ual.geoplatform.us';
+const URL = 'https://ual.geoplatform.gov';
 
 
 let service = new ItemService(URL, new HttpClient());
@@ -17,8 +17,8 @@ query.types(ItemTypes.MAP)
      .resourceTypes('http://www.geoplatform.gov/ont/openmap/AGOLMap');
 service.search(query)
 .then( response => {
-    response.results.forEach(result => console.log(result.label) ); 
+    response.results.forEach(result => console.log(result.label) );
 })
 .catch(e => {
-    console.log(`NodeItemService Test - Error exporting dataset: ${e.message}`);
+    console.log(`Node Agol Test - Error searching items: ${e.message}`);
 });

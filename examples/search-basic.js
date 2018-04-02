@@ -1,8 +1,8 @@
 
 
-const Query = GeoPlatform.Query;
-const ItemTypes = GeoPlatform.ItemTypes;
-const QueryParameters = GeoPlatform.QueryParameters;
+const Query = GeoPlatformClient.Query;
+const ItemTypes = GeoPlatformClient.ItemTypes;
+const QueryParameters = GeoPlatformClient.QueryParameters;
 
 
 let query = new Query();

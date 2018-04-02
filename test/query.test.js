@@ -3,14 +3,14 @@
 const chai = require('chai');
 const expect = chai.expect;
 
-const API  = require('../src/index');
+const API  = require('../dist/js/geoplatform.client');
 const Query             = API.Query;
 const QueryParameters   = API.QueryParameters;
 const ItemTypes         = API.ItemTypes;
 const ItemService       = API.ItemService;
-const HttpClient        = API.HttpClient;
+const HttpClient        = API.NodeHttpClient;
 
-const URL = 'https://sit-ual.geoplatform.us';
+const URL = 'https://ual.geoplatform.gov';
 
 
 chai.config.includeStack = true;

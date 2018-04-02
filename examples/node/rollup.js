@@ -1,14 +1,10 @@
 
-// const request = require('request');
-// require('request-debug')(request);
-
-
-const GPClient = require('../../dist/js/geoplatform.client');
-const Query = GPClient.Query;
-const ItemTypes = GPClient.ItemTypes;
-const QueryParameters = GPClient.QueryParameters;
-const ItemService = GPClient.ItemService;
-const HttpClient = GPClient.NodeHttpClient;
+const Client = require('../../dist/js/geoplatform.client');
+const Query = Client.Query;
+const ItemTypes = Client.ItemTypes;
+const QueryParameters = Client.QueryParameters;
+const ItemService = Client.ItemService;
+const HttpClient = Client.NodeHttpClient;
 
 const URL = 'https://ual.geoplatform.gov';
 

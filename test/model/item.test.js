@@ -2,7 +2,7 @@
 const chai = require('chai');
 const expect = chai.expect;
 
-const API = require('../../src/index');
+const API = require('../../dist/js/geoplatform.client');
 const Types = API.ItemTypes;
 const ItemFactory = API.ItemFactory;
 const ItemProperties = API.ItemProperties;
@@ -11,6 +11,43 @@ chai.config.includeStack = true;
 
 describe('# ItemModel', function() {
 
+
+
+    it('should support constructing Contacts', function(done) {
+
+        let item = createContact();
+        expect(item).to.exist;
+        expect(item.getType()).to.equal(Types.CONTACT);
+        expect(item.toJson).to.be.ok;
+        expect(item.getFullName()).to.equal("Jim Bob Tester");
+        expect(item.getDescription()).to.equal("This is a test");
+        expect(item.getOrgName()).to.equal("Acme, Inc");
+        expect(item.getPosition()).to.equal('Test Engineer');
+        expect(item.getEmail()).to.equal('jimbob@acme.inc');
+        expect(item.getPhone()).to.equal('123-555-1234');
+        expect(item.getStreet()).to.equal('123 Main St');
+        expect(item.getCity()).to.equal('Anywhere');
+        expect(item.getState()).to.equal('XX');
+        expect(item.getCountry()).to.equal('US');
+        expect(item.getZipCode()).to.equal("12345");
+        done();
+
+    });
+
+
+    it('should support constructing Organizations', function(done) {
+
+        let item = createOrganization();
+        expect(item).to.exist;
+        expect(item.getType()).to.equal(Types.ORGANIZATION);
+        expect(item.toJson).to.be.ok;
+        expect(item.getName()).to.equal("Acme, Inc.");
+        let parentOrg = item.getParentOrganization();
+        expect(parentOrg).to.exist;
+        expect(parentOrg.getName()).to.equal("Coyote, Ltd.");
+        done();
+
+    });
 
 
 
@@ -266,6 +303,31 @@ describe('# ItemModel', function() {
 
     /* ------------- CREATION HELPERS ---------------- */
 
+
+    function createContact() {
+        let contact = ItemFactory(Types.CONTACT);
+        return contact.fullName('Jim Bob Tester')
+            .description("This is a test")
+            .orgName("Acme, Inc")
+            .position('Test Engineer')
+            .email('jimbob@acme.inc')
+            .phone('123-555-1234')
+            .street('123 Main St')
+            .city('Anywhere')
+            .state('XX')
+            .country('US')
+            .zipCode("12345");
+    }
+
+    function createOrganization() {
+
+        let parent = ItemFactory(Types.ORGANIZATION);
+        parent.setName("Coyote, Ltd.");
+
+        let org = ItemFactory(Types.ORGANIZATION);
+        return org.name("Acme, Inc.")
+                  .parentOrg(parent);
+    }
 
 
     function createConceptScheme() {

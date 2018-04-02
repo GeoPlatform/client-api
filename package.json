@@ -1,11 +1,11 @@
 {
     "name": "geoplatform.client",
-    "version": "0.0.2",
+    "version": "0.1.0",
     "description": "",
     "main": "src/geoplatform.client.js",
     "scripts": {
         "distro": "gulp",
-        "node": "node examples/search-node.js",
+        "node": "node examples/node/search.js",
         "test": "mocha"
     },
     "keywords": [

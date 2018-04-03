@@ -23,7 +23,7 @@ import Query           from './shared/query';
 import QueryFactory    from './shared/query-factory';
 import ServiceFactory  from './services/factory';
 
-import ItemProperties from './models/properties';
+import { ItemProperties, PropertiesFor } from './models/properties';
 import ItemFactory from './models/factory';
 import BaseModel from './models/base';
 import DatasetModel from './models/dataset';
@@ -34,6 +34,7 @@ import GalleryModel from './models/gallery';
 import CommunityModel from './models/community';
 import ContactModel from './models/contact';
 import OrganizationModel from './models/organization';
+import SearchResults from './models/search-results';
 
 import Config from './shared/config';
 
@@ -68,6 +69,7 @@ export {
 
     //models
     ItemProperties,
+    PropertiesFor,
     ItemFactory,
     BaseModel,
     DatasetModel,
@@ -79,5 +81,7 @@ export {
     ContactModel,
     OrganizationModel,
 
+    SearchResults,
+    
     Config
 };

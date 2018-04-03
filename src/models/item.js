@@ -2,7 +2,32 @@
 
 
 import BaseModel from './base';
-import ItemProperties from './properties';
+import { ItemProperties, PropertiesFor } from './properties';
+
+
+
+function parseDateLong(date) {
+    let result = null;
+    if(date) {
+        if(typeof(date) === 'number') {
+            //formatted as milliseconds (hopefully)
+            result = date;
+
+        } else if(typeof(date.getTime) !== 'undefined') {
+            //date obj
+            result = date.getTime();
+        }
+    }
+    return result;
+}
+
+function isNullUnDef(arg) {
+    return arg === null || isUnDef(arg);
+}
+function isUnDef(arg) {
+    return typeof(arg) === 'undefined';
+}
+
 
 
 /**
@@ -40,6 +65,9 @@ class ItemModel extends BaseModel {
         this.default(ItemProperties.PUBLISHERS, []);
         this.default(ItemProperties.CONTRIBUTORS, []);
         this.default(ItemProperties.RESOURCE_TYPES, []);
+        this.default(ItemProperties.USED_BY, []);
+        this.default(ItemProperties.ACCESS_RIGHTS, []);
+        this.default(ItemProperties.RELATED_RESOURCES, []);
     }
 
     getId() { return this.get(ItemProperties.ID); }
@@ -114,6 +142,12 @@ class ItemModel extends BaseModel {
 
     //-----------------------------------------------------------
 
+    purpose(value) { this.setPurpose(value); return this; }
+    getPurpose() { return this.get(ItemProperties.PURPOSE); }
+    setPurpose(value) { this.set(ItemProperties.PURPOSE, value===true); }
+
+    //-----------------------------------------------------------
+
     themes(value) { this.setThemes(value); return this; }
     getThemes() { return this.get(ItemProperties.THEMES); }
     setThemes(value) { this.set(ItemProperties.THEMES, value); }
@@ -174,6 +208,122 @@ class ItemModel extends BaseModel {
 
     //-----------------------------------------------------------
 
+    usedBy(value) { this.setUsedBy(value); return this; }
+    getUsedBy() { return this.get(ItemProperties.USED_BY); }
+    setUsedBy(value) { this.set(ItemProperties.USED_BY, value); }
+    addUsedBy(value) { this.addTo(ItemProperties.USED_BY, value); }
+    removeUsedBy(value) { this.removeFrom(ItemProperties.USED_BY, value); }
+
+    //-----------------------------------------------------------
+
+    accessRights(value) { this.setAccessRights(value); return this; }
+    getAccessRights() { return this.get(ItemProperties.ACCESS_RIGHTS); }
+    setAccessRights(value) { this.set(ItemProperties.ACCESS_RIGHTS, value); }
+    addAccessRight(value) { this.addTo(ItemProperties.ACCESS_RIGHTS, value); }
+    removeAccessRight(value) { this.removeFrom(ItemProperties.ACCESS_RIGHTS, value); }
+
+    //-----------------------------------------------------------
+
+    related(value) { this.setRelatedResources(value); return this; }
+    getRelatedResources() { return this.get(ItemProperties.RELATED_RESOURCES); }
+    setRelatedResources(value) { this.set(ItemProperties.RELATED_RESOURCES, value); }
+    addRelatedResource(value) { this.addTo(ItemProperties.RELATED_RESOURCES, value); }
+    removeRelatedResource(value) { this.removeFrom(ItemProperties.RELATED_RESOURCES, value); }
+
+    //-----------------------------------------------------------
+
+    extent(value) { this.setExtent(value); return this; }
+    getExtent() { return this.get(ItemProperties.GEOGRAPHIC_EXTENT); }
+    setExtent(value) {
+        if(typeof(value) === 'string') {
+            //bbox string (minx, miny, maxx, maxy)
+            let str = value.split(',');
+            value = {
+                minx: str[0].trim()*1,
+                miny: str[1].trim()*1,
+                maxx: str[2].trim()*1,
+                maxy: str[3].trim()*1
+            };
+        } else if(value && value.length && value[0].length) {
+            //nested arrays (geojson)
+            value = {
+                minx: value[0][1]*1, miny: value[0][0]*1,
+                maxx: value[1][1]*1, maxy: value[1][0]*1
+            };
+        } else if(value &&
+            !isNullUnDef(value.minx) && !isNullUnDef(value.miny) &&
+            !isNullUnDef(value.maxx) && !isNullUnDef(value.maxy)) {
+            //already in correct format
+
+        } else {
+            console.log("ItemModel.setExtent() - invalid argument");
+            return;
+        }
+        this.set(ItemProperties.GEOGRAPHIC_EXTENT, value);
+    }
+    intersects(arg) {
+        if(isNullUnDef(arg)) return false;
+        let extent = this.getExtent();
+        if(isNullUnDef(extent) ||
+            isNullUnDef(extent.minx) || isNullUnDef(extent.miny) ||
+            isNullUnDef(extent.maxx) || isNullUnDef(extent.maxy))
+            return false;
+
+        if( !isNullUnDef(arg.minx) || !isNullUnDef(arg.miny) ||
+            !isNullUnDef(arg.maxx) || !isNullUnDef(arg.maxy)) {
+            //default format (object)
+            return !(arg.minx > extent.maxx || arg.miny > extent.maxy ||
+                     arg.maxx < extent.minx || arg.maxy < extent.miny);
+
+        } else if(!isUnDef(arg.push) && arg.length >= 2 &&
+            arg[0] && !isUnDef(arg[0].push) && arg[0].length >= 2) {
+            //nested arrays (geojson)
+            return !(arg[0][1] > extent.maxx || arg[0][0] > extent.maxy ||
+                     arg[1][1] < extent.minx || arg[1][0] < extent.miny);
+        }
+        return false;
+    }
+
+    //-----------------------------------------------------------
+
+    temporal(value) { this.setTemporalExtent(value); return this; }
+    getTemporalExtent() { return this.get(ItemProperties.TEMPORAL_EXTENT); }
+    setTemporalExtent(value) {
+        let val = { startDate: null, endDate: null };
+        if(value && typeof(value) === 'object') {
+            val.startDate = parseDateLong(value.startDate);
+            val.endDate = parseDateLong(value.endDate);
+        } else {
+            console.log("ItemModel.setTemporalExtent() - invalid argument");
+            return;
+        }
+        this.set(ItemProperties.TEMPORAL_EXTENT, val);
+    }
+    isAfter(date) {
+        if(!date || isUnDef(date.getTime)) return false;
+        let temporal = this.getTemporalExtent();
+        if(isNullUnDef(temporal) || isNullUnDef(temporal.startDate)) return false;
+        return temporal.startDate < date.getTime();
+    }
+    isBefore(date) {
+        if(!date || isUnDef(date.getTime)) return false;
+        let temporal = this.getTemporalExtent();
+        if(isNullUnDef(temporal) || isNullUnDef(temporal.endDate)) return false;
+        return temporal.endDate > date.getTime();
+    }
+
+
+    //-----------------------------------------------------------
+
+
+    // statistics(value) { this.setStatistics(value); return this; }
+    getStatistics() { return this.get(ItemProperties.STATISTICS); }
+    // setStatistics(value) { this.set(ItemProperties.STATISTICS, value); }
+
+
+    //-----------------------------------------------------------
+
+
     /**
      * @return {boolean} true if the required fields are provided
      */
@@ -186,8 +336,9 @@ class ItemModel extends BaseModel {
 
     toJson() {
         let result = {};
-        for(let p in ItemProperties) {
-            let property = ItemProperties[p];
+        let props = PropertiesFor(this.getType()) || [];
+        for(let i=0; i<props.length; ++i) {
+            let property = props[i];
             let value = this.get(property);
             this.propertyToJson(property, value, result);
         }

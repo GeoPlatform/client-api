@@ -37,6 +37,21 @@
     };
   }();
 
+  var defineProperty = function (obj, key, value) {
+    if (key in obj) {
+      Object.defineProperty(obj, key, {
+        value: value,
+        enumerable: true,
+        configurable: true,
+        writable: true
+      });
+    } else {
+      obj[key] = value;
+    }
+
+    return obj;
+  };
+
   var get = function get(object, property, receiver) {
     if (object === null) object = Function.prototype;
     var desc = Object.getOwnPropertyDescriptor(object, property);
@@ -630,60 +645,94 @@
       return BaseService;
   }();
 
-  var ItemProperties = {
-      ID: { key: 'id' },
-      URI: { key: 'uri' },
-      TYPE: { key: 'type' },
-      CREATED: { key: '_created' },
-      MODIFIED: { key: 'modified' },
-      LAST_MODIFIED_BY: { key: 'lastModifiedBy' },
-      IDENTIFIERS: { key: 'identifiers', multi: true },
-      ALTERNATE_TITLES: { key: 'alternateTitles', multi: true },
-      CREATED_BY: { key: 'createdBy' },
-      LABEL: { key: 'label' },
+  var _ItemProperties;
+
+  var ItemProperties = (_ItemProperties = {
+
+      //all Items have the following properties
+      ID: { key: 'id', forType: 'Item' },
+      URI: { key: 'uri', forType: 'Item' },
+      TYPE: { key: 'type', forType: 'Item' },
+      CREATED: { key: '_created', forType: 'Item' },
+      MODIFIED: { key: 'modified', forType: 'Item' },
+      LAST_MODIFIED_BY: { key: 'lastModifiedBy', forType: 'Item' },
+      IDENTIFIERS: { key: 'identifiers', forType: 'Item', multi: true },
+      CREATED_BY: { key: 'createdBy', forType: 'Item' },
+      LABEL: { key: 'label', forType: 'Item' },
+      RESOURCE_TYPES: { key: 'resourceTypes', forType: 'Item', multi: true, type: 'object' },
+
+      //all Assets have the following properties
       TITLE: { key: 'title' },
       DESCRIPTION: { key: 'description' },
+      ALTERNATE_TITLES: { key: 'alternateTitles', multi: true },
       KEYWORDS: { key: 'keywords', multi: true },
+      GEOGRAPHIC_EXTENT: { key: 'extent', type: "object" },
+      TEMPORAL_EXTENT: { key: 'temporal', type: "object" },
+      STATISTICS: { key: 'statistics', type: 'object' },
       LANDING_PAGE: { key: 'landingPage' },
       STATUS: { key: 'status' },
       VISIBILITY: { key: 'visibility' },
-      THEMES: { key: 'themes', multi: true, type: 'item' },
-      PUBLISHERS: { key: 'publishers', multi: true, type: 'item' },
-      CONTACTS: { key: 'contacts', multi: true, type: 'item' },
-      CONTRIBUTORS: { key: 'contributors', multi: true, type: 'item' },
-      DISTRIBUTIONS: { key: 'distributions', multi: true, type: 'object' },
-      RESOURCE_TYPES: { key: 'resourceTypes', multi: true, type: 'object' },
+      THEMES: { key: 'themes', type: 'item', multi: true },
+      PUBLISHERS: { key: 'publishers', type: 'item', multi: true },
+      CONTACTS: { key: 'contacts', type: 'item', multi: true },
+      CONTRIBUTORS: { key: 'contributors', type: 'item', multi: true },
+      DISTRIBUTIONS: { key: 'distributions', type: 'object', multi: true },
       CLASSIFIERS: { key: 'classifiers', type: 'object' },
+      ACCESS_RIGHTS: { key: 'accessRights', type: 'object', multi: true },
+      RELATED_RESOURCES: { key: 'related', type: 'object', multi: true },
+      USED_BY: { key: 'usedBy', type: 'item', multi: true },
+      PURPOSE: { key: 'purpose' },
 
+      //Services also have these
       HREF: { key: 'href' },
       SERVICE_TYPE: { key: 'serviceType', type: 'object' },
-      DATASETS: { key: 'datasets', multi: true, type: 'item' },
+      DATASETS: { key: 'datasets', type: 'item', multi: true },
 
+      //Layers also have these
       LAYER_TYPE: { key: 'layerType' },
       LAYER_NAME: { key: 'layerName' },
       LEGEND: { key: 'legend', type: 'object' },
-      SERVICES: { key: 'services', multi: true, type: 'item' },
+      SERVICES: { key: 'services', type: 'item', multi: true },
+      SUPPORTED_FORMATS: { key: 'supportedFormats', multi: true },
+      MIN_SCALE: { key: 'minScale' },
+      MAX_SCALE: { key: 'maxScale' }
+  }, defineProperty(_ItemProperties, 'LEGEND', { key: 'legend', type: 'object' }), defineProperty(_ItemProperties, 'BASE_LAYER', { key: 'baseLayer', type: 'item' }), defineProperty(_ItemProperties, 'MAP_LAYERS', { key: 'layers', type: 'object', multi: true }), defineProperty(_ItemProperties, 'THUMBNAIL', { key: 'thumbnail', type: "object" }), defineProperty(_ItemProperties, 'ANNOTATIONS', { key: 'annotations', type: 'object' }), defineProperty(_ItemProperties, 'GALLERY_ITEMS', { key: 'items', type: 'object', multi: true }), defineProperty(_ItemProperties, 'CONCEPT_SCHEME', { key: 'scheme', type: 'item' }), defineProperty(_ItemProperties, 'FULL_NAME', { key: 'fullName' }), defineProperty(_ItemProperties, 'ORGANIZATION_NAME', { key: 'orgName' }), defineProperty(_ItemProperties, 'POSITION_TITLE', { key: 'positionTitle' }), defineProperty(_ItemProperties, 'EMAIL', { key: 'email' }), defineProperty(_ItemProperties, 'TELEPHONE', { key: 'tel' }), defineProperty(_ItemProperties, 'ADDRESS', { key: 'address', type: 'object' }), defineProperty(_ItemProperties, 'NAME', { key: 'name' }), defineProperty(_ItemProperties, 'PARENT_ORGANIZATION', { key: 'subOrganizationOf', type: 'item' }), _ItemProperties);
 
-      BASE_LAYER: { key: 'baseLayer', type: 'item' },
-      MAP_LAYERS: { key: 'layers', multi: true, type: 'object' },
-      THUMBNAIL: { key: 'thumbnail', type: "object" },
-      ANNOTATIONS: { key: 'annotations', type: 'object' },
+  //all Items have the following properties
+  var ItemProps = [ItemProperties.ID, ItemProperties.URI, ItemProperties.TYPE, ItemProperties.CREATED, ItemProperties.MODIFIED, ItemProperties.LAST_MODIFIED_BY, ItemProperties.IDENTIFIERS, ItemProperties.CREATED_BY, ItemProperties.LABEL, ItemProperties.RESOURCE_TYPES];
 
-      GALLERY_ITEMS: { key: 'items', multi: true, type: 'object' },
+  //all Assets have the following properties
+  var AssetProps = ItemProps.concat([ItemProperties.TITLE, ItemProperties.DESCRIPTION, ItemProperties.ALTERNATE_TITLES, ItemProperties.KEYWORDS, ItemProperties.GEOGRAPHIC_EXTENT, ItemProperties.TEMPORAL_EXTENT, ItemProperties.STATISTICS, ItemProperties.LANDING_PAGE, ItemProperties.STATUS, ItemProperties.VISIBILITY, ItemProperties.THEMES, ItemProperties.PUBLISHERS, ItemProperties.CONTACTS, ItemProperties.CONTRIBUTORS, ItemProperties.DISTRIBUTIONS, ItemProperties.CLASSIFIERS, ItemProperties.ACCESS_RIGHTS, ItemProperties.RELATED_RESOURCES, ItemProperties.USED_BY, ItemProperties.PURPOSE]);
 
-      CONCEPT_SCHEME: { key: 'scheme', type: 'item' },
+  var ServiceProps = AssetProps.concat([ItemProperties.HREF, ItemProperties.SERVICE_TYPE, ItemProperties.DATASETS]);
 
-      FULL_NAME: { key: 'fullName' },
-      ORGANIZATION_NAME: { key: 'orgName' },
-      POSITION_TITLE: { key: 'positionTitle' },
-      EMAIL: { key: 'email' },
-      TELEPHONE: { key: 'tel' },
-      ADDRESS: { key: 'address', type: 'object' },
+  var LayerProps = AssetProps.concat([ItemProperties.LAYER_TYPE, ItemProperties.LAYER_NAME, ItemProperties.LEGEND, ItemProperties.SERVICES, ItemProperties.SUPPORTED_FORMATS, ItemProperties.MIN_SCALE, ItemProperties.MAX_SCALE]);
 
-      NAME: { key: 'name' },
-      PARENT_ORGANIZATION: { key: 'subOrganizationOf', type: 'item' }
+  var MapProps = AssetProps.concat([ItemProperties.BASE_LAYER, ItemProperties.MAP_LAYERS, ItemProperties.THUMBNAIL, ItemProperties.ANNOTATIONS]);
 
-  };
+  var GalleryProps = AssetProps.concat([ItemProperties.GALLERY_ITEMS]);
+
+  var ConceptProps = ItemProps.concat([ItemProperties.CONCEPT_SCHEME]);
+
+  var ContactProps = ItemProps.concat([ItemProperties.FULL_NAME, ItemProperties.ORGANIZATION_NAME, ItemProperties.POSITION_TITLE, ItemProperties.EMAIL, ItemProperties.TELEPHONE, ItemProperties.ADDRESS]);
+
+  var OrgProps = ItemProps.concat([ItemProperties.NAME, ItemProperties.PARENT_ORGANIZATION]);
+
+  var props = {};
+  props[ItemTypes.DATASET] = AssetProps;
+  props[ItemTypes.SERVICE] = ServiceProps;
+  props[ItemTypes.LAYER] = LayerProps;
+  props[ItemTypes.MAP] = MapProps;
+  props[ItemTypes.GALLERY] = GalleryProps;
+  props[ItemTypes.COMMUNITY] = AssetProps;
+  props[ItemTypes.CONCEPT] = ConceptProps;
+  props[ItemTypes.CONCEPT_SCHEME] = ItemProps;
+  props[ItemTypes.CONTACT] = ContactProps;
+  props[ItemTypes.ORGANIZATION] = OrgProps;
+
+  function PropertiesFor(type) {
+      if (props[type]) return props[type].slice(0);else return ItemProps.slice(0);
+  }
 
   function mapArray(arr, fn) {
       var len = arr.length,
@@ -910,6 +959,27 @@
       return BaseModel;
   }();
 
+  function parseDateLong(date) {
+      var result = null;
+      if (date) {
+          if (typeof date === 'number') {
+              //formatted as milliseconds (hopefully)
+              result = date;
+          } else if (typeof date.getTime !== 'undefined') {
+              //date obj
+              result = date.getTime();
+          }
+      }
+      return result;
+  }
+
+  function isNullUnDef(arg) {
+      return arg === null || isUnDef(arg);
+  }
+  function isUnDef(arg) {
+      return typeof arg === 'undefined';
+  }
+
   /**
    * Item
    * base class for GeoPlatform objects
@@ -949,6 +1019,9 @@
           _this.default(ItemProperties.PUBLISHERS, []);
           _this.default(ItemProperties.CONTRIBUTORS, []);
           _this.default(ItemProperties.RESOURCE_TYPES, []);
+          _this.default(ItemProperties.USED_BY, []);
+          _this.default(ItemProperties.ACCESS_RIGHTS, []);
+          _this.default(ItemProperties.RELATED_RESOURCES, []);
           return _this;
       }
 
@@ -1181,6 +1254,24 @@
           //-----------------------------------------------------------
 
       }, {
+          key: 'purpose',
+          value: function purpose(value) {
+              this.setPurpose(value);return this;
+          }
+      }, {
+          key: 'getPurpose',
+          value: function getPurpose() {
+              return this.get(ItemProperties.PURPOSE);
+          }
+      }, {
+          key: 'setPurpose',
+          value: function setPurpose(value) {
+              this.set(ItemProperties.PURPOSE, value === true);
+          }
+
+          //-----------------------------------------------------------
+
+      }, {
           key: 'themes',
           value: function themes(value) {
               this.setThemes(value);return this;
@@ -1370,6 +1461,202 @@
 
           //-----------------------------------------------------------
 
+      }, {
+          key: 'usedBy',
+          value: function usedBy(value) {
+              this.setUsedBy(value);return this;
+          }
+      }, {
+          key: 'getUsedBy',
+          value: function getUsedBy() {
+              return this.get(ItemProperties.USED_BY);
+          }
+      }, {
+          key: 'setUsedBy',
+          value: function setUsedBy(value) {
+              this.set(ItemProperties.USED_BY, value);
+          }
+      }, {
+          key: 'addUsedBy',
+          value: function addUsedBy(value) {
+              this.addTo(ItemProperties.USED_BY, value);
+          }
+      }, {
+          key: 'removeUsedBy',
+          value: function removeUsedBy(value) {
+              this.removeFrom(ItemProperties.USED_BY, value);
+          }
+
+          //-----------------------------------------------------------
+
+      }, {
+          key: 'accessRights',
+          value: function accessRights(value) {
+              this.setAccessRights(value);return this;
+          }
+      }, {
+          key: 'getAccessRights',
+          value: function getAccessRights() {
+              return this.get(ItemProperties.ACCESS_RIGHTS);
+          }
+      }, {
+          key: 'setAccessRights',
+          value: function setAccessRights(value) {
+              this.set(ItemProperties.ACCESS_RIGHTS, value);
+          }
+      }, {
+          key: 'addAccessRight',
+          value: function addAccessRight(value) {
+              this.addTo(ItemProperties.ACCESS_RIGHTS, value);
+          }
+      }, {
+          key: 'removeAccessRight',
+          value: function removeAccessRight(value) {
+              this.removeFrom(ItemProperties.ACCESS_RIGHTS, value);
+          }
+
+          //-----------------------------------------------------------
+
+      }, {
+          key: 'related',
+          value: function related(value) {
+              this.setRelatedResources(value);return this;
+          }
+      }, {
+          key: 'getRelatedResources',
+          value: function getRelatedResources() {
+              return this.get(ItemProperties.RELATED_RESOURCES);
+          }
+      }, {
+          key: 'setRelatedResources',
+          value: function setRelatedResources(value) {
+              this.set(ItemProperties.RELATED_RESOURCES, value);
+          }
+      }, {
+          key: 'addRelatedResource',
+          value: function addRelatedResource(value) {
+              this.addTo(ItemProperties.RELATED_RESOURCES, value);
+          }
+      }, {
+          key: 'removeRelatedResource',
+          value: function removeRelatedResource(value) {
+              this.removeFrom(ItemProperties.RELATED_RESOURCES, value);
+          }
+
+          //-----------------------------------------------------------
+
+      }, {
+          key: 'extent',
+          value: function extent(value) {
+              this.setExtent(value);return this;
+          }
+      }, {
+          key: 'getExtent',
+          value: function getExtent() {
+              return this.get(ItemProperties.GEOGRAPHIC_EXTENT);
+          }
+      }, {
+          key: 'setExtent',
+          value: function setExtent(value) {
+              if (typeof value === 'string') {
+                  //bbox string (minx, miny, maxx, maxy)
+                  var str = value.split(',');
+                  value = {
+                      minx: str[0].trim() * 1,
+                      miny: str[1].trim() * 1,
+                      maxx: str[2].trim() * 1,
+                      maxy: str[3].trim() * 1
+                  };
+              } else if (value && value.length && value[0].length) {
+                  //nested arrays (geojson)
+                  value = {
+                      minx: value[0][1] * 1, miny: value[0][0] * 1,
+                      maxx: value[1][1] * 1, maxy: value[1][0] * 1
+                  };
+              } else if (value && !isNullUnDef(value.minx) && !isNullUnDef(value.miny) && !isNullUnDef(value.maxx) && !isNullUnDef(value.maxy)) {
+                  //already in correct format
+
+              } else {
+                  console.log("ItemModel.setExtent() - invalid argument");
+                  return;
+              }
+              this.set(ItemProperties.GEOGRAPHIC_EXTENT, value);
+          }
+      }, {
+          key: 'intersects',
+          value: function intersects(arg) {
+              if (isNullUnDef(arg)) return false;
+              var extent = this.getExtent();
+              if (isNullUnDef(extent) || isNullUnDef(extent.minx) || isNullUnDef(extent.miny) || isNullUnDef(extent.maxx) || isNullUnDef(extent.maxy)) return false;
+
+              if (!isNullUnDef(arg.minx) || !isNullUnDef(arg.miny) || !isNullUnDef(arg.maxx) || !isNullUnDef(arg.maxy)) {
+                  //default format (object)
+                  return !(arg.minx > extent.maxx || arg.miny > extent.maxy || arg.maxx < extent.minx || arg.maxy < extent.miny);
+              } else if (!isUnDef(arg.push) && arg.length >= 2 && arg[0] && !isUnDef(arg[0].push) && arg[0].length >= 2) {
+                  //nested arrays (geojson)
+                  return !(arg[0][1] > extent.maxx || arg[0][0] > extent.maxy || arg[1][1] < extent.minx || arg[1][0] < extent.miny);
+              }
+              return false;
+          }
+
+          //-----------------------------------------------------------
+
+      }, {
+          key: 'temporal',
+          value: function temporal(value) {
+              this.setTemporalExtent(value);return this;
+          }
+      }, {
+          key: 'getTemporalExtent',
+          value: function getTemporalExtent() {
+              return this.get(ItemProperties.TEMPORAL_EXTENT);
+          }
+      }, {
+          key: 'setTemporalExtent',
+          value: function setTemporalExtent(value) {
+              var val = { startDate: null, endDate: null };
+              if (value && (typeof value === 'undefined' ? 'undefined' : _typeof(value)) === 'object') {
+                  val.startDate = parseDateLong(value.startDate);
+                  val.endDate = parseDateLong(value.endDate);
+              } else {
+                  console.log("ItemModel.setTemporalExtent() - invalid argument");
+                  return;
+              }
+              this.set(ItemProperties.TEMPORAL_EXTENT, val);
+          }
+      }, {
+          key: 'isAfter',
+          value: function isAfter(date) {
+              if (!date || isUnDef(date.getTime)) return false;
+              var temporal = this.getTemporalExtent();
+              if (isNullUnDef(temporal) || isNullUnDef(temporal.startDate)) return false;
+              return temporal.startDate < date.getTime();
+          }
+      }, {
+          key: 'isBefore',
+          value: function isBefore(date) {
+              if (!date || isUnDef(date.getTime)) return false;
+              var temporal = this.getTemporalExtent();
+              if (isNullUnDef(temporal) || isNullUnDef(temporal.endDate)) return false;
+              return temporal.endDate > date.getTime();
+          }
+
+          //-----------------------------------------------------------
+
+
+          // statistics(value) { this.setStatistics(value); return this; }
+
+      }, {
+          key: 'getStatistics',
+          value: function getStatistics() {
+              return this.get(ItemProperties.STATISTICS);
+          }
+          // setStatistics(value) { this.set(ItemProperties.STATISTICS, value); }
+
+
+          //-----------------------------------------------------------
+
+
           /**
            * @return {boolean} true if the required fields are provided
            */
@@ -1387,8 +1674,9 @@
           key: 'toJson',
           value: function toJson() {
               var result = {};
-              for (var p in ItemProperties) {
-                  var property = ItemProperties[p];
+              var props = PropertiesFor(this.getType()) || [];
+              for (var i = 0; i < props.length; ++i) {
+                  var property = props[i];
                   var value = this.get(property);
                   this.propertyToJson(property, value, result);
               }
@@ -1525,10 +1813,20 @@
 
           //-----------------------------------------------------------
 
-
       }]);
       return ServiceModel;
   }(ItemModel);
+
+  var LEGEND_PROPS = {
+      LABEL: { key: "label" },
+      DESCRIPTION: { key: "description" },
+      URL: { key: "url" },
+      CONTENT: { key: "contentData" },
+      MEDIA_TYPE: { key: "mediaType" },
+      WIDTH: { key: "width" },
+      HEIGHT: { key: "height" },
+      VALUES: { key: "values", multi: true }
+  };
 
   var LayerModel = function (_ItemModel) {
       inherits(LayerModel, _ItemModel);
@@ -1623,6 +1921,124 @@
           key: 'removeService',
           value: function removeService(value) {
               this.removeFrom(ItemProperties.SERVICES, value);
+          }
+
+          //-----------------------------------------------------------
+
+      }, {
+          key: 'formats',
+          value: function formats(value) {
+              this.setFormats(value);return this;
+          }
+      }, {
+          key: 'getFormats',
+          value: function getFormats() {
+              return this.get(ItemProperties.SUPPORTED_FORMATS);
+          }
+      }, {
+          key: 'setFormats',
+          value: function setFormats(value) {
+              this.set(ItemProperties.SUPPORTED_FORMATS, value);
+          }
+      }, {
+          key: 'addFormat',
+          value: function addFormat(value) {
+              //TODO
+          }
+      }, {
+          key: 'removeFormat',
+          value: function removeFormat(value) {}
+          //TODO
+
+
+          //-----------------------------------------------------------
+
+      }, {
+          key: 'minScale',
+          value: function minScale(value) {
+              this.setMinScale(value);return this;
+          }
+      }, {
+          key: 'getMinScale',
+          value: function getMinScale() {
+              return this.get(ItemProperties.MIN_SCALE);
+          }
+      }, {
+          key: 'setMinScale',
+          value: function setMinScale(value) {
+              this.set(ItemProperties.MIN_SCALE, value);
+          }
+
+          //-----------------------------------------------------------
+
+      }, {
+          key: 'maxScale',
+          value: function maxScale(value) {
+              this.setMaxScale(value);return this;
+          }
+      }, {
+          key: 'getMaxScale',
+          value: function getMaxScale() {
+              return this.get(ItemProperties.MAX_SCALE);
+          }
+      }, {
+          key: 'setMaxScale',
+          value: function setMaxScale(value) {
+              this.set(ItemProperties.MAX_SCALE, value);
+          }
+
+          //-----------------------------------------------------------
+
+      }, {
+          key: 'scale',
+          value: function scale(min, max) {
+              this.setMinScale(min);
+              this.setMinScale(max);
+              return this;
+          }
+
+          //-----------------------------------------------------------
+
+      }, {
+          key: 'legend',
+          value: function legend(value) {
+              this.setLegend(value);return this;
+          }
+      }, {
+          key: 'getLegend',
+          value: function getLegend() {
+              return this.get(ItemProperties.LEGEND);
+          }
+      }, {
+          key: 'setLegend',
+          value: function setLegend(value) {
+              this.set(ItemProperties.LEGEND, value);
+          }
+          /**
+           * @param {object} item - defining a legend item, including label and either a URL or contentData
+           */
+
+      }, {
+          key: 'addLegendItem',
+          value: function addLegendItem(item) {
+              if (!item[LEGEND_PROPS.LABEL.key]) {
+                  console.log("LayerModel.addLegendItem() - legends must have a '" + LEGEND_PROPS.LABEL.key + "'");
+                  return;
+              }
+              if (!item[LEGEND_PROPS.URL.key] && !item[LEGEND_PROPS.CONTENT.key]) {
+                  console.log("LayerModel.addLegendItem() - legends must have either a '" + LEGEND_PROPS.URL.key + "' or '" + LEGEND_PROPS.CONTENT.key + "'");
+                  return;
+              }
+              var result = {};
+              for (var p in LEGEND_PROPS) {
+                  var prop = LEGEND_PROPS[p];
+                  var key = prop.key;
+                  result[key] = item[key];
+              }
+              var legend = this.getLegend();
+              if (!legend) legend = { title: this.getLabel() + " Legend", items: [] };else if (!legend.items) legend.items = [];
+              legend.items.push(result);
+              this.setLegend(legend);
           }
 
           //-----------------------------------------------------------
@@ -1779,7 +2195,8 @@
           value: function propertyToJson(property, value, parentJson) {
               var _this3 = this;
 
-              if (property === ItemProperties.MAP_LAYERS && value && value.length) {
+              if (!property || !property.key) return;
+              if (property.key === ItemProperties.MAP_LAYERS.key && value && value.length) {
                   var json = value.map(function (v) {
                       return _this3.fromLayerState(v);
                   });
@@ -1848,6 +2265,7 @@
   }(ItemModel);
 
   var GalleryItemProperties = {
+      LABEL: { key: "label" },
       ASSET_ID: { key: "assetId" },
       ASSET: { key: "asset" },
       ASSET_TYPE: { key: "assetType" }
@@ -1950,7 +2368,8 @@
           value: function propertyToJson(property, value, parentJson) {
               var _this3 = this;
 
-              if (property === ItemProperties.GALLERY_ITEMS && value && value.length) {
+              if (!property || !property.key) return;
+              if (property.key === ItemProperties.GALLERY_ITEMS.key && value && value.length) {
                   var json = value.map(function (v) {
                       return _this3.fromGalleryItem(v);
                   }).filter(function (v) {
@@ -1966,22 +2385,35 @@
           value: function toGalleryItem(object) {
               if (!object) return null;
 
+              // console.log("GalleryModel.toGalleryItem() - " + JSON.stringify(object));
+
               var result = {};
 
               if (object.asset) {
+                  //adding a gallery item container already containing an asset
                   // console.log("GalleryModel.toGalleryItem() - input was already an item");
                   var asset = this.toItem(object.asset);
                   if (!asset) return null;
                   result[GalleryItemProperties.ASSET.key] = asset;
                   result[GalleryItemProperties.ASSET_ID.key] = asset.getId() || object[GalleryItemProperties.ASSET_ID.key];
                   result[GalleryItemProperties.ASSET_TYPE.key] = asset.getType() || object[GalleryItemProperties.ASSET_TYPE.key];
-              } else {
+                  result[GalleryItemProperties.LABEL.key] = object[GalleryItemProperties.LABEL.key] || asset.getLabel();
+              } else if (object.toJson !== undefined || object.type) {
+                  //adding an item to the gallery, so it must be wrapped by the gallery item container
                   // console.log("GalleryModel.toGalleryItem() - input was an asset");
                   var _asset = this.toItem(object);
                   if (!_asset) return null;
                   result[GalleryItemProperties.ASSET.key] = _asset;
                   result[GalleryItemProperties.ASSET_ID.key] = _asset.getId();
                   result[GalleryItemProperties.ASSET_TYPE.key] = _asset.getType();
+                  result[GalleryItemProperties.LABEL.key] = _asset.getLabel();
+              } else if (object[GalleryItemProperties.ASSET_ID.key] && object[GalleryItemProperties.ASSET_TYPE.key]) {
+                  //adding a gallery item container that does not already contain a fully-realized
+                  // item, but does contain the id and type of the item contained within
+                  // console.log("GalleryModel.toGalleryItem() - input was partial container");
+                  result[GalleryItemProperties.ASSET_ID.key] = object[GalleryItemProperties.ASSET_ID.key];
+                  result[GalleryItemProperties.ASSET_TYPE.key] = object[GalleryItemProperties.ASSET_TYPE.key];
+                  result[GalleryItemProperties.LABEL.key] = object[GalleryItemProperties.LABEL.key] || "Unlabeled item";
               }
 
               return result;
@@ -2431,7 +2863,12 @@
               return arg; //already an Item instance
           }
 
-          if (arg.type) type = arg.type;else throw new Error("ItemFactory() - Must specify 'type' in parameter object");
+          if (arg.type) type = arg.type;else {
+              // console.log('*******************');
+              // console.log(JSON.stringify(arg));
+              // console.log('----');
+              throw new Error("ItemFactory() - Must specify 'type' in parameter object");
+          }
 
           options = arg;
       } else {
@@ -2440,6 +2877,34 @@
 
       return itemFactory(type, options);
   }
+
+  var SearchResults = function () {
+      function SearchResults(data) {
+          classCallCheck(this, SearchResults);
+
+          this._data = {
+              totalResults: 0,
+              results: []
+          };
+          if (data) {
+              this._data.totalResults = data.totalResults || 0;
+              this._data.results = data.results || [];
+          }
+      }
+
+      createClass(SearchResults, [{
+          key: "getTotalResults",
+          value: function getTotalResults() {
+              return this._data.totalResults;
+          }
+      }, {
+          key: "getItems",
+          value: function getItems() {
+              return this._data.results;
+          }
+      }]);
+      return SearchResults;
+  }();
 
   /**
    * ItemService
@@ -2601,6 +3066,8 @@
                       method: "GET", url: _this6.baseUrl, params: params, options: options
                   });
                   return _this6.execute(opts);
+              }).then(function (response) {
+                  return new SearchResults(response);
               }).catch(function (e) {
                   return _this6._onError(e, 'ItemService.search() - Error searching items');
               });
@@ -2639,6 +3106,8 @@
                   }
                   var opts = _this7.buildRequest(ro);
                   return _this7.execute(opts);
+              }).then(function (obj) {
+                  return factory(obj);
               }).catch(function (e) {
                   var err = new Error('ItemService.import() - Error importing item: ' + e.message);
                   if (e.status === 409 || ~e.message.indexOf('Item already exists')) err.status = 409;
@@ -4678,6 +5147,7 @@
   exports.KGService = KGService;
   exports.ServiceFactory = ServiceFactory;
   exports.ItemProperties = ItemProperties;
+  exports.PropertiesFor = PropertiesFor;
   exports.ItemFactory = factory;
   exports.BaseModel = BaseModel;
   exports.DatasetModel = DatasetModel;
@@ -4688,6 +5158,7 @@
   exports.CommunityModel = CommunityModel;
   exports.ContactModel = ContactModel;
   exports.OrganizationModel = OrganizationModel;
+  exports.SearchResults = SearchResults;
   exports.Config = config;
 
   Object.defineProperty(exports, '__esModule', { value: true });

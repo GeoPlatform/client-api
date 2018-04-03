@@ -4,6 +4,7 @@ import ItemTypes from '../shared/types';
 import ItemProperties from './properties';
 
 const GalleryItemProperties = {
+    LABEL       : { key: "label"     },
     ASSET_ID    : { key: "assetId"   },
     ASSET       : { key: "asset"     },
     ASSET_TYPE  : { key: "assetType" }
@@ -76,7 +77,8 @@ class GalleryModel extends ItemModel {
      * @override ItemModel.propertyToJson
      */
     propertyToJson(property, value, parentJson) {
-        if(property === ItemProperties.GALLERY_ITEMS && value && value.length) {
+        if(!property || !property.key) return;
+        if(property.key === ItemProperties.GALLERY_ITEMS.key && value && value.length) {
             let json = value.map(v => this.fromGalleryItem(v) ).filter(v=>v!==null);
             parentJson[property.key] = json;
         } else {
@@ -90,9 +92,12 @@ class GalleryModel extends ItemModel {
     toGalleryItem(object) {
         if(!object) return null;
 
+        // console.log("GalleryModel.toGalleryItem() - " + JSON.stringify(object));
+
         let result = {};
 
         if(object.asset) {
+            //adding a gallery item container already containing an asset
             // console.log("GalleryModel.toGalleryItem() - input was already an item");
             let asset = this.toItem(object.asset);
             if(!asset) return null;
@@ -101,16 +106,27 @@ class GalleryModel extends ItemModel {
                 asset.getId() || object[GalleryItemProperties.ASSET_ID.key];
             result[GalleryItemProperties.ASSET_TYPE.key] =
                 asset.getType() || object[GalleryItemProperties.ASSET_TYPE.key];
+            result[GalleryItemProperties.LABEL.key] =
+                object[GalleryItemProperties.LABEL.key] || asset.getLabel();
 
-
-        } else {
+        } else if(object.toJson !== undefined || object.type){
+            //adding an item to the gallery, so it must be wrapped by the gallery item container
             // console.log("GalleryModel.toGalleryItem() - input was an asset");
             let asset = this.toItem(object);
             if(!asset) return null;
             result[GalleryItemProperties.ASSET.key] = asset;
             result[GalleryItemProperties.ASSET_ID.key] = asset.getId();
             result[GalleryItemProperties.ASSET_TYPE.key] = asset.getType();
+            result[GalleryItemProperties.LABEL.key] = asset.getLabel();
 
+        } else if(object[GalleryItemProperties.ASSET_ID.key] &&
+            object[GalleryItemProperties.ASSET_TYPE.key]) {
+            //adding a gallery item container that does not already contain a fully-realized
+            // item, but does contain the id and type of the item contained within
+            // console.log("GalleryModel.toGalleryItem() - input was partial container");
+            result[GalleryItemProperties.ASSET_ID.key] = object[GalleryItemProperties.ASSET_ID.key];
+            result[GalleryItemProperties.ASSET_TYPE.key] = object[GalleryItemProperties.ASSET_TYPE.key];
+            result[GalleryItemProperties.LABEL.key] = object[GalleryItemProperties.LABEL.key] || "Unlabeled item";
         }
 
         return result;

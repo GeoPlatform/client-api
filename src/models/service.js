@@ -33,8 +33,6 @@ class ServiceModel extends ItemModel {
     removeDataset(value) { this.removeFrom(ItemProperties.DATASETS, value); }
 
     //-----------------------------------------------------------
-
-
 }
 
 export default ServiceModel;

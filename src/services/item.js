@@ -2,6 +2,7 @@
 import Q from 'q';
 import BaseService from './base';
 import ItemFactory from '../models/factory';
+import SearchResults from '../models/search-results';
 
 /**
  * ItemService
@@ -138,6 +139,7 @@ class ItemService extends BaseService {
             });
             return this.execute(opts);
         })
+        .then( response => new SearchResults(response) )
         .catch(e => this._onError(e, `ItemService.search() - Error searching items`) );
     }
 
@@ -173,6 +175,7 @@ class ItemService extends BaseService {
             let opts = this.buildRequest(ro);
             return this.execute(opts);
         })
+        .then( obj => ItemFactory(obj) )
         .catch( e => {
             let err = new Error(`ItemService.import() - Error importing item: ${e.message}`);
             if(e.status === 409 || ~e.message.indexOf('Item already exists')) err.status = 409;

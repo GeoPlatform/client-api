@@ -42,9 +42,9 @@ describe('# ItemService', function() {
             .sort('modified', 'desc');;
 
         service.search(query)
-        .then( response => {
-            expect(response.results).to.exist;
-            expect(response.results.length).to.be.greaterThan(0);
+        .then( results => {
+            expect(results).to.exist;
+            expect(results.getItems().length).to.be.greaterThan(0);
             done();
         })
         .catch(e => done(e));

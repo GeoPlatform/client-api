@@ -88,7 +88,8 @@ class MapModel extends ItemModel {
      * @override ItemModel.propertyToJson
      */
     propertyToJson(property, value, parentJson) {
-        if(property === ItemProperties.MAP_LAYERS && value && value.length) {
+        if(!property || !property.key) return;
+        if(property.key === ItemProperties.MAP_LAYERS.key && value && value.length) {
             let json = value.map(v => this.fromLayerState(v) );
             parentJson[property.key] = json;
         } else {

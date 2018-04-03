@@ -6,6 +6,7 @@ const API = require('../../dist/js/geoplatform.client');
 const Types = API.ItemTypes;
 const ItemFactory = API.ItemFactory;
 const ItemProperties = API.ItemProperties;
+const PropertiesFor = API.PropertiesFor;
 
 chai.config.includeStack = true;
 
@@ -20,7 +21,6 @@ describe('# ItemModel', function() {
         expect(item.getType()).to.equal(Types.CONTACT);
         expect(item.toJson).to.be.ok;
         expect(item.getFullName()).to.equal("Jim Bob Tester");
-        expect(item.getDescription()).to.equal("This is a test");
         expect(item.getOrgName()).to.equal("Acme, Inc");
         expect(item.getPosition()).to.equal('Test Engineer');
         expect(item.getEmail()).to.equal('jimbob@acme.inc');
@@ -30,6 +30,27 @@ describe('# ItemModel', function() {
         expect(item.getState()).to.equal('XX');
         expect(item.getCountry()).to.equal('US');
         expect(item.getZipCode()).to.equal("12345");
+
+        let json = item.toJson();
+
+        let props = PropertiesFor(Types.CONTACT);
+        for(let i=0; i<props.length; ++i) {
+            let prop = props[i];
+            if(prop.multi) {
+                expect(json[prop.key].length).to.equal(
+                    item.get(prop).length, prop.key + " was not correct");
+
+            } else if(prop.type === 'object' || prop.type === 'item') {
+                let o1 = JSON.stringify(json[prop.key]);
+                let o2 = JSON.stringify(item.get(prop));
+                expect(o1).to.equal(o2, prop.key + " was not correct");
+
+            } else {
+                expect(json[prop.key]).to.equal(item.get(prop), prop.key + " was not correct");
+
+            }
+        }
+
         done();
 
     });
@@ -307,7 +328,6 @@ describe('# ItemModel', function() {
     function createContact() {
         let contact = ItemFactory(Types.CONTACT);
         return contact.fullName('Jim Bob Tester')
-            .description("This is a test")
             .orgName("Acme, Inc")
             .position('Test Engineer')
             .email('jimbob@acme.inc')

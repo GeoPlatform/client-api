@@ -82,9 +82,10 @@ describe('# ItemService', function() {
 
         let query = new Query().types(ItemTypes.DATASET);
         service.search(query)
-        .then( response => {
-            expect(response.results).to.exist;
-            expect(response.results.length).to.be.greaterThan(0);
+        .then( results => {
+            expect(results).to.exist;
+            expect(results.getItems().length).to.be.greaterThan(0);
+            expect(results.getTotalResults()).to.be.greaterThan(0);
             done();
         })
         .catch(e => done(e));
@@ -98,7 +99,7 @@ describe('# ItemService', function() {
 
         let query = new Query().types(ItemTypes.DATASET);
         service.search(query)
-        .then( response => response.results[0] )
+        .then( results => results.getItems()[0] )
         .then( item => service.export(item.id) )
         .then( output => {
             expect(output).to.be.ok;

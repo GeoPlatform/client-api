@@ -71,8 +71,12 @@ export default function factory(arg) {
 
         if(arg.type)
             type = arg.type;
-        else
+        else {
+            // console.log('*******************');
+            // console.log(JSON.stringify(arg));
+            // console.log('----');
             throw new Error("ItemFactory() - Must specify 'type' in parameter object");
+        }
 
         options = arg;
     } else {

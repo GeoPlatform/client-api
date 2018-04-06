@@ -2,9 +2,6 @@
 
 import Q from 'q';
 
-const METHODS = ["GET", "POST", "PUT", "DELETE", "PATCH"];
-
-
 class UtilsService {
 
     constructor(url, httpClient) {

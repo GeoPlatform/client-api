@@ -1344,6 +1344,390 @@
       return UtilsService;
   }();
 
+  var AgolQuery = function () {
+      function AgolQuery() {
+          classCallCheck(this, AgolQuery);
+
+          this._query = {};
+      }
+
+      createClass(AgolQuery, [{
+          key: 'getQuery',
+          value: function getQuery() {
+              var result = {};
+              for (var prop in this._query) {
+                  var value = this._query[prop];
+                  if (value !== null && typeof value.push !== 'undefined') {
+                      value = value.join(',');
+                  }
+                  result[prop] = value;
+              }
+              return result;
+          }
+
+          // ---------------------------------------
+
+      }, {
+          key: 'q',
+          value: function q(value) {
+              this.setQ(value);return this;
+          }
+      }, {
+          key: 'setQ',
+          value: function setQ(value) {
+              this._query.q = value;
+          }
+      }, {
+          key: 'getQ',
+          value: function getQ() {
+              return this._query.q;
+          }
+
+          // ---------------------------------------
+
+      }, {
+          key: 'types',
+          value: function types(value) {
+              this.setTypes(value);return this;
+          }
+      }, {
+          key: 'setTypes',
+          value: function setTypes(value) {
+              if (value && typeof value.push !== 'undefined') value = value.join(',');
+              this._query.types = value;
+          }
+      }, {
+          key: 'getTypes',
+          value: function getTypes() {
+              return this._query.types;
+          }
+
+          // ---------------------------------------
+
+      }, {
+          key: 'groups',
+          value: function groups(value) {
+              this.setGroups(value);return this;
+          }
+      }, {
+          key: 'setGroups',
+          value: function setGroups(value) {
+              if (value && typeof value.push !== 'undefined') value = value.join(',');
+              this._query.groups = value;
+          }
+      }, {
+          key: 'getGroups',
+          value: function getGroups() {
+              return this._query.groups;
+          }
+
+          // ---------------------------------------
+
+      }, {
+          key: 'orgs',
+          value: function orgs(value) {
+              this.setOrgs(value);return this;
+          }
+      }, {
+          key: 'setOrgs',
+          value: function setOrgs(value) {
+              if (value && typeof value.push !== 'undefined') value = value.join(',');
+              this._query.orgs = value;
+          }
+      }, {
+          key: 'getOrgs',
+          value: function getOrgs() {
+              return this._query.orgs;
+          }
+
+          // ---------------------------------------
+
+      }, {
+          key: 'extent',
+          value: function extent(value) {
+              this.setExtent(value);return this;
+          }
+      }, {
+          key: 'setExtent',
+          value: function setExtent(value) {
+              this._query.bbox = value;
+          }
+      }, {
+          key: 'getExtent',
+          value: function getExtent() {
+              return this._query.bbox;
+          }
+
+          // ---------------------------------------
+
+          /**
+           * @param {string} sort - form of <field>,<dir> or just field name
+           * @param {string} order - optional, either 'asc' or 'desc'
+           */
+
+      }, {
+          key: 'sort',
+          value: function sort(_sort, order) {
+              this.setSort(_sort, order);return this;
+          }
+          /**
+           * @param {string} sort - form of <field>,<dir> or just field name
+           * @param {string} order - optional, either 'asc' or 'desc'
+           */
+
+      }, {
+          key: 'setSort',
+          value: function setSort(sort, order) {
+              order = order && (order !== 'asc' || order !== 'desc') ? 'desc' : order;
+              if (sort && sort.indexOf(',') < 0) sort = sort + ',' + order;
+              this._query.sort = sort;
+          }
+      }, {
+          key: 'getSort',
+          value: function getSort() {
+              return this._query.sort;
+          }
+      }, {
+          key: 'getSortField',
+          value: function getSortField() {
+              return this._query.sort.split(',')[0];
+          }
+      }, {
+          key: 'getSortOrder',
+          value: function getSortOrder() {
+              return this._query.sort.split(',')[1] === 'asc';
+          }
+      }]);
+      return AgolQuery;
+  }();
+
+  var AgolService = function () {
+      function AgolService(url, httpClient) {
+          classCallCheck(this, AgolService);
+
+          this.setUrl(url);
+          this.client = httpClient;
+          this.timeout = 10000;
+          this.httpMethods = ["GET", "POST", "PUT", "DELETE", "PATCH"];
+      }
+
+      createClass(AgolService, [{
+          key: 'setUrl',
+          value: function setUrl(baseUrl) {
+              this.baseUrl = baseUrl + '/api/agol/';
+          }
+
+          // -----------------------------------------------------------------------
+          // AGOL ORGS METHODS
+
+
+          /**
+           * @param {string} id - identifier of AGOL organization to fetch
+           * @param {Object} options - optional set of request options to apply to xhr request
+           * @return {Promise} resolving Item object or an error
+           */
+
+      }, {
+          key: 'getOrg',
+          value: function getOrg(id, options) {
+              var _this = this;
+
+              return Q.resolve(id).then(function (id) {
+                  var opts = _this.buildRequest({
+                      method: "GET", url: _this.baseUrl + '/orgs/' + id, options: options
+                  });
+                  return _this.execute(opts);
+              }).catch(function (e) {
+                  var err = new Error('AgolService.getOrg() - Error fetching org ' + id + ': ' + e.message);
+                  return Q.reject(err);
+              });
+          }
+
+          /**
+           * @param {Object} arg - either JS object of query parameters or Query instance
+           * @param {Object} options - optional set of request options to apply to xhr request
+           * @return {Promise} resolving search results
+           */
+
+      }, {
+          key: 'searchOrgs',
+          value: function searchOrgs(arg, options) {
+              var _this2 = this;
+
+              return Q.resolve(arg).then(function (params) {
+
+                  if (params && typeof params.getQuery !== 'undefined') {
+                      //if passed a GeoPlatform.Query object,
+                      // convert to parameters object
+                      params = params.getQuery();
+                  }
+                  var opts = _this2.buildRequest({
+                      method: "GET", url: _this2.baseUrl + '/orgs', params: params, options: options
+                  });
+                  return _this2.execute(opts);
+              }).catch(function (e) {
+                  var err = new Error('AgolService.searchOrgs() - Error searching orgs: ' + e.message);
+                  return Q.reject(err);
+              });
+          }
+
+          // -----------------------------------------------------------------------
+          // AGOL GROUPS METHODS
+
+
+          /**
+           * @param {string} id - identifier of AGOL group to fetch
+           * @param {Object} options - optional set of request options to apply to xhr request
+           * @return {Promise} resolving Item object or an error
+           */
+
+      }, {
+          key: 'getGroup',
+          value: function getGroup(id, options) {
+              var _this3 = this;
+
+              return Q.resolve(id).then(function (id) {
+                  var opts = _this3.buildRequest({
+                      method: "GET", url: _this3.baseUrl + '/groups/' + id, options: options
+                  });
+                  return _this3.execute(opts);
+              }).catch(function (e) {
+                  var err = new Error('AgolService.getGroup() - Error fetching group ' + id + ': ' + e.message);
+                  return Q.reject(err);
+              });
+          }
+
+          /**
+           * @param {Object} arg - either JS object of query parameters or AgolQuery instance
+           * @param {Object} options - optional set of request options to apply to xhr request
+           * @return {Promise} resolving search results
+           */
+
+      }, {
+          key: 'searchGroups',
+          value: function searchGroups(arg, options) {
+              var _this4 = this;
+
+              return Q.resolve(arg).then(function (params) {
+
+                  if (params && typeof params.getQuery !== 'undefined') {
+                      //if passed a GeoPlatform.Query object,
+                      // convert to parameters object
+                      params = params.getQuery();
+                  }
+                  var opts = _this4.buildRequest({
+                      method: "GET", url: _this4.baseUrl + '/groups', params: params, options: options
+                  });
+                  return _this4.execute(opts);
+              }).catch(function (e) {
+                  var err = new Error('AgolService.searchGroups() - Error searching groups: ' + e.message);
+                  return Q.reject(err);
+              });
+          }
+
+          // -----------------------------------------------------------------------
+          // AGOL ITEMS METHODS
+
+          /**
+           * @param {string} id - identifier of AGOL item to fetch
+           * @param {Object} options - optional set of request options to apply to xhr request
+           * @return {Promise} resolving Item object or an error
+           */
+
+      }, {
+          key: 'getItem',
+          value: function getItem(id, options) {
+              var _this5 = this;
+
+              return Q.resolve(id).then(function (id) {
+                  var opts = _this5.buildRequest({
+                      method: "GET", url: _this5.baseUrl + '/items/' + id, options: options
+                  });
+                  return _this5.execute(opts);
+              }).catch(function (e) {
+                  var err = new Error('AgolService.getItem() - Error fetching item ' + id + ': ' + e.message);
+                  return Q.reject(err);
+              });
+          }
+
+          /**
+           * @param {Object} arg - either JS object of query parameters or AgolQuery instance
+           * @param {Object} options - optional set of request options to apply to xhr request
+           * @return {Promise} resolving search results
+           */
+
+      }, {
+          key: 'searchItems',
+          value: function searchItems(arg, options) {
+              var _this6 = this;
+
+              return Q.resolve(arg).then(function (params) {
+
+                  if (params && typeof params.getQuery !== 'undefined') {
+                      //if passed a GeoPlatform.Query object,
+                      // convert to parameters object
+                      params = params.getQuery();
+                  }
+                  var opts = _this6.buildRequest({
+                      method: "GET", url: _this6.baseUrl + '/items', params: params, options: options
+                  });
+                  return _this6.execute(opts);
+              }).catch(function (e) {
+                  var err = new Error('AgolService.searchItems() - Error searching items: ' + e.message);
+                  return Q.reject(err);
+              });
+          }
+
+          /* --------------------------- */
+
+      }, {
+          key: 'getAgolId',
+          value: function getAgolId(obj) {
+              if (!obj || !obj.identifiers || !obj.identifiers.length) return null;
+              var ids = obj.identifiers.filter(function (id) {
+                  return ~id.indexOf('agol:');
+              });
+              if (!ids.length) return null;
+              return ids[0].replace('agol:', '');
+          }
+
+          /* ----------------------------------------------------------- */
+
+          /**
+           * @param {string} method - one of "GET", "POST", "PUT", "DELETE", "PATCH"
+           * @param {string} url - destination of xhr request
+           * @param {Object} params - object to be sent with request as query parameters
+           * @param {Object} data - object to be sent with request as body
+           * @param {Object} options - optional object defining request options
+           * @return {Object} request options for xhr
+           */
+
+      }, {
+          key: 'buildRequest',
+          value: function buildRequest(options) {
+
+              if (this.httpMethods.indexOf(options.method) < 0) throw new Error('Unsupported HTTP method ' + options.method);
+
+              if (!options.url) throw new Error('Must specify a URL for HTTP requests');
+
+              options.timeout = this.timeout;
+
+              return this.createRequestOpts(options);
+          }
+      }, {
+          key: 'createRequestOpts',
+          value: function createRequestOpts(options) {
+              return this.client.createRequestOpts(options);
+          }
+      }, {
+          key: 'execute',
+          value: function execute(opts) {
+              return this.client.execute(opts);
+          }
+      }]);
+      return AgolService;
+  }();
+
   var QueryParameters = {
       TYPES: 'type',
       QUERY: 'q',
@@ -2692,6 +3076,8 @@
   exports.DatasetService = DatasetService;
   exports.MapService = MapService;
   exports.UtilsService = UtilsService;
+  exports.AgolService = AgolService;
+  exports.AgolQuery = AgolQuery;
   exports.KGService = KGService;
   exports.ServiceFactory = ServiceFactory;
   exports.Config = config;

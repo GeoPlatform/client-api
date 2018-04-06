@@ -10,6 +10,7 @@ import LayerService from './services/layer';
 import ServiceService from './services/service';
 import GalleryService from './services/gallery';
 import UtilsService from './services/utils';
+import { AgolService, AgolQuery } from './services/agol';
 
 import KGQuery from './shared/kg-query';
 import KGService from './services/kg';
@@ -41,6 +42,8 @@ export {
     DatasetService,
     MapService,
     UtilsService,
+    AgolService,
+    AgolQuery,
     KGService,
     ServiceFactory,
     Config

@@ -3,9 +3,6 @@
 import Q from 'q';
 import BaseService from './base';
 
-const METHODS = ["GET", "POST", "PUT", "DELETE", "PATCH"];
-
-
 class UtilsService extends BaseService {
 
     constructor(url, httpClient) {

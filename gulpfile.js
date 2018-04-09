@@ -49,7 +49,10 @@ gulp.task('js', 'Concat, Uglify JavaScript into a single file', function() {
                 main: true,
                 browser: true,
             }),
-            rollupBabel({ exclude: 'node_modules/**' })
+            rollupBabel({
+                presets: [ 'es2015-rollup' ],
+                exclude: 'node_modules/**'
+            })
         ]
     })
     .then(bundle => {

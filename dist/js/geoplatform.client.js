@@ -2986,6 +2986,17 @@
                   if (item.id) {
                       method = "PUT";
                       url += '/' + item.id;
+                  } else {
+                      //if item is being created and has no URI already defined
+                      // attempt to create one using the API's method for doing so
+                      // and then attempt the actual item creation
+                      if (!item.uri) {
+                          return _this3.getUri(item, options).then(function (uri) {
+                              item.uri = uri;
+                              var opts = _this3.buildRequest({ method: method, url: url, data: item, options: options });
+                              return _this3.execute(opts);
+                          });
+                      }
                   }
 
                   var opts = _this3.buildRequest({ method: method, url: url, data: item, options: options });
@@ -3421,13 +3432,14 @@
       KEYWORDS: 'keyword',
       URI: 'uri',
       CREATED_BY: 'createdBy',
+      LAST_MODIFIED_BY: 'lastModifiedBy',
       CONTRIBUTED_BY: 'contributedBy',
       CREATOR: 'creator.id',
-      SVC_TYPES: 'serviceType.id',
+      SERVICE_TYPES: 'serviceType.id',
       THEMES_ID: 'theme.id',
       THEMES_LABEL: 'theme.label',
       THEMES_URI: 'theme.uri',
-      PUBLISHERS: 'publisher.id',
+      PUBLISHERS_ID: 'publisher.id',
       PUBLISHERS_LABEL: 'publisher.label',
       PUBLISHERS_URI: 'publisher.uri',
       USED_BY_ID: 'usedBy.id',
@@ -3438,17 +3450,67 @@
       SCHEMES_URI: 'scheme.uri',
       VISIBILITY: 'visibility',
       EXTENT: 'extent',
+      CREATED: 'created',
+      CREATED_BEFORE: 'created.max',
+      CREATED_AFTER: 'created.min',
+      MODIFIED: 'modified',
       MODIFIED_BEFORE: 'modified.max',
       MODIFIED_AFTER: 'modified.min',
       BEGINS: 'startDate.min',
       ENDS: 'endDate.max',
       RESOURCE_TYPE: 'resourceType',
 
+      FACETS: 'includeFacets',
+      FIELDS: 'fields',
+
       //recommender service-specific
       FOR_TYPES: 'for'
   };
 
-  var QueryFacets = {
+  var Fields = {
+      LABEL: 'label',
+      DESCRIPTION: 'description',
+      CREATED: 'created',
+      MODIFIED: 'modified',
+      CREATED_BY: 'createdBy',
+      LAST_MODIFIED_BY: 'lastModifiedBy',
+      KEYWORDS: 'keywords',
+      THEMES: 'themes',
+      PUBLISHERS: 'publishers',
+      STATUS: 'status',
+      VISIBILITY: 'visibility',
+      EXTENT: 'extent',
+      TEMPORAL: 'temporal',
+      IDENTIFIERS: 'identifiers',
+      RESOURCE_TYPES: 'resourceTypes',
+      SERVICES: 'services',
+      CONTACTS: 'contacts',
+      DISTRIBUTIONS: 'distributions',
+      ACCESS_RIGHTS: 'rights',
+      USED_BY: 'usedBy',
+      STATISTICS: 'statistics',
+
+      SERVICE_TYPE: 'serviceType',
+      HREF: 'href',
+      DATASETS: 'datasets',
+
+      LAYER_TYPE: 'layerType',
+      LAYER_NAME: 'layerName',
+      LEGEND: 'legend',
+      SUB_LAYERS: 'subLayers',
+      PARENT_LAYER: 'parentLayer',
+
+      LAYERS: 'layers',
+      ANNOTATIONS: 'annotations',
+      THUMBNAIL: 'thumbnail',
+
+      GALLERY_ITEMS: 'items',
+
+      CONCEPT_SCHEME: 'scheme'
+
+  };
+
+  var Facets = {
       TYPES: 'types',
       THEMES: 'themes',
       PUBLISHERS: 'publishers',
@@ -3459,9 +3521,9 @@
       USED_BY: 'usedBy.id'
   };
 
-  var FIELDS_DEFAULT = ['created', 'modified', 'createdBy', 'publishers', 'themes', 'description'];
+  var FIELDS_DEFAULT = [Fields.CREATED, Fields.MODIFIED, Fields.CREATED_BY, Fields.PUBLISHERS, Fields.THEMES, Fields.DESCRIPTION];
 
-  var FACETS_DEFAULT = [QueryFacets.TYPES, QueryFacets.PUBLISHERS, QueryFacets.SERVICE_TYPES, QueryFacets.CONCEPT_SCHEMES, QueryFacets.VISIBILITY, QueryFacets.CREATED_BY];
+  var FACETS_DEFAULT = [Facets.TYPES, Facets.PUBLISHERS, Facets.SERVICE_TYPES, Facets.CONCEPT_SCHEMES, Facets.VISIBILITY, Facets.CREATED_BY];
 
   var SORT_OPTIONS_DEFAULT = [{ value: "label,asc", label: "Name (A-Z)" }, { value: "label,desc", label: "Name (Z-A)" }, { value: "type,asc", label: "Type (A-Z)" }, { value: "type,desc", label: "Type (Z-A)" }, { value: "modified,desc", label: "Most recently modified" }, { value: "modified,asc", label: "Least recently modified" }, { value: "_score,desc", label: "Relevance" }];
 
@@ -3516,12 +3578,14 @@
       }, {
           key: 'setParameter',
           value: function setParameter(name, value) {
-              if (value === null || value === undefined) delete this.query[name];else this.query[name] = value;
+              if (value === null || value === undefined || //if no value was provide
+              typeof value.push !== 'undefined' && !value.length) //or empty array
+                  delete this.query[name];else this.query[name] = value;
           }
       }, {
           key: 'getParameter',
           value: function getParameter(key) {
-              return this.getParameter(key);
+              return this.query[key];
           }
       }, {
           key: 'applyParameters',
@@ -3575,7 +3639,7 @@
       }, {
           key: 'setKeywords',
           value: function setKeywords(text) {
-              if (text && typeof text.push !== 'undefined') text = text.join(',');
+              if (text && typeof text.push === 'undefined') text = [text];
               this.setParameter(QueryParameters.KEYWORDS, text);
           }
       }, {
@@ -3621,7 +3685,7 @@
       }, {
           key: 'setTypes',
           value: function setTypes(types) {
-              if (types && types.push === 'undefined') types = [types];
+              if (types && typeof types.push === 'undefined') types = [types];
               this.setParameter(QueryParameters.TYPES, types);
           }
       }, {
@@ -3640,16 +3704,16 @@
               return this;
           }
 
-          /**
-           * @param {string} user - username
-           * @param {boolean} fireUpdate -
-           */
+          /** @param {string} user - username */
 
       }, {
           key: 'setCreatedBy',
           value: function setCreatedBy(user) {
               this.setParameter(QueryParameters.CREATED_BY, user);
           }
+
+          /** @return {string} username */
+
       }, {
           key: 'getCreatedBy',
           value: function getCreatedBy() {
@@ -3659,11 +3723,37 @@
           // -----------------------------------------------------------
 
 
+      }, {
+          key: 'lastModifiedBy',
+          value: function lastModifiedBy(user) {
+              this.setLastModifiedBy(user);
+              return this;
+          }
+
+          /** @param {string} user - username */
+
+      }, {
+          key: 'setLastModifiedBy',
+          value: function setLastModifiedBy(user) {
+              this.setParameter(QueryParameters.LAST_MODIFIED_BY, user);
+          }
+
+          /** @return {string} username */
+
+      }, {
+          key: 'getLastModifiedBy',
+          value: function getLastModifiedBy() {
+              return this.getParameter(QueryParameters.LAST_MODIFIED_BY);
+          }
+
+          // -----------------------------------------------------------
+
+
           /**
            * Specify a Theme or set of Themes to constrain results. By
            * default, values are assumed to be theme identifiers. If using
            * theme labels or theme uris, specify the optional second parameter
-           * to be either QueryParameters.THEMES_LABEL or QueryParameters.THEMES_URI
+           * to be either Parameters.THEMES_LABEL or Parameters.THEMES_URI
            * respectively.
            * @param {array[string]} themes - string or array of strings containing theme constraint
            * @param {string} parameter - optional, to indicate the parameter to use
@@ -3681,7 +3771,7 @@
            * Specify a Theme or set of Themes to constrain results. By
            * default, values are assumed to be theme identifiers. If using
            * theme labels or theme uris, specify the optional second parameter
-           * to be either QueryParameters.THEMES_LABEL or QueryParameters.THEMES_URI
+           * to be either Parameters.THEMES_LABEL or Parameters.THEMES_URI
            * respectively.
            * @param {array[string]} themes - theme or themes to constrain by
            */
@@ -3689,7 +3779,7 @@
       }, {
           key: 'setThemes',
           value: function setThemes(themes, parameter) {
-              if (themes && themes.push === 'undefined') themes = [themes];
+              if (themes && typeof themes.push === 'undefined') themes = [themes];
 
               //clear existing
               this.setParameter(QueryParameters.THEMES_ID, null);
@@ -3712,7 +3802,7 @@
            * Specify a Publisher or set of Publishers to constrain results. By
            * default, values are assumed to be theme identifiers. If using
            * theme labels or theme uris, specify the optional second parameter
-           * to be either QueryParameters.PUBLISHERS_LABEL or QueryParameters.PUBLISHERS_URI
+           * to be either Parameters.PUBLISHERS_LABEL or Parameters.PUBLISHERS_URI
            * respectively.
            * @param {string} parameter - optional, to indicate the parameter to use
            * @return {Query}
@@ -3729,7 +3819,7 @@
            * Specify a Publisher or set of Publishers to constrain results. By
            * default, values are assumed to be theme identifiers. If using
            * theme labels or theme uris, specify the optional second parameter
-           * to be either QueryParameters.PUBLISHERS_LABEL or QueryParameters.PUBLISHERS_URI
+           * to be either Parameters.PUBLISHERS_LABEL or Parameters.PUBLISHERS_URI
            * respectively.
            * @param {array[string]} publishers - publishing orgs to constrain by
            */
@@ -3737,7 +3827,7 @@
       }, {
           key: 'setPublishers',
           value: function setPublishers(publishers, parameter) {
-              if (publishers && publishers.push === 'undefined') publishers = [publishers];
+              if (publishers && typeof publishers.push === 'undefined') publishers = [publishers];
 
               //clear existing
               this.setParameter(QueryParameters.PUBLISHERS_ID, null);
@@ -3761,7 +3851,7 @@
            * uses items you wish to find in search results. By
            * default, values are assumed to be theme identifiers. If using
            * theme labels or theme uris, specify the optional second parameter
-           * to be either QueryParameters.USED_BY_LABEL or QueryParameters.USED_BY_URI
+           * to be either Parameters.USED_BY_LABEL or Parameters.USED_BY_URI
            * respectively.
            * @param {string} parameter - optional, to indicate the parameter to use
            * @return {Query}
@@ -3779,7 +3869,7 @@
            * uses items you wish to find in search results. By
            * default, values are assumed to be theme identifiers. If using
            * theme labels or theme uris, specify the optional second parameter
-           * to be either QueryParameters.USED_BY_LABEL or QueryParameters.USED_BY_URI
+           * to be either Parameters.USED_BY_LABEL or Parameters.USED_BY_URI
            * respectively.
            * @param {array[string]} ids - publishing orgs to constrain by
            */
@@ -3787,7 +3877,7 @@
       }, {
           key: 'setUsedBy',
           value: function setUsedBy(ids, parameter) {
-              if (ids && ids.push === 'undefined') ids = [ids];
+              if (ids && typeof ids.push === 'undefined') ids = [ids];
 
               //clear existing
               this.setParameter(QueryParameters.USED_BY_ID, null);
@@ -3810,7 +3900,7 @@
            * Specify a Concept Scheme or set of Concept Schemes to constrain results. By
            * default, values are assumed to be theme identifiers. If using
            * theme labels or theme uris, specify the optional second parameter
-           * to be either QueryParameters.SCHEMES_LABEL or QueryParameters.SCHEMES_URI
+           * to be either Parameters.SCHEMES_LABEL or Parameters.SCHEMES_URI
            * respectively.
            * @param {array[string]} schemes - schemes to constrain by
            * @param {string} parameter - optional, to indicate the parameter to use
@@ -3828,7 +3918,7 @@
            * Specify a Concept Scheme or set of Concept Schemes to constrain results. By
            * default, values are assumed to be theme identifiers. If using
            * theme labels or theme uris, specify the optional second parameter
-           * to be either QueryParameters.SCHEMES_LABEL or QueryParameters.SCHEMES_URI
+           * to be either Parameters.SCHEMES_LABEL or Parameters.SCHEMES_URI
            * respectively.
            * @param {array[string]} schemes - schemes to constrain by
            * @param {string} parameter - optional, to indicate the parameter to use
@@ -3837,7 +3927,7 @@
       }, {
           key: 'setSchemes',
           value: function setSchemes(schemes, parameter) {
-              if (schemes && schemes.push === 'undefined') schemes = [schemes];
+              if (schemes && typeof schemes.push === 'undefined') schemes = [schemes];
 
               //clear existing
               this.setParameter(QueryParameters.SCHEMES_ID, null);
@@ -3850,7 +3940,7 @@
       }, {
           key: 'getSchemes',
           value: function getSchemes() {
-              return this.getParameter(QueryParameters.SCHEMES) || this.getParameter(QueryParameters.SCHEMES_LABEL) || this.getParameter(QueryParameters.SCHEMES_URI);
+              return this.getParameter(QueryParameters.SCHEMES_ID) || this.getParameter(QueryParameters.SCHEMES_LABEL) || this.getParameter(QueryParameters.SCHEMES_URI);
           }
 
           // -----------------------------------------------------------
@@ -3873,7 +3963,7 @@
       }, {
           key: 'setServiceTypes',
           value: function setServiceTypes(types) {
-              if (types && types.push === 'undefined') types = [types];
+              if (types && typeof types.push === 'undefined') types = [types];
               this.setParameter(QueryParameters.SERVICE_TYPES, types);
           }
       }, {
@@ -3894,7 +3984,6 @@
 
           /**
            * @param {string} visibility - one of 'public' or 'private'
-           * @param {boolean} fireUpdate
            */
 
       }, {
@@ -3905,7 +3994,7 @@
       }, {
           key: 'getVisibility',
           value: function getVisibility() {
-              this.getParameter(QueryParameters.VISIBILITY);
+              return this.getParameter(QueryParameters.VISIBILITY);
           }
 
           // -----------------------------------------------------------
@@ -3920,8 +4009,7 @@
 
           /**
            * @param {Date} date - date to compare against
-           * @param {boolean} beforeOrAfter - flag specifying which boundary condition (true = before, false = after)
-           * @param {boolean} fireUpdate - flag specifying whether to trigger update automatically
+           * @param {boolean} beforeOrAfter - flag specifying which boundary condition (true = before, false = after) flag specifying whether to trigger update automatically
            */
 
       }, {
@@ -3947,6 +4035,46 @@
           key: 'getModified',
           value: function getModified() {
               return this.getParameter(QueryParameters.MODIFIED_BEFORE) || this.getParameter(QueryParameters.MODIFIED_AFTER);
+          }
+
+          // -----------------------------------------------------------
+
+
+      }, {
+          key: 'created',
+          value: function created(date, beforeOrAfter) {
+              this.setCreated(date, beforeOrAfter);
+              return this;
+          }
+
+          /**
+           * @param {Date} date - date to compare against
+           * @param {boolean} beforeOrAfter - flag specifying which boundary condition (true = before, false = after) flag specifying whether to trigger update automatically
+           */
+
+      }, {
+          key: 'setCreated',
+          value: function setCreated(date, beforeOrAfter) {
+
+              //if no date was supplied, consider it "unset" for both properties
+              if (!date) {
+                  this.setParameter(QueryParameters.CREATED_BEFORE, null);
+                  this.setParameter(QueryParameters.CREATED_AFTER, null);
+                  return;
+              }
+
+              var dir = beforeOrAfter && (beforeOrAfter === true || beforeOrAfter === "true");
+              var prop = dir ? QueryParameters.CREATED_BEFORE : QueryParameters.CREATED_AFTER; //property being set
+              var oppProp = dir ? QueryParameters.CREATED_AFTER : QueryParameters.CREATED_BEFORE; //unset opposite property
+              var arg = date && date.getTime ? date.getTime() : date;
+
+              this.setParameter(oppProp, null);
+              this.setParameter(prop, arg);
+          }
+      }, {
+          key: 'getCreated',
+          value: function getCreated() {
+              return this.getParameter(QueryParameters.CREATED_BEFORE) || this.getParameter(QueryParameters.CREATED_AFTER);
           }
 
           // -----------------------------------------------------------
@@ -4054,7 +4182,7 @@
       }, {
           key: 'setResourceTypes',
           value: function setResourceTypes(types) {
-              if (types && types.push === 'undefined') types = [types];
+              if (types && typeof types.push === 'undefined') types = [types];
               this.setParameter(QueryParameters.RESOURCE_TYPE, types);
           }
       }, {
@@ -4080,12 +4208,13 @@
       }, {
           key: 'setFacets',
           value: function setFacets(names) {
-              this.query.includeFacets = names;
+              if (names && typeof names.push === 'undefined') names = [names];
+              this.setParameter(QueryParameters.FACETS, names);
           }
       }, {
           key: 'getFacets',
           value: function getFacets() {
-              return this.query.includeFacets;
+              return this.getParameter(QueryParameters.FACETS);
           }
 
           /**
@@ -4095,7 +4224,8 @@
       }, {
           key: 'addFacet',
           value: function addFacet(name) {
-              var facets = (this.getFacets() || []).push(name);
+              var facets = this.getFacets() || [];
+              facets.push(name);
               this.setFacets(facets);
           }
 
@@ -4132,12 +4262,12 @@
           key: 'setFields',
           value: function setFields(fields) {
               if (fields && typeof fields.push === 'undefined') fields = [fields];
-              this.query.fields = fields;
+              this.setParameter(QueryParameters.FIELDS, fields);
           }
       }, {
           key: 'getFields',
           value: function getFields() {
-              return this.query.fields;
+              return this.getParameter(QueryParameters.FIELDS);
           }
 
           // -----------------------------------------------------------
@@ -4651,6 +4781,461 @@
       return UtilsService;
   }(BaseService);
 
+  var AgolQuery = function () {
+      function AgolQuery() {
+          classCallCheck(this, AgolQuery);
+
+          this._query = {
+              page: 0,
+              size: 10
+          };
+      }
+
+      createClass(AgolQuery, [{
+          key: 'getQuery',
+          value: function getQuery() {
+              var result = {};
+              for (var prop in this._query) {
+                  var value = this._query[prop];
+                  if (value !== null && typeof value.push !== 'undefined') {
+                      value = value.join(',');
+                  }
+                  result[prop] = value;
+              }
+              return result;
+          }
+
+          // ---------------------------------------
+
+      }, {
+          key: 'q',
+          value: function q(value) {
+              this.setQ(value);return this;
+          }
+      }, {
+          key: 'setQ',
+          value: function setQ(value) {
+              this._query.q = value;
+          }
+      }, {
+          key: 'getQ',
+          value: function getQ() {
+              return this._query.q;
+          }
+
+          // ---------------------------------------
+
+      }, {
+          key: 'types',
+          value: function types(value) {
+              this.setTypes(value);return this;
+          }
+      }, {
+          key: 'setTypes',
+          value: function setTypes(value) {
+              if (value && typeof value.push !== 'undefined') value = value.join(',');
+              this._query.types = value;
+          }
+      }, {
+          key: 'getTypes',
+          value: function getTypes() {
+              return this._query.types;
+          }
+
+          // ---------------------------------------
+
+      }, {
+          key: 'groups',
+          value: function groups(value) {
+              this.setGroups(value);return this;
+          }
+      }, {
+          key: 'setGroups',
+          value: function setGroups(value) {
+              if (value && typeof value.push !== 'undefined') value = value.join(',');
+              this._query.groups = value;
+          }
+      }, {
+          key: 'getGroups',
+          value: function getGroups() {
+              return this._query.groups;
+          }
+
+          // ---------------------------------------
+
+      }, {
+          key: 'orgs',
+          value: function orgs(value) {
+              this.setOrgs(value);return this;
+          }
+      }, {
+          key: 'setOrgs',
+          value: function setOrgs(value) {
+              if (value && typeof value.push !== 'undefined') value = value.join(',');
+              this._query.orgs = value;
+          }
+      }, {
+          key: 'getOrgs',
+          value: function getOrgs() {
+              return this._query.orgs;
+          }
+
+          // ---------------------------------------
+
+      }, {
+          key: 'extent',
+          value: function extent(value) {
+              this.setExtent(value);return this;
+          }
+      }, {
+          key: 'setExtent',
+          value: function setExtent(value) {
+              this._query.bbox = value;
+          }
+      }, {
+          key: 'getExtent',
+          value: function getExtent() {
+              return this._query.bbox;
+          }
+
+          // ---------------------------------------
+
+          /**
+           * @param {string} sort - form of <field>,<dir> or just field name
+           * @param {string} order - optional, either 'asc' or 'desc'
+           */
+
+      }, {
+          key: 'sort',
+          value: function sort(_sort, order) {
+              this.setSort(_sort, order);return this;
+          }
+          /**
+           * @param {string} sort - form of <field>,<dir> or just field name
+           * @param {string} order - optional, either 'asc' or 'desc'
+           */
+
+      }, {
+          key: 'setSort',
+          value: function setSort(sort, order) {
+              order = order && (order !== 'asc' || order !== 'desc') ? 'desc' : order;
+              if (sort && sort.indexOf(',') < 0) sort = sort + ',' + order;
+              this._query.sort = sort;
+          }
+      }, {
+          key: 'getSort',
+          value: function getSort() {
+              return this._query.sort;
+          }
+      }, {
+          key: 'getSortField',
+          value: function getSortField() {
+              return this._query.sort.split(',')[0];
+          }
+      }, {
+          key: 'getSortOrder',
+          value: function getSortOrder() {
+              return this._query.sort.split(',')[1] === 'asc';
+          }
+
+          // -----------------------------------------------------------
+
+
+          /**
+           * @param {int} page - page of results to fetch
+           */
+
+      }, {
+          key: 'page',
+          value: function page(_page) {
+              this.setPage(_page);
+              return this;
+          }
+      }, {
+          key: 'setPage',
+          value: function setPage(page) {
+              if (isNaN(page) || page * 1 < 0) return;
+              this._query.page = page * 1;
+          }
+      }, {
+          key: 'getPage',
+          value: function getPage() {
+              return this._query.page;
+          }
+      }, {
+          key: 'nextPage',
+          value: function nextPage() {
+              this.setPage(this._query.page + 1);
+          }
+      }, {
+          key: 'previousPage',
+          value: function previousPage() {
+              this.setPage(this._query.page - 1);
+          }
+
+          // -----------------------------------------------------------
+
+
+          /**
+           * @param {int} size - page size to request
+           */
+
+      }, {
+          key: 'pageSize',
+          value: function pageSize(size) {
+              this.setPageSize(size);
+              return this;
+          }
+      }, {
+          key: 'setPageSize',
+          value: function setPageSize(size) {
+              if (isNaN(size) || size * 1 < 0) return;
+              this._query.size = size * 1;
+          }
+      }, {
+          key: 'getPageSize',
+          value: function getPageSize() {
+              return this._query.size;
+          }
+      }]);
+      return AgolQuery;
+  }();
+
+  var AgolService = function () {
+      function AgolService(url, httpClient) {
+          classCallCheck(this, AgolService);
+
+          this.setUrl(url);
+          this.client = httpClient;
+          this.timeout = 10000;
+          this.httpMethods = ["GET", "POST", "PUT", "DELETE", "PATCH"];
+      }
+
+      createClass(AgolService, [{
+          key: 'setUrl',
+          value: function setUrl(baseUrl) {
+              this.baseUrl = baseUrl + '/api/agol/';
+          }
+
+          // -----------------------------------------------------------------------
+          // AGOL ORGS METHODS
+
+
+          /**
+           * @param {string} id - identifier of AGOL organization to fetch
+           * @param {Object} options - optional set of request options to apply to xhr request
+           * @return {Promise} resolving Item object or an error
+           */
+
+      }, {
+          key: 'getOrg',
+          value: function getOrg(id, options) {
+              var _this = this;
+
+              return Q.resolve(id).then(function (id) {
+                  var opts = _this.buildRequest({
+                      method: "GET", url: _this.baseUrl + '/orgs/' + id, options: options
+                  });
+                  return _this.execute(opts);
+              }).catch(function (e) {
+                  var err = new Error('AgolService.getOrg() - Error fetching org ' + id + ': ' + e.message);
+                  return Q.reject(err);
+              });
+          }
+
+          /**
+           * @param {Object} arg - either JS object of query parameters or Query instance
+           * @param {Object} options - optional set of request options to apply to xhr request
+           * @return {Promise} resolving search results
+           */
+
+      }, {
+          key: 'searchOrgs',
+          value: function searchOrgs(arg, options) {
+              var _this2 = this;
+
+              return Q.resolve(arg).then(function (params) {
+
+                  if (params && typeof params.getQuery !== 'undefined') {
+                      //if passed a GeoPlatform.Query object,
+                      // convert to parameters object
+                      params = params.getQuery();
+                  }
+                  var opts = _this2.buildRequest({
+                      method: "GET", url: _this2.baseUrl + '/orgs', params: params, options: options
+                  });
+                  return _this2.execute(opts);
+              }).catch(function (e) {
+                  var err = new Error('AgolService.searchOrgs() - Error searching orgs: ' + e.message);
+                  return Q.reject(err);
+              });
+          }
+
+          // -----------------------------------------------------------------------
+          // AGOL GROUPS METHODS
+
+
+          /**
+           * @param {string} id - identifier of AGOL group to fetch
+           * @param {Object} options - optional set of request options to apply to xhr request
+           * @return {Promise} resolving Item object or an error
+           */
+
+      }, {
+          key: 'getGroup',
+          value: function getGroup(id, options) {
+              var _this3 = this;
+
+              return Q.resolve(id).then(function (id) {
+                  var opts = _this3.buildRequest({
+                      method: "GET", url: _this3.baseUrl + '/groups/' + id, options: options
+                  });
+                  return _this3.execute(opts);
+              }).catch(function (e) {
+                  var err = new Error('AgolService.getGroup() - Error fetching group ' + id + ': ' + e.message);
+                  return Q.reject(err);
+              });
+          }
+
+          /**
+           * @param {Object} arg - either JS object of query parameters or AgolQuery instance
+           * @param {Object} options - optional set of request options to apply to xhr request
+           * @return {Promise} resolving search results
+           */
+
+      }, {
+          key: 'searchGroups',
+          value: function searchGroups(arg, options) {
+              var _this4 = this;
+
+              return Q.resolve(arg).then(function (params) {
+
+                  if (params && typeof params.getQuery !== 'undefined') {
+                      //if passed a GeoPlatform.Query object,
+                      // convert to parameters object
+                      params = params.getQuery();
+                  }
+                  var opts = _this4.buildRequest({
+                      method: "GET", url: _this4.baseUrl + '/groups', params: params, options: options
+                  });
+                  return _this4.execute(opts);
+              }).catch(function (e) {
+                  var err = new Error('AgolService.searchGroups() - Error searching groups: ' + e.message);
+                  return Q.reject(err);
+              });
+          }
+
+          // -----------------------------------------------------------------------
+          // AGOL ITEMS METHODS
+
+          /**
+           * @param {string} id - identifier of AGOL item to fetch
+           * @param {Object} options - optional set of request options to apply to xhr request
+           * @return {Promise} resolving Item object or an error
+           */
+
+      }, {
+          key: 'getItem',
+          value: function getItem(id, options) {
+              var _this5 = this;
+
+              return Q.resolve(id).then(function (id) {
+                  var opts = _this5.buildRequest({
+                      method: "GET", url: _this5.baseUrl + '/items/' + id, options: options
+                  });
+                  return _this5.execute(opts);
+              }).catch(function (e) {
+                  var err = new Error('AgolService.getItem() - Error fetching item ' + id + ': ' + e.message);
+                  return Q.reject(err);
+              });
+          }
+
+          /**
+           * @param {Object} arg - either JS object of query parameters or AgolQuery instance
+           * @param {Object} options - optional set of request options to apply to xhr request
+           * @return {Promise} resolving search results
+           */
+
+      }, {
+          key: 'searchItems',
+          value: function searchItems(arg, options) {
+              var _this6 = this;
+
+              return Q.resolve(arg).then(function (params) {
+
+                  if (params && typeof params.getQuery !== 'undefined') {
+                      //if passed a GeoPlatform.Query object,
+                      // convert to parameters object
+                      params = params.getQuery();
+                  }
+                  var opts = _this6.buildRequest({
+                      method: "GET", url: _this6.baseUrl + '/items', params: params, options: options
+                  });
+                  return _this6.execute(opts);
+              }).catch(function (e) {
+                  var err = new Error('AgolService.searchItems() - Error searching items: ' + e.message);
+                  return Q.reject(err);
+              });
+          }
+
+          /* --------------------------- */
+
+      }, {
+          key: 'getAgolId',
+          value: function getAgolId(obj) {
+              if (!obj) return null;
+
+              if (!obj.type) return null;
+
+              if (ItemTypes.ORGANIZATION === obj.type || 'Group' === obj.type) {
+                  return obj.id;
+              }
+
+              if (!obj.identifiers || !obj.identifiers.length) return null;
+              var ids = obj.identifiers.filter(function (id) {
+                  return ~id.indexOf('agol:');
+              });
+              if (!ids.length) return null;
+              return ids[0].replace('agol:', '');
+          }
+
+          /* ----------------------------------------------------------- */
+
+          /**
+           * @param {string} method - one of "GET", "POST", "PUT", "DELETE", "PATCH"
+           * @param {string} url - destination of xhr request
+           * @param {Object} params - object to be sent with request as query parameters
+           * @param {Object} data - object to be sent with request as body
+           * @param {Object} options - optional object defining request options
+           * @return {Object} request options for xhr
+           */
+
+      }, {
+          key: 'buildRequest',
+          value: function buildRequest(options) {
+
+              if (this.httpMethods.indexOf(options.method) < 0) throw new Error('Unsupported HTTP method ' + options.method);
+
+              if (!options.url) throw new Error('Must specify a URL for HTTP requests');
+
+              options.timeout = this.timeout;
+
+              return this.createRequestOpts(options);
+          }
+      }, {
+          key: 'createRequestOpts',
+          value: function createRequestOpts(options) {
+              return this.client.createRequestOpts(options);
+          }
+      }, {
+          key: 'execute',
+          value: function execute(opts) {
+              return this.client.execute(opts);
+          }
+      }]);
+      return AgolService;
+  }();
+
   var SORT_OPTIONS_DEFAULT$1 = [{ value: "label,asc", label: "Name (A-Z)" }, { value: "label,desc", label: "Name (Z-A)" }, { value: "type,asc", label: "Type (A-Z)" }, { value: "type,desc", label: "Type (Z-A)" }, { value: "modified,desc", label: "Most recently modified" }, { value: "modified,asc", label: "Least recently modified" }, { value: "_score,desc", label: "Relevance" }];
 
   var KGQuery = function () {
@@ -4702,7 +5287,7 @@
       }, {
           key: "getParameter",
           value: function getParameter(key) {
-              return this.getParameter(key);
+              return this.query[key];
           }
       }, {
           key: "applyParameters",
@@ -4760,7 +5345,7 @@
       }, {
           key: "setClassifiers",
           value: function setClassifiers(types) {
-              if (types && types.push === 'undefined') types = [types];
+              if (types && typeof types.push === 'undefined') types = [types];
               this.setParameter(QueryParameters.TYPES, types);
           }
 
@@ -4803,7 +5388,7 @@
       }, {
           key: "setTypes",
           value: function setTypes(objTypes) {
-              if (objTypes && objTypes.push === 'undefined') objTypes = [objTypes];
+              if (objTypes && typeof objTypes.push === 'undefined') objTypes = [objTypes];
               this.setParameter(QueryParameters.FOR_TYPES, objTypes);
           }
 
@@ -5127,9 +5712,10 @@
 
   exports.ItemTypes = ItemTypes;
   exports.QueryParameters = QueryParameters;
-  exports.QueryFacets = QueryFacets;
+  exports.QueryFacets = Facets;
   exports.Query = Query;
   exports.QueryFactory = QueryFactory;
+  exports.QueryFields = Fields;
   exports.KGQuery = KGQuery;
   exports.KGClassifiers = classifiers;
   exports.HttpClientBase = HttpClientBase;
@@ -5144,6 +5730,8 @@
   exports.DatasetService = DatasetService;
   exports.MapService = MapService;
   exports.UtilsService = UtilsService;
+  exports.AgolService = AgolService;
+  exports.AgolQuery = AgolQuery;
   exports.KGService = KGService;
   exports.ServiceFactory = ServiceFactory;
   exports.ItemProperties = ItemProperties;

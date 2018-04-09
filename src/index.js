@@ -12,14 +12,18 @@ import ServiceService from './services/service';
 import GalleryService from './services/gallery';
 import CommunityService from './services/community';
 import UtilsService from './services/utils';
+import { AgolService, AgolQuery } from './services/agol';
 
 import KGQuery from './shared/kg-query';
 import KGService from './services/kg';
 import KGClassifiers from './shared/classifiers';
 
 import QueryParameters from './shared/parameters';
-import QueryFacets     from './shared/facets';
-import Query           from './shared/query';
+import {
+    Query,
+    Fields as QueryFields,
+    Facets as QueryFacets
+} from './shared/query';
 import QueryFactory    from './shared/query-factory';
 import ServiceFactory  from './services/factory';
 
@@ -46,6 +50,7 @@ export {
     QueryFacets,
     Query,
     QueryFactory,
+    QueryFields,
     KGQuery,
     KGClassifiers,
 
@@ -64,6 +69,8 @@ export {
     DatasetService,
     MapService,
     UtilsService,
+    AgolService,
+    AgolQuery,
     KGService,
     ServiceFactory,
 

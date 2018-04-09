@@ -1810,19 +1810,20 @@
       return AgolService;
   }();
 
-  var QueryParameters = {
+  var Parameters = {
       TYPES: 'type',
       QUERY: 'q',
       KEYWORDS: 'keyword',
       URI: 'uri',
       CREATED_BY: 'createdBy',
+      LAST_MODIFIED_BY: 'lastModifiedBy',
       CONTRIBUTED_BY: 'contributedBy',
       CREATOR: 'creator.id',
-      SVC_TYPES: 'serviceType.id',
+      SERVICE_TYPES: 'serviceType.id',
       THEMES_ID: 'theme.id',
       THEMES_LABEL: 'theme.label',
       THEMES_URI: 'theme.uri',
-      PUBLISHERS: 'publisher.id',
+      PUBLISHERS_ID: 'publisher.id',
       PUBLISHERS_LABEL: 'publisher.label',
       PUBLISHERS_URI: 'publisher.uri',
       USED_BY_ID: 'usedBy.id',
@@ -1833,11 +1834,18 @@
       SCHEMES_URI: 'scheme.uri',
       VISIBILITY: 'visibility',
       EXTENT: 'extent',
+      CREATED: 'created',
+      CREATED_BEFORE: 'created.max',
+      CREATED_AFTER: 'created.min',
+      MODIFIED: 'modified',
       MODIFIED_BEFORE: 'modified.max',
       MODIFIED_AFTER: 'modified.min',
       BEGINS: 'startDate.min',
       ENDS: 'endDate.max',
       RESOURCE_TYPE: 'resourceType',
+
+      FACETS: 'includeFacets',
+      FIELDS: 'fields',
 
       //recommender service-specific
       FOR_TYPES: 'for'
@@ -1894,7 +1902,7 @@
       }, {
           key: "getParameter",
           value: function getParameter(key) {
-              return this.getParameter(key);
+              return this.query[key];
           }
       }, {
           key: "applyParameters",
@@ -1923,12 +1931,12 @@
       }, {
           key: "setQ",
           value: function setQ(text) {
-              this.setParameter(QueryParameters.QUERY, text);
+              this.setParameter(Parameters.QUERY, text);
           }
       }, {
           key: "getQ",
           value: function getQ() {
-              return this.getParameter(QueryParameters.QUERY);
+              return this.getParameter(Parameters.QUERY);
           }
 
           // -----------------------------------------------------------
@@ -1952,8 +1960,8 @@
       }, {
           key: "setClassifiers",
           value: function setClassifiers(types) {
-              if (types && types.push === 'undefined') types = [types];
-              this.setParameter(QueryParameters.TYPES, types);
+              if (types && typeof types.push === 'undefined') types = [types];
+              this.setParameter(Parameters.TYPES, types);
           }
 
           /**
@@ -1963,7 +1971,7 @@
       }, {
           key: "getClassifiers",
           value: function getClassifiers() {
-              return this.getParameter(QueryParameters.TYPES);
+              return this.getParameter(Parameters.TYPES);
           }
 
           // -----------------------------------------------------------
@@ -1995,8 +2003,8 @@
       }, {
           key: "setTypes",
           value: function setTypes(objTypes) {
-              if (objTypes && objTypes.push === 'undefined') objTypes = [objTypes];
-              this.setParameter(QueryParameters.FOR_TYPES, objTypes);
+              if (objTypes && typeof objTypes.push === 'undefined') objTypes = [objTypes];
+              this.setParameter(Parameters.FOR_TYPES, objTypes);
           }
 
           /**
@@ -2010,7 +2018,7 @@
       }, {
           key: "getTypes",
           value: function getTypes() {
-              return this.getParameter(QueryParameters.FOR_TYPES);
+              return this.getParameter(Parameters.FOR_TYPES);
           }
 
           // -----------------------------------------------------------
@@ -2281,7 +2289,50 @@
       CATEGORY: 'categories'
   };
 
-  var QueryFacets = {
+  var Fields = {
+      LABEL: 'label',
+      DESCRIPTION: 'description',
+      CREATED: 'created',
+      MODIFIED: 'modified',
+      CREATED_BY: 'createdBy',
+      LAST_MODIFIED_BY: 'lastModifiedBy',
+      KEYWORDS: 'keywords',
+      THEMES: 'themes',
+      PUBLISHERS: 'publishers',
+      STATUS: 'status',
+      VISIBILITY: 'visibility',
+      EXTENT: 'extent',
+      TEMPORAL: 'temporal',
+      IDENTIFIERS: 'identifiers',
+      RESOURCE_TYPES: 'resourceTypes',
+      SERVICES: 'services',
+      CONTACTS: 'contacts',
+      DISTRIBUTIONS: 'distributions',
+      ACCESS_RIGHTS: 'rights',
+      USED_BY: 'usedBy',
+      STATISTICS: 'statistics',
+
+      SERVICE_TYPE: 'serviceType',
+      HREF: 'href',
+      DATASETS: 'datasets',
+
+      LAYER_TYPE: 'layerType',
+      LAYER_NAME: 'layerName',
+      LEGEND: 'legend',
+      SUB_LAYERS: 'subLayers',
+      PARENT_LAYER: 'parentLayer',
+
+      LAYERS: 'layers',
+      ANNOTATIONS: 'annotations',
+      THUMBNAIL: 'thumbnail',
+
+      GALLERY_ITEMS: 'items',
+
+      CONCEPT_SCHEME: 'scheme'
+
+  };
+
+  var Facets = {
       TYPES: 'types',
       THEMES: 'themes',
       PUBLISHERS: 'publishers',
@@ -2292,9 +2343,9 @@
       USED_BY: 'usedBy.id'
   };
 
-  var FIELDS_DEFAULT = ['created', 'modified', 'createdBy', 'publishers', 'themes', 'description'];
+  var FIELDS_DEFAULT = [Fields.CREATED, Fields.MODIFIED, Fields.CREATED_BY, Fields.PUBLISHERS, Fields.THEMES, Fields.DESCRIPTION];
 
-  var FACETS_DEFAULT = [QueryFacets.TYPES, QueryFacets.PUBLISHERS, QueryFacets.SERVICE_TYPES, QueryFacets.CONCEPT_SCHEMES, QueryFacets.VISIBILITY, QueryFacets.CREATED_BY];
+  var FACETS_DEFAULT = [Facets.TYPES, Facets.PUBLISHERS, Facets.SERVICE_TYPES, Facets.CONCEPT_SCHEMES, Facets.VISIBILITY, Facets.CREATED_BY];
 
   var SORT_OPTIONS_DEFAULT$1 = [{ value: "label,asc", label: "Name (A-Z)" }, { value: "label,desc", label: "Name (Z-A)" }, { value: "type,asc", label: "Type (A-Z)" }, { value: "type,desc", label: "Type (Z-A)" }, { value: "modified,desc", label: "Most recently modified" }, { value: "modified,asc", label: "Least recently modified" }, { value: "_score,desc", label: "Relevance" }];
 
@@ -2348,12 +2399,14 @@
       }, {
           key: 'setParameter',
           value: function setParameter(name, value) {
-              if (value === null || value === undefined) delete this.query[name];else this.query[name] = value;
+              if (value === null || value === undefined || //if no value was provide
+              typeof value.push !== 'undefined' && !value.length) //or empty array
+                  delete this.query[name];else this.query[name] = value;
           }
       }, {
           key: 'getParameter',
           value: function getParameter(key) {
-              return this.getParameter(key);
+              return this.query[key];
           }
       }, {
           key: 'applyParameters',
@@ -2382,12 +2435,12 @@
       }, {
           key: 'setQ',
           value: function setQ(text) {
-              this.setParameter(QueryParameters.QUERY, text);
+              this.setParameter(Parameters.QUERY, text);
           }
       }, {
           key: 'getQ',
           value: function getQ() {
-              return this.getParameter(QueryParameters.QUERY);
+              return this.getParameter(Parameters.QUERY);
           }
 
           // -----------------------------------------------------------
@@ -2407,13 +2460,13 @@
       }, {
           key: 'setKeywords',
           value: function setKeywords(text) {
-              if (text && typeof text.push !== 'undefined') text = text.join(',');
-              this.setParameter(QueryParameters.KEYWORDS, text);
+              if (text && typeof text.push === 'undefined') text = [text];
+              this.setParameter(Parameters.KEYWORDS, text);
           }
       }, {
           key: 'getKeywords',
           value: function getKeywords() {
-              return this.getParameter(QueryParameters.KEYWORDS);
+              return this.getParameter(Parameters.KEYWORDS);
           }
 
           // -----------------------------------------------------------
@@ -2428,12 +2481,12 @@
       }, {
           key: 'setUri',
           value: function setUri(uri) {
-              this.setParameter(QueryParameters.URI, uri);
+              this.setParameter(Parameters.URI, uri);
           }
       }, {
           key: 'getUri',
           value: function getUri() {
-              return this.getParameter(QueryParameters.URI);
+              return this.getParameter(Parameters.URI);
           }
 
           // -----------------------------------------------------------
@@ -2453,13 +2506,13 @@
       }, {
           key: 'setTypes',
           value: function setTypes(types) {
-              if (types && types.push === 'undefined') types = [types];
-              this.setParameter(QueryParameters.TYPES, types);
+              if (types && typeof types.push === 'undefined') types = [types];
+              this.setParameter(Parameters.TYPES, types);
           }
       }, {
           key: 'getTypes',
           value: function getTypes() {
-              return this.getParameter(QueryParameters.TYPES);
+              return this.getParameter(Parameters.TYPES);
           }
 
           // -----------------------------------------------------------
@@ -2472,20 +2525,46 @@
               return this;
           }
 
-          /**
-           * @param {string} user - username
-           * @param {boolean} fireUpdate -
-           */
+          /** @param {string} user - username */
 
       }, {
           key: 'setCreatedBy',
           value: function setCreatedBy(user) {
-              this.setParameter(QueryParameters.CREATED_BY, user);
+              this.setParameter(Parameters.CREATED_BY, user);
           }
+
+          /** @return {string} username */
+
       }, {
           key: 'getCreatedBy',
           value: function getCreatedBy() {
-              return this.getParameter(QueryParameters.CREATED_BY);
+              return this.getParameter(Parameters.CREATED_BY);
+          }
+
+          // -----------------------------------------------------------
+
+
+      }, {
+          key: 'lastModifiedBy',
+          value: function lastModifiedBy(user) {
+              this.setLastModifiedBy(user);
+              return this;
+          }
+
+          /** @param {string} user - username */
+
+      }, {
+          key: 'setLastModifiedBy',
+          value: function setLastModifiedBy(user) {
+              this.setParameter(Parameters.LAST_MODIFIED_BY, user);
+          }
+
+          /** @return {string} username */
+
+      }, {
+          key: 'getLastModifiedBy',
+          value: function getLastModifiedBy() {
+              return this.getParameter(Parameters.LAST_MODIFIED_BY);
           }
 
           // -----------------------------------------------------------
@@ -2495,7 +2574,7 @@
            * Specify a Theme or set of Themes to constrain results. By
            * default, values are assumed to be theme identifiers. If using
            * theme labels or theme uris, specify the optional second parameter
-           * to be either QueryParameters.THEMES_LABEL or QueryParameters.THEMES_URI
+           * to be either Parameters.THEMES_LABEL or Parameters.THEMES_URI
            * respectively.
            * @param {array[string]} themes - string or array of strings containing theme constraint
            * @param {string} parameter - optional, to indicate the parameter to use
@@ -2513,7 +2592,7 @@
            * Specify a Theme or set of Themes to constrain results. By
            * default, values are assumed to be theme identifiers. If using
            * theme labels or theme uris, specify the optional second parameter
-           * to be either QueryParameters.THEMES_LABEL or QueryParameters.THEMES_URI
+           * to be either Parameters.THEMES_LABEL or Parameters.THEMES_URI
            * respectively.
            * @param {array[string]} themes - theme or themes to constrain by
            */
@@ -2521,20 +2600,20 @@
       }, {
           key: 'setThemes',
           value: function setThemes(themes, parameter) {
-              if (themes && themes.push === 'undefined') themes = [themes];
+              if (themes && typeof themes.push === 'undefined') themes = [themes];
 
               //clear existing
-              this.setParameter(QueryParameters.THEMES_ID, null);
-              this.setParameter(QueryParameters.THEMES_LABEL, null);
-              this.setParameter(QueryParameters.THEMES_URI, null);
+              this.setParameter(Parameters.THEMES_ID, null);
+              this.setParameter(Parameters.THEMES_LABEL, null);
+              this.setParameter(Parameters.THEMES_URI, null);
 
-              var param = parameter || QueryParameters.THEMES_ID;
+              var param = parameter || Parameters.THEMES_ID;
               this.setParameter(param, themes);
           }
       }, {
           key: 'getThemes',
           value: function getThemes() {
-              return this.getParameter(QueryParameters.THEMES_ID) || this.getParameter(QueryParameters.THEMES_LABEL) || this.getParameter(QueryParameters.THEMES_URI);
+              return this.getParameter(Parameters.THEMES_ID) || this.getParameter(Parameters.THEMES_LABEL) || this.getParameter(Parameters.THEMES_URI);
           }
 
           // -----------------------------------------------------------
@@ -2544,7 +2623,7 @@
            * Specify a Publisher or set of Publishers to constrain results. By
            * default, values are assumed to be theme identifiers. If using
            * theme labels or theme uris, specify the optional second parameter
-           * to be either QueryParameters.PUBLISHERS_LABEL or QueryParameters.PUBLISHERS_URI
+           * to be either Parameters.PUBLISHERS_LABEL or Parameters.PUBLISHERS_URI
            * respectively.
            * @param {string} parameter - optional, to indicate the parameter to use
            * @return {Query}
@@ -2561,7 +2640,7 @@
            * Specify a Publisher or set of Publishers to constrain results. By
            * default, values are assumed to be theme identifiers. If using
            * theme labels or theme uris, specify the optional second parameter
-           * to be either QueryParameters.PUBLISHERS_LABEL or QueryParameters.PUBLISHERS_URI
+           * to be either Parameters.PUBLISHERS_LABEL or Parameters.PUBLISHERS_URI
            * respectively.
            * @param {array[string]} publishers - publishing orgs to constrain by
            */
@@ -2569,20 +2648,20 @@
       }, {
           key: 'setPublishers',
           value: function setPublishers(publishers, parameter) {
-              if (publishers && publishers.push === 'undefined') publishers = [publishers];
+              if (publishers && typeof publishers.push === 'undefined') publishers = [publishers];
 
               //clear existing
-              this.setParameter(QueryParameters.PUBLISHERS_ID, null);
-              this.setParameter(QueryParameters.PUBLISHERS_LABEL, null);
-              this.setParameter(QueryParameters.PUBLISHERS_URI, null);
+              this.setParameter(Parameters.PUBLISHERS_ID, null);
+              this.setParameter(Parameters.PUBLISHERS_LABEL, null);
+              this.setParameter(Parameters.PUBLISHERS_URI, null);
 
-              var param = parameter || QueryParameters.PUBLISHERS_ID;
+              var param = parameter || Parameters.PUBLISHERS_ID;
               this.setParameter(param, publishers);
           }
       }, {
           key: 'getPublishers',
           value: function getPublishers() {
-              return this.getParameter(QueryParameters.PUBLISHERS_ID) || this.getParameter(QueryParameters.PUBLISHERS_LABEL) || this.getParameter(QueryParameters.PUBLISHERS_URI);
+              return this.getParameter(Parameters.PUBLISHERS_ID) || this.getParameter(Parameters.PUBLISHERS_LABEL) || this.getParameter(Parameters.PUBLISHERS_URI);
           }
 
           // -----------------------------------------------------------
@@ -2593,7 +2672,7 @@
            * uses items you wish to find in search results. By
            * default, values are assumed to be theme identifiers. If using
            * theme labels or theme uris, specify the optional second parameter
-           * to be either QueryParameters.USED_BY_LABEL or QueryParameters.USED_BY_URI
+           * to be either Parameters.USED_BY_LABEL or Parameters.USED_BY_URI
            * respectively.
            * @param {string} parameter - optional, to indicate the parameter to use
            * @return {Query}
@@ -2611,7 +2690,7 @@
            * uses items you wish to find in search results. By
            * default, values are assumed to be theme identifiers. If using
            * theme labels or theme uris, specify the optional second parameter
-           * to be either QueryParameters.USED_BY_LABEL or QueryParameters.USED_BY_URI
+           * to be either Parameters.USED_BY_LABEL or Parameters.USED_BY_URI
            * respectively.
            * @param {array[string]} ids - publishing orgs to constrain by
            */
@@ -2619,20 +2698,20 @@
       }, {
           key: 'setUsedBy',
           value: function setUsedBy(ids, parameter) {
-              if (ids && ids.push === 'undefined') ids = [ids];
+              if (ids && typeof ids.push === 'undefined') ids = [ids];
 
               //clear existing
-              this.setParameter(QueryParameters.USED_BY_ID, null);
-              this.setParameter(QueryParameters.USED_BY_LABEL, null);
-              this.setParameter(QueryParameters.USED_BY_URI, null);
+              this.setParameter(Parameters.USED_BY_ID, null);
+              this.setParameter(Parameters.USED_BY_LABEL, null);
+              this.setParameter(Parameters.USED_BY_URI, null);
 
-              var param = parameter || QueryParameters.USED_BY_ID;
+              var param = parameter || Parameters.USED_BY_ID;
               this.setParameter(param, ids);
           }
       }, {
           key: 'getUsedBy',
           value: function getUsedBy() {
-              return this.getParameter(QueryParameters.USED_BY_ID) || this.getParameter(QueryParameters.USED_BY_LABEL) || this.getParameter(QueryParameters.USED_BY_URI);
+              return this.getParameter(Parameters.USED_BY_ID) || this.getParameter(Parameters.USED_BY_LABEL) || this.getParameter(Parameters.USED_BY_URI);
           }
 
           // -----------------------------------------------------------
@@ -2642,7 +2721,7 @@
            * Specify a Concept Scheme or set of Concept Schemes to constrain results. By
            * default, values are assumed to be theme identifiers. If using
            * theme labels or theme uris, specify the optional second parameter
-           * to be either QueryParameters.SCHEMES_LABEL or QueryParameters.SCHEMES_URI
+           * to be either Parameters.SCHEMES_LABEL or Parameters.SCHEMES_URI
            * respectively.
            * @param {array[string]} schemes - schemes to constrain by
            * @param {string} parameter - optional, to indicate the parameter to use
@@ -2660,7 +2739,7 @@
            * Specify a Concept Scheme or set of Concept Schemes to constrain results. By
            * default, values are assumed to be theme identifiers. If using
            * theme labels or theme uris, specify the optional second parameter
-           * to be either QueryParameters.SCHEMES_LABEL or QueryParameters.SCHEMES_URI
+           * to be either Parameters.SCHEMES_LABEL or Parameters.SCHEMES_URI
            * respectively.
            * @param {array[string]} schemes - schemes to constrain by
            * @param {string} parameter - optional, to indicate the parameter to use
@@ -2669,20 +2748,20 @@
       }, {
           key: 'setSchemes',
           value: function setSchemes(schemes, parameter) {
-              if (schemes && schemes.push === 'undefined') schemes = [schemes];
+              if (schemes && typeof schemes.push === 'undefined') schemes = [schemes];
 
               //clear existing
-              this.setParameter(QueryParameters.SCHEMES_ID, null);
-              this.setParameter(QueryParameters.SCHEMES_LABEL, null);
-              this.setParameter(QueryParameters.SCHEMES_URI, null);
+              this.setParameter(Parameters.SCHEMES_ID, null);
+              this.setParameter(Parameters.SCHEMES_LABEL, null);
+              this.setParameter(Parameters.SCHEMES_URI, null);
 
-              var param = parameter || QueryParameters.SCHEMES_ID;
+              var param = parameter || Parameters.SCHEMES_ID;
               this.setParameter(param, schemes);
           }
       }, {
           key: 'getSchemes',
           value: function getSchemes() {
-              return this.getParameter(QueryParameters.SCHEMES) || this.getParameter(QueryParameters.SCHEMES_LABEL) || this.getParameter(QueryParameters.SCHEMES_URI);
+              return this.getParameter(Parameters.SCHEMES_ID) || this.getParameter(Parameters.SCHEMES_LABEL) || this.getParameter(Parameters.SCHEMES_URI);
           }
 
           // -----------------------------------------------------------
@@ -2705,13 +2784,13 @@
       }, {
           key: 'setServiceTypes',
           value: function setServiceTypes(types) {
-              if (types && types.push === 'undefined') types = [types];
-              this.setParameter(QueryParameters.SERVICE_TYPES, types);
+              if (types && typeof types.push === 'undefined') types = [types];
+              this.setParameter(Parameters.SERVICE_TYPES, types);
           }
       }, {
           key: 'getServiceTypes',
           value: function getServiceTypes() {
-              return this.getParameter(QueryParameters.SERVICE_TYPES);
+              return this.getParameter(Parameters.SERVICE_TYPES);
           }
 
           // -----------------------------------------------------------
@@ -2726,18 +2805,17 @@
 
           /**
            * @param {string} visibility - one of 'public' or 'private'
-           * @param {boolean} fireUpdate
            */
 
       }, {
           key: 'setVisibility',
           value: function setVisibility(visibility) {
-              this.setParameter(QueryParameters.VISIBILITY, visibility);
+              this.setParameter(Parameters.VISIBILITY, visibility);
           }
       }, {
           key: 'getVisibility',
           value: function getVisibility() {
-              this.getParameter(QueryParameters.VISIBILITY);
+              return this.getParameter(Parameters.VISIBILITY);
           }
 
           // -----------------------------------------------------------
@@ -2752,8 +2830,7 @@
 
           /**
            * @param {Date} date - date to compare against
-           * @param {boolean} beforeOrAfter - flag specifying which boundary condition (true = before, false = after)
-           * @param {boolean} fireUpdate - flag specifying whether to trigger update automatically
+           * @param {boolean} beforeOrAfter - flag specifying which boundary condition (true = before, false = after) flag specifying whether to trigger update automatically
            */
 
       }, {
@@ -2762,14 +2839,14 @@
 
               //if no date was supplied, consider it "unset" for both properties
               if (!date) {
-                  this.setParameter(QueryParameters.MODIFIED_BEFORE, null);
-                  this.setParameter(QueryParameters.MODIFIED_AFTER, null);
+                  this.setParameter(Parameters.MODIFIED_BEFORE, null);
+                  this.setParameter(Parameters.MODIFIED_AFTER, null);
                   return;
               }
 
               var dir = beforeOrAfter && (beforeOrAfter === true || beforeOrAfter === "true");
-              var prop = dir ? QueryParameters.MODIFIED_BEFORE : QueryParameters.MODIFIED_AFTER; //property being set
-              var oppProp = dir ? QueryParameters.MODIFIED_AFTER : QueryParameters.MODIFIED_BEFORE; //unset opposite property
+              var prop = dir ? Parameters.MODIFIED_BEFORE : Parameters.MODIFIED_AFTER; //property being set
+              var oppProp = dir ? Parameters.MODIFIED_AFTER : Parameters.MODIFIED_BEFORE; //unset opposite property
               var arg = date && date.getTime ? date.getTime() : date;
 
               this.setParameter(oppProp, null);
@@ -2778,7 +2855,47 @@
       }, {
           key: 'getModified',
           value: function getModified() {
-              return this.getParameter(QueryParameters.MODIFIED_BEFORE) || this.getParameter(QueryParameters.MODIFIED_AFTER);
+              return this.getParameter(Parameters.MODIFIED_BEFORE) || this.getParameter(Parameters.MODIFIED_AFTER);
+          }
+
+          // -----------------------------------------------------------
+
+
+      }, {
+          key: 'created',
+          value: function created(date, beforeOrAfter) {
+              this.setCreated(date, beforeOrAfter);
+              return this;
+          }
+
+          /**
+           * @param {Date} date - date to compare against
+           * @param {boolean} beforeOrAfter - flag specifying which boundary condition (true = before, false = after) flag specifying whether to trigger update automatically
+           */
+
+      }, {
+          key: 'setCreated',
+          value: function setCreated(date, beforeOrAfter) {
+
+              //if no date was supplied, consider it "unset" for both properties
+              if (!date) {
+                  this.setParameter(Parameters.CREATED_BEFORE, null);
+                  this.setParameter(Parameters.CREATED_AFTER, null);
+                  return;
+              }
+
+              var dir = beforeOrAfter && (beforeOrAfter === true || beforeOrAfter === "true");
+              var prop = dir ? Parameters.CREATED_BEFORE : Parameters.CREATED_AFTER; //property being set
+              var oppProp = dir ? Parameters.CREATED_AFTER : Parameters.CREATED_BEFORE; //unset opposite property
+              var arg = date && date.getTime ? date.getTime() : date;
+
+              this.setParameter(oppProp, null);
+              this.setParameter(prop, arg);
+          }
+      }, {
+          key: 'getCreated',
+          value: function getCreated() {
+              return this.getParameter(Parameters.CREATED_BEFORE) || this.getParameter(Parameters.CREATED_AFTER);
           }
 
           // -----------------------------------------------------------
@@ -2799,7 +2916,7 @@
           key: 'setExtent',
           value: function setExtent(bbox) {
               if (bbox && typeof bbox.toBboxString !== 'undefined') bbox = bbox.toBboxString();
-              this.setParameter(QueryParameters.EXTENT, bbox);
+              this.setParameter(Parameters.EXTENT, bbox);
           }
 
           /**
@@ -2809,7 +2926,7 @@
       }, {
           key: 'getExtent',
           value: function getExtent() {
-              return this.getParameter(QueryParameters.EXTENT);
+              return this.getParameter(Parameters.EXTENT);
           }
 
           // -----------------------------------------------------------
@@ -2825,7 +2942,7 @@
           key: 'setBeginDate',
           value: function setBeginDate(date) {
               if (date && date instanceof Date) date = date.getTime();
-              this.setParameter(QueryParameters.BEGINS, date);
+              this.setParameter(Parameters.BEGINS, date);
           }
       }, {
           key: 'getBeginDate',
@@ -2848,7 +2965,7 @@
           key: 'setEndDate',
           value: function setEndDate(date) {
               if (date && date instanceof Date) date = date.getTime();
-              this.setParameter(QueryParameters.ENDS, date);
+              this.setParameter(Parameters.ENDS, date);
           }
       }, {
           key: 'getEndDate',
@@ -2886,13 +3003,13 @@
       }, {
           key: 'setResourceTypes',
           value: function setResourceTypes(types) {
-              if (types && types.push === 'undefined') types = [types];
-              this.setParameter(QueryParameters.RESOURCE_TYPE, types);
+              if (types && typeof types.push === 'undefined') types = [types];
+              this.setParameter(Parameters.RESOURCE_TYPE, types);
           }
       }, {
           key: 'getResourceTypes',
           value: function getResourceTypes() {
-              return this.getParameter(QueryParameters.RESOURCE_TYPE);
+              return this.getParameter(Parameters.RESOURCE_TYPE);
           }
 
           // -----------------------------------------------------------
@@ -2912,12 +3029,13 @@
       }, {
           key: 'setFacets',
           value: function setFacets(names) {
-              this.query.includeFacets = names;
+              if (names && typeof names.push === 'undefined') names = [names];
+              this.setParameter(Parameters.FACETS, names);
           }
       }, {
           key: 'getFacets',
           value: function getFacets() {
-              return this.query.includeFacets;
+              return this.getParameter(Parameters.FACETS);
           }
 
           /**
@@ -2927,7 +3045,8 @@
       }, {
           key: 'addFacet',
           value: function addFacet(name) {
-              var facets = (this.getFacets() || []).push(name);
+              var facets = this.getFacets() || [];
+              facets.push(name);
               this.setFacets(facets);
           }
 
@@ -2964,12 +3083,12 @@
           key: 'setFields',
           value: function setFields(fields) {
               if (fields && typeof fields.push === 'undefined') fields = [fields];
-              this.query.fields = fields;
+              this.setParameter(Parameters.FIELDS, fields);
           }
       }, {
           key: 'getFields',
           value: function getFields() {
-              return this.query.fields;
+              return this.getParameter(Parameters.FIELDS);
           }
 
           // -----------------------------------------------------------
@@ -3142,10 +3261,11 @@
   };
 
   exports.ItemTypes = ItemTypes;
-  exports.QueryParameters = QueryParameters;
-  exports.QueryFacets = QueryFacets;
+  exports.QueryParameters = Parameters;
+  exports.QueryFacets = Facets;
   exports.Query = Query$1;
   exports.QueryFactory = queryFactory;
+  exports.QueryFields = Fields;
   exports.KGQuery = KGQuery;
   exports.KGClassifiers = classifiers;
   exports.JQueryHttpClient = JQueryHttpClient;

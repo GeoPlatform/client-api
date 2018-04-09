@@ -61,7 +61,7 @@ class KGQuery {
     }
 
     getParameter (key) {
-        return this.getParameter(key);
+        return this.query[key];
     }
 
     applyParameters (obj) { 
@@ -108,7 +108,7 @@ class KGQuery {
      * @param {array[string]} types - KG classifiers for which concepts should be returned
      */
     setClassifiers (types) {
-        if(types && types.push === 'undefined')
+        if(types && typeof(types.push) === 'undefined')
             types = [types];
         this.setParameter(QueryParameters.TYPES, types);
     }
@@ -144,7 +144,7 @@ class KGQuery {
      * @param {array[string]} objTypes - Item object type names
      */
     setTypes (objTypes) {
-        if(objTypes && objTypes.push === 'undefined')
+        if(objTypes && typeof(objTypes.push) === 'undefined')
             objTypes = [objTypes];
         this.setParameter(QueryParameters.FOR_TYPES, objTypes);
     }

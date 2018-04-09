@@ -1,19 +1,73 @@
 
-import QueryParameters from './parameters';
-import QueryFacets from './facets';
+import Parameters from './parameters';
+
+const Fields = {
+    LABEL           : 'label',
+    DESCRIPTION     : 'description',
+    CREATED         : 'created',
+    MODIFIED        : 'modified',
+    CREATED_BY      : 'createdBy',
+    LAST_MODIFIED_BY: 'lastModifiedBy',
+    KEYWORDS        : 'keywords',
+    THEMES          : 'themes',
+    PUBLISHERS      : 'publishers',
+    STATUS          : 'status',
+    VISIBILITY      : 'visibility',
+    EXTENT          : 'extent',
+    TEMPORAL        : 'temporal',
+    IDENTIFIERS     : 'identifiers',
+    RESOURCE_TYPES  : 'resourceTypes',
+    SERVICES        : 'services',
+    CONTACTS        : 'contacts',
+    DISTRIBUTIONS   : 'distributions',
+    ACCESS_RIGHTS   : 'rights',
+    USED_BY         : 'usedBy',
+    STATISTICS      : 'statistics',
+
+    SERVICE_TYPE    : 'serviceType',
+    HREF            : 'href',
+    DATASETS        : 'datasets',
+
+    LAYER_TYPE      : 'layerType',
+    LAYER_NAME      : 'layerName',
+    LEGEND          : 'legend',
+    SUB_LAYERS      : 'subLayers',
+    PARENT_LAYER    : 'parentLayer',
+
+    LAYERS          : 'layers',
+    ANNOTATIONS     : 'annotations',
+    THUMBNAIL       : 'thumbnail',
+
+    GALLERY_ITEMS   : 'items',
+
+    CONCEPT_SCHEME  : 'scheme'
+
+};
+
+const Facets = {
+    TYPES           : 'types',
+    THEMES          : 'themes',
+    PUBLISHERS      : 'publishers',
+    SERVICE_TYPES   : 'serviceTypes',
+    CONCEPT_SCHEMES : 'schemes',
+    VISIBILITY      : 'visibility',
+    CREATED_BY      : 'createdBy',
+    USED_BY         : 'usedBy.id'
+};
 
 
 const FIELDS_DEFAULT = [
-    'created','modified','createdBy','publishers','themes','description'
+    Fields.CREATED, Fields.MODIFIED, Fields.CREATED_BY,
+    Fields.PUBLISHERS, Fields.THEMES, Fields.DESCRIPTION
 ];
 
 const FACETS_DEFAULT = [
-    QueryFacets.TYPES,
-    QueryFacets.PUBLISHERS,
-    QueryFacets.SERVICE_TYPES,
-    QueryFacets.CONCEPT_SCHEMES,
-    QueryFacets.VISIBILITY,
-    QueryFacets.CREATED_BY
+    Facets.TYPES,
+    Facets.PUBLISHERS,
+    Facets.SERVICE_TYPES,
+    Facets.CONCEPT_SCHEMES,
+    Facets.VISIBILITY,
+    Facets.CREATED_BY
 ];
 
 const SORT_OPTIONS_DEFAULT = [
@@ -75,14 +129,15 @@ class Query {
     }
 
     setParameter (name, value) {
-        if(value === null || value === undefined)
+        if(value === null || value === undefined || //if no value was provide
+            (typeof(value.push) !== 'undefined' && !value.length)) //or empty array
             delete this.query[name];
         else
             this.query[name] = value;
     }
 
     getParameter (key) {
-        return this.getParameter(key);
+        return this.query[key];
     }
 
     applyParameters (obj) { 
@@ -106,11 +161,11 @@ class Query {
      * @param {string} text - free text query
      */
     setQ (text) {
-        this.setParameter(QueryParameters.QUERY, text);
+        this.setParameter(Parameters.QUERY, text);
     }
 
     getQ() {
-        return this.getParameter(QueryParameters.QUERY);
+        return this.getParameter(Parameters.QUERY);
     }
 
 
@@ -126,13 +181,13 @@ class Query {
      * @param {string} text - free text query
      */
     setKeywords (text) {
-        if(text && typeof(text.push) !== 'undefined')
-            text = text.join(',');
-        this.setParameter(QueryParameters.KEYWORDS, text);
+        if(text && typeof(text.push) === 'undefined')
+            text = [text];
+        this.setParameter(Parameters.KEYWORDS, text);
     }
 
     getKeywords() {
-        return this.getParameter(QueryParameters.KEYWORDS);
+        return this.getParameter(Parameters.KEYWORDS);
     }
 
 
@@ -145,11 +200,11 @@ class Query {
     }
 
     setUri(uri) {
-        this.setParameter(QueryParameters.URI, uri);
+        this.setParameter(Parameters.URI, uri);
     }
 
     getUri() {
-        return this.getParameter(QueryParameters.URI);
+        return this.getParameter(Parameters.URI);
     }
 
 
@@ -165,13 +220,13 @@ class Query {
      * @param {array[string]} types - name of class(es) to request
      */
     setTypes (types) {
-        if(types && types.push === 'undefined')
+        if(types && typeof(types.push) === 'undefined')
             types = [types];
-        this.setParameter(QueryParameters.TYPES, types);
+        this.setParameter(Parameters.TYPES, types);
     }
 
     getTypes () {
-        return this.getParameter(QueryParameters.TYPES);
+        return this.getParameter(Parameters.TYPES);
     }
 
 
@@ -183,16 +238,33 @@ class Query {
         return this;
     }
 
-    /**
-     * @param {string} user - username
-     * @param {boolean} fireUpdate -
-     */
+    /** @param {string} user - username */
     setCreatedBy (user) {
-        this.setParameter(QueryParameters.CREATED_BY, user);
+        this.setParameter(Parameters.CREATED_BY, user);
     }
 
+    /** @return {string} username */
     getCreatedBy () {
-        return this.getParameter(QueryParameters.CREATED_BY);
+        return this.getParameter(Parameters.CREATED_BY);
+    }
+
+
+    // -----------------------------------------------------------
+
+
+    lastModifiedBy(user) {
+        this.setLastModifiedBy(user);
+        return this;
+    }
+
+    /** @param {string} user - username */
+    setLastModifiedBy (user) {
+        this.setParameter(Parameters.LAST_MODIFIED_BY, user);
+    }
+
+    /** @return {string} username */
+    getLastModifiedBy () {
+        return this.getParameter(Parameters.LAST_MODIFIED_BY);
     }
 
 
@@ -203,7 +275,7 @@ class Query {
      * Specify a Theme or set of Themes to constrain results. By
      * default, values are assumed to be theme identifiers. If using
      * theme labels or theme uris, specify the optional second parameter
-     * to be either QueryParameters.THEMES_LABEL or QueryParameters.THEMES_URI
+     * to be either Parameters.THEMES_LABEL or Parameters.THEMES_URI
      * respectively.
      * @param {array[string]} themes - string or array of strings containing theme constraint
      * @param {string} parameter - optional, to indicate the parameter to use
@@ -219,27 +291,27 @@ class Query {
      * Specify a Theme or set of Themes to constrain results. By
      * default, values are assumed to be theme identifiers. If using
      * theme labels or theme uris, specify the optional second parameter
-     * to be either QueryParameters.THEMES_LABEL or QueryParameters.THEMES_URI
+     * to be either Parameters.THEMES_LABEL or Parameters.THEMES_URI
      * respectively.
      * @param {array[string]} themes - theme or themes to constrain by
      */
     setThemes (themes, parameter) {
-        if(themes && themes.push === 'undefined')
+        if(themes && typeof(themes.push) === 'undefined')
             themes = [themes];
 
         //clear existing
-        this.setParameter(QueryParameters.THEMES_ID, null);
-        this.setParameter(QueryParameters.THEMES_LABEL, null);
-        this.setParameter(QueryParameters.THEMES_URI, null);
+        this.setParameter(Parameters.THEMES_ID, null);
+        this.setParameter(Parameters.THEMES_LABEL, null);
+        this.setParameter(Parameters.THEMES_URI, null);
 
-        let param = parameter || QueryParameters.THEMES_ID;
+        let param = parameter || Parameters.THEMES_ID;
         this.setParameter(param, themes);
     }
 
     getThemes () {
-        return this.getParameter(QueryParameters.THEMES_ID) ||
-            this.getParameter(QueryParameters.THEMES_LABEL) ||
-            this.getParameter(QueryParameters.THEMES_URI);
+        return this.getParameter(Parameters.THEMES_ID) ||
+            this.getParameter(Parameters.THEMES_LABEL) ||
+            this.getParameter(Parameters.THEMES_URI);
     }
 
 
@@ -250,7 +322,7 @@ class Query {
      * Specify a Publisher or set of Publishers to constrain results. By
      * default, values are assumed to be theme identifiers. If using
      * theme labels or theme uris, specify the optional second parameter
-     * to be either QueryParameters.PUBLISHERS_LABEL or QueryParameters.PUBLISHERS_URI
+     * to be either Parameters.PUBLISHERS_LABEL or Parameters.PUBLISHERS_URI
      * respectively.
      * @param {string} parameter - optional, to indicate the parameter to use
      * @return {Query}
@@ -264,27 +336,27 @@ class Query {
      * Specify a Publisher or set of Publishers to constrain results. By
      * default, values are assumed to be theme identifiers. If using
      * theme labels or theme uris, specify the optional second parameter
-     * to be either QueryParameters.PUBLISHERS_LABEL or QueryParameters.PUBLISHERS_URI
+     * to be either Parameters.PUBLISHERS_LABEL or Parameters.PUBLISHERS_URI
      * respectively.
      * @param {array[string]} publishers - publishing orgs to constrain by
      */
     setPublishers (publishers, parameter) {
-        if(publishers && publishers.push === 'undefined')
+        if(publishers && typeof(publishers.push) === 'undefined')
             publishers = [publishers];
 
         //clear existing
-        this.setParameter(QueryParameters.PUBLISHERS_ID, null);
-        this.setParameter(QueryParameters.PUBLISHERS_LABEL, null);
-        this.setParameter(QueryParameters.PUBLISHERS_URI, null);
+        this.setParameter(Parameters.PUBLISHERS_ID, null);
+        this.setParameter(Parameters.PUBLISHERS_LABEL, null);
+        this.setParameter(Parameters.PUBLISHERS_URI, null);
 
-        let param = parameter || QueryParameters.PUBLISHERS_ID;
+        let param = parameter || Parameters.PUBLISHERS_ID;
         this.setParameter(param, publishers);
     }
 
     getPublishers () {
-        return this.getParameter(QueryParameters.PUBLISHERS_ID) ||
-            this.getParameter(QueryParameters.PUBLISHERS_LABEL) ||
-            this.getParameter(QueryParameters.PUBLISHERS_URI);
+        return this.getParameter(Parameters.PUBLISHERS_ID) ||
+            this.getParameter(Parameters.PUBLISHERS_LABEL) ||
+            this.getParameter(Parameters.PUBLISHERS_URI);
     }
 
 
@@ -296,7 +368,7 @@ class Query {
      * uses items you wish to find in search results. By
      * default, values are assumed to be theme identifiers. If using
      * theme labels or theme uris, specify the optional second parameter
-     * to be either QueryParameters.USED_BY_LABEL or QueryParameters.USED_BY_URI
+     * to be either Parameters.USED_BY_LABEL or Parameters.USED_BY_URI
      * respectively.
      * @param {string} parameter - optional, to indicate the parameter to use
      * @return {Query}
@@ -311,27 +383,27 @@ class Query {
      * uses items you wish to find in search results. By
      * default, values are assumed to be theme identifiers. If using
      * theme labels or theme uris, specify the optional second parameter
-     * to be either QueryParameters.USED_BY_LABEL or QueryParameters.USED_BY_URI
+     * to be either Parameters.USED_BY_LABEL or Parameters.USED_BY_URI
      * respectively.
      * @param {array[string]} ids - publishing orgs to constrain by
      */
     setUsedBy (ids, parameter) {
-        if(ids && ids.push === 'undefined')
+        if(ids && typeof(ids.push) === 'undefined')
             ids = [ids];
 
         //clear existing
-        this.setParameter(QueryParameters.USED_BY_ID, null);
-        this.setParameter(QueryParameters.USED_BY_LABEL, null);
-        this.setParameter(QueryParameters.USED_BY_URI, null);
+        this.setParameter(Parameters.USED_BY_ID, null);
+        this.setParameter(Parameters.USED_BY_LABEL, null);
+        this.setParameter(Parameters.USED_BY_URI, null);
 
-        let param = parameter || QueryParameters.USED_BY_ID;
+        let param = parameter || Parameters.USED_BY_ID;
         this.setParameter(param, ids);
     }
 
     getUsedBy () {
-        return this.getParameter(QueryParameters.USED_BY_ID) ||
-            this.getParameter(QueryParameters.USED_BY_LABEL) ||
-            this.getParameter(QueryParameters.USED_BY_URI);
+        return this.getParameter(Parameters.USED_BY_ID) ||
+            this.getParameter(Parameters.USED_BY_LABEL) ||
+            this.getParameter(Parameters.USED_BY_URI);
     }
 
 
@@ -342,7 +414,7 @@ class Query {
      * Specify a Concept Scheme or set of Concept Schemes to constrain results. By
      * default, values are assumed to be theme identifiers. If using
      * theme labels or theme uris, specify the optional second parameter
-     * to be either QueryParameters.SCHEMES_LABEL or QueryParameters.SCHEMES_URI
+     * to be either Parameters.SCHEMES_LABEL or Parameters.SCHEMES_URI
      * respectively.
      * @param {array[string]} schemes - schemes to constrain by
      * @param {string} parameter - optional, to indicate the parameter to use
@@ -357,28 +429,28 @@ class Query {
      * Specify a Concept Scheme or set of Concept Schemes to constrain results. By
      * default, values are assumed to be theme identifiers. If using
      * theme labels or theme uris, specify the optional second parameter
-     * to be either QueryParameters.SCHEMES_LABEL or QueryParameters.SCHEMES_URI
+     * to be either Parameters.SCHEMES_LABEL or Parameters.SCHEMES_URI
      * respectively.
      * @param {array[string]} schemes - schemes to constrain by
      * @param {string} parameter - optional, to indicate the parameter to use
      */
     setSchemes (schemes, parameter) {
-        if(schemes && schemes.push === 'undefined')
+        if(schemes && typeof(schemes.push) === 'undefined')
             schemes = [schemes];
 
         //clear existing
-        this.setParameter(QueryParameters.SCHEMES_ID, null);
-        this.setParameter(QueryParameters.SCHEMES_LABEL, null);
-        this.setParameter(QueryParameters.SCHEMES_URI, null);
+        this.setParameter(Parameters.SCHEMES_ID, null);
+        this.setParameter(Parameters.SCHEMES_LABEL, null);
+        this.setParameter(Parameters.SCHEMES_URI, null);
 
-        let param = parameter || QueryParameters.SCHEMES_ID;
+        let param = parameter || Parameters.SCHEMES_ID;
         this.setParameter(param, schemes);
     }
 
     getSchemes() {
-        return this.getParameter(QueryParameters.SCHEMES) ||
-            this.getParameter(QueryParameters.SCHEMES_LABEL) ||
-            this.getParameter(QueryParameters.SCHEMES_URI);
+        return this.getParameter(Parameters.SCHEMES_ID) ||
+            this.getParameter(Parameters.SCHEMES_LABEL) ||
+            this.getParameter(Parameters.SCHEMES_URI);
     }
 
 
@@ -396,13 +468,13 @@ class Query {
      * @param {array[string]} types - ids
      */
     setServiceTypes (types) {
-        if(types && types.push === 'undefined')
+        if(types && typeof(types.push) === 'undefined')
             types = [types];
-        this.setParameter(QueryParameters.SERVICE_TYPES, types);
+        this.setParameter(Parameters.SERVICE_TYPES, types);
     }
 
     getServiceTypes () {
-        return this.getParameter(QueryParameters.SERVICE_TYPES);
+        return this.getParameter(Parameters.SERVICE_TYPES);
     }
 
 
@@ -416,14 +488,13 @@ class Query {
 
     /**
      * @param {string} visibility - one of 'public' or 'private'
-     * @param {boolean} fireUpdate
      */
     setVisibility (visibility) {
-        this.setParameter(QueryParameters.VISIBILITY, visibility);
+        this.setParameter(Parameters.VISIBILITY, visibility);
     }
 
     getVisibility () {
-        this.getParameter(QueryParameters.VISIBILITY);
+        return this.getParameter(Parameters.VISIBILITY);
     }
 
 
@@ -437,21 +508,20 @@ class Query {
 
     /**
      * @param {Date} date - date to compare against
-     * @param {boolean} beforeOrAfter - flag specifying which boundary condition (true = before, false = after)
-     * @param {boolean} fireUpdate - flag specifying whether to trigger update automatically
+     * @param {boolean} beforeOrAfter - flag specifying which boundary condition (true = before, false = after) flag specifying whether to trigger update automatically
      */
     setModified (date, beforeOrAfter) {
 
         //if no date was supplied, consider it "unset" for both properties
         if(!date) {
-            this.setParameter(QueryParameters.MODIFIED_BEFORE, null);
-            this.setParameter(QueryParameters.MODIFIED_AFTER, null);
+            this.setParameter(Parameters.MODIFIED_BEFORE, null);
+            this.setParameter(Parameters.MODIFIED_AFTER, null);
             return;
         }
 
         let dir = beforeOrAfter && (beforeOrAfter === true || beforeOrAfter === "true");
-        let prop = dir ? QueryParameters.MODIFIED_BEFORE : QueryParameters.MODIFIED_AFTER;       //property being set
-        let oppProp = dir ? QueryParameters.MODIFIED_AFTER : QueryParameters.MODIFIED_BEFORE;    //unset opposite property
+        let prop = dir ? Parameters.MODIFIED_BEFORE : Parameters.MODIFIED_AFTER;       //property being set
+        let oppProp = dir ? Parameters.MODIFIED_AFTER : Parameters.MODIFIED_BEFORE;    //unset opposite property
         let arg = (date && date.getTime) ? date.getTime() : date;
 
         this.setParameter(oppProp, null);
@@ -459,8 +529,44 @@ class Query {
     }
 
     getModified () {
-        return  this.getParameter(QueryParameters.MODIFIED_BEFORE) ||
-                this.getParameter(QueryParameters.MODIFIED_AFTER);
+        return  this.getParameter(Parameters.MODIFIED_BEFORE) ||
+                this.getParameter(Parameters.MODIFIED_AFTER);
+    }
+
+
+    // -----------------------------------------------------------
+
+
+    created(date, beforeOrAfter) {
+        this.setCreated(date, beforeOrAfter);
+        return this;
+    }
+
+    /**
+     * @param {Date} date - date to compare against
+     * @param {boolean} beforeOrAfter - flag specifying which boundary condition (true = before, false = after) flag specifying whether to trigger update automatically
+     */
+    setCreated (date, beforeOrAfter) {
+
+        //if no date was supplied, consider it "unset" for both properties
+        if(!date) {
+            this.setParameter(Parameters.CREATED_BEFORE, null);
+            this.setParameter(Parameters.CREATED_AFTER, null);
+            return;
+        }
+
+        let dir = beforeOrAfter && (beforeOrAfter === true || beforeOrAfter === "true");
+        let prop = dir ? Parameters.CREATED_BEFORE : Parameters.CREATED_AFTER;       //property being set
+        let oppProp = dir ? Parameters.CREATED_AFTER : Parameters.CREATED_BEFORE;    //unset opposite property
+        let arg = (date && date.getTime) ? date.getTime() : date;
+
+        this.setParameter(oppProp, null);
+        this.setParameter(prop, arg);
+    }
+
+    getCreated () {
+        return  this.getParameter(Parameters.CREATED_BEFORE) ||
+                this.getParameter(Parameters.CREATED_AFTER);
     }
 
 
@@ -478,14 +584,14 @@ class Query {
     setExtent (bbox) {
         if(bbox && typeof(bbox.toBboxString) !== 'undefined')
             bbox = bbox.toBboxString();
-        this.setParameter(QueryParameters.EXTENT, bbox);
+        this.setParameter(Parameters.EXTENT, bbox);
     }
 
     /**
      * @return {string} bbox string or null if not set
      */
     getExtent () {
-        return this.getParameter(QueryParameters.EXTENT);
+        return this.getParameter(Parameters.EXTENT);
     }
 
 
@@ -500,7 +606,7 @@ class Query {
     setBeginDate (date) {
         if(date && date instanceof Date)
             date = date.getTime();
-        this.setParameter(QueryParameters.BEGINS, date);
+        this.setParameter(Parameters.BEGINS, date);
     }
 
     getBeginDate () {
@@ -521,7 +627,7 @@ class Query {
     setEndDate (date) {
         if(date && date instanceof Date)
             date = date.getTime();
-        this.setParameter(QueryParameters.ENDS, date);
+        this.setParameter(Parameters.ENDS, date);
     }
 
     getEndDate () {
@@ -554,13 +660,13 @@ class Query {
     }
 
     setResourceTypes(types) {
-        if(types && types.push === 'undefined')
+        if(types && typeof(types.push) === 'undefined')
             types = [types];
-        this.setParameter(QueryParameters.RESOURCE_TYPE, types);
+        this.setParameter(Parameters.RESOURCE_TYPE, types);
     }
 
     getResourceTypes() {
-        return this.getParameter(QueryParameters.RESOURCE_TYPE);
+        return this.getParameter(Parameters.RESOURCE_TYPE);
     }
 
 
@@ -576,18 +682,21 @@ class Query {
      * @param {array[string]} names - names of facets
      */
     setFacets (names) {
-        this.query.includeFacets = names;
+        if(names && typeof(names.push) === 'undefined')
+            names = [names];
+        this.setParameter(Parameters.FACETS, names);
     }
 
     getFacets() {
-        return this.query.includeFacets;
+        return this.getParameter(Parameters.FACETS);
     }
 
     /**
      * @param {string} name - name of facet to add
      */
     addFacet(name) {
-        let facets = (this.getFacets()||[]).push(name);
+        let facets = this.getFacets() || [];
+        facets.push(name);
         this.setFacets(facets);
     }
 
@@ -618,11 +727,11 @@ class Query {
     setFields (fields) {
         if(fields && typeof(fields.push) === 'undefined')
             fields = [fields];
-        this.query.fields = fields;
+        this.setParameter(Parameters.FIELDS, fields);
     }
 
     getFields() {
-        return this.query.fields;
+        return this.getParameter(Parameters.FIELDS);
     }
 
 
@@ -730,4 +839,9 @@ class Query {
     }
 }
 
-export default Query;
+export {
+    Query as default,
+    Query,
+    Fields,
+    Facets
+};

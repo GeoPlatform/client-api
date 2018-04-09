@@ -1348,7 +1348,10 @@
       function AgolQuery() {
           classCallCheck(this, AgolQuery);
 
-          this._query = {};
+          this._query = {
+              page: 0,
+              size: 10
+          };
       }
 
       createClass(AgolQuery, [{
@@ -1496,6 +1499,66 @@
           key: 'getSortOrder',
           value: function getSortOrder() {
               return this._query.sort.split(',')[1] === 'asc';
+          }
+
+          // -----------------------------------------------------------
+
+
+          /**
+           * @param {int} page - page of results to fetch
+           */
+
+      }, {
+          key: 'page',
+          value: function page(_page) {
+              this.setPage(_page);
+              return this;
+          }
+      }, {
+          key: 'setPage',
+          value: function setPage(page) {
+              if (isNaN(page) || page * 1 < 0) return;
+              this._query.page = page * 1;
+          }
+      }, {
+          key: 'getPage',
+          value: function getPage() {
+              return this._query.page;
+          }
+      }, {
+          key: 'nextPage',
+          value: function nextPage() {
+              this.setPage(this._query.page + 1);
+          }
+      }, {
+          key: 'previousPage',
+          value: function previousPage() {
+              this.setPage(this._query.page - 1);
+          }
+
+          // -----------------------------------------------------------
+
+
+          /**
+           * @param {int} size - page size to request
+           */
+
+      }, {
+          key: 'pageSize',
+          value: function pageSize(size) {
+              this.setPageSize(size);
+              return this;
+          }
+      }, {
+          key: 'setPageSize',
+          value: function setPageSize(size) {
+              if (isNaN(size) || size * 1 < 0) return;
+              this._query.size = size * 1;
+          }
+      }, {
+          key: 'getPageSize',
+          value: function getPageSize() {
+              return this._query.size;
           }
       }]);
       return AgolQuery;
@@ -1683,7 +1746,15 @@
       }, {
           key: 'getAgolId',
           value: function getAgolId(obj) {
-              if (!obj || !obj.identifiers || !obj.identifiers.length) return null;
+              if (!obj) return null;
+
+              if (!obj.type) return null;
+
+              if (ItemTypes.ORGANIZATION === obj.type || 'Group' === obj.type) {
+                  return obj.id;
+              }
+
+              if (!obj.identifiers || !obj.identifiers.length) return null;
               var ids = obj.identifiers.filter(function (id) {
                   return ~id.indexOf('agol:');
               });

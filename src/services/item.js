@@ -76,6 +76,18 @@ class ItemService {
             if(item.id) {
                 method = "PUT";
                 url += '/' + item.id;
+            } else {
+                //if item is being created and has no URI already defined
+                // attempt to create one using the API's method for doing so
+                // and then attempt the actual item creation
+                if(!item.uri) {
+                    return this.getUri(item, options)
+                    .then( uri => {
+                        item.uri = uri;
+                        let opts = this.buildRequest({method:method, url:url, data:item, options:options});
+                        return this.execute(opts);
+                    });
+                }
             }
 
             let opts = this.buildRequest({method:method, url:url, data:item, options:options});

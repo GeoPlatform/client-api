@@ -1,12 +1,16 @@
 
 
 import Q from 'q';
+import ItemTypes from '../shared/types';
 
 
 class AgolQuery {
 
     constructor() {
-        this._query = {};
+        this._query = {
+            page: 0,
+            size: 10
+        };
     }
 
     getQuery() {
@@ -83,6 +87,56 @@ class AgolQuery {
     getSort() { return this._query.sort; }
     getSortField() { return this._query.sort.split(',')[0]; }
     getSortOrder() { return this._query.sort.split(',')[1] === 'asc'; }
+
+
+    // -----------------------------------------------------------
+
+
+    /**
+     * @param {int} page - page of results to fetch
+     */
+    page (page) {
+        this.setPage(page);
+        return this;
+    }
+
+    setPage(page) {
+        if(isNaN(page) || page*1<0) return;
+        this._query.page = page*1;
+    }
+
+    getPage() {
+        return this._query.page;
+    }
+
+    nextPage() {
+        this.setPage(this._query.page+1);
+    }
+
+    previousPage() {
+        this.setPage(this._query.page-1);
+    }
+
+
+    // -----------------------------------------------------------
+
+
+    /**
+     * @param {int} size - page size to request
+     */
+    pageSize (size) {
+        this.setPageSize(size);
+        return this;
+    }
+
+    setPageSize (size) {
+        if(isNaN(size) || size*1<0) return;
+        this._query.size = size*1;
+    }
+
+    getPageSize() {
+        return this._query.size;
+    }
 
 }
 
@@ -269,7 +323,15 @@ class AgolService {
     /* --------------------------- */
 
     getAgolId (obj) {
-        if(!obj || !obj.identifiers || !obj.identifiers.length) return null;
+        if(!obj) return null;
+
+        if(!obj.type) return null;
+
+        if(ItemTypes.ORGANIZATION === obj.type || 'Group' === obj.type) {
+            return obj.id;
+        }
+
+        if(!obj.identifiers || !obj.identifiers.length) return null;
         let ids = obj.identifiers.filter(id => ~id.indexOf('agol:'));
         if(!ids.length) return null;
         return ids[0].replace('agol:','');

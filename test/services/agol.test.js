@@ -27,7 +27,8 @@ describe('# AgolService', function() {
         .then( id => service.getItem(id))
         .then( item => {
             expect(item).to.exist;
-            expect(item.id).to.equal(id);
+            let id2 = service.getAgolId(item);
+            expect(id2).to.equal(id);
             done();
         })
         .catch(e => done(e));
@@ -37,6 +38,7 @@ describe('# AgolService', function() {
     it('should search orgs', function(done) {
 
         let query = new Query();
+        query.setQ('GEOPLATFORM');
         service.searchOrgs(query)
         .then( response => {
             expect(response.results).to.exist;
@@ -47,7 +49,6 @@ describe('# AgolService', function() {
         .then( id => service.getOrg(id))
         .then( item => {
             expect(item).to.exist;
-            expect(item.id).to.equal(id);
             done();
         })
         .catch(e => done(e));
@@ -69,7 +70,6 @@ describe('# AgolService', function() {
         .then( id => service.getGroup(id))
         .then( item => {
             expect(item).to.exist;
-            expect(item.id).to.equal(id);
             done();
         })
         .catch(e => done(e));

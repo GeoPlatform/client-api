@@ -75,7 +75,7 @@ export default function factory(arg) {
             // console.log('*******************');
             // console.log(JSON.stringify(arg));
             // console.log('----');
-            throw new Error("ItemFactory() - Must specify 'type' in parameter object");
+            throw new Error("ItemFactory() - Missing 'type' in object: " + JSON.stringify(arg));
         }
 
         options = arg;

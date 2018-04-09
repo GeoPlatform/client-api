@@ -2867,7 +2867,7 @@
               // console.log('*******************');
               // console.log(JSON.stringify(arg));
               // console.log('----');
-              throw new Error("ItemFactory() - Must specify 'type' in parameter object");
+              throw new Error("ItemFactory() - Missing 'type' in object: " + JSON.stringify(arg));
           }
 
           options = arg;
@@ -5001,14 +5001,73 @@
       return AgolQuery;
   }();
 
-  var AgolService = function () {
+  var AgolGroup = function () {
+      function AgolGroup(data) {
+          classCallCheck(this, AgolGroup);
+
+          if (data) {
+              for (var p in data) {
+                  var value = data[p];
+                  if (!value) continue;
+                  if ("contact" === p) {
+                      value.type = ItemTypes.CONTACT;
+                      value = factory(value);
+                  } else if (typeof value.push !== 'undefined') value = value.slice(0);
+                  this[p] = value;
+              }
+          }
+      }
+
+      createClass(AgolGroup, [{
+          key: 'getId',
+          value: function getId() {
+              return this.id;
+          }
+      }, {
+          key: 'getType',
+          value: function getType() {
+              return this.type;
+          }
+      }, {
+          key: 'getTitle',
+          value: function getTitle() {
+              return this.title;
+          }
+      }, {
+          key: 'getLabel',
+          value: function getLabel() {
+              return this.label;
+          }
+      }, {
+          key: 'getDescription',
+          value: function getDescription() {
+              return this.description;
+          }
+      }, {
+          key: 'getContact',
+          value: function getContact() {
+              return contact;
+          }
+      }, {
+          key: 'getKeywords',
+          value: function getKeywords() {
+              return this.keywords;
+          }
+      }, {
+          key: 'getThumbnailUrl',
+          value: function getThumbnailUrl() {
+              return this.thumbnail;
+          }
+      }]);
+      return AgolGroup;
+  }();
+
+  var AgolService = function (_BaseService) {
+      inherits(AgolService, _BaseService);
+
       function AgolService(url, httpClient) {
           classCallCheck(this, AgolService);
-
-          this.setUrl(url);
-          this.client = httpClient;
-          this.timeout = 10000;
-          this.httpMethods = ["GET", "POST", "PUT", "DELETE", "PATCH"];
+          return possibleConstructorReturn(this, (AgolService.__proto__ || Object.getPrototypeOf(AgolService)).call(this, url, httpClient));
       }
 
       createClass(AgolService, [{
@@ -5030,13 +5089,15 @@
       }, {
           key: 'getOrg',
           value: function getOrg(id, options) {
-              var _this = this;
+              var _this2 = this;
 
               return Q.resolve(id).then(function (id) {
-                  var opts = _this.buildRequest({
-                      method: "GET", url: _this.baseUrl + '/orgs/' + id, options: options
+                  var opts = _this2.buildRequest({
+                      method: "GET", url: _this2.baseUrl + '/orgs/' + id, options: options
                   });
-                  return _this.execute(opts);
+                  return _this2.execute(opts);
+              }).then(function (org) {
+                  return factory(org);
               }).catch(function (e) {
                   var err = new Error('AgolService.getOrg() - Error fetching org ' + id + ': ' + e.message);
                   return Q.reject(err);
@@ -5052,7 +5113,7 @@
       }, {
           key: 'searchOrgs',
           value: function searchOrgs(arg, options) {
-              var _this2 = this;
+              var _this3 = this;
 
               return Q.resolve(arg).then(function (params) {
 
@@ -5061,10 +5122,15 @@
                       // convert to parameters object
                       params = params.getQuery();
                   }
-                  var opts = _this2.buildRequest({
-                      method: "GET", url: _this2.baseUrl + '/orgs', params: params, options: options
+                  var opts = _this3.buildRequest({
+                      method: "GET", url: _this3.baseUrl + '/orgs', params: params, options: options
                   });
-                  return _this2.execute(opts);
+                  return _this3.execute(opts);
+              }).then(function (response) {
+                  response.results = response.results.map(function (result) {
+                      return factory(result);
+                  });
+                  return response;
               }).catch(function (e) {
                   var err = new Error('AgolService.searchOrgs() - Error searching orgs: ' + e.message);
                   return Q.reject(err);
@@ -5084,13 +5150,15 @@
       }, {
           key: 'getGroup',
           value: function getGroup(id, options) {
-              var _this3 = this;
+              var _this4 = this;
 
               return Q.resolve(id).then(function (id) {
-                  var opts = _this3.buildRequest({
-                      method: "GET", url: _this3.baseUrl + '/groups/' + id, options: options
+                  var opts = _this4.buildRequest({
+                      method: "GET", url: _this4.baseUrl + '/groups/' + id, options: options
                   });
-                  return _this3.execute(opts);
+                  return _this4.execute(opts);
+              }).then(function (group) {
+                  return new AgolGroup(group);
               }).catch(function (e) {
                   var err = new Error('AgolService.getGroup() - Error fetching group ' + id + ': ' + e.message);
                   return Q.reject(err);
@@ -5106,7 +5174,7 @@
       }, {
           key: 'searchGroups',
           value: function searchGroups(arg, options) {
-              var _this4 = this;
+              var _this5 = this;
 
               return Q.resolve(arg).then(function (params) {
 
@@ -5115,10 +5183,15 @@
                       // convert to parameters object
                       params = params.getQuery();
                   }
-                  var opts = _this4.buildRequest({
-                      method: "GET", url: _this4.baseUrl + '/groups', params: params, options: options
+                  var opts = _this5.buildRequest({
+                      method: "GET", url: _this5.baseUrl + '/groups', params: params, options: options
                   });
-                  return _this4.execute(opts);
+                  return _this5.execute(opts);
+              }).then(function (response) {
+                  response.results = response.results.map(function (result) {
+                      return new AgolGroup(result);
+                  });
+                  return response;
               }).catch(function (e) {
                   var err = new Error('AgolService.searchGroups() - Error searching groups: ' + e.message);
                   return Q.reject(err);
@@ -5137,13 +5210,15 @@
       }, {
           key: 'getItem',
           value: function getItem(id, options) {
-              var _this5 = this;
+              var _this6 = this;
 
               return Q.resolve(id).then(function (id) {
-                  var opts = _this5.buildRequest({
-                      method: "GET", url: _this5.baseUrl + '/items/' + id, options: options
+                  var opts = _this6.buildRequest({
+                      method: "GET", url: _this6.baseUrl + '/items/' + id, options: options
                   });
-                  return _this5.execute(opts);
+                  return _this6.execute(opts);
+              }).then(function (item) {
+                  return factory(item);
               }).catch(function (e) {
                   var err = new Error('AgolService.getItem() - Error fetching item ' + id + ': ' + e.message);
                   return Q.reject(err);
@@ -5159,7 +5234,7 @@
       }, {
           key: 'searchItems',
           value: function searchItems(arg, options) {
-              var _this6 = this;
+              var _this7 = this;
 
               return Q.resolve(arg).then(function (params) {
 
@@ -5168,10 +5243,15 @@
                       // convert to parameters object
                       params = params.getQuery();
                   }
-                  var opts = _this6.buildRequest({
-                      method: "GET", url: _this6.baseUrl + '/items', params: params, options: options
+                  var opts = _this7.buildRequest({
+                      method: "GET", url: _this7.baseUrl + '/items', params: params, options: options
                   });
-                  return _this6.execute(opts);
+                  return _this7.execute(opts);
+              }).then(function (response) {
+                  response.results = response.results.map(function (result) {
+                      return factory(result);
+                  });
+                  return response;
               }).catch(function (e) {
                   var err = new Error('AgolService.searchItems() - Error searching items: ' + e.message);
                   return Q.reject(err);
@@ -5183,16 +5263,20 @@
       }, {
           key: 'getAgolId',
           value: function getAgolId(obj) {
+
               if (!obj) return null;
 
-              if (!obj.type) return null;
+              if (!obj.getType) return null;
 
-              if (ItemTypes.ORGANIZATION === obj.type || 'Group' === obj.type) {
-                  return obj.id;
+              var type = obj.getType();
+
+              if (ItemTypes.ORGANIZATION === type || 'Group' === type) {
+                  return obj.getId();
               }
 
-              if (!obj.identifiers || !obj.identifiers.length) return null;
-              var ids = obj.identifiers.filter(function (id) {
+              var identifiers = obj.getIdentifiers();
+              if (!identifiers || !identifiers.length) return null;
+              var ids = identifiers.filter(function (id) {
                   return ~id.indexOf('agol:');
               });
               if (!ids.length) return null;
@@ -5234,7 +5318,7 @@
           }
       }]);
       return AgolService;
-  }();
+  }(BaseService);
 
   var SORT_OPTIONS_DEFAULT$1 = [{ value: "label,asc", label: "Name (A-Z)" }, { value: "label,desc", label: "Name (Z-A)" }, { value: "type,asc", label: "Type (A-Z)" }, { value: "type,desc", label: "Type (Z-A)" }, { value: "modified,desc", label: "Most recently modified" }, { value: "modified,asc", label: "Least recently modified" }, { value: "_score,desc", label: "Relevance" }];
 

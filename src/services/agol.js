@@ -2,6 +2,8 @@
 
 import Q from 'q';
 import ItemTypes from '../shared/types';
+import BaseService from './base';
+import ItemFactory from '../models/factory';
 
 
 class AgolQuery {
@@ -143,15 +145,37 @@ class AgolQuery {
 
 
 
-class AgolService {
+class AgolGroup {
+    constructor(data) {
+        if(data){
+            for(let p in data) {
+                let value = data[p];
+                if(!value) continue;
+                if("contact" === p) {
+                    value.type = ItemTypes.CONTACT;
+                    value = ItemFactory(value);
+                } else if(typeof(value.push) !== 'undefined')
+                    value = value.slice(0);
+                this[p] = value;
+            }
+        }
+    }
+    getId() { return this.id; }
+    getType() { return this.type; }
+    getTitle() { return this.title; }
+    getLabel() { return this.label; }
+    getDescription() { return this.description; }
+    getContact() { return contact; }
+    getKeywords() { return this.keywords; }
+    getThumbnailUrl() { return this.thumbnail; }
+}
 
 
+
+class AgolService extends BaseService {
 
     constructor(url, httpClient) {
-        this.setUrl(url);
-        this.client = httpClient;
-        this.timeout = 10000;
-        this.httpMethods = ["GET", "POST", "PUT", "DELETE", "PATCH"];
+        super(url, httpClient);
     }
 
     setUrl(baseUrl) {
@@ -179,6 +203,7 @@ class AgolService {
             });
             return this.execute(opts);
         })
+        .then(org => ItemFactory(org))
         .catch(e => {
             let err = new Error(`AgolService.getOrg() - Error fetching org ${id}: ${e.message}`);
             return Q.reject(err);
@@ -204,6 +229,10 @@ class AgolService {
                 method:"GET", url: this.baseUrl + '/orgs', params: params, options: options
             });
             return this.execute(opts);
+        })
+        .then(response => {
+            response.results = response.results.map(result => ItemFactory(result));
+            return response;
         })
         .catch(e => {
             let err = new Error(`AgolService.searchOrgs() - Error searching orgs: ${e.message}`);
@@ -232,6 +261,7 @@ class AgolService {
             });
             return this.execute(opts);
         })
+        .then(group => new AgolGroup(group))
         .catch(e => {
             let err = new Error(`AgolService.getGroup() - Error fetching group ${id}: ${e.message}`);
             return Q.reject(err);
@@ -259,6 +289,10 @@ class AgolService {
             });
             return this.execute(opts);
         })
+        .then(response => {
+            response.results = response.results.map(result => new AgolGroup(result));
+            return response;
+        })
         .catch(e => {
             let err = new Error(`AgolService.searchGroups() - Error searching groups: ${e.message}`);
             return Q.reject(err);
@@ -285,6 +319,7 @@ class AgolService {
             });
             return this.execute(opts);
         })
+        .then(item => ItemFactory(item))
         .catch(e => {
             let err = new Error(`AgolService.getItem() - Error fetching item ${id}: ${e.message}`);
             return Q.reject(err);
@@ -312,6 +347,10 @@ class AgolService {
             });
             return this.execute(opts);
         })
+        .then(response => {
+            response.results = response.results.map(result => ItemFactory(result));
+            return response;
+        })
         .catch(e => {
             let err = new Error(`AgolService.searchItems() - Error searching items: ${e.message}`);
             return Q.reject(err);
@@ -323,16 +362,20 @@ class AgolService {
     /* --------------------------- */
 
     getAgolId (obj) {
+
         if(!obj) return null;
 
-        if(!obj.type) return null;
+        if(!obj.getType) return null;
 
-        if(ItemTypes.ORGANIZATION === obj.type || 'Group' === obj.type) {
-            return obj.id;
+        let type = obj.getType();
+
+        if(ItemTypes.ORGANIZATION === type || 'Group' === type) {
+            return obj.getId();
         }
 
-        if(!obj.identifiers || !obj.identifiers.length) return null;
-        let ids = obj.identifiers.filter(id => ~id.indexOf('agol:'));
+        let identifiers = obj.getIdentifiers();
+        if(!identifiers || !identifiers.length) return null;
+        let ids = identifiers.filter(id => ~id.indexOf('agol:'));
         if(!ids.length) return null;
         return ids[0].replace('agol:','');
     }

@@ -610,6 +610,17 @@
                   if (item.id) {
                       method = "PUT";
                       url += '/' + item.id;
+                  } else {
+                      //if item is being created and has no URI already defined
+                      // attempt to create one using the API's method for doing so
+                      // and then attempt the actual item creation
+                      if (!item.uri) {
+                          return _this2.getUri(item, options).then(function (uri) {
+                              item.uri = uri;
+                              var opts = _this2.buildRequest({ method: method, url: url, data: item, options: options });
+                              return _this2.execute(opts);
+                          });
+                      }
                   }
 
                   var opts = _this2.buildRequest({ method: method, url: url, data: item, options: options });

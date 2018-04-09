@@ -378,4 +378,4 @@ export {
     AgolService as default,
     AgolService,
     AgolQuery
-}
+};

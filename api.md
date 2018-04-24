@@ -242,7 +242,16 @@ itemSvc.export(itemId, 'iso19139')
 .catch(e=>{...});
 ```
 
+| Format | Supported Types |
+|:-------- |:-------------- |
+| (empty) | all, default format used will be different based upon type |
+| iso19139 | dcat:Dataset, regp:Service, Map, Layer |
+| wmc | Map |
+| kml | Map |
+| json | all (see below) |
 
+**Note:** The default representation for GeoPlatform items is in JSON, so there is no need
+to use the export method with a "json" format. Use the `get(_id_)` method instead.
 
 #### Get URI
 Given an un-persisted GeoPlatform Item, generate and return a valid URI for it.

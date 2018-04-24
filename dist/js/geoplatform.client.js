@@ -768,7 +768,12 @@
                   });
                   return _this7.execute(opts);
               }).catch(function (e) {
-                  var err = new Error("ItemService.export() - Error exporting item: " + e.message);
+                  var msg = e.message;
+                  //https://github.com/GeoPlatform/client-api/issues/1
+                  if (e.statusCode && e.statusCode === 406 || e.statusCode === '406') {
+                      msg = "Unsupported export format specified '" + format + "'";
+                  }
+                  var err = new Error("ItemService.export() - Error exporting item: " + msg);
                   return Q.reject(err);
               });
           }

@@ -7,6 +7,7 @@ const API           = require('../../dist/js/geoplatform.client');
 const Query         = API.Query;
 const ItemTypes     = API.ItemTypes;
 const ItemService   = API.ItemService;
+const NodeHttpClient = API.NodeHttpClient;
 
 const URL = 'https://sit-ual.geoplatform.us';
 const URI = "http://www.geoplatform.gov/items/test";
@@ -227,6 +228,36 @@ describe('# ItemService', function() {
             expect(item.modified).to.be.ok;
             expect(item.lastModifiedBy).to.be.ok;
             done();
+        })
+        .catch(e => done(e));
+
+    });
+
+
+
+
+    /*
+     * Export Formats
+     */
+    it('should handle export errors', function(done) {
+
+        let svc = new ItemService(URL, new NodeHttpClient());
+
+        svc.search({type:'regp:Service'})
+        .then( response => {
+
+            let id = response.results[0].id;
+
+            svc.export(id, 'json')
+            .then( response => {
+                console.log(response);
+                done(new Error("Should have caught an error"));
+            })
+            .catch(e => {
+                expect(e).to.be.ok;
+                done();
+            });
+
         })
         .catch(e => done(e));
 

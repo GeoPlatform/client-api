@@ -229,7 +229,12 @@ class ItemService {
             return this.execute(opts);
         })
         .catch( e => {
-            let err = new Error(`ItemService.export() - Error exporting item: ${e.message}`);
+            let msg = e.message;
+            //https://github.com/GeoPlatform/client-api/issues/1
+            if(e.statusCode && e.statusCode===406 || e.statusCode==='406') {
+                msg = `Unsupported export format specified '${format}'`;
+            }
+            let err = new Error(`ItemService.export() - Error exporting item: ${msg}`);
             return Q.reject(err);
         });
     }

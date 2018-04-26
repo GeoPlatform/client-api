@@ -265,7 +265,28 @@ class ItemService {
     }
 
 
+    /**
+     * @param {Array} ids - list of identifiers to fetch objects for
+     * @param {Object} options - optional set of request options to apply to xhr request
+     * @return {Promise} resolving list of matching items or an error
+     */
+    getMultiple (ids, options) {
 
+        return Q.resolve( ids )
+        .then( identifiers => {
+
+            let method = 'POST',
+                url = this.apiBase + '/api/fetch';
+
+            let opts = this.buildRequest({method:method, url:url, data:identifiers, options:options});
+            return this.execute(opts);
+
+        })
+        .catch(e => {
+            let err = new Error(`ItemService.getMultiple() - Error fetching items: ${e.message}`);
+            return Q.reject(err);
+        });
+    }
 
 
 

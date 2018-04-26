@@ -145,6 +145,24 @@ itemSvc.get(itemId)
 .catch(e=>{...});
 ```
 
+#### Get Multiple By Id
+Fetch one or more items using an array of identifiers.
+
+| Parameter | required   | description |
+|:------    |:---------- |:----------- |
+| ids   | true | array of item identifiers |
+
+```javascript
+//continuing from examples above
+let id1 = '...', id2 = '...', id3 = '...';
+itemSvc.getMultiple([id1, id2, id3])
+.then( items => {
+    items.forEach(item => console.log(item.label));
+});
+.catch(e=>{...});
+```
+
+
 #### Save
 Create or update the specified item. If 'item.id' exists, updates with HTTP-PUT. Otherwise, creates using HTTP-POST.
 
@@ -530,24 +548,6 @@ module.exports = {
     }
 }
 ```
-
-
-## NodeJS Modules
-When using Client API inside NodeJS, the following modules are exposed via
-`require('geoplatform.client')`:
-- `ItemTypes` - set of supported GeoPlatform object model item types.
-- `QueryParameters` - set of supported query parameters
-- `Query` - class used to build queries
-- `QueryFactory` - convenience factory for quickly creating query instances
-- `HttpClient` - default NodeJS http client using RequestJS
-- `ServiceFactory` - convenience factor for quickly creating a service based upon a specified object model item type
-- `ItemService` - default API service, supports all item types
-- `MapService` - API service for working with Maps
-- `LayerService` - API service for working with Layers
-- `ServiceService` - API service for working with Services
-- `GalleryService` - API service for working with Galleries
-- `DatasetService` - API service for working with Datasets
-- `UtilsService` - API service for miscellaneous usage not directly tied to any item type, such as API capabilities queries and GeoJSON file parsing
 
 
 

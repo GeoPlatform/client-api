@@ -26,6 +26,20 @@ service.search(query)
 });
 
 
+//
+// FETCH MULTIPLE
+//
+service.search(query)
+.then( response => response.results.map(it=>it.id).slice(0,3) )
+.then( ids => service.getMultiple(ids) )
+.then( response => {
+    console.log(response.length);
+})
+.catch(e => {
+    console.log(`NodeItemService Test - Error fetching multiple: ${e.message}`);
+});
+
+
 
 
 //

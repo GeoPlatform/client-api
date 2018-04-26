@@ -248,7 +248,7 @@ describe('# ItemService', function() {
 
             let id = response.results[0].id;
 
-            svc.export(id, 'json')
+            svc.export(id, 'badFormat')
             .then( response => {
                 console.log(response);
                 done(new Error("Should have caught an error"));

@@ -119,6 +119,13 @@ class Query {
         return result;
     }
 
+    clone() {
+        let result = new Query();
+        let json = JSON.parse(JSON.stringify(this.query));
+        result.applyParameters(json);
+        return result;
+    }
+
 
     // -----------------------------------------------------------
 
@@ -173,7 +180,7 @@ class Query {
 
 
     keywords(text) {
-        this.setQ(text);
+        this.setKeywords(text);
         return this;
     }
 

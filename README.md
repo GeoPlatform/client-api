@@ -15,6 +15,7 @@ This library requires the following dependencies be present in your application:
 
 - [Q](https://cdnjs.cloudflare.com/ajax/libs/q.js/1.5.1/q.js) - version 1.5+
 - [jQuery](https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js) - version 2.1+
+- [Request](https://github.com/request/request) - version 2.75+
 - [AngularJS 1.x](http://...) - optional, used by the NGHttpClient component
 
 

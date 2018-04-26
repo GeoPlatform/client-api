@@ -802,6 +802,30 @@
               });
           }
 
+          /**
+           * @param {Array} ids - list of identifiers to fetch objects for
+           * @param {Object} options - optional set of request options to apply to xhr request
+           * @return {Promise} resolving list of matching items or an error
+           */
+
+      }, {
+          key: "getMultiple",
+          value: function getMultiple(ids, options) {
+              var _this9 = this;
+
+              return Q.resolve(ids).then(function (identifiers) {
+
+                  var method = 'POST',
+                      url = _this9.apiBase + '/api/fetch';
+
+                  var opts = _this9.buildRequest({ method: method, url: url, data: identifiers, options: options });
+                  return _this9.execute(opts);
+              }).catch(function (e) {
+                  var err = new Error("ItemService.getMultiple() - Error fetching items: " + e.message);
+                  return Q.reject(err);
+              });
+          }
+
           /* ----------------------------------------------------------- */
 
           /**
@@ -2391,6 +2415,14 @@
               }
               return result;
           }
+      }, {
+          key: 'clone',
+          value: function clone() {
+              var result = new Query();
+              var json = JSON.parse(JSON.stringify(this.query));
+              result.applyParameters(json);
+              return result;
+          }
 
           // -----------------------------------------------------------
 
@@ -2454,7 +2486,7 @@
       }, {
           key: 'keywords',
           value: function keywords(text) {
-              this.setQ(text);
+              this.setKeywords(text);
               return this;
           }
 

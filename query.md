@@ -92,21 +92,21 @@ let queryB = new GeoPlatformClient.Query().ends( new Date().getTime() );
 ## Requesting specific result properties
 By default, search result items contain only a limited set of properties:
 
-| Property | Notes |
-|:---------   |:----------- |
-| id          | included automatically |
-| uri         | included automatically |
-| type        | included automatically |
-| label       | included automatically |
-| description | |
-| createdBy   | GeoPlatform username of author |
-| created     | Creation date |
-| modified    | Last modified date |
-| publishers  | Publishing Organizations |
-| themes      | GeoPlatform themes associated |
+- id - unique identifier of an Item
+- uri - unique resource identifier (URI) of an Item
+- type - the type of Item
+- label
+- description
+- createdBy - GeoPlatform username of author
+- created - Creation date
+- modified - Last modified date
+- publishers - Publishing Organizations
+- themes - GeoPlatform themes associated
 
 To request a different set of fields, specify them using `Query.setFields()` or
-`Query.fields()`. To get the current set of fields, use `Query.getFields()`.
+`Query.fields()`. To get the current set of fields, use `Query.getFields()`.  Use
+the `QueryFields` object to reference fields when manipulating the fields to request
+in a Query.
 
 _Note:_ You must specify the property name to use. For example, to also request
 the geographic extent for each item in the search results, do the following:
@@ -114,41 +114,48 @@ the geographic extent for each item in the search results, do the following:
 ```javascript
 let query = new GeoPlatformClient.Query();
 let fields = query.getFields();
-fields.push('extent'); //'extent' is the property to use in this case
+fields.push(GeoPlatformClient.QueryFields.EXTENT);
 query.setFields(fields);
 ```
 
 
 ## Request faceted information
 Search results contain facet information specifying how certain values appear
-within the entire repository of data.  By default, the following facets are
-requested with each search:
-
-| Facet | Notes |
-|:----  |:----- |
-| types      | item types |
-| themes     | GeoPlatform themes associated |
-| publishers | GeoPlatform publishing organizations associated |
-| serviceTypes | only applies to type "regp:Service" items |
-| schemes    | only applies to type "skos:Concept" items |
-| visibility | |
-| createdBy  | GeoPlatform authors |
-
-To omit facet information, use `Query.setFacets(false)`.  To request a different
-set of facets, do the following:
+within the entire repository of data.  Use the `QueryFacets` object's set of
+facets to request specific ones with a query.
 
 ```javascript
-let query = new GeoPlatformClient.Query();
-let facets = query.getFacets();
-facets.push('layerType'); //Layer.layerType facet info requested
-query.setFacets(facets);
+const Facets = GeoPlatformClient.QueryFacets; //or require('geoplatform.client').QueryFacets;
+query.facets([Facets.TYPES, Facets.THEMES]);
 ```
+
+To omit facet information, use `Query.setFacets(false)`.
+
+
+By default, the following facets are requested with each search:
+
+- QueryFacet.TYPES - GeoPlatform CBO Item types
+- QueryFacets.THEMES - GeoPlatform Concepts associated as themes
+- QueryFacets.PUBLISHERS - GeoPlatform Organizations associated as publishing agencies
+- QueryFacets.SERVICE_TYPES - GeoPlatform Service specification association (only applies to type "regp:Service" items)
+- QueryFacets.SCHEMES - GeoPlatform Concept Schemes associated (only applies to type "skos:Concept" items)
+- QueryFacets.VISIBILITY - visible status of Items
+- QueryFacets.CREATED_BY - authors of Items
+
+See [QueryFacets](src/shared/query.js) for a larger list of available facets.
+
 
 ## Sorting results
 
 The `Query.setSort()` and `Query.sort()` methods allows you to set both the property
 and direction of sorting to use. To specifically set either, use the `Query.setSortField()`
 and `Query.setSortOrder()` methods.
+
+```javascript
+let query = new Query();
+query.sort('modified', 'desc');
+query.sort('modified,desc');    //same as above line
+```
 
 The list of supported default sort options can be retrieved using `Query.getSortOptions()`.
 

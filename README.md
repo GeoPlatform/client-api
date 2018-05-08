@@ -22,7 +22,7 @@ This library requires the following dependencies be present in your application:
 ## Using GeoPlatform API Client in your app...
 
 ### Include as a Dependency
-Include Client-API as a dependency of your application inside the package.json file (or similar dependency definition file).
+Include API Client as a dependency of your application inside the package.json file (or similar dependency definition file).
 
 ```
    ...
@@ -69,7 +69,7 @@ const ItemService = GeoPlatformClient.ItemService;
 ```
 
 #### Environment Variables
-The `Config` object exposed by GeoPlatform Client API allows configuration of
+The `Config` object exposed by GeoPlatform API Client allows configuration of
 environment variables necessary to interact with the GeoPlatform API. Below is
 an example of how to configure this object.
 
@@ -119,7 +119,7 @@ the desired example JS file (e.g., `node examples/node/item.js`)
 
 ## Authentication and Authorization
 The GeoPlatform API uses OAuth 2.0 to authenticate users and restrict access to data and operations.
-Client API provides a way to specify a valid JWT token to be used with requests, but assumes a
+API Client provides a way to specify a valid JWT token to be used with requests, but assumes a
 valid token has already been fetched by another component within your application.
 
 __Important!__ To use any data-modifying portion of this client API, you __must__ provide

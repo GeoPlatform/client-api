@@ -1840,40 +1840,73 @@
   }();
 
   var Parameters = {
-      TYPES: 'type',
-      QUERY: 'q',
-      KEYWORDS: 'keyword',
-      URI: 'uri',
+      ALTERNATE_TITLE: 'alternateTitles',
+      BEGINS: 'startDate.min',
+      CREATED: 'created',
+      CREATED_BEFORE: 'created.max',
+      CREATED_AFTER: 'created.min',
       CREATED_BY: 'createdBy',
-      LAST_MODIFIED_BY: 'lastModifiedBy',
-      CONTRIBUTED_BY: 'contributedBy',
       CREATOR: 'creator.id',
+      CONTRIBUTED_BY: 'contributedBy',
+      ENDS: 'endDate.max',
+      EXTENT: 'extent',
+      IDENTIFIERS: 'identifiers',
+      KEYWORDS: 'keyword',
+      LAST_MODIFIED_BY: 'lastModifiedBy',
+      MODIFIED: 'modified',
+      MODIFIED_BEFORE: 'modified.max',
+      MODIFIED_AFTER: 'modified.min',
+      PUBLISHERS_ID: 'publisher.id',
+      PUBLISHERS_LABEL: 'publisher.label',
+      PUBLISHERS_URI: 'publisher.uri',
+      QUERY: 'q',
+      SCHEMES_ID: 'scheme.id',
+      SCHEMES_LABEL: 'scheme.label',
+      SCHEMES_URI: 'scheme.uri',
+      STATUS: 'status',
       SERVICE_TYPES: 'serviceType.id',
       THEMES_ID: 'theme.id',
       THEMES_LABEL: 'theme.label',
       THEMES_URI: 'theme.uri',
-      PUBLISHERS_ID: 'publisher.id',
-      PUBLISHERS_LABEL: 'publisher.label',
-      PUBLISHERS_URI: 'publisher.uri',
+      TYPES: 'type', //TODO change to 'types'
+      URI: 'uri',
       USED_BY_ID: 'usedBy.id',
       USED_BY_LABEL: 'usedBy.label',
       USED_BY_URI: 'usedBy.uri',
-      SCHEMES_ID: 'scheme.id',
-      SCHEMES_LABEL: 'scheme.label',
-      SCHEMES_URI: 'scheme.uri',
       VISIBILITY: 'visibility',
-      EXTENT: 'extent',
-      CREATED: 'created',
-      CREATED_BEFORE: 'created.max',
-      CREATED_AFTER: 'created.min',
-      MODIFIED: 'modified',
-      MODIFIED_BEFORE: 'modified.max',
-      MODIFIED_AFTER: 'modified.min',
-      BEGINS: 'startDate.min',
-      ENDS: 'endDate.max',
       RESOURCE_TYPE: 'resourceType',
+      DATASET: 'dataset',
+      LANDING_PAGE: 'landingPage',
+      PURPOSE: 'purpose',
 
-      FACETS: 'includeFacets',
+      //statistics parameters
+      RELIABILITY: 'reliability',
+      RELIABILITY_MIN: 'reliability.min',
+      RELIABILITY_MAX: 'reliability.max',
+      ONLINE: 'online',
+      COMPLIANT: 'compliant',
+      SPEED: 'speed',
+      SPEED_MIN: 'speed.min',
+      SPEED_MAX: 'speed.max',
+      LIKES: 'likes',
+      LIKES_MIN: 'likes.min',
+      LIKES_MAX: 'likes.max',
+      VIEWS: 'views',
+      VIEWS_MIN: 'views.min',
+      VIEWS_MAX: 'views.max',
+
+      //type-specific parameters
+      HREF: 'href', //service-specific
+      LAYER_TYPE: 'layerType', //layer-specific
+      LAYER_NAME: 'layerName', //...
+      PARENT_LAYER: 'parentLayer', //...
+      SUB_LAYER: 'subLayer', //...
+      SERVICE: 'service', //...
+      MAP_LAYER: 'mapLayer', //map-specific
+      GALLERY_ITEM: 'galleryItem', //gallery-specific
+
+      //meta-parameters
+      FACETS: 'includeFacet', //TODO change to 'facets'
       FIELDS: 'fields',
 
       //recommender service-specific
@@ -2319,64 +2352,106 @@
   };
 
   var Fields = {
-      LABEL: 'label',
-      DESCRIPTION: 'description',
-      CREATED: 'created',
-      MODIFIED: 'modified',
-      CREATED_BY: 'createdBy',
-      LAST_MODIFIED_BY: 'lastModifiedBy',
-      KEYWORDS: 'keywords',
-      THEMES: 'themes',
-      PUBLISHERS: 'publishers',
-      STATUS: 'status',
-      VISIBILITY: 'visibility',
-      EXTENT: 'extent',
-      TEMPORAL: 'temporal',
-      IDENTIFIERS: 'identifiers',
-      RESOURCE_TYPES: 'resourceTypes',
-      SERVICES: 'services',
-      CONTACTS: 'contacts',
-      DISTRIBUTIONS: 'distributions',
       ACCESS_RIGHTS: 'rights',
-      USED_BY: 'usedBy',
-      STATISTICS: 'statistics',
-
-      SERVICE_TYPE: 'serviceType',
-      HREF: 'href',
+      ALTERNATE_TITLES: 'alternateTitles',
+      ANNOTATIONS: 'annotations',
+      CLASSIFIERS: 'classifiers',
+      CONCEPT_SCHEME: 'scheme',
+      CONTACTS: 'contacts',
+      CREATED: 'created',
+      CREATED_BY: 'createdBy',
       DATASETS: 'datasets',
-
+      DESCRIPTION: 'description',
+      DISTRIBUTIONS: 'distributions',
+      EXTENT: 'extent',
+      GALLERY_ITEMS: 'items',
+      HREF: 'href',
+      IDENTIFIERS: 'identifiers',
+      KEYWORDS: 'keywords',
+      LABEL: 'label',
+      LAST_MODIFIED_BY: 'lastModifiedBy',
+      LAYERS: 'layers',
       LAYER_TYPE: 'layerType',
       LAYER_NAME: 'layerName',
       LEGEND: 'legend',
-      SUB_LAYERS: 'subLayers',
+      MODIFIED: 'modified',
       PARENT_LAYER: 'parentLayer',
-
-      LAYERS: 'layers',
-      ANNOTATIONS: 'annotations',
-      THUMBNAIL: 'thumbnail',
-
-      GALLERY_ITEMS: 'items',
-
-      CONCEPT_SCHEME: 'scheme'
-
-  };
-
-  var Facets = {
-      TYPES: 'types',
-      THEMES: 'themes',
       PUBLISHERS: 'publishers',
-      SERVICE_TYPES: 'serviceTypes',
-      CONCEPT_SCHEMES: 'schemes',
-      VISIBILITY: 'visibility',
-      CREATED_BY: 'createdBy',
-      USED_BY: 'usedBy.id'
+      RESOURCE_TYPES: 'resourceTypes',
+      SERVICE_TYPE: 'serviceType',
+      SERVICES: 'services',
+      SPATIAL: 'spatial',
+      STATISTICS: 'statistics',
+      STATUS: 'status',
+      SUB_LAYERS: 'subLayers',
+      TEMPORAL: 'temporal',
+      THEMES: 'themes',
+      THUMBNAIL: 'thumbnail',
+      USED_BY: 'usedBy',
+      VISIBILITY: 'visibility'
   };
 
   var FIELDS_DEFAULT = [Fields.CREATED, Fields.MODIFIED, Fields.CREATED_BY, Fields.PUBLISHERS, Fields.THEMES, Fields.DESCRIPTION];
 
+  /* --------------------------------------------------------- */
+
+  var Facets = {
+      ALTERNATE_TITLES: 'alternateTitles',
+      CONCEPT_SCHEMES: 'schemes',
+      CREATED_BY: 'createdBy',
+      HREF: 'href',
+      IDENTIFIERS: "identifiers",
+      LAYER_TYPE: 'layerType',
+      LAYER_NAME: 'layerName',
+      LIKES: 'likes',
+      ONLINE: 'online',
+      PUBLISHERS: 'publishers',
+      RELIABILITY: 'reliability',
+      SERVICE_TYPES: 'serviceTypes',
+      SPEED: 'speed',
+      STATUS: 'status',
+      THEMES: 'themes',
+      TYPES: 'type', //TODO change to 'types'
+      USED_BY: 'usedBy',
+      VIEWS: 'views',
+      VISIBILITY: 'visibility'
+  };
+
   var FACETS_DEFAULT = [Facets.TYPES, Facets.PUBLISHERS, Facets.SERVICE_TYPES, Facets.CONCEPT_SCHEMES, Facets.VISIBILITY, Facets.CREATED_BY];
 
+  /*
+      Map facet keys to parameters so clients can set
+      query params using faceted results
+
+      //TODO remove these and their function below
+   */
+  var FacetToParam = {};
+  FacetToParam[Facets.TYPES] = Parameters.TYPES;
+  FacetToParam[Facets.THEMES] = Parameters.THEMES_ID;
+  FacetToParam[Facets.PUBLISHERS] = Parameters.PUBLISHERS_ID;
+  FacetToParam[Facets.CONCEPT_SCHEMES] = Parameters.SCHEMES_ID;
+  FacetToParam[Facets.USED_BY] = Parameters.USED_BY_ID;
+
+  /* --------------------------------------------------------- */
+
   var SORT_OPTIONS_DEFAULT$1 = [{ value: "label,asc", label: "Name (A-Z)" }, { value: "label,desc", label: "Name (Z-A)" }, { value: "type,asc", label: "Type (A-Z)" }, { value: "type,desc", label: "Type (Z-A)" }, { value: "modified,desc", label: "Most recently modified" }, { value: "modified,asc", label: "Least recently modified" }, { value: "_score,desc", label: "Relevance" }];
+
+  var BBOX_REGEX = /^\-?\d+(\.\d*)?,\-?\d+(\.\d*)?,\-?\d+(\.\d*)?,\-?\d+(\.\d*)?$/;
+
+  function toArray$1(value) {
+      var result = value;
+      //if given a non-array value, wrap in array
+      if (result !== null && typeof result.push === 'undefined') result = [result];
+      //if array value is empty, nullify the result
+      if (result !== null && !result.length) result = null;
+      return result;
+  }
+
+  /**
+   * Query
+   *
+   * @constructor
+   */
 
   var Query$1 = function () {
       function Query() {
@@ -2402,6 +2477,11 @@
           };
       }
 
+      /**
+       * @return {object} containing request-ready parameters/values
+       */
+
+
       createClass(Query, [{
           key: 'getQuery',
           value: function getQuery() {
@@ -2415,6 +2495,11 @@
               }
               return result;
           }
+
+          /**
+           * @return {Query}
+           */
+
       }, {
           key: 'clone',
           value: function clone() {
@@ -2426,6 +2511,11 @@
 
           // -----------------------------------------------------------
 
+          /**
+           * @param {string} name
+           * @param {any} value
+           * @return {Query} this
+           */
 
       }, {
           key: 'parameter',
@@ -2433,6 +2523,12 @@
               this.setParameter(name, value);
               return this;
           }
+
+          /**
+           * @param {string} name
+           * @param {any} value
+           */
+
       }, {
           key: 'setParameter',
           value: function setParameter(name, value) {
@@ -2440,11 +2536,22 @@
               typeof value.push !== 'undefined' && !value.length) //or empty array
                   delete this.query[name];else this.query[name] = value;
           }
+
+          /**
+           * @param {string} key - name of parameter
+           * @return {string} value of parameter
+           */
+
       }, {
           key: 'getParameter',
           value: function getParameter(key) {
               return this.query[key];
           }
+
+          /**
+           * @param {object} obj - set of parameter/values to apply to this query
+           */
+
       }, {
           key: 'applyParameters',
           value: function applyParameters(obj) {
@@ -2455,25 +2562,43 @@
               }
           }
 
+          /**
+           * @param {string} facet - name of facet to set the value for as a parameter
+           * @param {string} value - value of the facet to use as the parameter's value
+           */
+          //TODO remove this function
+
+      }, {
+          key: 'setFacetParameter',
+          value: function setFacetParameter(facet, value) {
+              var param = FacetToParam[facet];
+              if (!param) {
+                  console.log("WARN : Query.applyFacetParameter() - " + "unable to map facet to known parameter '" + facet + "', using " + "as direct parameter which may not operate as intended");
+              }
+              this.setParameter(param || facet, value);
+          }
+
           // -----------------------------------------------------------
 
+          /**
+           * @param {string} text
+           * @return {Query} this
+           */
 
       }, {
           key: 'q',
           value: function q(text) {
-              this.setQ(text);
-              return this;
+              this.setQ(text);return this;
           }
-
-          /**
-           * @param {string} text - free text query
-           */
+          /** @param {string} text - free text query */
 
       }, {
           key: 'setQ',
           value: function setQ(text) {
               this.setParameter(Parameters.QUERY, text);
           }
+          /** @return {string} */
+
       }, {
           key: 'getQ',
           value: function getQ() {
@@ -2497,8 +2622,7 @@
       }, {
           key: 'setKeywords',
           value: function setKeywords(text) {
-              if (text && typeof text.push === 'undefined') text = [text];
-              this.setParameter(Parameters.KEYWORDS, text);
+              this.setParameter(Parameters.KEYWORDS, toArray$1(text));
           }
       }, {
           key: 'getKeywords',
@@ -2543,8 +2667,7 @@
       }, {
           key: 'setTypes',
           value: function setTypes(types) {
-              if (types && typeof types.push === 'undefined') types = [types];
-              this.setParameter(Parameters.TYPES, types);
+              this.setParameter(Parameters.TYPES, toArray$1(types));
           }
       }, {
           key: 'getTypes',
@@ -2637,7 +2760,6 @@
       }, {
           key: 'setThemes',
           value: function setThemes(themes, parameter) {
-              if (themes && typeof themes.push === 'undefined') themes = [themes];
 
               //clear existing
               this.setParameter(Parameters.THEMES_ID, null);
@@ -2645,7 +2767,7 @@
               this.setParameter(Parameters.THEMES_URI, null);
 
               var param = parameter || Parameters.THEMES_ID;
-              this.setParameter(param, themes);
+              this.setParameter(param, toArray$1(themes));
           }
       }, {
           key: 'getThemes',
@@ -2685,7 +2807,6 @@
       }, {
           key: 'setPublishers',
           value: function setPublishers(publishers, parameter) {
-              if (publishers && typeof publishers.push === 'undefined') publishers = [publishers];
 
               //clear existing
               this.setParameter(Parameters.PUBLISHERS_ID, null);
@@ -2693,7 +2814,7 @@
               this.setParameter(Parameters.PUBLISHERS_URI, null);
 
               var param = parameter || Parameters.PUBLISHERS_ID;
-              this.setParameter(param, publishers);
+              this.setParameter(param, toArray$1(publishers));
           }
       }, {
           key: 'getPublishers',
@@ -2735,7 +2856,6 @@
       }, {
           key: 'setUsedBy',
           value: function setUsedBy(ids, parameter) {
-              if (ids && typeof ids.push === 'undefined') ids = [ids];
 
               //clear existing
               this.setParameter(Parameters.USED_BY_ID, null);
@@ -2743,7 +2863,7 @@
               this.setParameter(Parameters.USED_BY_URI, null);
 
               var param = parameter || Parameters.USED_BY_ID;
-              this.setParameter(param, ids);
+              this.setParameter(param, toArray$1(ids));
           }
       }, {
           key: 'getUsedBy',
@@ -2785,7 +2905,6 @@
       }, {
           key: 'setSchemes',
           value: function setSchemes(schemes, parameter) {
-              if (schemes && typeof schemes.push === 'undefined') schemes = [schemes];
 
               //clear existing
               this.setParameter(Parameters.SCHEMES_ID, null);
@@ -2793,7 +2912,7 @@
               this.setParameter(Parameters.SCHEMES_URI, null);
 
               var param = parameter || Parameters.SCHEMES_ID;
-              this.setParameter(param, schemes);
+              this.setParameter(param, toArray$1(schemes));
           }
       }, {
           key: 'getSchemes',
@@ -2821,8 +2940,7 @@
       }, {
           key: 'setServiceTypes',
           value: function setServiceTypes(types) {
-              if (types && typeof types.push === 'undefined') types = [types];
-              this.setParameter(Parameters.SERVICE_TYPES, types);
+              this.setParameter(Parameters.SERVICE_TYPES, toArray$1(types));
           }
       }, {
           key: 'getServiceTypes',
@@ -2853,6 +2971,76 @@
           key: 'getVisibility',
           value: function getVisibility() {
               return this.getParameter(Parameters.VISIBILITY);
+          }
+
+          // -----------------------------------------------------------
+
+
+      }, {
+          key: 'status',
+          value: function status(value) {
+              this.setStatus(value);
+              return this;
+          }
+
+          /**
+           * @param {string} status - current status of Item
+           */
+
+      }, {
+          key: 'setStatus',
+          value: function setStatus(value) {
+              this.setParameter(Parameters.STATUS, value);
+          }
+      }, {
+          key: 'getStatus',
+          value: function getStatus() {
+              return this.getParameter(Parameters.STATUS);
+          }
+
+          // -----------------------------------------------------------
+
+
+      }, {
+          key: 'extent',
+          value: function extent(bbox) {
+              this.setExtent(bbox);
+              return this;
+          }
+
+          /**
+           * @param {string} bboxStr - form of "minx,miny,maxx,maxy"
+           */
+
+      }, {
+          key: 'setExtent',
+          value: function setExtent(bbox) {
+              if (bbox && typeof bbox.toBboxString !== 'undefined') {
+                  //Leaflet Bounds instance
+                  bbox = bbox.toBboxString();
+              } else if (typeof bbox.push !== 'undefined' && bbox.length &&
+              //Nested array (alternate Leaflet representation):
+              // [ [minLat,minLong], [maxLat,maxLong] ]
+              typeof bbox[0].push !== 'undefined') {
+                  bbox = bbox[0][1] + ',' + bbox[0][0] + ',' + bbox[1][1] + ',' + bbox[1][0];
+              } else if (typeof bbox === 'string') {
+                  if (!BBOX_REGEX.test(bbox)) {
+                      throw new Error("Invalid argument: bbox string must be " + "in form of 'minx,miny,maxx,maxy'");
+                  }
+              } else {
+                  throw new Error("Invalid argument: bbox must be one of " + "Leaflet.Bounds, nested array, or bbox string");
+              }
+              this.setParameter(Parameters.EXTENT, bbox);
+          }
+
+          /**
+           * @return {string} bbox string or null if not set
+           */
+
+      }, {
+          key: 'getExtent',
+          value: function getExtent() {
+              return this.getParameter(Parameters.EXTENT);
           }
 
           // -----------------------------------------------------------
@@ -2892,7 +3080,11 @@
       }, {
           key: 'getModified',
           value: function getModified() {
-              return this.getParameter(Parameters.MODIFIED_BEFORE) || this.getParameter(Parameters.MODIFIED_AFTER);
+              var value = this.getParameter(Parameters.MODIFIED_BEFORE) || this.getParameter(Parameters.MODIFIED_AFTER);
+              if (value && typeof value === 'number') {
+                  value = new Date(value);
+              }
+              return value;
           }
 
           // -----------------------------------------------------------
@@ -2932,38 +3124,11 @@
       }, {
           key: 'getCreated',
           value: function getCreated() {
-              return this.getParameter(Parameters.CREATED_BEFORE) || this.getParameter(Parameters.CREATED_AFTER);
-          }
-
-          // -----------------------------------------------------------
-
-
-      }, {
-          key: 'extent',
-          value: function extent(bbox) {
-              this.setExtent(bbox);
-              return this;
-          }
-
-          /**
-           * @param {string} bboxStr - form of "minx,miny,maxx,maxy"
-           */
-
-      }, {
-          key: 'setExtent',
-          value: function setExtent(bbox) {
-              if (bbox && typeof bbox.toBboxString !== 'undefined') bbox = bbox.toBboxString();
-              this.setParameter(Parameters.EXTENT, bbox);
-          }
-
-          /**
-           * @return {string} bbox string or null if not set
-           */
-
-      }, {
-          key: 'getExtent',
-          value: function getExtent() {
-              return this.getParameter(Parameters.EXTENT);
+              var value = this.getParameter(Parameters.CREATED_BEFORE) || this.getParameter(Parameters.CREATED_AFTER);
+              if (value && typeof value === 'number') {
+                  value = new Date(value);
+              }
+              return value;
           }
 
           // -----------------------------------------------------------
@@ -2984,7 +3149,7 @@
       }, {
           key: 'getBeginDate',
           value: function getBeginDate() {
-              var date = this.getParameter(this.parameter.BEGINS);
+              var date = this.getParameter(Parameters.BEGINS);
               if (date) date = new Date(date);
               return date;
           }
@@ -3007,7 +3172,7 @@
       }, {
           key: 'getEndDate',
           value: function getEndDate() {
-              var date = this.getParameter(this.parameter.ENDS);
+              var date = this.getParameter(Parameters.ENDS);
               if (date) date = new Date(date);
               return date;
           }
@@ -3040,8 +3205,7 @@
       }, {
           key: 'setResourceTypes',
           value: function setResourceTypes(types) {
-              if (types && typeof types.push === 'undefined') types = [types];
-              this.setParameter(Parameters.RESOURCE_TYPE, types);
+              this.setParameter(Parameters.RESOURCE_TYPE, toArray$1(types));
           }
       }, {
           key: 'getResourceTypes',
@@ -3066,8 +3230,7 @@
       }, {
           key: 'setFacets',
           value: function setFacets(names) {
-              if (names && typeof names.push === 'undefined') names = [names];
-              this.setParameter(Parameters.FACETS, names);
+              this.setParameter(Parameters.FACETS, toArray$1(names));
           }
       }, {
           key: 'getFacets',
@@ -3119,8 +3282,7 @@
       }, {
           key: 'setFields',
           value: function setFields(fields) {
-              if (fields && typeof fields.push === 'undefined') fields = [fields];
-              this.setParameter(Parameters.FIELDS, fields);
+              this.setParameter(Parameters.FIELDS, toArray$1(fields));
           }
       }, {
           key: 'getFields',

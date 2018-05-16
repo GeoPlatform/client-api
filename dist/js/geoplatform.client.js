@@ -521,8 +521,9 @@
       LAYER: "Layer",
       MAP: "Map",
       GALLERY: "Gallery",
-      ORGANIZATION: "org:Organization",
       COMMUNITY: 'Community',
+      ORGANIZATION: "org:Organization",
+      CONTACT: "vcard:VCard",
       CONCEPT: "skos:Concept",
       CONCEPT_SCHEME: "skos:ConceptScheme",
       STANDARD: 'dct:Standard'

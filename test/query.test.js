@@ -30,6 +30,7 @@ describe('# Query', function() {
         query.setUri("uri");
         query.themes('themes');
         query.setPublishers(["pub1","pub2"]);
+        query.setContacts(['con1', 'con2']);
         query.setUsedBy("usedBy");
         query.setSchemes('schemes');
         query.setServiceTypes('svcType');
@@ -91,6 +92,7 @@ describe('# Query', function() {
         expect( json[Parameters.URI] ).to.equal(query.getUri());
         expect( json[Parameters.THEMES_ID] ).to.equal(query.getThemes().join(','));
         expect( json[Parameters.PUBLISHERS_ID] ).to.equal(query.getPublishers().join(","));
+        expect( json[Parameters.CONTACTS_ID] ).to.equal(query.getContacts().join(","));
         expect( json[Parameters.USED_BY_ID] ).to.equal(query.getUsedBy().join(','));
         expect( json[Parameters.SCHEMES_ID] ).to.equal(query.getSchemes().join(','));
         expect( json[Parameters.SERVICE_TYPES] ).to.equal(query.getServiceTypes().join(','));

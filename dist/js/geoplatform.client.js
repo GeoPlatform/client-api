@@ -1859,6 +1859,9 @@
       PUBLISHERS_ID: 'publisher.id',
       PUBLISHERS_LABEL: 'publisher.label',
       PUBLISHERS_URI: 'publisher.uri',
+      CONTACTS_ID: 'contacts.id',
+      CONTACTS_LABEL: 'contacts.label',
+      CONTACTS_URI: 'contacts.uri',
       QUERY: 'q',
       SCHEMES_ID: 'scheme.id',
       SCHEMES_LABEL: 'scheme.label',
@@ -2406,6 +2409,7 @@
       LIKES: 'likes',
       ONLINE: 'online',
       PUBLISHERS: 'publishers',
+      CONTACTS: 'contacts',
       RELIABILITY: 'reliability',
       SERVICE_TYPES: 'serviceTypes',
       SPEED: 'speed',
@@ -2429,6 +2433,7 @@
   FacetToParam[Facets.TYPES] = Parameters.TYPES;
   FacetToParam[Facets.THEMES] = Parameters.THEMES_ID;
   FacetToParam[Facets.PUBLISHERS] = Parameters.PUBLISHERS_ID;
+  FacetToParam[Facets.CONTACTS] = Parameters.CONTACTS_ID;
   FacetToParam[Facets.CONCEPT_SCHEMES] = Parameters.SCHEMES_ID;
   FacetToParam[Facets.USED_BY] = Parameters.USED_BY_ID;
 
@@ -2780,10 +2785,9 @@
 
           /**
            * Specify a Publisher or set of Publishers to constrain results. By
-           * default, values are assumed to be theme identifiers. If using
-           * theme labels or theme uris, specify the optional second parameter
-           * to be either Parameters.PUBLISHERS_LABEL or Parameters.PUBLISHERS_URI
-           * respectively.
+           * default, values are assumed to be identifiers. If using labels or uris,
+           * specify the optional second parameter to be either
+           * Parameters.PUBLISHERS_LABEL or Parameters.PUBLISHERS_URI respectively.
            * @param {string} parameter - optional, to indicate the parameter to use
            * @return {Query}
            */
@@ -2797,10 +2801,9 @@
 
           /**
            * Specify a Publisher or set of Publishers to constrain results. By
-           * default, values are assumed to be theme identifiers. If using
-           * theme labels or theme uris, specify the optional second parameter
-           * to be either Parameters.PUBLISHERS_LABEL or Parameters.PUBLISHERS_URI
-           * respectively.
+           * default, values are assumed to be identifiers. If using labels or uris,
+           * specify the optional second parameter to be either
+           * Parameters.PUBLISHERS_LABEL or Parameters.PUBLISHERS_URI respectively.
            * @param {array[string]} publishers - publishing orgs to constrain by
            */
 
@@ -2826,10 +2829,55 @@
 
 
           /**
+           * Specify a Point of Contact or set of Contacts to constrain results. By
+           * default, values are assumed to be identifiers. If using
+           * labels or uris, specify the optional second parameter to be either
+           * Parameters.CONTACTS_LABEL or Parameters.CONTACTS_URI respectively.
+           * @param {string} parameter - optional, to indicate the parameter to use
+           * @return {Query}
+           */
+
+      }, {
+          key: 'contacts',
+          value: function contacts(_contacts, parameter) {
+              this.setContacts(_contacts, parameter);
+              return this;
+          }
+
+          /**
+           * Specify a Contact or set of Contacts to constrain results. By
+           * default, values are assumed to be identifiers. If using
+           * labels or uris, specify the optional second parameter to be either
+           * Parameters.CONTACTS_LABEL or Parameters.CONTACTS_URI respectively.
+           * @param {array[string]} contacts - publishing orgs to constrain by
+           */
+
+      }, {
+          key: 'setContacts',
+          value: function setContacts(contacts, parameter) {
+
+              //clear existing
+              this.setParameter(Parameters.CONTACTS_ID, null);
+              this.setParameter(Parameters.CONTACTS_LABEL, null);
+              this.setParameter(Parameters.CONTACTS_URI, null);
+
+              var param = parameter || Parameters.CONTACTS_ID;
+              this.setParameter(param, toArray$1(contacts));
+          }
+      }, {
+          key: 'getContacts',
+          value: function getContacts() {
+              return this.getParameter(Parameters.CONTACTS_ID) || this.getParameter(Parameters.CONTACTS_LABEL) || this.getParameter(Parameters.CONTACTS_URI);
+          }
+
+          // -----------------------------------------------------------
+
+
+          /**
            * Specify the identifier of an Agent (Community, Group, etc) that
            * uses items you wish to find in search results. By
-           * default, values are assumed to be theme identifiers. If using
-           * theme labels or theme uris, specify the optional second parameter
+           * default, values are assumed to be identifiers. If using
+           * labels or uris, specify the optional second parameter
            * to be either Parameters.USED_BY_LABEL or Parameters.USED_BY_URI
            * respectively.
            * @param {string} parameter - optional, to indicate the parameter to use
@@ -2846,8 +2894,8 @@
           /**
            * Specify the identifier of an Agent (Community, Group, etc) that
            * uses items you wish to find in search results. By
-           * default, values are assumed to be theme identifiers. If using
-           * theme labels or theme uris, specify the optional second parameter
+           * default, values are assumed to be identifiers. If using
+           * labels or uris, specify the optional second parameter
            * to be either Parameters.USED_BY_LABEL or Parameters.USED_BY_URI
            * respectively.
            * @param {array[string]} ids - publishing orgs to constrain by
@@ -2876,8 +2924,8 @@
 
           /**
            * Specify a Concept Scheme or set of Concept Schemes to constrain results. By
-           * default, values are assumed to be theme identifiers. If using
-           * theme labels or theme uris, specify the optional second parameter
+           * default, values are assumed to be identifiers. If using
+           * labels or uris, specify the optional second parameter
            * to be either Parameters.SCHEMES_LABEL or Parameters.SCHEMES_URI
            * respectively.
            * @param {array[string]} schemes - schemes to constrain by

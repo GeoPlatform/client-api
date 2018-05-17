@@ -1348,6 +1348,34 @@
               });
           }
 
+          /**
+           * Geolocate the specified argument to a set of candidate locations.
+           * @param {Object} value - text string to geolocate (name or lat,lng)
+           * @param {Object} options - optional config to send with http request
+           * @return {Promise} resolving an array of geocoded results
+           */
+
+      }, {
+          key: "locate",
+          value: function locate(value, options) {
+              var _this3 = this;
+
+              var url = this.baseUrl + '/api/utils/gazetteer';
+              return Q.resolve(url).then(function (url) {
+                  var opts = _this3.buildRequest({
+                      method: 'GET',
+                      url: url,
+                      params: { location: value }
+                  });
+                  return _this3.execute(opts);
+              }).then(function (response) {
+                  return response;
+              }).catch(function (e) {
+                  var err = new Error("UtilsService.locate() - Error resolving location: " + e.message);
+                  return Q.reject(err);
+              });
+          }
+
           /* ----------------------------------------------------------- */
 
           /**

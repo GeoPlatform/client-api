@@ -827,6 +827,28 @@
               });
           }
 
+          /**
+           * @param {Array} uris - list of URIs to retrieve objects for
+           * @param {Object} options - optional set of request options to apply to xhr request
+           * @return {Promise} resolving list containing uri-item association where exists
+           */
+
+      }, {
+          key: "exists",
+          value: function exists(uris, options) {
+              var _this10 = this;
+
+              return Q.resolve(uris).then(function (uris) {
+                  var method = 'POST',
+                      url = _this10.apiBase + '/api/utils/exists';
+                  var opts = _this10.buildRequest({ method: method, url: url, data: uris, options: options });
+                  return _this10.execute(opts);
+              }).catch(function (e) {
+                  var err = new Error("ItemService.exists() - Error resolving items: " + e.message);
+                  return Q.reject(err);
+              });
+          }
+
           /* ----------------------------------------------------------- */
 
           /**
@@ -2420,7 +2442,8 @@
       THEMES: 'themes',
       THUMBNAIL: 'thumbnail',
       USED_BY: 'usedBy',
-      VISIBILITY: 'visibility'
+      VISIBILITY: 'visibility',
+      LANDING_PAGE: 'landingPage'
   };
 
   var FIELDS_DEFAULT = [Fields.CREATED, Fields.MODIFIED, Fields.CREATED_BY, Fields.PUBLISHERS, Fields.THEMES, Fields.DESCRIPTION];
@@ -3365,6 +3388,33 @@
           key: 'getFields',
           value: function getFields() {
               return this.getParameter(Parameters.FIELDS);
+          }
+
+          /**
+           * @param {string} field - name of field to remove
+           */
+
+      }, {
+          key: 'addField',
+          value: function addField(field) {
+              var fields = this.getFields() || [];
+              fields.push(field);
+              this.setFields(fields);
+          }
+
+          /**
+           * @param {string} field - name of field to remove
+           */
+
+      }, {
+          key: 'removeField',
+          value: function removeField(field) {
+              var fields = this.getFields() || [];
+              var idx = fields.indexOf(name);
+              if (idx >= 0) {
+                  fields.splice(idx, 1);
+                  this.setFields(fields);
+              }
           }
 
           // -----------------------------------------------------------

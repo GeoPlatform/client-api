@@ -289,6 +289,25 @@ class ItemService {
     }
 
 
+    /**
+     * @param {Array} uris - list of URIs to retrieve objects for
+     * @param {Object} options - optional set of request options to apply to xhr request
+     * @return {Promise} resolving list containing uri-item association where exists
+     */
+    exists(uris, options) {
+        return Q.resolve(uris)
+        .then( uris => {
+            let method = 'POST', url = this.apiBase + '/api/utils/exists';
+            let opts = this.buildRequest({method:method, url:url, data:uris, options:options});
+            return this.execute(opts);
+        })
+        .catch(e => {
+            let err = new Error(`ItemService.exists() - Error resolving items: ${e.message}`);
+            return Q.reject(err);
+        });
+    }
+
+
 
 
     /* ----------------------------------------------------------- */

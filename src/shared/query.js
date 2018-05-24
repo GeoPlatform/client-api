@@ -38,7 +38,8 @@ const Fields = {
     THEMES              : 'themes',
     THUMBNAIL           : 'thumbnail',
     USED_BY             : 'usedBy',
-    VISIBILITY          : 'visibility'
+    VISIBILITY          : 'visibility',
+    LANDING_PAGE        : 'landingPage'
 };
 
 const FIELDS_DEFAULT = [
@@ -879,6 +880,28 @@ class Query {
     getFields() {
         return this.getParameter(Parameters.FIELDS);
     }
+
+    /**
+     * @param {string} field - name of field to remove
+     */
+    addField(field) {
+        let fields = this.getFields() || [];
+        fields.push(field);
+        this.setFields(fields);
+    }
+
+    /**
+     * @param {string} field - name of field to remove
+     */
+    removeField(field) {
+        let fields = this.getFields() || [];
+        let idx = fields.indexOf(name);
+        if(idx>=0) {
+            fields.splice(idx, 1);
+            this.setFields(fields);
+        }
+    }
+
 
 
     // -----------------------------------------------------------

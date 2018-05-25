@@ -7,7 +7,7 @@ const API           = require('../../dist/js/geoplatform.client');
 const Query         = API.Query;
 const ItemTypes     = API.ItemTypes;
 const ItemService   = API.ItemService;
-const HttpClient    = API.NodeHttpClient;
+const NodeHttpClient = API.NodeHttpClient;
 const HttpClientBase = API.HttpClientBase;
 const ItemFactory   = API.ItemFactory;
 const ItemProperties = API.ItemProperties;
@@ -229,6 +229,37 @@ describe('# ItemService', function() {
             expect(item).to.exist;
             expect(item.toJson).to.be.ok;
             done();
+        })
+        .catch(e => done(e));
+
+    });
+
+
+    /*
+     * Export Formats
+     */
+    it('should handle export errors', function(done) {
+
+        let svc = new ItemService(URL, new NodeHttpClient());
+        let query = new Query().types(ItemTypes.SERVICE);
+
+        svc.search(query).then( results => {
+
+            expect(results.getTotalResults()).to.be.greaterThan(0);
+
+            let item = results.getItemAt(0),
+                id = item.id;
+
+            svc.export(id, 'badFormat')
+            .then( response => {
+                console.log(response);
+                done(new Error("Should have caught an error"));
+            })
+            .catch(e => {
+                expect(e).to.be.ok;
+                done();
+            });
+
         })
         .catch(e => done(e));
 

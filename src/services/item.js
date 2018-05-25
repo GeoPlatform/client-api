@@ -216,7 +216,15 @@ class ItemService extends BaseService {
             });
             return this.execute(opts);
         })
-        .catch( e => this._onError(e, `ItemService.export() - Error exporting item`) );
+        .catch( e => {
+            let msg = e.message;
+            //https://github.com/GeoPlatform/client-api/issues/1
+            if(e.statusCode && e.statusCode===406 || e.statusCode==='406') {
+                msg = `Unsupported export format specified '${format}'`;
+            }
+            let err = new Error(`ItemService.export() - Error exporting item: ${msg}`);
+            return Q.reject(err);
+        });
     }
 
 
@@ -256,6 +264,43 @@ class ItemService extends BaseService {
         })
         .catch( e => this._onError(e, `ItemService.getUri() - Error getting URI for item`) );
 
+    }
+
+    /**
+     * @param {Array} ids - list of identifiers to fetch objects for
+     * @param {Object} options - optional set of request options to apply to xhr request
+     * @return {Promise} resolving list of matching items or an error
+     */
+    getMultiple (ids, options) {
+        return Q.resolve( ids )
+        .then( identifiers => {
+            let method = 'POST',
+                url = this.apiBase + '/api/fetch';
+            let opts = this.buildRequest({method:method, url:url, data:identifiers, options:options});
+            return this.execute(opts);
+        })
+        .catch(e => {
+            let err = new Error(`ItemService.getMultiple() - Error fetching items: ${e.message}`);
+            return Q.reject(err);
+        });
+    }
+
+    /**
+     * @param {Array} uris - list of URIs to retrieve objects for
+     * @param {Object} options - optional set of request options to apply to xhr request
+     * @return {Promise} resolving list containing uri-item association where exists
+     */
+    exists(uris, options) {
+        return Q.resolve(uris)
+        .then( uris => {
+            let method = 'POST', url = this.apiBase + '/api/utils/exists';
+            let opts = this.buildRequest({method:method, url:url, data:uris, options:options});
+            return this.execute(opts);
+        })
+        .catch(e => {
+            let err = new Error(`ItemService.exists() - Error resolving items: ${e.message}`);
+            return Q.reject(err);
+        });
     }
 
     /* ----------------------------------------------------------- */

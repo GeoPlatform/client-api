@@ -2,64 +2,75 @@
 import Parameters from './parameters';
 
 const Fields = {
-    LABEL           : 'label',
-    DESCRIPTION     : 'description',
-    CREATED         : 'created',
-    MODIFIED        : 'modified',
-    CREATED_BY      : 'createdBy',
-    LAST_MODIFIED_BY: 'lastModifiedBy',
-    KEYWORDS        : 'keywords',
-    THEMES          : 'themes',
-    PUBLISHERS      : 'publishers',
-    STATUS          : 'status',
-    VISIBILITY      : 'visibility',
-    EXTENT          : 'extent',
-    TEMPORAL        : 'temporal',
-    IDENTIFIERS     : 'identifiers',
-    RESOURCE_TYPES  : 'resourceTypes',
-    SERVICES        : 'services',
-    CONTACTS        : 'contacts',
-    DISTRIBUTIONS   : 'distributions',
-    ACCESS_RIGHTS   : 'rights',
-    USED_BY         : 'usedBy',
-    STATISTICS      : 'statistics',
-
-    SERVICE_TYPE    : 'serviceType',
-    HREF            : 'href',
-    DATASETS        : 'datasets',
-
-    LAYER_TYPE      : 'layerType',
-    LAYER_NAME      : 'layerName',
-    LEGEND          : 'legend',
-    SUB_LAYERS      : 'subLayers',
-    PARENT_LAYER    : 'parentLayer',
-
-    LAYERS          : 'layers',
-    ANNOTATIONS     : 'annotations',
-    THUMBNAIL       : 'thumbnail',
-
-    GALLERY_ITEMS   : 'items',
-
-    CONCEPT_SCHEME  : 'scheme'
-
+    ACCESS_RIGHTS       : 'rights',
+    ALTERNATE_TITLES    : 'alternateTitles',
+    ANNOTATIONS         : 'annotations',
+    CLASSIFIERS         : 'classifiers',
+    CONCEPT_SCHEME      : 'scheme',
+    CONTACTS            : 'contacts',
+    CREATED             : 'created',
+    CREATED_BY          : 'createdBy',
+    DATASETS            : 'datasets',
+    DESCRIPTION         : 'description',
+    DISTRIBUTIONS       : 'distributions',
+    EXTENT              : 'extent',
+    GALLERY_ITEMS       : 'items',
+    HREF                : 'href',
+    IDENTIFIERS         : 'identifiers',
+    KEYWORDS            : 'keywords',
+    LABEL               : 'label',
+    LAST_MODIFIED_BY    : 'lastModifiedBy',
+    LAYERS              : 'layers',
+    LAYER_TYPE          : 'layerType',
+    LAYER_NAME          : 'layerName',
+    LEGEND              : 'legend',
+    MODIFIED            : 'modified',
+    PARENT_LAYER        : 'parentLayer',
+    PUBLISHERS          : 'publishers',
+    RESOURCE_TYPES      : 'resourceTypes',
+    SERVICE_TYPE        : 'serviceType',
+    SERVICES            : 'services',
+    SPATIAL             : 'spatial',
+    STATISTICS          : 'statistics',
+    STATUS              : 'status',
+    SUB_LAYERS          : 'subLayers',
+    TEMPORAL            : 'temporal',
+    THEMES              : 'themes',
+    THUMBNAIL           : 'thumbnail',
+    USED_BY             : 'usedBy',
+    VISIBILITY          : 'visibility',
+    LANDING_PAGE        : 'landingPage'
 };
-
-const Facets = {
-    TYPES           : 'types',
-    THEMES          : 'themes',
-    PUBLISHERS      : 'publishers',
-    SERVICE_TYPES   : 'serviceTypes',
-    CONCEPT_SCHEMES : 'schemes',
-    VISIBILITY      : 'visibility',
-    CREATED_BY      : 'createdBy',
-    USED_BY         : 'usedBy.id'
-};
-
 
 const FIELDS_DEFAULT = [
     Fields.CREATED, Fields.MODIFIED, Fields.CREATED_BY,
     Fields.PUBLISHERS, Fields.THEMES, Fields.DESCRIPTION
 ];
+
+/* --------------------------------------------------------- */
+
+const Facets = {
+    ALTERNATE_TITLES    : 'alternateTitles',
+    CONCEPT_SCHEMES     : 'schemes',
+    CREATED_BY          : 'createdBy',
+    HREF                : 'href',
+    IDENTIFIERS         : "identifiers",
+    LAYER_TYPE          : 'layerType',
+    LAYER_NAME          : 'layerName',
+    LIKES               : 'likes',
+    ONLINE              : 'online',
+    PUBLISHERS          : 'publishers',
+    CONTACTS            : 'contacts',
+    RELIABILITY         : 'reliability',
+    SERVICE_TYPES       : 'serviceTypes',
+    SPEED               : 'speed',
+    STATUS              : 'status',
+    THEMES              : 'themes',
+    TYPES               : 'type',   //TODO change to 'types'
+    USED_BY             : 'usedBy',
+    VIEWS               : 'views',
+    VISIBILITY          : 'visibility'
+};
 
 const FACETS_DEFAULT = [
     Facets.TYPES,
@@ -69,6 +80,26 @@ const FACETS_DEFAULT = [
     Facets.VISIBILITY,
     Facets.CREATED_BY
 ];
+
+
+/*
+    Map facet keys to parameters so clients can set
+    query params using faceted results
+
+    //TODO remove these and their function below
+ */
+const FacetToParam = {};
+FacetToParam[Facets.TYPES]           = Parameters.TYPES;
+FacetToParam[Facets.THEMES]          = Parameters.THEMES_ID;
+FacetToParam[Facets.PUBLISHERS]      = Parameters.PUBLISHERS_ID;
+FacetToParam[Facets.CONTACTS]        = Parameters.CONTACTS_ID;
+FacetToParam[Facets.CONCEPT_SCHEMES] = Parameters.SCHEMES_ID;
+FacetToParam[Facets.USED_BY]         = Parameters.USED_BY_ID;
+
+
+
+/* --------------------------------------------------------- */
+
 
 const SORT_OPTIONS_DEFAULT = [
     { value:"label,asc",       label: "Name (A-Z)"              },
@@ -81,6 +112,25 @@ const SORT_OPTIONS_DEFAULT = [
 ];
 
 
+const BBOX_REGEX = /^\-?\d+(\.\d*)?,\-?\d+(\.\d*)?,\-?\d+(\.\d*)?,\-?\d+(\.\d*)?$/;
+
+
+function toArray(value) {
+    let result = value;
+    //if given a non-array value, wrap in array
+    if(result !== null && typeof(result.push) === 'undefined') result = [result];
+    //if array value is empty, nullify the result
+    if(result !== null && !result.length) result = null;
+    return result;
+}
+
+
+
+/**
+ * Query
+ *
+ * @constructor
+ */
 class Query {
 
     constructor() {
@@ -106,31 +156,48 @@ class Query {
     }
 
 
-
+    /**
+     * @return {object} containing request-ready parameters/values
+     */
     getQuery() {
         let result = {};
         for(let prop in this.query) {
             let value = this.query[prop];
-            if(value === null || value === undefined)
-                continue;
-            if(typeof(value.push) !== 'undefined') {
+            if(value !== null && typeof(value.push) !== 'undefined') {
                 value = value.join(',');
             }
-            if(typeof(value) !== 'string' || value.length > 0)
-                result[prop] = value;
+            result[prop] = value;
         }
+        return result;
+    }
+
+    /**
+     * @return {Query}
+     */
+    clone() {
+        let result = new Query();
+        let json = JSON.parse(JSON.stringify(this.query));
+        result.applyParameters(json);
         return result;
     }
 
 
     // -----------------------------------------------------------
 
-
+    /**
+     * @param {string} name
+     * @param {any} value
+     * @return {Query} this
+     */
     parameter(name, value) {
         this.setParameter(name, value);
         return this;
     }
 
+    /**
+     * @param {string} name
+     * @param {any} value
+     */
     setParameter (name, value) {
         if(value === null || value === undefined || //if no value was provide
             (typeof(value.push) !== 'undefined' && !value.length)) //or empty array
@@ -139,11 +206,18 @@ class Query {
             this.query[name] = value;
     }
 
+    /**
+     * @param {string} key - name of parameter
+     * @return {string} value of parameter
+     */
     getParameter (key) {
         return this.query[key];
     }
 
-    applyParameters (obj) { 
+    /**
+     * @param {object} obj - set of parameter/values to apply to this query
+     */
+    applyParameters (obj) {
         for(var p in obj) {
             if(obj.hasOwnProperty(p)) {
                 this.setParameter(p, obj[p]);
@@ -151,32 +225,40 @@ class Query {
         }
     }
 
+    /**
+     * @param {string} facet - name of facet to set the value for as a parameter
+     * @param {string} value - value of the facet to use as the parameter's value
+     */
+     //TODO remove this function
+    setFacetParameter (facet, value) {
+        let param = FacetToParam[facet];
+        if(!param) {
+            console.log("WARN : Query.applyFacetParameter() - " +
+                "unable to map facet to known parameter '" + facet + "', using " +
+                "as direct parameter which may not operate as intended");
+        }
+        this.setParameter(param||facet, value);
+    }
+
 
     // -----------------------------------------------------------
 
-
-    q(text) {
-        this.setQ(text);
-        return this;
-    }
-
     /**
-     * @param {string} text - free text query
+     * @param {string} text
+     * @return {Query} this
      */
-    setQ (text) {
-        this.setParameter(Parameters.QUERY, text);
-    }
-
-    getQ() {
-        return this.getParameter(Parameters.QUERY);
-    }
+    q(text) { this.setQ(text); return this; }
+    /** @param {string} text - free text query */
+    setQ (text) { this.setParameter(Parameters.QUERY, text); }
+    /** @return {string} */
+    getQ() { return this.getParameter(Parameters.QUERY); }
 
 
     // -----------------------------------------------------------
 
 
     keywords(text) {
-        this.setQ(text);
+        this.setKeywords(text);
         return this;
     }
 
@@ -184,9 +266,7 @@ class Query {
      * @param {string} text - free text query
      */
     setKeywords (text) {
-        if(text && typeof(text.push) === 'undefined')
-            text = [text];
-        this.setParameter(Parameters.KEYWORDS, text);
+        this.setParameter(Parameters.KEYWORDS, toArray(text));
     }
 
     getKeywords() {
@@ -223,9 +303,7 @@ class Query {
      * @param {array[string]} types - name of class(es) to request
      */
     setTypes (types) {
-        if(types && typeof(types.push) === 'undefined')
-            types = [types];
-        this.setParameter(Parameters.TYPES, types);
+        this.setParameter(Parameters.TYPES, toArray(types));
     }
 
     getTypes () {
@@ -299,8 +377,6 @@ class Query {
      * @param {array[string]} themes - theme or themes to constrain by
      */
     setThemes (themes, parameter) {
-        if(themes && typeof(themes.push) === 'undefined')
-            themes = [themes];
 
         //clear existing
         this.setParameter(Parameters.THEMES_ID, null);
@@ -308,7 +384,7 @@ class Query {
         this.setParameter(Parameters.THEMES_URI, null);
 
         let param = parameter || Parameters.THEMES_ID;
-        this.setParameter(param, themes);
+        this.setParameter(param, toArray(themes));
     }
 
     getThemes () {
@@ -323,10 +399,9 @@ class Query {
 
     /**
      * Specify a Publisher or set of Publishers to constrain results. By
-     * default, values are assumed to be theme identifiers. If using
-     * theme labels or theme uris, specify the optional second parameter
-     * to be either Parameters.PUBLISHERS_LABEL or Parameters.PUBLISHERS_URI
-     * respectively.
+     * default, values are assumed to be identifiers. If using labels or uris,
+     * specify the optional second parameter to be either
+     * Parameters.PUBLISHERS_LABEL or Parameters.PUBLISHERS_URI respectively.
      * @param {string} parameter - optional, to indicate the parameter to use
      * @return {Query}
      */
@@ -337,15 +412,12 @@ class Query {
 
     /**
      * Specify a Publisher or set of Publishers to constrain results. By
-     * default, values are assumed to be theme identifiers. If using
-     * theme labels or theme uris, specify the optional second parameter
-     * to be either Parameters.PUBLISHERS_LABEL or Parameters.PUBLISHERS_URI
-     * respectively.
+     * default, values are assumed to be identifiers. If using labels or uris,
+     * specify the optional second parameter to be either
+     * Parameters.PUBLISHERS_LABEL or Parameters.PUBLISHERS_URI respectively.
      * @param {array[string]} publishers - publishing orgs to constrain by
      */
     setPublishers (publishers, parameter) {
-        if(publishers && typeof(publishers.push) === 'undefined')
-            publishers = [publishers];
 
         //clear existing
         this.setParameter(Parameters.PUBLISHERS_ID, null);
@@ -353,7 +425,7 @@ class Query {
         this.setParameter(Parameters.PUBLISHERS_URI, null);
 
         let param = parameter || Parameters.PUBLISHERS_ID;
-        this.setParameter(param, publishers);
+        this.setParameter(param, toArray(publishers));
     }
 
     getPublishers () {
@@ -367,10 +439,51 @@ class Query {
 
 
     /**
+     * Specify a Point of Contact or set of Contacts to constrain results. By
+     * default, values are assumed to be identifiers. If using
+     * labels or uris, specify the optional second parameter to be either
+     * Parameters.CONTACTS_LABEL or Parameters.CONTACTS_URI respectively.
+     * @param {string} parameter - optional, to indicate the parameter to use
+     * @return {Query}
+     */
+    contacts(contacts, parameter) {
+        this.setContacts(contacts, parameter);
+        return this;
+    }
+
+    /**
+     * Specify a Contact or set of Contacts to constrain results. By
+     * default, values are assumed to be identifiers. If using
+     * labels or uris, specify the optional second parameter to be either
+     * Parameters.CONTACTS_LABEL or Parameters.CONTACTS_URI respectively.
+     * @param {array[string]} contacts - publishing orgs to constrain by
+     */
+    setContacts (contacts, parameter) {
+
+        //clear existing
+        this.setParameter(Parameters.CONTACTS_ID, null);
+        this.setParameter(Parameters.CONTACTS_LABEL, null);
+        this.setParameter(Parameters.CONTACTS_URI, null);
+
+        let param = parameter || Parameters.CONTACTS_ID;
+        this.setParameter(param, toArray(contacts));
+    }
+
+    getContacts () {
+        return this.getParameter(Parameters.CONTACTS_ID) ||
+            this.getParameter(Parameters.CONTACTS_LABEL) ||
+            this.getParameter(Parameters.CONTACTS_URI);
+    }
+
+
+    // -----------------------------------------------------------
+
+
+    /**
      * Specify the identifier of an Agent (Community, Group, etc) that
      * uses items you wish to find in search results. By
-     * default, values are assumed to be theme identifiers. If using
-     * theme labels or theme uris, specify the optional second parameter
+     * default, values are assumed to be identifiers. If using
+     * labels or uris, specify the optional second parameter
      * to be either Parameters.USED_BY_LABEL or Parameters.USED_BY_URI
      * respectively.
      * @param {string} parameter - optional, to indicate the parameter to use
@@ -384,15 +497,13 @@ class Query {
     /**
      * Specify the identifier of an Agent (Community, Group, etc) that
      * uses items you wish to find in search results. By
-     * default, values are assumed to be theme identifiers. If using
-     * theme labels or theme uris, specify the optional second parameter
+     * default, values are assumed to be identifiers. If using
+     * labels or uris, specify the optional second parameter
      * to be either Parameters.USED_BY_LABEL or Parameters.USED_BY_URI
      * respectively.
      * @param {array[string]} ids - publishing orgs to constrain by
      */
     setUsedBy (ids, parameter) {
-        if(ids && typeof(ids.push) === 'undefined')
-            ids = [ids];
 
         //clear existing
         this.setParameter(Parameters.USED_BY_ID, null);
@@ -400,7 +511,7 @@ class Query {
         this.setParameter(Parameters.USED_BY_URI, null);
 
         let param = parameter || Parameters.USED_BY_ID;
-        this.setParameter(param, ids);
+        this.setParameter(param, toArray(ids));
     }
 
     getUsedBy () {
@@ -415,8 +526,8 @@ class Query {
 
     /**
      * Specify a Concept Scheme or set of Concept Schemes to constrain results. By
-     * default, values are assumed to be theme identifiers. If using
-     * theme labels or theme uris, specify the optional second parameter
+     * default, values are assumed to be identifiers. If using
+     * labels or uris, specify the optional second parameter
      * to be either Parameters.SCHEMES_LABEL or Parameters.SCHEMES_URI
      * respectively.
      * @param {array[string]} schemes - schemes to constrain by
@@ -438,8 +549,6 @@ class Query {
      * @param {string} parameter - optional, to indicate the parameter to use
      */
     setSchemes (schemes, parameter) {
-        if(schemes && typeof(schemes.push) === 'undefined')
-            schemes = [schemes];
 
         //clear existing
         this.setParameter(Parameters.SCHEMES_ID, null);
@@ -447,7 +556,7 @@ class Query {
         this.setParameter(Parameters.SCHEMES_URI, null);
 
         let param = parameter || Parameters.SCHEMES_ID;
-        this.setParameter(param, schemes);
+        this.setParameter(param, toArray(schemes));
     }
 
     getSchemes() {
@@ -471,9 +580,7 @@ class Query {
      * @param {array[string]} types - ids
      */
     setServiceTypes (types) {
-        if(types && typeof(types.push) === 'undefined')
-            types = [types];
-        this.setParameter(Parameters.SERVICE_TYPES, types);
+        this.setParameter(Parameters.SERVICE_TYPES, toArray(types));
     }
 
     getServiceTypes () {
@@ -498,6 +605,66 @@ class Query {
 
     getVisibility () {
         return this.getParameter(Parameters.VISIBILITY);
+    }
+
+
+    // -----------------------------------------------------------
+
+
+    status(value) {
+        this.setStatus(value);
+        return this;
+    }
+
+    /**
+     * @param {string} status - current status of Item
+     */
+    setStatus (value) {
+        this.setParameter(Parameters.STATUS, value);
+    }
+
+    getStatus () {
+        return this.getParameter(Parameters.STATUS);
+    }
+
+
+    // -----------------------------------------------------------
+
+
+    extent(bbox) {
+        this.setExtent(bbox);
+        return this;
+    }
+
+    /**
+     * @param {string} bboxStr - form of "minx,miny,maxx,maxy"
+     */
+    setExtent (bbox) {
+        if(bbox && typeof(bbox.toBboxString) !== 'undefined') {
+            //Leaflet Bounds instance
+            bbox = bbox.toBboxString();
+        } else if(typeof(bbox.push) !== 'undefined' && bbox.length &&
+            //Nested array (alternate Leaflet representation):
+            // [ [minLat,minLong], [maxLat,maxLong] ]
+            typeof(bbox[0].push) !== 'undefined') {
+            bbox = bbox[0][1]+','+bbox[0][0]+','+bbox[1][1]+','+bbox[1][0];
+        } else if(typeof(bbox) === 'string') {
+            if(!BBOX_REGEX.test(bbox)) {
+                throw new Error("Invalid argument: bbox string must be " +
+                    "in form of 'minx,miny,maxx,maxy'");
+            }
+        } else {
+            throw new Error("Invalid argument: bbox must be one of " +
+                "Leaflet.Bounds, nested array, or bbox string");
+        }
+        this.setParameter(Parameters.EXTENT, bbox);
+    }
+
+    /**
+     * @return {string} bbox string or null if not set
+     */
+    getExtent () {
+        return this.getParameter(Parameters.EXTENT);
     }
 
 
@@ -532,8 +699,12 @@ class Query {
     }
 
     getModified () {
-        return  this.getParameter(Parameters.MODIFIED_BEFORE) ||
-                this.getParameter(Parameters.MODIFIED_AFTER);
+        let value = this.getParameter(Parameters.MODIFIED_BEFORE) ||
+            this.getParameter(Parameters.MODIFIED_AFTER);
+        if(value && typeof(value) === 'number') {
+            value = new Date(value);
+        }
+        return value;
     }
 
 
@@ -568,33 +739,12 @@ class Query {
     }
 
     getCreated () {
-        return  this.getParameter(Parameters.CREATED_BEFORE) ||
-                this.getParameter(Parameters.CREATED_AFTER);
-    }
-
-
-    // -----------------------------------------------------------
-
-
-    extent(bbox) {
-        this.setExtent(bbox);
-        return this;
-    }
-
-    /**
-     * @param {string} bboxStr - form of "minx,miny,maxx,maxy"
-     */
-    setExtent (bbox) {
-        if(bbox && typeof(bbox.toBboxString) !== 'undefined')
-            bbox = bbox.toBboxString();
-        this.setParameter(Parameters.EXTENT, bbox);
-    }
-
-    /**
-     * @return {string} bbox string or null if not set
-     */
-    getExtent () {
-        return this.getParameter(Parameters.EXTENT);
+        let value = this.getParameter(Parameters.CREATED_BEFORE) ||
+            this.getParameter(Parameters.CREATED_AFTER);
+        if(value && typeof(value) === 'number') {
+            value = new Date(value);
+        }
+        return value;
     }
 
 
@@ -613,7 +763,7 @@ class Query {
     }
 
     getBeginDate () {
-        let date = this.getParameter(this.parameter.BEGINS);
+        let date = this.getParameter(Parameters.BEGINS);
         if(date) date = new Date(date);
         return date;
     }
@@ -634,7 +784,7 @@ class Query {
     }
 
     getEndDate () {
-        let date = this.getParameter(this.parameter.ENDS);
+        let date = this.getParameter(Parameters.ENDS);
         if(date) date = new Date(date);
         return date;
     }
@@ -663,9 +813,7 @@ class Query {
     }
 
     setResourceTypes(types) {
-        if(types && typeof(types.push) === 'undefined')
-            types = [types];
-        this.setParameter(Parameters.RESOURCE_TYPE, types);
+        this.setParameter(Parameters.RESOURCE_TYPE, toArray(types));
     }
 
     getResourceTypes() {
@@ -685,9 +833,7 @@ class Query {
      * @param {array[string]} names - names of facets
      */
     setFacets (names) {
-        if(names && typeof(names.push) === 'undefined')
-            names = [names];
-        this.setParameter(Parameters.FACETS, names);
+        this.setParameter(Parameters.FACETS, toArray(names));
     }
 
     getFacets() {
@@ -728,14 +874,34 @@ class Query {
      * @param {array[string]} fields - list of field names to request for each search result
      */
     setFields (fields) {
-        if(fields && typeof(fields.push) === 'undefined')
-            fields = [fields];
-        this.setParameter(Parameters.FIELDS, fields);
+        this.setParameter(Parameters.FIELDS, toArray(fields));
     }
 
     getFields() {
         return this.getParameter(Parameters.FIELDS);
     }
+
+    /**
+     * @param {string} field - name of field to remove
+     */
+    addField(field) {
+        let fields = this.getFields() || [];
+        fields.push(field);
+        this.setFields(fields);
+    }
+
+    /**
+     * @param {string} field - name of field to remove
+     */
+    removeField(field) {
+        let fields = this.getFields() || [];
+        let idx = fields.indexOf(name);
+        if(idx>=0) {
+            fields.splice(idx, 1);
+            this.setFields(fields);
+        }
+    }
+
 
 
     // -----------------------------------------------------------

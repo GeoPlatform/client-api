@@ -64,6 +64,31 @@ class UtilsService extends BaseService {
         });
     }
 
+    /**
+     * Geolocate the specified argument to a set of candidate locations.
+     * @param {Object} value - text string to geolocate (name or lat,lng)
+     * @param {Object} options - optional config to send with http request
+     * @return {Promise} resolving an array of geocoded results
+     */
+    locate(value, options) {
+
+        var url = this.baseUrl + '/api/utils/gazetteer';
+        return Q.resolve(url)
+        .then( url => {
+            let opts = this.buildRequest({
+                method: 'GET',
+                url: url,
+                params: { location: value }
+            });
+            return this.execute(opts);
+        })
+        .then(response => response)
+        .catch(e => {
+            let err = new Error(`UtilsService.locate() - Error resolving location: ${e.message}`);
+            return Q.reject(err);
+        });
+    }
+
     /* ----------------------------------------------------------- */
 
     /**

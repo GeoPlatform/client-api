@@ -1,40 +1,73 @@
 
 
 export default {
-    TYPES            : 'type',
-    QUERY            : 'q',
-    KEYWORDS         : 'keyword',
-    URI              : 'uri',
+    ALTERNATE_TITLE  : 'alternateTitles',
+    BEGINS           : 'startDate.min',
+    CREATED          : 'created',
+    CREATED_BEFORE   : 'created.max',
+    CREATED_AFTER    : 'created.min',
     CREATED_BY       : 'createdBy',
-    LAST_MODIFIED_BY : 'lastModifiedBy',
-    CONTRIBUTED_BY   : 'contributedBy',
     CREATOR          : 'creator.id',
+    CONTRIBUTED_BY   : 'contributedBy',
+    ENDS             : 'endDate.max',
+    EXTENT           : 'extent',
+    IDENTIFIERS      : 'identifiers',
+    KEYWORDS         : 'keyword',
+    LAST_MODIFIED_BY : 'lastModifiedBy',
+    MODIFIED         : 'modified',
+    MODIFIED_BEFORE  : 'modified.max',
+    MODIFIED_AFTER   : 'modified.min',
+    PUBLISHERS_ID    : 'publisher.id',
+    PUBLISHERS_LABEL : 'publisher.label',
+    PUBLISHERS_URI   : 'publisher.uri',
+    QUERY            : 'q',
+    SCHEMES_ID       : 'scheme.id',
+    SCHEMES_LABEL    : 'scheme.label',
+    SCHEMES_URI      : 'scheme.uri',
+    STATUS           : 'status',
     SERVICE_TYPES    : 'serviceType.id',
     THEMES_ID        : 'theme.id',
     THEMES_LABEL     : 'theme.label',
     THEMES_URI       : 'theme.uri',
-    PUBLISHERS_ID    : 'publisher.id',
-    PUBLISHERS_LABEL : 'publisher.label',
-    PUBLISHERS_URI   : 'publisher.uri',
+    TYPES            : 'type',      //TODO change to 'types'
+    URI              : 'uri',
     USED_BY_ID       : 'usedBy.id',
     USED_BY_LABEL    : 'usedBy.label',
     USED_BY_URI      : 'usedBy.uri',
-    SCHEMES_ID       : 'scheme.id',
-    SCHEMES_LABEL    : 'scheme.label',
-    SCHEMES_URI      : 'scheme.uri',
     VISIBILITY       : 'visibility',
-    EXTENT           : 'extent',
-    CREATED          : 'created',
-    CREATED_BEFORE   : 'created.max',
-    CREATED_AFTER    : 'created.min',
-    MODIFIED         : 'modified',
-    MODIFIED_BEFORE  : 'modified.max',
-    MODIFIED_AFTER   : 'modified.min',
-    BEGINS           : 'startDate.min',
-    ENDS             : 'endDate.max',
     RESOURCE_TYPE    : 'resourceType',
+    DATASET          : 'dataset',
+    LANDING_PAGE     : 'landingPage',
+    PURPOSE          : 'purpose',
 
-    FACETS           : 'includeFacets',
+    //statistics parameters
+    RELIABILITY      : 'reliability',
+    RELIABILITY_MIN  : 'reliability.min',
+    RELIABILITY_MAX  : 'reliability.max',
+    ONLINE           : 'online',
+    COMPLIANT        : 'compliant',
+    SPEED            : 'speed',
+    SPEED_MIN        : 'speed.min',
+    SPEED_MAX        : 'speed.max',
+    LIKES            : 'likes',
+    LIKES_MIN        : 'likes.min',
+    LIKES_MAX        : 'likes.max',
+    VIEWS            : 'views',
+    VIEWS_MIN        : 'views.min',
+    VIEWS_MAX        : 'views.max',
+
+    //type-specific parameters
+    HREF             : 'href',           //service-specific
+    LAYER_TYPE       : 'layerType',     //layer-specific
+    LAYER_NAME       : 'layerName',     //...
+    PARENT_LAYER     : 'parentLayer',   //...
+    SUB_LAYER        : 'subLayer',      //...
+    SERVICE          : 'service',       //...
+    MAP_LAYER        : 'mapLayer',      //map-specific
+    GALLERY_ITEM     : 'galleryItem',   //gallery-specific
+
+    //meta-parameters
+    FACETS           : 'includeFacet',  //TODO change to 'facets'
     FIELDS           : 'fields',
 
     //recommender service-specific

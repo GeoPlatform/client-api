@@ -37,12 +37,6 @@ class LayerModel extends ItemModel {
 
     //-----------------------------------------------------------
 
-    legend(value) { this.setLegend(value); return this; }
-    getLegend() { return this.get(ItemProperties.LEGEND); }
-    setLegend(value) { this.set(ItemProperties.LEGEND, value); }
-
-    //-----------------------------------------------------------
-
     services(value) { this.setServices(value); return this; }
     getServices() { return this.get(ItemProperties.SERVICES); }
     setServices(value) { this.set(ItemProperties.SERVICES, value); }

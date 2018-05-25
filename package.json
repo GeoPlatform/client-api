@@ -36,8 +36,6 @@
         "matchdep": "^0.3.0",
         "mocha": "3.2.0",
         "pre-commit": "^1.2.2",
-        "q": "1.1.2",
-        "request": "^2.75.0",
         "request-debug": "^0.2.0",
         "supertest": "^0.15.0",
         "supertest-as-promised": "4.0.2"
@@ -49,6 +47,8 @@
         "babel-plugin-external-helpers": "^6.22.0",
         "babel-preset-es2015-rollup": "^3.0.0",
         "jquery": "^3.3.1",
+        "q": "1.1.2",
+        "request": "^2.75.0",
         "rollup": "^0.57.1",
         "rollup-plugin-babel": "^3.0.3",
         "rollup-plugin-commonjs": "^9.1.0",

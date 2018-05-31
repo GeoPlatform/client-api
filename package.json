@@ -19,6 +19,8 @@
         "babel-plugin-add-module-exports": "0.2.1",
         "babel-preset-es2015": "6.18.0",
         "babel-preset-stage-2": "6.18.0",
+        "babel-plugin-external-helpers": "^6.22.0",
+        "babel-preset-es2015-rollup": "^3.0.0",
         "chai": "^3.4.1",
         "gulp": "^3.9.1",
         "gulp-babel": "^6.1.2",
@@ -35,6 +37,11 @@
         "mocha": "3.2.0",
         "pre-commit": "^1.2.2",
         "request-debug": "^0.2.0",
+        "rollup": "^0.57.1",
+        "rollup-plugin-babel": "^3.0.3",
+        "rollup-plugin-commonjs": "^9.1.0",
+        "rollup-plugin-node-builtins": "^2.1.2",
+        "rollup-plugin-node-resolve": "^3.3.0",
         "supertest": "^0.15.0",
         "supertest-as-promised": "4.0.2"
     },
@@ -42,15 +49,8 @@
         "distro"
     ],
     "dependencies": {
-        "babel-plugin-external-helpers": "^6.22.0",
-        "babel-preset-es2015-rollup": "^3.0.0",
         "jquery": "^3.3.1",
         "q": "1.1.2",
-        "request": "^2.75.0",
-        "rollup": "^0.57.1",
-        "rollup-plugin-babel": "^3.0.3",
-        "rollup-plugin-commonjs": "^9.1.0",
-        "rollup-plugin-node-builtins": "^2.1.2",
-        "rollup-plugin-node-resolve": "^3.3.0"
+        "request": "^2.75.0"
     }
 }

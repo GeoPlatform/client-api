@@ -27,6 +27,17 @@ import ServiceFactory  from './services/factory';
 
 import Config from './shared/config';
 
+// import {
+//     Event,
+//     TrackingService,
+//     EventCategories,
+//     EventTypes,
+//     MapEventFactory,
+//     LayerEventFactory
+// } from './services/tracking';
+
+
+
 export {
     ItemTypes,
     QueryParameters,
@@ -51,4 +62,11 @@ export {
     KGService,
     ServiceFactory,
     Config
+    // ,
+    // Event,
+    // TrackingService,
+    // EventCategories,
+    // EventTypes,
+    // MapEventFactory,
+    // LayerEventFactory
 };

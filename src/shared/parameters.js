@@ -70,7 +70,7 @@ export default {
     GALLERY_ITEM     : 'galleryItem',   //gallery-specific
 
     //meta-parameters
-    FACETS           : 'includeFacet',  //TODO change to 'facets'
+    FACETS           : 'includeFacets',  //TODO change to 'facets'
     FIELDS           : 'fields',
 
     //recommender service-specific

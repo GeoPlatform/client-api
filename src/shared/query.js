@@ -129,30 +129,28 @@ function toArray(value) {
 /**
  * Query
  *
+ * Specify the "default" query constraints to use by passing in 'options.defaults = {...}';
+ *
  * @constructor
  */
 class Query {
 
-    constructor() {
-
-        this.defaultQuery = {
-            page: 0,
-            size: 10,
-            total: 0,
-            sort: "modified,desc",
-            fields: FIELDS_DEFAULT.slice(0),
-            includeFacets: FACETS_DEFAULT.slice(0)
-        };
-
-        this.query = {
-            page: 0,
-            size: 10,
-            total: 0,
-            sort: "modified,desc",
-            fields: FIELDS_DEFAULT.slice(0),
-            includeFacets: FACETS_DEFAULT.slice(0)
-        };
-
+    /**
+     * @param {Object} options - set of initial constraints
+     */
+    constructor(options) {
+        this.defaultQuery = { page: 0, size: 10 };
+        this.defaultQuery[Parameters.SORT] = "modified,desc";
+        this.defaultQuery[Parameters.FIELDS] = FIELDS_DEFAULT.slice(0);
+        this.defaultQuery[Parameters.FACETS] = FACETS_DEFAULT.slice(0);
+        if(options && options.defaults) {
+            Object.assign(this.defaultQuery, options.defaults);
+            delete options.defaults;
+        }
+        this.query = JSON.parse(JSON.stringify(this.defaultQuery));
+        if(options) {
+            this.applyParameters(options);
+        }
     }
 
 
@@ -1004,7 +1002,7 @@ class Query {
      *
      */
     clear () {
-        this.query = this.defaultQuery;
+        this.query = JSON.parse(JSON.stringify(this.defaultQuery));
     }
 }
 

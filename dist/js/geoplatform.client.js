@@ -1960,7 +1960,7 @@
       GALLERY_ITEM: 'galleryItem', //gallery-specific
 
       //meta-parameters
-      FACETS: 'includeFacet', //TODO change to 'facets'
+      FACETS: 'includeFacets', //TODO change to 'facets'
       FIELDS: 'fields',
 
       //recommender service-specific
@@ -2507,31 +2507,31 @@
   /**
    * Query
    *
+   * Specify the "default" query constraints to use by passing in 'options.defaults = {...}';
+   *
    * @constructor
    */
 
   var Query$1 = function () {
-      function Query() {
+
+      /**
+       * @param {Object} options - set of initial constraints
+       */
+      function Query(options) {
           classCallCheck(this, Query);
 
-
-          this.defaultQuery = {
-              page: 0,
-              size: 10,
-              total: 0,
-              sort: "modified,desc",
-              fields: FIELDS_DEFAULT.slice(0),
-              includeFacets: FACETS_DEFAULT.slice(0)
-          };
-
-          this.query = {
-              page: 0,
-              size: 10,
-              total: 0,
-              sort: "modified,desc",
-              fields: FIELDS_DEFAULT.slice(0),
-              includeFacets: FACETS_DEFAULT.slice(0)
-          };
+          this.defaultQuery = { page: 0, size: 10 };
+          this.defaultQuery[Parameters.SORT] = "modified,desc";
+          this.defaultQuery[Parameters.FIELDS] = FIELDS_DEFAULT.slice(0);
+          this.defaultQuery[Parameters.FACETS] = FACETS_DEFAULT.slice(0);
+          if (options && options.defaults) {
+              Object.assign(this.defaultQuery, options.defaults);
+              delete options.defaults;
+          }
+          this.query = JSON.parse(JSON.stringify(this.defaultQuery));
+          if (options) {
+              this.applyParameters(options);
+          }
       }
 
       /**
@@ -3540,7 +3540,7 @@
       }, {
           key: 'clear',
           value: function clear() {
-              this.query = this.defaultQuery;
+              this.query = JSON.parse(JSON.stringify(this.defaultQuery));
           }
       }]);
       return Query;

@@ -14,6 +14,33 @@ chai.config.includeStack = true;
 
 describe('# Query', function() {
 
+    it("should support setting custom defaults and initial constraints", function(done) {
+
+        let opts = {
+            q: 'test',
+            defaults: { }
+        };
+        //specify custom initial field param value
+        opts[Parameters.FIELDS] = ['types'];
+        //specify custom default facets to request
+        opts.defaults[Parameters.FACETS] = ['facet1', 'facet2'];
+
+        let query = new Query(opts);
+        let defFacets = query.defaultQuery[Parameters.FACETS];
+        expect(defFacets).to.be.ok;
+        expect(defFacets.length).to.equal(2);
+        expect(query.getQ()).to.equal('test');
+        expect(query.getFields().length).to.equal(1);
+
+        //ensure un-configured defaults are correct too
+        query = new Query();
+        defFacets = query.defaultQuery[Parameters.FACETS];
+        expect(defFacets.length).to.equal(6);
+        expect(query.getFields().length).to.equal(6);
+
+        done();
+    });
+
     it("should export to a querystring-usable kvp object", function(done) {
 
         let query = new Query();

@@ -20,6 +20,7 @@ describe('# Query', function() {
             q: 'test',
             defaults: { }
         };
+        opts[Parameters.PAGE_SIZE] = 50;
         //specify custom initial field param value
         opts[Parameters.FIELDS] = ['types'];
         //specify custom default facets to request
@@ -29,14 +30,18 @@ describe('# Query', function() {
         let defFacets = query.defaultQuery[Parameters.FACETS];
         expect(defFacets).to.be.ok;
         expect(defFacets.length).to.equal(2);
+        //note: didn't change default page size, only initial, so this should still be 10
+        expect(query.defaultQuery[Parameters.PAGE_SIZE]).to.equal(10);
         expect(query.getQ()).to.equal('test');
         expect(query.getFields().length).to.equal(1);
+        expect(query.getPageSize()).to.equal(50);
 
         //ensure un-configured defaults are correct too
         query = new Query();
         defFacets = query.defaultQuery[Parameters.FACETS];
         expect(defFacets.length).to.equal(6);
         expect(query.getFields().length).to.equal(6);
+        expect(query.getPageSize()).to.equal(10);
 
         done();
     });

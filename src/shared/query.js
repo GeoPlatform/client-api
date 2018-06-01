@@ -139,7 +139,9 @@ class Query {
      * @param {Object} options - set of initial constraints
      */
     constructor(options) {
-        this.defaultQuery = { page: 0, size: 10 };
+        this.defaultQuery = { };
+        this.defaultQuery[Parameters.PAGE] = 0;
+        this.defaultQuery[Parameters.PAGE_SIZE] = 10;
         this.defaultQuery[Parameters.SORT] = "modified,desc";
         this.defaultQuery[Parameters.FIELDS] = FIELDS_DEFAULT.slice(0);
         this.defaultQuery[Parameters.FACETS] = FACETS_DEFAULT.slice(0);
@@ -915,19 +917,19 @@ class Query {
 
     setPage(page) {
         if(isNaN(page) || page*1<0) return;
-        this.query.page = page*1;
+        this.setParameter(Parameters.PAGE, page*1);
     }
 
     getPage() {
-        return this.query.page;
+        return this.getParameter(Parameters.PAGE);
     }
 
     nextPage() {
-        this.setPage(this.query.page+1);
+        this.setPage(this.getPage()+1);
     }
 
     previousPage() {
-        this.setPage(this.query.page-1);
+        this.setPage(this.getPage()-1);
     }
 
 
@@ -944,11 +946,11 @@ class Query {
 
     setPageSize (size) {
         if(isNaN(size) || size*1<0) return;
-        this.query.size = size*1;
+        this.setParameter(Parameters.PAGE_SIZE, size*1);
     }
 
     getPageSize() {
-        return this.query.size;
+        return this.getParameter(Parameters.PAGE_SIZE);
     }
 
 
@@ -972,19 +974,21 @@ class Query {
          order = (order && (order !== 'asc' || order !== 'desc')) ? 'desc' : order;
          if(sort && sort.indexOf(',')<0)
             sort = sort + ',' + order;
-         this.query.sort = sort;
+         this.setParameter(Parameters.SORT, sort);
     }
 
     getSort() {
-        return this.query.sort;
+        return this.getParameter(Parameters.SORT);
     }
 
     getSortField() {
-        return this.query.sort.split(',')[0];
+        let value = this.getSort();
+        return value && value.length ? value.split(',')[0] : null;
     }
 
     getSortOrder() {
-        return this.query.sort.split(',')[1] === 'asc';
+        let value = this.getSort();
+        return value && value.length ? value.split(',')[1] : null;
     }
 
     /**

@@ -1962,6 +1962,9 @@
       //meta-parameters
       FACETS: 'includeFacets', //TODO change to 'facets'
       FIELDS: 'fields',
+      SORT: 'sort',
+      PAGE: 'page',
+      PAGE_SIZE: 'size',
 
       //recommender service-specific
       FOR_TYPES: 'for'
@@ -2520,7 +2523,9 @@
       function Query(options) {
           classCallCheck(this, Query);
 
-          this.defaultQuery = { page: 0, size: 10 };
+          this.defaultQuery = {};
+          this.defaultQuery[Parameters.PAGE] = 0;
+          this.defaultQuery[Parameters.PAGE_SIZE] = 10;
           this.defaultQuery[Parameters.SORT] = "modified,desc";
           this.defaultQuery[Parameters.FIELDS] = FIELDS_DEFAULT.slice(0);
           this.defaultQuery[Parameters.FACETS] = FACETS_DEFAULT.slice(0);
@@ -3434,22 +3439,22 @@
           key: 'setPage',
           value: function setPage(page) {
               if (isNaN(page) || page * 1 < 0) return;
-              this.query.page = page * 1;
+              this.setParameter(Parameters.PAGE, page * 1);
           }
       }, {
           key: 'getPage',
           value: function getPage() {
-              return this.query.page;
+              return this.getParameter(Parameters.PAGE);
           }
       }, {
           key: 'nextPage',
           value: function nextPage() {
-              this.setPage(this.query.page + 1);
+              this.setPage(this.getPage() + 1);
           }
       }, {
           key: 'previousPage',
           value: function previousPage() {
-              this.setPage(this.query.page - 1);
+              this.setPage(this.getPage() - 1);
           }
 
           // -----------------------------------------------------------
@@ -3469,12 +3474,12 @@
           key: 'setPageSize',
           value: function setPageSize(size) {
               if (isNaN(size) || size * 1 < 0) return;
-              this.query.size = size * 1;
+              this.setParameter(Parameters.PAGE_SIZE, size * 1);
           }
       }, {
           key: 'getPageSize',
           value: function getPageSize() {
-              return this.query.size;
+              return this.getParameter(Parameters.PAGE_SIZE);
           }
 
           // -----------------------------------------------------------
@@ -3502,22 +3507,24 @@
           value: function setSort(sort, order) {
               order = order && (order !== 'asc' || order !== 'desc') ? 'desc' : order;
               if (sort && sort.indexOf(',') < 0) sort = sort + ',' + order;
-              this.query.sort = sort;
+              this.setParameter(Parameters.SORT, sort);
           }
       }, {
           key: 'getSort',
           value: function getSort() {
-              return this.query.sort;
+              return this.getParameter(Parameters.SORT);
           }
       }, {
           key: 'getSortField',
           value: function getSortField() {
-              return this.query.sort.split(',')[0];
+              var value = this.getSort();
+              return value && value.length ? value.split(',')[0] : null;
           }
       }, {
           key: 'getSortOrder',
           value: function getSortOrder() {
-              return this.query.sort.split(',')[1] === 'asc';
+              var value = this.getSort();
+              return value && value.length ? value.split(',')[1] : null;
           }
 
           /**

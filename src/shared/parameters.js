@@ -72,6 +72,9 @@ export default {
     //meta-parameters
     FACETS           : 'includeFacets',  //TODO change to 'facets'
     FIELDS           : 'fields',
+    SORT             : 'sort',
+    PAGE             : 'page',
+    PAGE_SIZE        : 'size',
 
     //recommender service-specific
     FOR_TYPES        : 'for'

@@ -572,6 +572,40 @@
           }
 
           /**
+           * @param {Logger} logger - log service
+           */
+
+      }, {
+          key: "setLogger",
+          value: function setLogger(logger) {
+              this.logger = logger;
+          }
+
+          /**
+           * @param {Error} e - error to log (if logger specified)
+           */
+
+      }, {
+          key: "logError",
+          value: function logError(e) {
+              if (this.logger && this.logger.error) {
+                  this.logger.error(e);
+              }
+          }
+
+          /**
+           * @param {string} msg - message to log as debug
+           */
+
+      }, {
+          key: "logDebug",
+          value: function logDebug(msg) {
+              if (this.logger && this.logger.debug) {
+                  this.logger.debug(msg);
+              }
+          }
+
+          /**
            * @param {string} id - identifier of item to fetch
            * @param {Object} options - optional set of request options to apply to xhr request
            * @return {Promise} resolving Item object or an error
@@ -589,6 +623,7 @@
                   return _this.execute(opts);
               }).catch(function (e) {
                   var err = new Error("ItemService.get() - Error fetching item " + id + ": " + e.message);
+                  _this.logError(err);
                   return Q.reject(err);
               });
           }
@@ -628,6 +663,7 @@
                   return _this2.execute(opts);
               }).catch(function (e) {
                   var err = new Error("ItemService.save() - Error saving item: " + e.message);
+                  _this2.logError(err);
                   return Q.reject(err);
               });
           }
@@ -652,6 +688,7 @@
                   return true;
               }).catch(function (e) {
                   var err = new Error("ItemService.remove() - Error deleting item " + id + ": " + e.message);
+                  _this3.logError(err);
                   return Q.reject(err);
               });
           }
@@ -675,6 +712,7 @@
                   return _this4.execute(opts);
               }).catch(function (e) {
                   var err = new Error("ItemService.patch() - Error patching item " + id + ": " + e.message);
+                  _this4.logError(err);
                   return Q.reject(err);
               });
           }
@@ -703,6 +741,7 @@
                   return _this5.execute(opts);
               }).catch(function (e) {
                   var err = new Error("ItemService.search() - Error searching items: " + e.message);
+                  _this5.logError(err);
                   return Q.reject(err);
               });
           }
@@ -744,6 +783,7 @@
                   var err = new Error("ItemService.import() - Error importing item: " + e.message);
                   if (e.status === 409 || ~e.message.indexOf('Item already exists')) err.status = 409;
                   if (e.item) err.item = e.item;
+                  _this6.logError(err);
                   return Q.reject(err);
               });
           }
@@ -775,6 +815,7 @@
                       msg = "Unsupported export format specified '" + format + "'";
                   }
                   var err = new Error("ItemService.export() - Error exporting item: " + msg);
+                  _this7.logError(err);
                   return Q.reject(err);
               });
           }
@@ -799,6 +840,7 @@
                   return _this8.execute(opts);
               }).catch(function (e) {
                   var err = new Error("ItemService.getUri() - Error getting URI for item: " + e.message);
+                  _this8.logError(err);
                   return Q.reject(err);
               });
           }
@@ -823,6 +865,7 @@
                   return _this9.execute(opts);
               }).catch(function (e) {
                   var err = new Error("ItemService.getMultiple() - Error fetching items: " + e.message);
+                  _this9.logError(err);
                   return Q.reject(err);
               });
           }
@@ -845,6 +888,7 @@
                   return _this10.execute(opts);
               }).catch(function (e) {
                   var err = new Error("ItemService.exists() - Error resolving items: " + e.message);
+                  _this10.logError(err);
                   return Q.reject(err);
               });
           }
@@ -982,6 +1026,7 @@
                   return _this2.execute(opts);
               }).catch(function (e) {
                   var err = new Error('LayerService.style() - Error fetching style: ' + e.message);
+                  _this2.logError(err);
                   return Q.reject(err);
               });
           }
@@ -1030,7 +1075,8 @@
                   });
                   return _this3.execute(opts);
               }).catch(function (e) {
-                  var err = new Error('LayerService.describe() -\n                Error describing layer feature: ' + e.message);
+                  var err = new Error('LayerService.describe() - Error describing layer feature: ' + e.message);
+                  _this3.logError(err);
                   return Q.reject(err);
               });
           }
@@ -1059,7 +1105,8 @@
                   });
                   return _this4.execute(opts);
               }).catch(function (e) {
-                  var err = new Error('LayerService.describe() -\n                Error describing layer feature: ' + e.message);
+                  var err = new Error('LayerService.describe() - Error describing layer feature: ' + e.message);
+                  _this4.logError(err);
                   return Q.reject(err);
               });
           }
@@ -1111,7 +1158,8 @@
                   });
                   return _this2.execute(opts);
               }).catch(function (e) {
-                  var err = new Error('ServiceService.about() -\n                Error describing service: ' + e.message);
+                  var err = new Error('ServiceService.about() - Error describing service: ' + e.message);
+                  _this2.logError(err);
                   return Q.reject(err);
               });
           }
@@ -1137,7 +1185,8 @@
               }).then(function (response) {
                   return response.results;
               }).catch(function (e) {
-                  var err = new Error('ServiceService.types() -\n                Error fetching service types: ' + e.message);
+                  var err = new Error('ServiceService.types() - Error fetching service types: ' + e.message);
+                  _this3.logError(err);
                   return Q.reject(err);
               });
           }
@@ -1160,7 +1209,8 @@
                   });
                   return _this4.execute(opts);
               }).catch(function (e) {
-                  var err = new Error('ServiceService.import() -\n                Error importing service: ' + e.message);
+                  var err = new Error('ServiceService.import() - Error importing service: ' + e.message);
+                  _this4.logError(err);
                   return Q.reject(err);
               });
           }
@@ -1183,7 +1233,8 @@
                   });
                   return _this5.execute(opts);
               }).catch(function (e) {
-                  var err = new Error('ServiceService.harvest() -\n                Error harvesting layers from service: ' + e.message);
+                  var err = new Error('ServiceService.harvest() - Error harvesting layers from service: ' + e.message);
+                  _this5.logError(err);
                   return Q.reject(err);
               });
           }
@@ -1206,7 +1257,8 @@
                   });
                   return _this6.execute(opts);
               }).catch(function (e) {
-                  var err = new Error('ServiceService.liveTest() -\n                Error testing service: ' + e.message);
+                  var err = new Error('ServiceService.liveTest() - Error testing service: ' + e.message);
+                  _this6.logError(err);
                   return Q.reject(err);
               });
           }
@@ -1229,7 +1281,8 @@
                   });
                   return _this7.execute(opts);
               }).catch(function (e) {
-                  var err = new Error('ServiceService.statistics() -\n                Error getting service statistics: ' + e.message);
+                  var err = new Error('ServiceService.statistics() - Error getting service statistics: ' + e.message);
+                  _this7.logError(err);
                   return Q.reject(err);
               });
           }
@@ -1272,6 +1325,7 @@
                   return _this2.execute(opts);
               }).catch(function (e) {
                   var err = new Error("GalleryService.addItem() - Error adding item: " + e.message);
+                  _this2.logError(err);
                   return Q.reject(err);
               });
           }
@@ -1289,6 +1343,7 @@
                   return true;
               }).catch(function (e) {
                   var err = new Error("GalleryService.addItem() - Error adding item: " + e.message);
+                  _this3.logError(err);
                   return Q.reject(err);
               });
           }
@@ -1334,6 +1389,7 @@
                   return _this.execute(opts);
               }).catch(function (e) {
                   var err = new Error("UtilsService.capabilities() - Error getting capabilities: " + e.message);
+                  _this.logError(err);
                   return Q.reject(err);
               });
           }
@@ -1366,6 +1422,7 @@
                   return response;
               }).catch(function (e) {
                   var err = new Error("UtilsService.parseFile() - Error parsing file: " + e.message);
+                  _this2.logError(err);
                   return Q.reject(err);
               });
           }
@@ -1394,6 +1451,7 @@
                   return response;
               }).catch(function (e) {
                   var err = new Error("UtilsService.locate() - Error resolving location: " + e.message);
+                  _this3.logError(err);
                   return Q.reject(err);
               });
           }
@@ -3593,6 +3651,291 @@
       }
   };
 
+  var Categories = {
+      UNKNOWN: 'Unknown Category',
+      DATASET: 'Dataset',
+      SERVICE: 'Service',
+      LAYER: 'Layer',
+      MAP: 'Map',
+      GALLERY: 'Gallery',
+      COMMUNITY: 'Community',
+      CONTACT: 'Contact',
+      ORGANIZATION: 'Organization',
+      CONCEPT: 'Concept',
+      CONCEPT_SCHEME: 'Concept Scheme',
+      KNOWLEDGE_GRAPH: 'Knowledge Graph',
+      USER: 'User',
+      COMMUNITY_POST: 'Community Post', //post within a community portal
+      COMMUNITY_PAGE: 'Community Page', //page within a community portal
+      APP_PAGE: 'Application Page' //page/view within a client application
+  };
+
+  var Events = {
+      ACCESSED: 'Accessed', //related item was accessed using API
+      DISPLAYED: 'Displayed', //related item was displayed in a native form (map)
+      VIEWED: 'Viewed', //related item was viewed in general form (metadata)
+      CREATED: 'Created',
+      EDITED: 'Edited',
+      DELETED: 'Deleted'
+  };
+
+  function getCategory(type) {
+      var result = Categories.UNKNOWN;
+      if (type) {
+          var cats = Categories.keys().map(function (k) {
+              return Categories[k];
+          });
+          //if existing category was specified
+          if (~cats.indexOf(type)) return type;
+          //if an ItemType with prefix was specified (strip off prefix)
+          else if (~type.indexOf(':')) {
+                  var cat = type.split(':')[1];
+                  if (~cats.indexOf(cat)) return cat;
+              }
+      }
+      return result;
+  }
+
+  /**
+   *
+   */
+
+  var Event = function () {
+      function Event(category, type, item, related) {
+          classCallCheck(this, Event);
+
+          if (!category || !type) {
+              throw new Error("TrackingService Event - Must specific an event " + "category and event type when constructing events");
+          }
+          this.category = category;
+          this.type = type;
+          this.setItem(item);
+          this.setRelated(related);
+      }
+
+      createClass(Event, [{
+          key: 'getCategory',
+          value: function getCategory() {
+              return this.category;
+          }
+      }, {
+          key: 'getType',
+          value: function getType() {
+              return this.type;
+          }
+      }, {
+          key: 'getItem',
+          value: function getItem() {
+              return this.item;
+          }
+      }, {
+          key: 'setItem',
+          value: function setItem(item) {
+              this.item = item ? item.id || item : null;
+          }
+      }, {
+          key: 'getRelated',
+          value: function getRelated() {
+              return this.related;
+          }
+      }, {
+          key: 'setRelated',
+          value: function setRelated(related) {
+              this.related = related ? related.id || related : null;
+          }
+      }]);
+      return Event;
+  }();
+
+  /**
+   * @param {string} eventType - type of event being created
+   * @param {Object} item - GeoPlatform Item instance
+   * @return {Array<Event>} list of event objects
+   */
+
+
+  function TrackingEventFactory(eventType, item) {
+      var result = [];
+      if (eventType && item && item.type) {
+          if (ItemTypes.MAP === item.type) {
+              result.push(new Event(Categories.MAP, eventType, item));
+              if (Events.DISPLAYED === eventType) {
+
+                  item.layers.forEach(function (layer) {
+                      var layerEvents = TrackingEventFactory(eventType, layer).filter(function (e) {
+                          return e !== null;
+                      });
+                      if (layerEvents && layerEvents.length) {
+                          result = result.concat(layerEvents);
+                      }
+                  });
+
+                  if (item.baseLayer) {
+                      var baseEvents = TrackingEventFactory(eventType, item.baseLayer).filter(function (e) {
+                          return e !== null;
+                      });
+                      if (baseEvents && baseEvents.length) result = result.concat(baseEvents);
+                  }
+              }
+          } else if (ItemTypes.LAYER === item.type) {
+              result.push(new Event(Categories.LAYER, eventType, item));
+              if (Events.DISPLAYED === eventType && item.services && item.services.length) {
+                  result.push(new Event(Categories.SERVICE, eventType, item.services[0]));
+              }
+          } else {
+              var category = getCategory(item.type);
+              result.push(new Event(category, eventType, item));
+          }
+      }
+      // else {
+      //     if(!event) console.log("Missing event");
+      //     if(!item) console.log("Missing item");
+      //     if(!item.type) console.log("Missing item type");
+      // }
+      return result;
+  }
+
+  /**
+   *
+   */
+
+  var DefaultTrackingServiceProvider = function () {
+      function DefaultTrackingServiceProvider() {
+          classCallCheck(this, DefaultTrackingServiceProvider);
+      }
+
+      createClass(DefaultTrackingServiceProvider, [{
+          key: 'logEvent',
+          value: function logEvent(category, event, item, related) {
+              console.log("EVENT (" + category + ") - " + event + " : " + item);
+          }
+          // logPageView( view, data ) {
+          //     console.log("PAGEVIEW " + view + (data ? " : " + JSON.stringify(data) : '') );
+          // }
+
+      }]);
+      return DefaultTrackingServiceProvider;
+  }();
+
+  /**
+   * TrackingService
+   *
+   * Service for logging events related to usage of the GeoPlatform and its data
+   *
+   * Example:
+   *
+   *   import { TrackingService, EventCategories, EventTypes } from 'geoplatform.client';
+   *
+   *   let tracker = new TrackingService();
+   *   tracker.setProvider( ... );
+   *   tracker.event( Event.of(EventCategories.MAP, EventTypes.VIEWED, map) );
+   *
+   * Multi-event example:
+   *
+   *   import {
+   *      TrackingService, TrackingEventCategories, TrackingEventTypes, TrackingEventFactory
+   *   } from 'geoplatform.client';
+   *
+   *   let tracker = new TrackingService();
+   *   tracker.setProvider( ... );
+   *
+   *   let events = [
+   *       TrackingEvent.of( TrackingCategories.MAP, TrackingEventTypes.VIEWED, this.map )
+   *       TrackingEvent.of( TrackingCategories.LAYER, TrackingEventTypes.VIEWED, this.map.baseLayer )
+   *   ];
+   *   tracker.event(events);
+   *
+   *   //OR use the event factory:
+   *   tracker.event( TrackingEventFactory(EventTypes.VIEWED, this.map) );
+   */
+
+
+  var TrackingService = function () {
+      function TrackingService(options) {
+          classCallCheck(this, TrackingService);
+
+          if (options && (typeof options === 'undefined' ? 'undefined' : _typeof(options)) === 'object') Object.assign(this, options);
+
+          if (!this.provider) this.setProvider(new DefaultEventServiceProvider());
+      }
+
+      /**
+       * @param {EventServiceProvider} provider -
+       */
+
+
+      createClass(TrackingService, [{
+          key: 'setProvider',
+          value: function setProvider(provider) {
+              if (provider) this.provider = provider;
+          }
+
+          /**
+           * @param {Event} event - event to log
+           * @return {TrackingService}
+           */
+
+      }, {
+          key: 'event',
+          value: function event(_event) {
+              this.logEvent(_event);
+              return this;
+          }
+
+          /**
+           * @param {Event} event - event to log
+           */
+
+      }, {
+          key: 'logEvent',
+          value: function logEvent(event) {
+              var _this = this;
+
+              if (!this.provider || !this.provider.logEvent || !event) return;
+
+              if (typeof event.push !== 'undefined') {
+                  event.forEach(function (evt) {
+                      return _this.logEvent(evt);
+                  });
+              } else {
+                  this.provider.logEvent(event.getCategory(), event.getType(), event.getItem(), event.getRelated());
+              }
+
+              // this.provider.logEvent(category, event, data);
+          }
+
+          /**
+           * @param {string} view - name of the view being activated
+           * @param {any} data - additional context to supply for the event
+           * @return {TrackingService}
+           * @deprecated use svc.event( new Event(EventCategories.APP_PAGE, EventTypes.VIEWED, pageId) )
+           */
+
+      }, {
+          key: 'pageView',
+          value: function pageView(view, data) {
+              this.logPageView(view, data);
+              return this;
+          }
+
+          /**
+           * @param {string} view - name of the view being activated
+           * @param {any} data - additional context to supply for the event
+           * @deprecated use svc.logEvent( new Event(EventCategories.APP_PAGE, EventTypes.VIEWED, pageId) )
+           */
+
+      }, {
+          key: 'logPageView',
+          value: function logPageView(view, data) {
+              this.logEvent(new Event(Categories.APP_PAGE, Events.VIEWED, view));
+              // if(this.provider && this.provider.logPageView) {
+              //     this.provider.logPageView(view, data);
+              // }
+          }
+      }]);
+      return TrackingService;
+  }();
+
   exports.ItemTypes = ItemTypes;
   exports.QueryParameters = Parameters;
   exports.QueryFacets = Facets;
@@ -3616,6 +3959,11 @@
   exports.KGService = KGService;
   exports.ServiceFactory = ServiceFactory;
   exports.Config = config;
+  exports.TrackingEvent = Event;
+  exports.TrackingService = TrackingService;
+  exports.TrackingCategories = Categories;
+  exports.TrackingTypes = Events;
+  exports.TrackingEventFactory = TrackingEventFactory;
 
   Object.defineProperty(exports, '__esModule', { value: true });
 

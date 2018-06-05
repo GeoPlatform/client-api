@@ -37,6 +37,7 @@ class UtilsService {
         })
         .catch(e => {
             let err = new Error(`UtilsService.capabilities() - Error getting capabilities: ${e.message}`);
+            this.logError(err);
             return Q.reject(err);
         });
     }
@@ -66,6 +67,7 @@ class UtilsService {
         .then( response => response )
         .catch(e => {
             let err = new Error(`UtilsService.parseFile() - Error parsing file: ${e.message}`);
+            this.logError(err);
             return Q.reject(err);
         });
     }
@@ -92,6 +94,7 @@ class UtilsService {
         .then(response => response)
         .catch(e => {
             let err = new Error(`UtilsService.locate() - Error resolving location: ${e.message}`);
+            this.logError(err);
             return Q.reject(err);
         });
     }

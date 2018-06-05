@@ -40,6 +40,33 @@ class ItemService {
         this.baseUrl = baseUrl + '/api/items';
     }
 
+    /**
+     * @param {Logger} logger - log service
+     */
+    setLogger(logger) {
+        this.logger = logger;
+    }
+
+    /**
+     * @param {Error} e - error to log (if logger specified)
+     */
+    logError(e) {
+        if(this.logger && this.logger.error) {
+            this.logger.error(e);
+        }
+    }
+
+    /**
+     * @param {string} msg - message to log as debug
+     */
+    logDebug(msg) {
+        if(this.logger && this.logger.debug) {
+            this.logger.debug(msg);
+        }
+    }
+
+
+
 
     /**
      * @param {string} id - identifier of item to fetch
@@ -57,6 +84,7 @@ class ItemService {
         })
         .catch(e => {
             let err = new Error(`ItemService.get() - Error fetching item ${id}: ${e.message}`);
+            this.logError(err);
             return Q.reject(err);
         });
     }
@@ -96,6 +124,7 @@ class ItemService {
         })
         .catch(e => {
             let err = new Error(`ItemService.save() - Error saving item: ${e.message}`);
+            this.logError(err);
             return Q.reject(err);
         });
     }
@@ -117,6 +146,7 @@ class ItemService {
         .then(response => true)
         .catch(e => {
             let err = new Error(`ItemService.remove() - Error deleting item ${id}: ${e.message}`);
+            this.logError(err);
             return Q.reject(err);
         });
     }
@@ -138,6 +168,7 @@ class ItemService {
         })
         .catch(e => {
             let err = new Error(`ItemService.patch() - Error patching item ${id}: ${e.message}`);
+            this.logError(err);
             return Q.reject(err);
         });
     }
@@ -164,6 +195,7 @@ class ItemService {
         })
         .catch(e => {
             let err = new Error(`ItemService.search() - Error searching items: ${e.message}`);
+            this.logError(err);
             return Q.reject(err);
         });
     }
@@ -204,6 +236,7 @@ class ItemService {
             let err = new Error(`ItemService.import() - Error importing item: ${e.message}`);
             if(e.status === 409 || ~e.message.indexOf('Item already exists')) err.status = 409;
             if(e.item) err.item = e.item;
+            this.logError(err);
             return Q.reject(err);
         });
     }
@@ -235,6 +268,7 @@ class ItemService {
                 msg = `Unsupported export format specified '${format}'`;
             }
             let err = new Error(`ItemService.export() - Error exporting item: ${msg}`);
+            this.logError(err);
             return Q.reject(err);
         });
     }
@@ -259,6 +293,7 @@ class ItemService {
         })
         .catch( e => {
             let err = new Error(`ItemService.getUri() - Error getting URI for item: ${e.message}`);
+            this.logError(err);
             return Q.reject(err);
         });
 
@@ -284,6 +319,7 @@ class ItemService {
         })
         .catch(e => {
             let err = new Error(`ItemService.getMultiple() - Error fetching items: ${e.message}`);
+            this.logError(err);
             return Q.reject(err);
         });
     }
@@ -303,6 +339,7 @@ class ItemService {
         })
         .catch(e => {
             let err = new Error(`ItemService.exists() - Error resolving items: ${e.message}`);
+            this.logError(err);
             return Q.reject(err);
         });
     }

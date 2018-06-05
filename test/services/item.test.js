@@ -75,9 +75,33 @@ describe('# ItemService', function() {
         }
     }
 
-
-
     let service = new ItemService(URL, new TestHttpClient());
+
+
+
+    class TestLogger {
+        constructor() {
+            this.errors = 0;
+            this.debugs = 0;
+        }
+        error(e) {
+            this.errors++;
+        }
+        debug(msg) {
+            this.debugs++;
+        }
+        reset() {
+            this.errors = this.debugs = 0;
+        }
+        validate(e,d) {
+            expect(this.errors).to.equal(e);
+            expect(this.debugs).to.equal(d);
+        }
+    }
+
+    service.setLogger(new TestLogger());
+
+
 
 
 
@@ -262,5 +286,11 @@ describe('# ItemService', function() {
         .catch(e => done(e));
 
     });
+
+    //
+    // it("should support logging", function(done) {
+    //
+    //     done();
+    // });
 
 });

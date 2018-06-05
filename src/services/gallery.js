@@ -32,6 +32,7 @@ class GalleryService extends ItemService {
         })
         .catch(e => {
             let err = new Error("GalleryService.addItem() - Error adding item: " + e.message);
+            this.logError(err);
             return Q.reject(err);
         });
     }
@@ -47,6 +48,7 @@ class GalleryService extends ItemService {
         .then(response=>true)
         .catch(e => {
             let err = new Error("GalleryService.addItem() - Error adding item: " + e.message);
+            this.logError(err);
             return Q.reject(err);
         });
     }

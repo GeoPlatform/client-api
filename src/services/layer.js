@@ -38,6 +38,7 @@ class LayerService extends ItemService {
         })
         .catch(e => {
             let err = new Error(`LayerService.style() - Error fetching style: ${e.message}`);
+            this.logError(err);
             return Q.reject(err);
         });
     }
@@ -82,8 +83,8 @@ class LayerService extends ItemService {
             return this.execute(opts);
         })
         .catch(e => {
-            let err = new Error(`LayerService.describe() -
-                Error describing layer feature: ${e.message}`);
+            let err = new Error(`LayerService.describe() - Error describing layer feature: ${e.message}`);
+            this.logError(err);
             return Q.reject(err);
         });
     }
@@ -110,8 +111,8 @@ class LayerService extends ItemService {
             return this.execute(opts);
         })
         .catch(e => {
-            let err = new Error(`LayerService.describe() -
-                Error describing layer feature: ${e.message}`);
+            let err = new Error(`LayerService.describe() - Error describing layer feature: ${e.message}`);
+            this.logError(err);
             return Q.reject(err);
         });
     }

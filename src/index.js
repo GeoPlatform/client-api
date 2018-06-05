@@ -27,14 +27,13 @@ import ServiceFactory  from './services/factory';
 
 import Config from './shared/config';
 
-// import {
-//     Event,
-//     TrackingService,
-//     EventCategories,
-//     EventTypes,
-//     MapEventFactory,
-//     LayerEventFactory
-// } from './services/tracking';
+import {
+    TrackingEvent,
+    TrackingService,
+    TrackingCategories,
+    TrackingTypes,
+    TrackingEventFactory
+} from './services/tracking';
 
 
 
@@ -61,12 +60,10 @@ export {
     AgolQuery,
     KGService,
     ServiceFactory,
-    Config
-    // ,
-    // Event,
-    // TrackingService,
-    // EventCategories,
-    // EventTypes,
-    // MapEventFactory,
-    // LayerEventFactory
+    Config,
+    TrackingEvent,
+    TrackingService,
+    TrackingCategories,
+    TrackingTypes,
+    TrackingEventFactory
 };

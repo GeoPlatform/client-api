@@ -35,7 +35,7 @@ const Events = {
 function getCategory(type) {
     let result = Categories.UNKNOWN;
     if(type) {
-        let cats = Categories.keys().map(k=>Categories[k]);
+        let cats = Object.keys(Categories).map(k=>Categories[k]);
         //if existing category was specified
         if(~cats.indexOf(type))
             return type;

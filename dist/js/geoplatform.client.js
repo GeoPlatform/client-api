@@ -3682,7 +3682,7 @@
   function getCategory(type) {
       var result = Categories.UNKNOWN;
       if (type) {
-          var cats = Categories.keys().map(function (k) {
+          var cats = Object.keys(Categories).map(function (k) {
               return Categories[k];
           });
           //if existing category was specified

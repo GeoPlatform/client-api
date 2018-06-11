@@ -7,24 +7,9 @@ provides methods for quickly building search criteria based upon the GeoPlatform
 ## Creating a Query
 You can instantiate `Query` directly or use `QueryFactory` to get a new `Query` instance.
 
-### Client-side
-
 ```javascript
-//using global variable
-let queryA = new GeoPlatformClient.Query();
-queryA.setQ("testing");
-
-let queryB = GeoPlatformClient.QueryFactory();
-queryB.setQ("testing");
-```
-
-### Server-side
-
-```javascript
-//using require
-const GeoPlatformClient = require('geoplatform.client')
-const Query = GeoPlatformClient.Query
-const QueryFactory = GeoPlatformClient.QueryFactory
+//using ES6 imports
+import { Query, QueryFactory } from 'geoplatform.client';
 
 let queryA = new Query();
 queryA.setQ("testing");
@@ -32,7 +17,6 @@ queryA.setQ("testing");
 let queryB = QueryFactory();
 queryB.setQ("testing");
 ```
-
 
 ## Fluent Queries
 
@@ -42,11 +26,11 @@ method calls.
 
 ```javascript
 //Both of these are equivalent
-let queryA = new GeoPlatformClient.Query();
+let queryA = new Query();
 queryA.setTypes( 'Layer' );
 queryA.setEndDate( new Date().getTime() );
 
-let queryB = new GeoPlatformClient.Query()
+let queryB = new Query()
     .types( 'Layer' )
     .ends( new Date().getTime() );
 ```
@@ -56,17 +40,11 @@ let queryB = new GeoPlatformClient.Query()
 You can get a list of the predefined query parameters supported by the
 `Query` object using the `QueryParameters` object:
 
-### Client-side
 ```javascript
-const PARAMS = GeoPlatformClient.QueryParameters;
+import { Query, QueryParameters } from 'geoplatform.client';
+let query = new Query();
+query.setParameter(QueryParameters.TYPES, "Layer");
 ```
-
-### Server-side
-```javascript
-const PARAMS = require('geoplatform.client').QueryParameters
-```
-
-
 
 ## Free text search
 
@@ -79,14 +57,14 @@ Values with spaces are treated as multiple, OR'ed constraints. To search for a s
 phrase, wrap the value with double quotes.
 
 ```javascript
-let query = new GeoPlatformClient.Query().q('"This is a phrase"');
+let query = new Query().q('"This is a phrase"');
 ```
 
 ## Date Parameters
 Date values should be passed to `Query` methods as their millisecond representation.
 
 ```javascript
-let queryB = new GeoPlatformClient.Query().ends( new Date().getTime() );
+let queryB = new Query().ends( new Date().getTime() );
 ```
 
 ## Requesting specific result properties
@@ -112,10 +90,11 @@ _Note:_ You must specify the property name to use. For example, to also request
 the geographic extent for each item in the search results, do the following:
 
 ```javascript
-let query = new GeoPlatformClient.Query();
+import { Query, QueryFields } from 'geoplatform.client';
+let query = new Query();
+//add a desired field to the default set requested
+query.addField(QueryFields.EXTENT);
 let fields = query.getFields();
-fields.push(GeoPlatformClient.QueryFields.EXTENT);
-query.setFields(fields);
 ```
 
 
@@ -125,8 +104,12 @@ within the entire repository of data.  Use the `QueryFacets` object's set of
 facets to request specific ones with a query.
 
 ```javascript
-const Facets = GeoPlatformClient.QueryFacets; //or require('geoplatform.client').QueryFacets;
-query.facets([Facets.TYPES, Facets.THEMES]);
+import { Query, QueryFacets } from 'geoplatform.client';
+//only request these 2 facets
+query.facets([QueryFacets.TYPES, QueryFacets.THEMES]);
+//add another facet to the list
+query.addFacet(QueryFacets.PUBLISHERS);
+let facets = query.getFacets();
 ```
 
 To omit facet information, use `Query.setFacets(false)`.
@@ -167,7 +150,37 @@ with queries.  Pages start at 0 and the default page size is 10.
 
 ## Clearing Query values
 
-To reset a Query instance, use `Query.clear()`.
+To reset a Query instance, use `Query.clear()`.  Resetting a query will clear out
+constraints applied using the query's interface.
+
+## Default Queries
+
+Initial constraints can be passed into the `Query` constructor.  
+
+```javascript
+let query = new Query({
+    QueryParameters.Q : 'testing',
+    QueryParameters.TYPES : 'Layer'
+})
+```
+
+In addition, the default set of constraints can be predefined using the
+`defaults` property of the constructor argument. The following example specifies
+the same initial constraints plus also defining a third constraint using GP authorship
+which will always be applied unless overridden using `Query.setCreatedBy()`.  
+
+```javascript
+let query = new Query({
+    QueryParameters.Q : 'testing',
+    QueryParameters.TYPES : 'Layer',
+    defaults: {
+        QueryParameters.CREATED_BY : "joe_user"
+    }
+})
+```
+
+__Note:__ Default constraints will remain applied when queries are reset using
+`Query.clear()`.
 
 
 ## KG Queries

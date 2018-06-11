@@ -14,10 +14,21 @@ which provide specialized support for specific item types
 
 ### Non-Item Support
 
+### Utils Service
 The [UtilsService](src/services/utils.js) class is provided for working with non-item API endpoints, such as GeoPlatform capabilities queries.
 
+### Knowledge Graph Service
 The [KGService](src/services/kg.js) class is provided for recommending concepts to be associated with GeoPlatform Items.
-Note that you should use a [KGQuery](src/shared/kg-query.js) with the `KGService` instead of the a normal [Query](src/shared/query.js).
+
+__Note:__ You must use [KGQuery](src/shared/kg-query.js) instances with the `KGService` instead of the a normal [Query](src/shared/query.js).
+
+### ArcGIS Online Service
+The [AgolService][src/services/agol.js] class allows searching ArcGIS Online data including Web Maps, Services, Organizations, and Groups. Items matching queries are transformed into
+their appropriate GeoPlatform business object instance prior to being returned but
+are not automatically inserted into the GeoPlatform.
+
+__Note:__ You must use [AgolQuery](src/shared/agol.js) instances with this service
+instead of normal `Query` instances.
 
 
 ### HttpClients
@@ -488,6 +499,209 @@ svc.statistics(serviceId)
 });
 .catch(e=>{...});
 ```
+
+
+### Utils Service API
+
+#### capabilities
+Fetch GeoPlatform API capabilities descriptions
+
+| Parameter | Required | Description |
+|:--------- |:-------- |:----------- |
+| property  | false    | optional capabilities property to specifically request |
+| query     | false    | optional query parameters to include with request |
+
+
+#### parseFile
+Parse an uploaded file and receive its contents
+
+| Parameter | Required | Description |
+|:--------- |:-------- |:----------- |
+| file     | true    | File to upload |
+| format   | true    | format of the file ('geojson', 'csv', 'zip')
+
+
+#### locate
+Geolocate the specified argument to a set of candidate locations.
+
+| Parameter | Required | Description |
+|:--------- |:-------- |:----------- |
+| value     | true    | text string to geolocate (name or lat,lng) |
+
+
+### AgolService API
+
+#### searchItems
+Query non-org, non-group data inside AGOL
+
+| Parameter | Required | Description |
+|:--------- |:-------- |:----------- |
+| query     | false    | `AgolQuery` instance |
+
+```javascript
+//using es6 import in this example
+import { AgolService, AgolQuery, Config, JQueryHttpClient } from 'geoplatform.client';
+let svc = new AgolService(Config.ualUrl, new JQueryHttpClient());
+
+let query = new AgolQuery();
+query.setQ('testing');
+query.setTypes('Web Map');
+
+svc.searchItems(query)
+.then( response => {
+    console.log(response.totalResults);
+    response.results.map( result => { console.log(result.label) });
+});
+.catch(e=>{...});
+```
+
+
+#### getItem(:id)
+Retrieve single AGOL data item by its AGOL identifier
+
+| Parameter | Required | Description |
+|:--------- |:-------- |:----------- |
+| id     | true    | string identifier |
+
+```javascript
+//using es6 import in this example
+import { AgolService, Config, JQueryHttpClient } from 'geoplatform.client';
+let svc = new AgolService(Config.ualUrl, new JQueryHttpClient());
+let id = ...;
+svc.getItem(id)
+//get service information using Service Harvester
+.then( item => { console.log(JSON.stringify(item)); });
+.catch(e=>{...});
+```
+
+
+#### searchOrgs
+Query AGOL Organization entities
+
+| Parameter | Required | Description |
+|:--------- |:-------- |:----------- |
+| query     | false    | `AgolQuery` instance |
+
+```javascript
+//using es6 import in this example
+import { AgolService, AgolQuery, Config, JQueryHttpClient } from 'geoplatform.client';
+let svc = new AgolService(Config.ualUrl, new JQueryHttpClient());
+
+let query = new AgolQuery();
+query.setQ('testing');
+
+svc.searchOrgs(query)
+.then( response => {
+    console.log(response.totalResults);
+    response.results.map( result => { console.log(result.label) });
+});
+.catch(e=>{...});
+```
+
+#### getOrg(:id)
+Retrieve single AGOL organization by its AGOL identifier
+
+| Parameter | Required | Description |
+|:--------- |:-------- |:----------- |
+| id     | true    | string identifier |
+
+```javascript
+//using es6 import in this example
+import { AgolService, Config, JQueryHttpClient } from 'geoplatform.client';
+let svc = new AgolService(Config.ualUrl, new JQueryHttpClient());
+let id = ...;
+svc.getOrg(id)
+//get service information using Service Harvester
+.then( org => { console.log(JSON.stringify(org)); });
+.catch(e=>{...});
+```
+
+
+#### searchGroups
+Query AGOL Group entities
+
+| Parameter | Required | Description |
+|:--------- |:-------- |:----------- |
+| query     | false    | `AgolQuery` instance |
+
+```javascript
+//using es6 import in this example
+import { AgolService, AgolQuery, Config, JQueryHttpClient } from 'geoplatform.client';
+let svc = new AgolService(Config.ualUrl, new JQueryHttpClient());
+
+let query = new AgolQuery();
+query.setQ('testing');
+
+svc.searchGroups(query)
+.then( response => {
+    console.log(response.totalResults);
+    response.results.map( result => { console.log(result.label) });
+});
+.catch(e=>{...});
+```
+
+#### getGroup(:id)
+Retrieve single AGOL group by its AGOL identifier
+
+| Parameter | Required | Description |
+|:--------- |:-------- |:----------- |
+| id     | true    | string identifier |
+
+```javascript
+//using es6 import in this example
+import { AgolService, Config, JQueryHttpClient } from 'geoplatform.client';
+let svc = new AgolService(Config.ualUrl, new JQueryHttpClient());
+let id = ...;
+svc.getGroup(id)
+//get service information using Service Harvester
+.then( group => { console.log(JSON.stringify(group)); });
+.catch(e=>{...});
+```
+
+
+#### AgolQuery API
+| Method | Description |
+|:------ |:----------- |
+| getQ/setQ | Retrieve/Specify free-text constraint |
+| getOrg/setOrg | Retrieve/Specify AGOL organizational constraint |
+| getGroup/setGroup | Retrieve/Specify AGOL group constraint |
+| getTypes/setTypes | Retrieve/Specify AGOL data type(s) constraint |
+| getExtent/setExtent | Retrieve/Specify geospatial bounding box constraint |
+| getSort/setSort | Retrieve/Specify sorting field and direction |
+| getPage/setPage | Retrieve/Specify starting page of results |
+| getPageSize/setPageSize | Retrieve/Specify number of results per page |
+
+
+### TrackingService API
+
+#### logEvent
+Send tracking event to GeoPlatform Resource Portfolio Management
+
+| Parameter | Required | Description |
+|:--------- |:-------- |:----------- |
+| event     | true    | `TrackingEvent` instance |
+
+```javascript
+//using es6 import in this example
+import {
+    TrackingService, TrackingEvent, TrackingCategories, TrackingTypes
+} from 'geoplatform.client';
+
+//Specify RPM Provider class using that library's mechanism (not covered here)
+let rpmProvider = ...
+
+let svc = new TrackingService(rpmProvider);
+
+let evt = new TrackingEvent(
+    TrackingCategories.MAP, //type of item being tracked
+    TrackingTypes.DISPLAYED,//type of action being recorded
+    mapObj  //item being tracking
+);
+svc.logEvent(evt);
+```
+
+
+
 
 
 ## Examples

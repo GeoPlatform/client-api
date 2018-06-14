@@ -209,15 +209,21 @@ class TrackingService {
             event.forEach( evt => this.logEvent(evt) );
 
         } else {
-            this.provider.logEvent(
-                event.getCategory(),
-                event.getType(),
-                event.getItem(),
-                event.getRelated()
-            );
+            try {
+                this.provider.logEvent(
+                    event.getCategory(),
+                    event.getType(),
+                    event.getItem(),
+                    event.getRelated()
+                );
+            } catch(e) {
+                console.log(
+                    "TrackingService.logEvent() - Error logging event (" +
+                    event.getCategory() + ", " + event.getType() + ", " +
+                    event.getItem() + ") - " + e.message
+                );
+            }
         }
-
-        // this.provider.logEvent(category, event, data);
     }
 
 

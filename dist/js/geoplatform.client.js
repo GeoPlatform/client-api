@@ -1960,7 +1960,7 @@
       ENDS: 'endDate.max',
       EXTENT: 'extent',
       IDENTIFIERS: 'identifiers',
-      KEYWORDS: 'keyword',
+      KEYWORDS: 'keywords',
       LAST_MODIFIED_BY: 'lastModifiedBy',
       MODIFIED: 'modified',
       MODIFIED_BEFORE: 'modified.max',

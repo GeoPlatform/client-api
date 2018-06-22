@@ -41,6 +41,21 @@ class ItemService {
     }
 
     /**
+     * @param {number} milliseconds - override environment variable timeout
+     */
+    setTimeout(milliseconds) {
+        this.timeout = milliseconds;
+    }
+
+    /**
+     * @param {number} milliseconds - override environment variable timeout
+     */
+    timeout(milliseconds) {
+        this.setTimeout(milliseconds);
+        return this;
+    }
+
+    /**
      * @param {Logger} logger - log service
      */
     setLogger(logger) {

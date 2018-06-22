@@ -572,6 +572,27 @@
           }
 
           /**
+           * @param {number} milliseconds - override environment variable timeout
+           */
+
+      }, {
+          key: "setTimeout",
+          value: function setTimeout(milliseconds) {
+              this.timeout = milliseconds;
+          }
+
+          /**
+           * @param {number} milliseconds - override environment variable timeout
+           */
+
+      }, {
+          key: "timeout",
+          value: function timeout(milliseconds) {
+              this.setTimeout(milliseconds);
+              return this;
+          }
+
+          /**
            * @param {Logger} logger - log service
            */
 

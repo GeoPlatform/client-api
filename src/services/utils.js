@@ -14,6 +14,31 @@ class UtilsService {
     setUrl(baseUrl) {
         this.baseUrl = baseUrl;
     }
+    
+    /**
+     * @param {Logger} logger - log service
+     */
+    setLogger(logger) {
+        this.logger = logger;
+    }
+
+    /**
+     * @param {Error} e - error to log (if logger specified)
+     */
+    logError(e) {
+        if(this.logger && this.logger.error) {
+            this.logger.error(e);
+        }
+    }
+
+    /**
+     * @param {string} msg - message to log as debug
+     */
+    logDebug(msg) {
+        if(this.logger && this.logger.debug) {
+            this.logger.debug(msg);
+        }
+    }
 
 
     /**

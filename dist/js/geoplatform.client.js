@@ -1389,6 +1389,40 @@
           }
 
           /**
+           * @param {Logger} logger - log service
+           */
+
+      }, {
+          key: "setLogger",
+          value: function setLogger(logger) {
+              this.logger = logger;
+          }
+
+          /**
+           * @param {Error} e - error to log (if logger specified)
+           */
+
+      }, {
+          key: "logError",
+          value: function logError(e) {
+              if (this.logger && this.logger.error) {
+                  this.logger.error(e);
+              }
+          }
+
+          /**
+           * @param {string} msg - message to log as debug
+           */
+
+      }, {
+          key: "logDebug",
+          value: function logDebug(msg) {
+              if (this.logger && this.logger.debug) {
+                  this.logger.debug(msg);
+              }
+          }
+
+          /**
            * @param {string} property - optional capa property to specifically request
            * @param {Object} query - optional query parameters to include with request
            * @param {Object} options - optional config to send with http request

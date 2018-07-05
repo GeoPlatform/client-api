@@ -388,7 +388,9 @@ class ItemService {
     }
 
     createRequestOpts(options) {
-        return this.client.createRequestOpts(options);
+        let request = this.client.createRequestOpts(options);
+        this.logDebug("ItemService.createRequestOpts() - " + JSON.stringify(request));
+        return request;
     }
 
     execute(opts) {

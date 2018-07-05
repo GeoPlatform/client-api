@@ -942,7 +942,9 @@
       }, {
           key: "createRequestOpts",
           value: function createRequestOpts(options) {
-              return this.client.createRequestOpts(options);
+              var request = this.client.createRequestOpts(options);
+              this.logDebug("ItemService.createRequestOpts() - " + JSON.stringify(request));
+              return request;
           }
       }, {
           key: "execute",

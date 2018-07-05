@@ -155,7 +155,7 @@ class AgolService {
     }
 
     setUrl(baseUrl) {
-        this.baseUrl = baseUrl + '/api/agol/';
+        this.baseUrl = baseUrl + '/api/agol';
     }
 
 
@@ -359,7 +359,7 @@ class AgolService {
         if(!options.url)
             throw new Error(`Must specify a URL for HTTP requests`);
 
-        options.timeout = this.timeout;
+        options.timeout = this.timeout || 10000 ;
 
         return this.createRequestOpts(options);
     }
@@ -369,7 +369,14 @@ class AgolService {
     }
 
     execute(opts) {
-        return this.client.execute(opts);
+        return this.client.execute(opts)
+        .catch(e => {
+            if(e === null || typeof(e) === 'undefined') {
+                e = new Error("AGOLService.execute() - Request failed but didn't return an " +
+                "error. This is most likely because the request timed out");
+            }
+            return Q.reject(e);
+        });
     }
 
 }

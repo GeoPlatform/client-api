@@ -1,6 +1,9 @@
 const chai = require('chai');
 const expect = chai.expect;
 
+// const request = require('request');
+// require('request-debug')(request);
+
 const API           = require('../../dist/js/geoplatform.client');
 const Query         = API.AgolQuery;
 const AgolService   = API.AgolService;
@@ -16,7 +19,7 @@ describe('# AgolService', function() {
 
     it('should search items', function(done) {
 
-        let query = new Query();
+        let query = new Query().q('test');
         service.searchItems(query)
         .then( response => {
             expect(response.results).to.exist;

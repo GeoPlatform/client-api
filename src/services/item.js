@@ -380,7 +380,7 @@ class ItemService {
         if(!options.url)
             throw new Error(`Must specify a URL for HTTP requests`);
 
-        options.timeout = this.timeout;
+        options.timeout = this.timeout || 10000;
 
         let opts = this.createRequestOpts(options);
 
@@ -394,7 +394,14 @@ class ItemService {
     }
 
     execute(opts) {
-        return this.client.execute(opts);
+        return this.client.execute(opts)
+        .catch(e => {
+            if(e === null || typeof(e) === 'undefined') {
+                e = new Error("ItemService.execute() - Request failed but didn't return an " +
+                "error. This is most likely because the request timed out");
+            }
+            return Q.reject(e);
+        });
     }
 
 }

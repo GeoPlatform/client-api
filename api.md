@@ -701,6 +701,25 @@ svc.logEvent(evt);
 ```
 
 
+## Logging
+The services provided also support logging information through a Logger that can
+be provided to a service:
+
+```javascript
+import {
+    Config, JQueryHttpClient, ItemService, QueryFactory
+} from 'geoplatform.client';
+import Logger from './logger';
+
+let url = Config.ualUrl;
+let svc = new ItemService(url, new JQueryHttpClient());
+svc.setLogger(Logger);
+```
+
+The logger instance provided to a service must implement the `debug(arg)` and `error(arg)`
+interface methods, otherwise, logged information will not be passed to the provided
+logger instance.
+
 
 
 
@@ -727,24 +746,34 @@ svc.search(query)
 ```
 
 
-### Angular
+### AngularJS
 
 ```javascript
-//using es6 import in this example
-import { Config, NGHttpClient, ItemService, QueryFactory } from 'geoplatform.client';
-let url = Config.ualUrl;
-let query = QueryFactory().types('Map','Layer');
-let svc = new ItemService(url, new NGHttpClient());
-svc.search(query)
-.then( response => {
-    if(!response.results.length) {
-        console.log("No results");
-        return;
-    }
-    console.log(response.results.length + " of " +
-    response.totalResults + " matches");
-})
-.catch(e=>{...});
+
+//using global constant reference in this example
+const APIClient = GeoPlatform.Client;
+
+angular.module('my-app', []).service('myService', ['$http', function($http) {
+
+    let url = APIClient.Config.ualUrl;
+    //use the $http service provided by angular
+    let client = new APIClient.NGHttpClient({$http: $http})
+    let svc = new APIClient.ItemService(url, client);
+
+    return {
+        /** @return {Promise} */
+        search: function(query) {
+            return svc.search(query).then( response => {
+                if(!response.results.length) {
+                    console.log("No results");
+                    return [];
+                }
+                console.log(response.results.length + " of " + response.totalResults + " matches");
+                return response.results;
+            });
+        }
+    };
+}]);
 ```
 
 

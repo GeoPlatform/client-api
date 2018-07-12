@@ -2079,6 +2079,7 @@
       SCHEMES_ID: 'scheme.id',
       SCHEMES_LABEL: 'scheme.label',
       SCHEMES_URI: 'scheme.uri',
+      SIMILAR_TO: 'similarTo',
       STATUS: 'status',
       SERVICE_TYPES: 'serviceType.id',
       THEMES_ID: 'theme.id',

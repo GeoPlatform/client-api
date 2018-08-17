@@ -9,7 +9,7 @@ const Query         = API.AgolQuery;
 const AgolService   = API.AgolService;
 const HttpClient    = API.NodeHttpClient;
 
-const URL = 'https://sit-ual.geoplatform.us';
+const URL = 'https://ual.geoplatform.gov';
 
 chai.config.includeStack = true;
 
@@ -36,7 +36,7 @@ describe('# AgolService', function() {
         })
         .catch(e => done(e));
 
-    });
+    }).timeout(20000);
 
     it('should search orgs', function(done) {
 
@@ -56,7 +56,7 @@ describe('# AgolService', function() {
         })
         .catch(e => done(e));
 
-    });
+    }).timeout(20000);
 
 
     it('should search groups', function(done) {
@@ -77,6 +77,6 @@ describe('# AgolService', function() {
         })
         .catch(e => done(e));
 
-    });
+    }).timeout(20000);
 
 });

@@ -27,7 +27,7 @@ module.exports = {
                         "type": Types.SERVICE,
                         "label": "Service",
                         "description": "service description",
-                        "href": "http://www.google.com",
+                        "href": "http://www.geoplatform.gov/test/sample_service_that_doesnt_exist",
                         "serviceType": {
                             "id":"370cf6ca5d91c07b63329b8384fe76c7",
                             "uri":"http://www.geoplatform.gov/spec/esri-map-rest",
@@ -42,6 +42,6 @@ module.exports = {
     ],
     thumbnail: {
         contentData: "base64",
-        href: "http://www.thumbs.com"
+        href: "http://www.geoplatform.gov/test/this_is_a_test_thumbnail_that_wont_resolve.gif"
     }
 };

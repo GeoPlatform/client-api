@@ -9,7 +9,7 @@ const ItemTypes     = API.ItemTypes;
 const ItemService   = API.ItemService;
 const NodeHttpClient = API.NodeHttpClient;
 
-const URL = 'https://sit-ual.geoplatform.us';
+const URL = 'https://ual.geoplatform.gov';
 const URI = "http://www.geoplatform.gov/items/test";
 
 chai.config.includeStack = true;

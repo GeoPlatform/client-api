@@ -6,7 +6,7 @@ const expect = chai.expect;
 const API           = require('../../dist/js/geoplatform.client');
 const HttpClient    = API.NodeHttpClient;
 
-const URL = 'https://sit-ual.geoplatform.us/api/items';
+const URL = 'https://ual.geoplatform.gov/api/items';
 
 chai.config.includeStack = true;
 
@@ -28,6 +28,6 @@ describe('# NodeHttpService', function() {
         })
         .catch( e => done(e) );
 
-    });
+    }).timeout(20000);
 
 });

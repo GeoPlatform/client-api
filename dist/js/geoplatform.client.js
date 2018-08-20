@@ -3871,12 +3871,14 @@
               result.push(new Event(Categories.MAP, eventType, item));
               if (Events.DISPLAYED === eventType) {
 
-                  item.layers.forEach(function (layer) {
-                      var layerEvents = TrackingEventFactory(eventType, layer).filter(function (e) {
-                          return e !== null;
-                      });
-                      if (layerEvents && layerEvents.length) {
-                          result = result.concat(layerEvents);
+                  item.layers.forEach(function (layerState) {
+                      if (layerState.layer) {
+                          var layerEvents = TrackingEventFactory(eventType, layerState.layer).filter(function (e) {
+                              return e !== null;
+                          });
+                          if (layerEvents && layerEvents.length) {
+                              result = result.concat(layerEvents);
+                          }
                       }
                   });
 

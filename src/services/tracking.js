@@ -87,15 +87,19 @@ function TrackingEventFactory(eventType, item) {
             result.push( new Event(Categories.MAP, eventType, item) );
             if(Events.DISPLAYED === eventType) {
 
-                item.layers.forEach( layer => {
-                    let layerEvents = TrackingEventFactory(eventType, layer).filter(e=>e!==null);
-                    if(layerEvents && layerEvents.length) {
-                        result = result.concat(layerEvents);
+                item.layers.forEach( layerState => {
+                    if(layerState.layer) {
+                        let layerEvents = TrackingEventFactory(eventType, layerState.layer)
+                            .filter(e=>e!==null);
+                        if(layerEvents && layerEvents.length) {
+                            result = result.concat(layerEvents);
+                        }
                     }
                 });
 
                 if(item.baseLayer) {
-                    let baseEvents = TrackingEventFactory(eventType, item.baseLayer).filter(e=>e!==null);
+                    let baseEvents = TrackingEventFactory(eventType, item.baseLayer)
+                        .filter(e=>e!==null);
                     if(baseEvents && baseEvents.length)
                         result = result.concat( baseEvents );
                 }

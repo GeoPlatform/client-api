@@ -23,12 +23,13 @@ class LayerService extends ItemService {
     }
 
     /**
+     * @param {string} id - GeoPlatform Layer identifier
      * @param {Object} options - optional set of request options to apply to xhr request
      * @return {Promise} resolving style JSON object
      */
-    style (options) {
-        return Q.resolve( true )
-        .then( () => {
+    style (id, options) {
+        return Q.resolve( id )
+        .then( (id) => {
 
             let url = this.baseUrl + '/' + id + '/style';
             let opts = this.buildRequest({

@@ -3,6 +3,7 @@
 import Q from 'q';
 import ItemTypes from '../shared/types';
 import ItemService from './item';
+import Query from '../shared/query';
 
 /**
  * GeoPlatform Service service

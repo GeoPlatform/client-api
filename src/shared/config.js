@@ -1,6 +1,6 @@
 export default {
 
-    //ualUrl: '...',
+    ualUrl: 'https://ual.geoplatform.gov',
     //appId: '...',
 
     configure: function(options) {

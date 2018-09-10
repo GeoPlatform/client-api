@@ -14,6 +14,15 @@ import GalleryService from './services/gallery';
 import UtilsService from './services/utils';
 import { AgolService, AgolQuery } from './services/agol';
 
+import ItemServiceProxy from './services/proxies/item';
+import ServiceServiceProxy from './services/proxies/service';
+import LayerServiceProxy from './services/proxies/layer';
+import DatasetServiceProxy from './services/proxies/dataset';
+import MapServiceProxy from './services/proxies/map';
+import GalleryServiceProxy from './services/proxies/gallery';
+import UtilsServiceProxy from './services/proxies/utils';
+import AgolServiceProxy from './services/proxies/agol';
+
 import KGQuery from './shared/kg-query';
 import KGService from './services/kg';
 import KGClassifiers from './shared/classifiers';
@@ -48,9 +57,11 @@ export {
     QueryFields,
     KGQuery,
     KGClassifiers,
+
     JQueryHttpClient,
     NGHttpClient,
     NodeHttpClient,
+
     ItemService,
     LayerService,
     ServiceService,
@@ -62,7 +73,18 @@ export {
     AgolQuery,
     KGService,
     ServiceFactory,
+
+    ItemServiceProxy,
+    ServiceServiceProxy,
+    LayerServiceProxy,
+    DatasetServiceProxy,
+    MapServiceProxy,
+    GalleryServiceProxy,
+    UtilsServiceProxy,
+    AgolServiceProxy,
+
     Config,
+
     TrackingEvent,
     TrackingService,
     TrackingCategories,

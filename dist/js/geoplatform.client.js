@@ -1068,16 +1068,17 @@
           }
 
           /**
+           * @param {string} id - GeoPlatform Layer identifier
            * @param {Object} options - optional set of request options to apply to xhr request
            * @return {Promise} resolving style JSON object
            */
 
       }, {
           key: 'style',
-          value: function style(options) {
+          value: function style(id, options) {
               var _this2 = this;
 
-              return Q.resolve(true).then(function () {
+              return Q.resolve(id).then(function (id) {
 
                   var url = _this2.baseUrl + '/' + id + '/style';
                   var opts = _this2.buildRequest({
@@ -1174,6 +1175,1232 @@
       return LayerService;
   }(ItemService);
 
+  var QueryParameters = {
+      ALTERNATE_TITLE: 'alternateTitles',
+      BEGINS: 'startDate.min',
+      CREATED: 'created',
+      CREATED_BEFORE: 'created.max',
+      CREATED_AFTER: 'created.min',
+      CREATED_BY: 'createdBy',
+      CREATOR: 'creator.id',
+      CONTRIBUTED_BY: 'contributedBy',
+      ENDS: 'endDate.max',
+      EXTENT: 'extent',
+      IDENTIFIERS: 'identifiers',
+      KEYWORDS: 'keywords',
+      LAST_MODIFIED_BY: 'lastModifiedBy',
+      MODIFIED: 'modified',
+      MODIFIED_BEFORE: 'modified.max',
+      MODIFIED_AFTER: 'modified.min',
+      PUBLISHERS_ID: 'publisher.id',
+      PUBLISHERS_LABEL: 'publisher.label',
+      PUBLISHERS_URI: 'publisher.uri',
+      CONTACTS_ID: 'contacts.id',
+      CONTACTS_LABEL: 'contacts.label',
+      CONTACTS_URI: 'contacts.uri',
+      QUERY: 'q',
+      SCHEMES_ID: 'scheme.id',
+      SCHEMES_LABEL: 'scheme.label',
+      SCHEMES_URI: 'scheme.uri',
+      SIMILAR_TO: 'similarTo',
+      STATUS: 'status',
+      SERVICE_TYPES: 'serviceType.id',
+      THEMES_ID: 'theme.id',
+      THEMES_LABEL: 'theme.label',
+      THEMES_URI: 'theme.uri',
+      TYPES: 'type', //TODO change to 'types'
+      URI: 'uri',
+      USED_BY_ID: 'usedBy.id',
+      USED_BY_LABEL: 'usedBy.label',
+      USED_BY_URI: 'usedBy.uri',
+      VISIBILITY: 'visibility',
+      RESOURCE_TYPE: 'resourceType',
+      DATASET: 'dataset',
+      LANDING_PAGE: 'landingPage',
+      PURPOSE: 'purpose',
+
+      //statistics parameters
+      RELIABILITY: 'reliability',
+      RELIABILITY_MIN: 'reliability.min',
+      RELIABILITY_MAX: 'reliability.max',
+      ONLINE: 'online',
+      COMPLIANT: 'compliant',
+      SPEED: 'speed',
+      SPEED_MIN: 'speed.min',
+      SPEED_MAX: 'speed.max',
+      LIKES: 'likes',
+      LIKES_MIN: 'likes.min',
+      LIKES_MAX: 'likes.max',
+      VIEWS: 'views',
+      VIEWS_MIN: 'views.min',
+      VIEWS_MAX: 'views.max',
+
+      //type-specific parameters
+      HREF: 'href', //service-specific
+      LAYER_TYPE: 'layerType', //layer-specific
+      LAYER_NAME: 'layerName', //...
+      PARENT_LAYER: 'parentLayer', //...
+      SUB_LAYER: 'subLayer', //...
+      SERVICE: 'service', //...
+      MAP_LAYER: 'mapLayer', //map-specific
+      GALLERY_ITEM: 'galleryItem', //gallery-specific
+
+      //meta-parameters
+      FACETS: 'includeFacets', //TODO change to 'facets'
+      FIELDS: 'fields',
+      SORT: 'sort',
+      PAGE: 'page',
+      PAGE_SIZE: 'size',
+
+      //recommender service-specific
+      FOR_TYPES: 'for'
+  };
+
+  var Fields = {
+      ACCESS_RIGHTS: 'rights',
+      ALTERNATE_TITLES: 'alternateTitles',
+      ANNOTATIONS: 'annotations',
+      CLASSIFIERS: 'classifiers',
+      CONCEPT_SCHEME: 'scheme',
+      CONTACTS: 'contacts',
+      CREATED: 'created',
+      CREATED_BY: 'createdBy',
+      DATASETS: 'datasets',
+      DESCRIPTION: 'description',
+      DISTRIBUTIONS: 'distributions',
+      EXTENT: 'extent',
+      GALLERY_ITEMS: 'items',
+      HREF: 'href',
+      IDENTIFIERS: 'identifiers',
+      KEYWORDS: 'keywords',
+      LABEL: 'label',
+      LAST_MODIFIED_BY: 'lastModifiedBy',
+      LAYERS: 'layers',
+      LAYER_TYPE: 'layerType',
+      LAYER_NAME: 'layerName',
+      LEGEND: 'legend',
+      MODIFIED: 'modified',
+      PARENT_LAYER: 'parentLayer',
+      PUBLISHERS: 'publishers',
+      RESOURCE_TYPES: 'resourceTypes',
+      SERVICE_TYPE: 'serviceType',
+      SERVICES: 'services',
+      SPATIAL: 'spatial',
+      STATISTICS: 'statistics',
+      STATUS: 'status',
+      SUB_LAYERS: 'subLayers',
+      TEMPORAL: 'temporal',
+      THEMES: 'themes',
+      THUMBNAIL: 'thumbnail',
+      USED_BY: 'usedBy',
+      VISIBILITY: 'visibility',
+      LANDING_PAGE: 'landingPage'
+  };
+
+  var FIELDS_DEFAULT = [Fields.CREATED, Fields.MODIFIED, Fields.CREATED_BY, Fields.PUBLISHERS, Fields.THEMES, Fields.DESCRIPTION];
+
+  /* --------------------------------------------------------- */
+
+  var Facets = {
+      ALTERNATE_TITLES: 'alternateTitles',
+      CONCEPT_SCHEMES: 'schemes',
+      CREATED_BY: 'createdBy',
+      HREF: 'href',
+      IDENTIFIERS: "identifiers",
+      LAYER_TYPE: 'layerType',
+      LAYER_NAME: 'layerName',
+      LIKES: 'likes',
+      ONLINE: 'online',
+      PUBLISHERS: 'publishers',
+      CONTACTS: 'contacts',
+      RELIABILITY: 'reliability',
+      SERVICE_TYPES: 'serviceTypes',
+      SPEED: 'speed',
+      STATUS: 'status',
+      THEMES: 'themes',
+      TYPES: 'type', //TODO change to 'types'
+      USED_BY: 'usedBy',
+      VIEWS: 'views',
+      VISIBILITY: 'visibility'
+  };
+
+  var FACETS_DEFAULT = [Facets.TYPES, Facets.PUBLISHERS, Facets.SERVICE_TYPES, Facets.CONCEPT_SCHEMES, Facets.VISIBILITY, Facets.CREATED_BY];
+
+  /*
+      Map facet keys to parameters so clients can set
+      query params using faceted results
+
+      //TODO remove these and their function below
+   */
+  var FacetToParam = {};
+  FacetToParam[Facets.TYPES] = QueryParameters.TYPES;
+  FacetToParam[Facets.THEMES] = QueryParameters.THEMES_ID;
+  FacetToParam[Facets.PUBLISHERS] = QueryParameters.PUBLISHERS_ID;
+  FacetToParam[Facets.CONTACTS] = QueryParameters.CONTACTS_ID;
+  FacetToParam[Facets.CONCEPT_SCHEMES] = QueryParameters.SCHEMES_ID;
+  FacetToParam[Facets.USED_BY] = QueryParameters.USED_BY_ID;
+
+  /* --------------------------------------------------------- */
+
+  var SORT_OPTIONS_DEFAULT = [{ value: "label,asc", label: "Name (A-Z)" }, { value: "label,desc", label: "Name (Z-A)" }, { value: "type,asc", label: "Type (A-Z)" }, { value: "type,desc", label: "Type (Z-A)" }, { value: "modified,desc", label: "Most recently modified" }, { value: "modified,asc", label: "Least recently modified" }, { value: "_score,desc", label: "Relevance" }];
+
+  var BBOX_REGEX = /^\-?\d+(\.\d*)?,\-?\d+(\.\d*)?,\-?\d+(\.\d*)?,\-?\d+(\.\d*)?$/;
+
+  function toArray$1(value) {
+      var result = value;
+      //if given a non-array value, wrap in array
+      if (result !== null && typeof result.push === 'undefined') result = [result];
+      //if array value is empty, nullify the result
+      if (result !== null && !result.length) result = null;
+      return result;
+  }
+
+  /**
+   * Query
+   *
+   * Specify the "default" query constraints to use by passing in 'options.defaults = {...}';
+   *
+   * @constructor
+   */
+
+  var Query$1 = function () {
+
+      /**
+       * @param {Object} options - set of initial constraints
+       */
+      function Query(options) {
+          classCallCheck(this, Query);
+
+          this.defaultQuery = {};
+          this.defaultQuery[QueryParameters.PAGE] = 0;
+          this.defaultQuery[QueryParameters.PAGE_SIZE] = 10;
+          this.defaultQuery[QueryParameters.SORT] = "modified,desc";
+          this.defaultQuery[QueryParameters.FIELDS] = FIELDS_DEFAULT.slice(0);
+          this.defaultQuery[QueryParameters.FACETS] = FACETS_DEFAULT.slice(0);
+          if (options && options.defaults) {
+              Object.assign(this.defaultQuery, options.defaults);
+              delete options.defaults;
+          }
+          this.query = JSON.parse(JSON.stringify(this.defaultQuery));
+          if (options) {
+              this.applyParameters(options);
+          }
+      }
+
+      /**
+       * @return {object} containing request-ready parameters/values
+       */
+
+
+      createClass(Query, [{
+          key: 'getQuery',
+          value: function getQuery() {
+              var result = {};
+              for (var prop in this.query) {
+                  var value = this.query[prop];
+                  if (value !== null && typeof value.push !== 'undefined') {
+                      value = value.join(',');
+                  }
+                  result[prop] = value;
+              }
+              return result;
+          }
+
+          /**
+           * @return {Query}
+           */
+
+      }, {
+          key: 'clone',
+          value: function clone() {
+              var result = new Query();
+              var json = JSON.parse(JSON.stringify(this.query));
+              result.applyParameters(json);
+              return result;
+          }
+
+          // -----------------------------------------------------------
+
+          /**
+           * @param {string} name
+           * @param {any} value
+           * @return {Query} this
+           */
+
+      }, {
+          key: 'parameter',
+          value: function parameter(name, value) {
+              this.setParameter(name, value);
+              return this;
+          }
+
+          /**
+           * @param {string} name
+           * @param {any} value
+           */
+
+      }, {
+          key: 'setParameter',
+          value: function setParameter(name, value) {
+              if (value === null || value === undefined || //if no value was provide
+              typeof value.push !== 'undefined' && !value.length) //or empty array
+                  delete this.query[name];else this.query[name] = value;
+          }
+
+          /**
+           * @param {string} key - name of parameter
+           * @return {string} value of parameter
+           */
+
+      }, {
+          key: 'getParameter',
+          value: function getParameter(key) {
+              return this.query[key];
+          }
+
+          /**
+           * @param {object} obj - set of parameter/values to apply to this query
+           */
+
+      }, {
+          key: 'applyParameters',
+          value: function applyParameters(obj) {
+              for (var p in obj) {
+                  if (obj.hasOwnProperty(p)) {
+                      this.setParameter(p, obj[p]);
+                  }
+              }
+          }
+
+          /**
+           * @param {string} facet - name of facet to set the value for as a parameter
+           * @param {string} value - value of the facet to use as the parameter's value
+           */
+          //TODO remove this function
+
+      }, {
+          key: 'setFacetParameter',
+          value: function setFacetParameter(facet, value) {
+              var param = FacetToParam[facet];
+              if (!param) {
+                  console.log("WARN : Query.applyFacetParameter() - " + "unable to map facet to known parameter '" + facet + "', using " + "as direct parameter which may not operate as intended");
+              }
+              this.setParameter(param || facet, value);
+          }
+
+          // -----------------------------------------------------------
+
+          /**
+           * @param {string} text
+           * @return {Query} this
+           */
+
+      }, {
+          key: 'q',
+          value: function q(text) {
+              this.setQ(text);return this;
+          }
+          /** @param {string} text - free text query */
+
+      }, {
+          key: 'setQ',
+          value: function setQ(text) {
+              this.setParameter(QueryParameters.QUERY, text);
+          }
+          /** @return {string} */
+
+      }, {
+          key: 'getQ',
+          value: function getQ() {
+              return this.getParameter(QueryParameters.QUERY);
+          }
+
+          // -----------------------------------------------------------
+
+
+      }, {
+          key: 'keywords',
+          value: function keywords(text) {
+              this.setKeywords(text);
+              return this;
+          }
+
+          /**
+           * @param {string} text - free text query
+           */
+
+      }, {
+          key: 'setKeywords',
+          value: function setKeywords(text) {
+              this.setParameter(QueryParameters.KEYWORDS, toArray$1(text));
+          }
+      }, {
+          key: 'getKeywords',
+          value: function getKeywords() {
+              return this.getParameter(QueryParameters.KEYWORDS);
+          }
+
+          // -----------------------------------------------------------
+
+
+      }, {
+          key: 'uri',
+          value: function uri(_uri) {
+              this.setUri(_uri);
+              return this;
+          }
+      }, {
+          key: 'setUri',
+          value: function setUri(uri) {
+              this.setParameter(QueryParameters.URI, uri);
+          }
+      }, {
+          key: 'getUri',
+          value: function getUri() {
+              return this.getParameter(QueryParameters.URI);
+          }
+
+          // -----------------------------------------------------------
+
+
+      }, {
+          key: 'types',
+          value: function types(_types) {
+              this.setTypes(_types);
+              return this;
+          }
+
+          /**
+           * @param {array[string]} types - name of class(es) to request
+           */
+
+      }, {
+          key: 'setTypes',
+          value: function setTypes(types) {
+              this.setParameter(QueryParameters.TYPES, toArray$1(types));
+          }
+      }, {
+          key: 'getTypes',
+          value: function getTypes() {
+              return this.getParameter(QueryParameters.TYPES);
+          }
+
+          // -----------------------------------------------------------
+
+
+      }, {
+          key: 'createdBy',
+          value: function createdBy(user) {
+              this.setCreatedBy(user);
+              return this;
+          }
+
+          /** @param {string} user - username */
+
+      }, {
+          key: 'setCreatedBy',
+          value: function setCreatedBy(user) {
+              this.setParameter(QueryParameters.CREATED_BY, user);
+          }
+
+          /** @return {string} username */
+
+      }, {
+          key: 'getCreatedBy',
+          value: function getCreatedBy() {
+              return this.getParameter(QueryParameters.CREATED_BY);
+          }
+
+          // -----------------------------------------------------------
+
+
+      }, {
+          key: 'lastModifiedBy',
+          value: function lastModifiedBy(user) {
+              this.setLastModifiedBy(user);
+              return this;
+          }
+
+          /** @param {string} user - username */
+
+      }, {
+          key: 'setLastModifiedBy',
+          value: function setLastModifiedBy(user) {
+              this.setParameter(QueryParameters.LAST_MODIFIED_BY, user);
+          }
+
+          /** @return {string} username */
+
+      }, {
+          key: 'getLastModifiedBy',
+          value: function getLastModifiedBy() {
+              return this.getParameter(QueryParameters.LAST_MODIFIED_BY);
+          }
+
+          // -----------------------------------------------------------
+
+
+          /**
+           * Specify a Theme or set of Themes to constrain results. By
+           * default, values are assumed to be theme identifiers. If using
+           * theme labels or theme uris, specify the optional second parameter
+           * to be either Parameters.THEMES_LABEL or Parameters.THEMES_URI
+           * respectively.
+           * @param {array[string]} themes - string or array of strings containing theme constraint
+           * @param {string} parameter - optional, to indicate the parameter to use
+           * @return {Query}
+           */
+
+      }, {
+          key: 'themes',
+          value: function themes(_themes, parameter) {
+              this.setThemes(_themes, parameter);
+              return this;
+          }
+
+          /**
+           * Specify a Theme or set of Themes to constrain results. By
+           * default, values are assumed to be theme identifiers. If using
+           * theme labels or theme uris, specify the optional second parameter
+           * to be either Parameters.THEMES_LABEL or Parameters.THEMES_URI
+           * respectively.
+           * @param {array[string]} themes - theme or themes to constrain by
+           */
+
+      }, {
+          key: 'setThemes',
+          value: function setThemes(themes, parameter) {
+
+              //clear existing
+              this.setParameter(QueryParameters.THEMES_ID, null);
+              this.setParameter(QueryParameters.THEMES_LABEL, null);
+              this.setParameter(QueryParameters.THEMES_URI, null);
+
+              var param = parameter || QueryParameters.THEMES_ID;
+              this.setParameter(param, toArray$1(themes));
+          }
+      }, {
+          key: 'getThemes',
+          value: function getThemes() {
+              return this.getParameter(QueryParameters.THEMES_ID) || this.getParameter(QueryParameters.THEMES_LABEL) || this.getParameter(QueryParameters.THEMES_URI);
+          }
+
+          // -----------------------------------------------------------
+
+
+          /**
+           * Specify a Publisher or set of Publishers to constrain results. By
+           * default, values are assumed to be identifiers. If using labels or uris,
+           * specify the optional second parameter to be either
+           * Parameters.PUBLISHERS_LABEL or Parameters.PUBLISHERS_URI respectively.
+           * @param {string} parameter - optional, to indicate the parameter to use
+           * @return {Query}
+           */
+
+      }, {
+          key: 'publishers',
+          value: function publishers(_publishers, parameter) {
+              this.setPublishers(_publishers, parameter);
+              return this;
+          }
+
+          /**
+           * Specify a Publisher or set of Publishers to constrain results. By
+           * default, values are assumed to be identifiers. If using labels or uris,
+           * specify the optional second parameter to be either
+           * Parameters.PUBLISHERS_LABEL or Parameters.PUBLISHERS_URI respectively.
+           * @param {array[string]} publishers - publishing orgs to constrain by
+           */
+
+      }, {
+          key: 'setPublishers',
+          value: function setPublishers(publishers, parameter) {
+
+              //clear existing
+              this.setParameter(QueryParameters.PUBLISHERS_ID, null);
+              this.setParameter(QueryParameters.PUBLISHERS_LABEL, null);
+              this.setParameter(QueryParameters.PUBLISHERS_URI, null);
+
+              var param = parameter || QueryParameters.PUBLISHERS_ID;
+              this.setParameter(param, toArray$1(publishers));
+          }
+      }, {
+          key: 'getPublishers',
+          value: function getPublishers() {
+              return this.getParameter(QueryParameters.PUBLISHERS_ID) || this.getParameter(QueryParameters.PUBLISHERS_LABEL) || this.getParameter(QueryParameters.PUBLISHERS_URI);
+          }
+
+          // -----------------------------------------------------------
+
+
+          /**
+           * Specify a Point of Contact or set of Contacts to constrain results. By
+           * default, values are assumed to be identifiers. If using
+           * labels or uris, specify the optional second parameter to be either
+           * Parameters.CONTACTS_LABEL or Parameters.CONTACTS_URI respectively.
+           * @param {string} parameter - optional, to indicate the parameter to use
+           * @return {Query}
+           */
+
+      }, {
+          key: 'contacts',
+          value: function contacts(_contacts, parameter) {
+              this.setContacts(_contacts, parameter);
+              return this;
+          }
+
+          /**
+           * Specify a Contact or set of Contacts to constrain results. By
+           * default, values are assumed to be identifiers. If using
+           * labels or uris, specify the optional second parameter to be either
+           * Parameters.CONTACTS_LABEL or Parameters.CONTACTS_URI respectively.
+           * @param {array[string]} contacts - publishing orgs to constrain by
+           */
+
+      }, {
+          key: 'setContacts',
+          value: function setContacts(contacts, parameter) {
+
+              //clear existing
+              this.setParameter(QueryParameters.CONTACTS_ID, null);
+              this.setParameter(QueryParameters.CONTACTS_LABEL, null);
+              this.setParameter(QueryParameters.CONTACTS_URI, null);
+
+              var param = parameter || QueryParameters.CONTACTS_ID;
+              this.setParameter(param, toArray$1(contacts));
+          }
+      }, {
+          key: 'getContacts',
+          value: function getContacts() {
+              return this.getParameter(QueryParameters.CONTACTS_ID) || this.getParameter(QueryParameters.CONTACTS_LABEL) || this.getParameter(QueryParameters.CONTACTS_URI);
+          }
+
+          // -----------------------------------------------------------
+
+
+          /**
+           * Specify the identifier of an Agent (Community, Group, etc) that
+           * uses items you wish to find in search results. By
+           * default, values are assumed to be identifiers. If using
+           * labels or uris, specify the optional second parameter
+           * to be either Parameters.USED_BY_LABEL or Parameters.USED_BY_URI
+           * respectively.
+           * @param {string} parameter - optional, to indicate the parameter to use
+           * @return {Query}
+           */
+
+      }, {
+          key: 'usedBy',
+          value: function usedBy(ids, parameter) {
+              this.setUsedBy(ids, parameter);
+              return this;
+          }
+
+          /**
+           * Specify the identifier of an Agent (Community, Group, etc) that
+           * uses items you wish to find in search results. By
+           * default, values are assumed to be identifiers. If using
+           * labels or uris, specify the optional second parameter
+           * to be either Parameters.USED_BY_LABEL or Parameters.USED_BY_URI
+           * respectively.
+           * @param {array[string]} ids - publishing orgs to constrain by
+           */
+
+      }, {
+          key: 'setUsedBy',
+          value: function setUsedBy(ids, parameter) {
+
+              //clear existing
+              this.setParameter(QueryParameters.USED_BY_ID, null);
+              this.setParameter(QueryParameters.USED_BY_LABEL, null);
+              this.setParameter(QueryParameters.USED_BY_URI, null);
+
+              var param = parameter || QueryParameters.USED_BY_ID;
+              this.setParameter(param, toArray$1(ids));
+          }
+      }, {
+          key: 'getUsedBy',
+          value: function getUsedBy() {
+              return this.getParameter(QueryParameters.USED_BY_ID) || this.getParameter(QueryParameters.USED_BY_LABEL) || this.getParameter(QueryParameters.USED_BY_URI);
+          }
+
+          // -----------------------------------------------------------
+
+
+          /**
+           * Specify a Concept Scheme or set of Concept Schemes to constrain results. By
+           * default, values are assumed to be identifiers. If using
+           * labels or uris, specify the optional second parameter
+           * to be either Parameters.SCHEMES_LABEL or Parameters.SCHEMES_URI
+           * respectively.
+           * @param {array[string]} schemes - schemes to constrain by
+           * @param {string} parameter - optional, to indicate the parameter to use
+           * @return {Query}
+           */
+
+      }, {
+          key: 'schemes',
+          value: function schemes(_schemes, parameter) {
+              this.setSchemes(_schemes, parameter);
+              return this;
+          }
+
+          /**
+           * Specify a Concept Scheme or set of Concept Schemes to constrain results. By
+           * default, values are assumed to be theme identifiers. If using
+           * theme labels or theme uris, specify the optional second parameter
+           * to be either Parameters.SCHEMES_LABEL or Parameters.SCHEMES_URI
+           * respectively.
+           * @param {array[string]} schemes - schemes to constrain by
+           * @param {string} parameter - optional, to indicate the parameter to use
+           */
+
+      }, {
+          key: 'setSchemes',
+          value: function setSchemes(schemes, parameter) {
+
+              //clear existing
+              this.setParameter(QueryParameters.SCHEMES_ID, null);
+              this.setParameter(QueryParameters.SCHEMES_LABEL, null);
+              this.setParameter(QueryParameters.SCHEMES_URI, null);
+
+              var param = parameter || QueryParameters.SCHEMES_ID;
+              this.setParameter(param, toArray$1(schemes));
+          }
+      }, {
+          key: 'getSchemes',
+          value: function getSchemes() {
+              return this.getParameter(QueryParameters.SCHEMES_ID) || this.getParameter(QueryParameters.SCHEMES_LABEL) || this.getParameter(QueryParameters.SCHEMES_URI);
+          }
+
+          // -----------------------------------------------------------
+
+          /**
+           *
+           */
+
+      }, {
+          key: 'serviceTypes',
+          value: function serviceTypes(types) {
+              this.setServiceTypes(types);
+              return this;
+          }
+
+          /**
+           * @param {array[string]} types - ids
+           */
+
+      }, {
+          key: 'setServiceTypes',
+          value: function setServiceTypes(types) {
+              this.setParameter(QueryParameters.SERVICE_TYPES, toArray$1(types));
+          }
+      }, {
+          key: 'getServiceTypes',
+          value: function getServiceTypes() {
+              return this.getParameter(QueryParameters.SERVICE_TYPES);
+          }
+
+          // -----------------------------------------------------------
+
+
+      }, {
+          key: 'visibility',
+          value: function visibility(vis) {
+              this.setVisibility(vis);
+              return this;
+          }
+
+          /**
+           * @param {string} visibility - one of 'public' or 'private'
+           */
+
+      }, {
+          key: 'setVisibility',
+          value: function setVisibility(visibility) {
+              this.setParameter(QueryParameters.VISIBILITY, visibility);
+          }
+      }, {
+          key: 'getVisibility',
+          value: function getVisibility() {
+              return this.getParameter(QueryParameters.VISIBILITY);
+          }
+
+          // -----------------------------------------------------------
+
+
+      }, {
+          key: 'status',
+          value: function status(value) {
+              this.setStatus(value);
+              return this;
+          }
+
+          /**
+           * @param {string} status - current status of Item
+           */
+
+      }, {
+          key: 'setStatus',
+          value: function setStatus(value) {
+              this.setParameter(QueryParameters.STATUS, value);
+          }
+      }, {
+          key: 'getStatus',
+          value: function getStatus() {
+              return this.getParameter(QueryParameters.STATUS);
+          }
+
+          // -----------------------------------------------------------
+
+
+      }, {
+          key: 'extent',
+          value: function extent(bbox) {
+              this.setExtent(bbox);
+              return this;
+          }
+
+          /**
+           * @param {string} bboxStr - form of "minx,miny,maxx,maxy"
+           */
+
+      }, {
+          key: 'setExtent',
+          value: function setExtent(bbox) {
+              if (bbox && typeof bbox.toBboxString !== 'undefined') {
+                  //Leaflet Bounds instance
+                  bbox = bbox.toBboxString();
+              } else if (typeof bbox.push !== 'undefined' && bbox.length &&
+              //Nested array (alternate Leaflet representation):
+              // [ [minLat,minLong], [maxLat,maxLong] ]
+              typeof bbox[0].push !== 'undefined') {
+                  bbox = bbox[0][1] + ',' + bbox[0][0] + ',' + bbox[1][1] + ',' + bbox[1][0];
+              } else if (typeof bbox === 'string') {
+                  if (!BBOX_REGEX.test(bbox)) {
+                      throw new Error("Invalid argument: bbox string must be " + "in form of 'minx,miny,maxx,maxy'");
+                  }
+              } else {
+                  throw new Error("Invalid argument: bbox must be one of " + "Leaflet.Bounds, nested array, or bbox string");
+              }
+              this.setParameter(QueryParameters.EXTENT, bbox);
+          }
+
+          /**
+           * @return {string} bbox string or null if not set
+           */
+
+      }, {
+          key: 'getExtent',
+          value: function getExtent() {
+              return this.getParameter(QueryParameters.EXTENT);
+          }
+
+          // -----------------------------------------------------------
+
+
+      }, {
+          key: 'modified',
+          value: function modified(date, beforeOrAfter) {
+              this.setModified(date, beforeOrAfter);
+              return this;
+          }
+
+          /**
+           * @param {Date} date - date to compare against
+           * @param {boolean} beforeOrAfter - flag specifying which boundary condition (true = before, false = after) flag specifying whether to trigger update automatically
+           */
+
+      }, {
+          key: 'setModified',
+          value: function setModified(date, beforeOrAfter) {
+
+              //if no date was supplied, consider it "unset" for both properties
+              if (!date) {
+                  this.setParameter(QueryParameters.MODIFIED_BEFORE, null);
+                  this.setParameter(QueryParameters.MODIFIED_AFTER, null);
+                  return;
+              }
+
+              var dir = beforeOrAfter && (beforeOrAfter === true || beforeOrAfter === "true");
+              var prop = dir ? QueryParameters.MODIFIED_BEFORE : QueryParameters.MODIFIED_AFTER; //property being set
+              var oppProp = dir ? QueryParameters.MODIFIED_AFTER : QueryParameters.MODIFIED_BEFORE; //unset opposite property
+              var arg = date && date.getTime ? date.getTime() : date;
+
+              this.setParameter(oppProp, null);
+              this.setParameter(prop, arg);
+          }
+      }, {
+          key: 'getModified',
+          value: function getModified() {
+              var value = this.getParameter(QueryParameters.MODIFIED_BEFORE) || this.getParameter(QueryParameters.MODIFIED_AFTER);
+              if (value && typeof value === 'number') {
+                  value = new Date(value);
+              }
+              return value;
+          }
+
+          // -----------------------------------------------------------
+
+
+      }, {
+          key: 'created',
+          value: function created(date, beforeOrAfter) {
+              this.setCreated(date, beforeOrAfter);
+              return this;
+          }
+
+          /**
+           * @param {Date} date - date to compare against
+           * @param {boolean} beforeOrAfter - flag specifying which boundary condition (true = before, false = after) flag specifying whether to trigger update automatically
+           */
+
+      }, {
+          key: 'setCreated',
+          value: function setCreated(date, beforeOrAfter) {
+
+              //if no date was supplied, consider it "unset" for both properties
+              if (!date) {
+                  this.setParameter(QueryParameters.CREATED_BEFORE, null);
+                  this.setParameter(QueryParameters.CREATED_AFTER, null);
+                  return;
+              }
+
+              var dir = beforeOrAfter && (beforeOrAfter === true || beforeOrAfter === "true");
+              var prop = dir ? QueryParameters.CREATED_BEFORE : QueryParameters.CREATED_AFTER; //property being set
+              var oppProp = dir ? QueryParameters.CREATED_AFTER : QueryParameters.CREATED_BEFORE; //unset opposite property
+              var arg = date && date.getTime ? date.getTime() : date;
+
+              this.setParameter(oppProp, null);
+              this.setParameter(prop, arg);
+          }
+      }, {
+          key: 'getCreated',
+          value: function getCreated() {
+              var value = this.getParameter(QueryParameters.CREATED_BEFORE) || this.getParameter(QueryParameters.CREATED_AFTER);
+              if (value && typeof value === 'number') {
+                  value = new Date(value);
+              }
+              return value;
+          }
+
+          // -----------------------------------------------------------
+
+
+      }, {
+          key: 'begins',
+          value: function begins(date) {
+              this.setBeginDate(date);
+              return this;
+          }
+      }, {
+          key: 'setBeginDate',
+          value: function setBeginDate(date) {
+              if (date && date instanceof Date) date = date.getTime();
+              this.setParameter(QueryParameters.BEGINS, date);
+          }
+      }, {
+          key: 'getBeginDate',
+          value: function getBeginDate() {
+              var date = this.getParameter(QueryParameters.BEGINS);
+              if (date) date = new Date(date);
+              return date;
+          }
+
+          // -----------------------------------------------------------
+
+
+      }, {
+          key: 'ends',
+          value: function ends(date) {
+              this.setEndDate(date);
+              return this;
+          }
+      }, {
+          key: 'setEndDate',
+          value: function setEndDate(date) {
+              if (date && date instanceof Date) date = date.getTime();
+              this.setParameter(QueryParameters.ENDS, date);
+          }
+      }, {
+          key: 'getEndDate',
+          value: function getEndDate() {
+              var date = this.getParameter(QueryParameters.ENDS);
+              if (date) date = new Date(date);
+              return date;
+          }
+
+          // -----------------------------------------------------------
+
+
+      }, {
+          key: 'between',
+          value: function between(begin, end) {
+              this.setBetween(begin, end);
+              return this;
+          }
+      }, {
+          key: 'setBetween',
+          value: function setBetween(begin, end) {
+              this.begins(begin);
+              this.ends(end);
+          }
+
+          // -----------------------------------------------------------
+
+
+      }, {
+          key: 'resourceTypes',
+          value: function resourceTypes(types) {
+              this.setResourceTypes(types);
+              return this;
+          }
+      }, {
+          key: 'setResourceTypes',
+          value: function setResourceTypes(types) {
+              this.setParameter(QueryParameters.RESOURCE_TYPE, toArray$1(types));
+          }
+      }, {
+          key: 'getResourceTypes',
+          value: function getResourceTypes() {
+              return this.getParameter(QueryParameters.RESOURCE_TYPE);
+          }
+
+          // -----------------------------------------------------------
+
+
+      }, {
+          key: 'facets',
+          value: function facets(names) {
+              this.setFacets(names);
+              return this;
+          }
+
+          /*
+           * @param {array[string]} names - names of facets
+           */
+
+      }, {
+          key: 'setFacets',
+          value: function setFacets(names) {
+              this.setParameter(QueryParameters.FACETS, toArray$1(names));
+          }
+      }, {
+          key: 'getFacets',
+          value: function getFacets() {
+              return this.getParameter(QueryParameters.FACETS);
+          }
+
+          /**
+           * @param {string} name - name of facet to add
+           */
+
+      }, {
+          key: 'addFacet',
+          value: function addFacet(name) {
+              var facets = this.getFacets() || [];
+              facets.push(name);
+              this.setFacets(facets);
+          }
+
+          /**
+           * @param {string} name - name of facet to remove
+           */
+
+      }, {
+          key: 'removeFacet',
+          value: function removeFacet(name) {
+              var facets = this.getFacets() || [];
+              var idx = facets.indexOf(name);
+              if (idx >= 0) {
+                  facets.splice(idx, 1);
+                  this.setFacets(facets);
+              }
+          }
+
+          // -----------------------------------------------------------
+
+
+      }, {
+          key: 'fields',
+          value: function fields(_fields) {
+              this.setFields(_fields);
+              return this;
+          }
+
+          /**
+           * @param {array[string]} fields - list of field names to request for each search result
+           */
+
+      }, {
+          key: 'setFields',
+          value: function setFields(fields) {
+              this.setParameter(QueryParameters.FIELDS, toArray$1(fields));
+          }
+      }, {
+          key: 'getFields',
+          value: function getFields() {
+              return this.getParameter(QueryParameters.FIELDS);
+          }
+
+          /**
+           * @param {string} field - name of field to remove
+           */
+
+      }, {
+          key: 'addField',
+          value: function addField(field) {
+              var fields = this.getFields() || [];
+              fields.push(field);
+              this.setFields(fields);
+          }
+
+          /**
+           * @param {string} field - name of field to remove
+           */
+
+      }, {
+          key: 'removeField',
+          value: function removeField(field) {
+              var fields = this.getFields() || [];
+              var idx = fields.indexOf(name);
+              if (idx >= 0) {
+                  fields.splice(idx, 1);
+                  this.setFields(fields);
+              }
+          }
+
+          // -----------------------------------------------------------
+
+
+          /**
+           * @param {int} page - page of results to fetch
+           */
+
+      }, {
+          key: 'page',
+          value: function page(_page) {
+              this.setPage(_page);
+              return this;
+          }
+      }, {
+          key: 'setPage',
+          value: function setPage(page) {
+              if (isNaN(page) || page * 1 < 0) return;
+              this.setParameter(QueryParameters.PAGE, page * 1);
+          }
+      }, {
+          key: 'getPage',
+          value: function getPage() {
+              return this.getParameter(QueryParameters.PAGE);
+          }
+      }, {
+          key: 'nextPage',
+          value: function nextPage() {
+              this.setPage(this.getPage() + 1);
+          }
+      }, {
+          key: 'previousPage',
+          value: function previousPage() {
+              this.setPage(this.getPage() - 1);
+          }
+
+          // -----------------------------------------------------------
+
+
+          /**
+           * @param {int} size - page size to request
+           */
+
+      }, {
+          key: 'pageSize',
+          value: function pageSize(size) {
+              this.setPageSize(size);
+              return this;
+          }
+      }, {
+          key: 'setPageSize',
+          value: function setPageSize(size) {
+              if (isNaN(size) || size * 1 < 0) return;
+              this.setParameter(QueryParameters.PAGE_SIZE, size * 1);
+          }
+      }, {
+          key: 'getPageSize',
+          value: function getPageSize() {
+              return this.getParameter(QueryParameters.PAGE_SIZE);
+          }
+
+          // -----------------------------------------------------------
+
+
+          /**
+           * @param {string} sort - form of <field>,<dir> or just field name
+           * @param {string} order - optional, either 'asc' or 'desc'
+           */
+
+      }, {
+          key: 'sort',
+          value: function sort(_sort, order) {
+              this.setSort(_sort, order);
+              return this;
+          }
+
+          /**
+           * @param {string} sort - form of <field>,<dir> or just field name
+           * @param {string} order - optional, either 'asc' or 'desc'
+           */
+
+      }, {
+          key: 'setSort',
+          value: function setSort(sort, order) {
+              order = order && (order !== 'asc' || order !== 'desc') ? 'desc' : order;
+              if (sort && sort.indexOf(',') < 0) sort = sort + ',' + order;
+              this.setParameter(QueryParameters.SORT, sort);
+          }
+      }, {
+          key: 'getSort',
+          value: function getSort() {
+              return this.getParameter(QueryParameters.SORT);
+          }
+      }, {
+          key: 'getSortField',
+          value: function getSortField() {
+              var value = this.getSort();
+              return value && value.length ? value.split(',')[0] : null;
+          }
+      }, {
+          key: 'getSortOrder',
+          value: function getSortOrder() {
+              var value = this.getSort();
+              return value && value.length ? value.split(',')[1] : null;
+          }
+
+          /**
+           * @return {array} list of key-value pairs of sort options
+           */
+
+      }, {
+          key: 'getSortOptions',
+          value: function getSortOptions() {
+              return SORT_OPTIONS_DEFAULT.slice(0);
+          }
+
+          // -----------------------------------------------------------
+
+
+          /**
+           *
+           */
+
+      }, {
+          key: 'clear',
+          value: function clear() {
+              this.query = JSON.parse(JSON.stringify(this.defaultQuery));
+          }
+      }]);
+      return Query;
+  }();
+
   /**
    * GeoPlatform Service service
    * service for working with the GeoPlatform API to
@@ -1234,7 +2461,7 @@
           value: function types(options) {
               var _this3 = this;
 
-              var query = new Query().types(ItemTypes.STANDARD).resourceTypes('ServiceType').pageSize(50).getQuery();
+              var query = new Query$1().types(ItemTypes.STANDARD).resourceTypes('ServiceType').pageSize(50).getQuery();
 
               return Q.resolve(query).then(function (params) {
                   var url = _this3.apiBase + '/api/items';
@@ -2052,88 +3279,683 @@
       return AgolService;
   }();
 
-  var Parameters = {
-      ALTERNATE_TITLE: 'alternateTitles',
-      BEGINS: 'startDate.min',
-      CREATED: 'created',
-      CREATED_BEFORE: 'created.max',
-      CREATED_AFTER: 'created.min',
-      CREATED_BY: 'createdBy',
-      CREATOR: 'creator.id',
-      CONTRIBUTED_BY: 'contributedBy',
-      ENDS: 'endDate.max',
-      EXTENT: 'extent',
-      IDENTIFIERS: 'identifiers',
-      KEYWORDS: 'keywords',
-      LAST_MODIFIED_BY: 'lastModifiedBy',
-      MODIFIED: 'modified',
-      MODIFIED_BEFORE: 'modified.max',
-      MODIFIED_AFTER: 'modified.min',
-      PUBLISHERS_ID: 'publisher.id',
-      PUBLISHERS_LABEL: 'publisher.label',
-      PUBLISHERS_URI: 'publisher.uri',
-      CONTACTS_ID: 'contacts.id',
-      CONTACTS_LABEL: 'contacts.label',
-      CONTACTS_URI: 'contacts.uri',
-      QUERY: 'q',
-      SCHEMES_ID: 'scheme.id',
-      SCHEMES_LABEL: 'scheme.label',
-      SCHEMES_URI: 'scheme.uri',
-      SIMILAR_TO: 'similarTo',
-      STATUS: 'status',
-      SERVICE_TYPES: 'serviceType.id',
-      THEMES_ID: 'theme.id',
-      THEMES_LABEL: 'theme.label',
-      THEMES_URI: 'theme.uri',
-      TYPES: 'type', //TODO change to 'types'
-      URI: 'uri',
-      USED_BY_ID: 'usedBy.id',
-      USED_BY_LABEL: 'usedBy.label',
-      USED_BY_URI: 'usedBy.uri',
-      VISIBILITY: 'visibility',
-      RESOURCE_TYPE: 'resourceType',
-      DATASET: 'dataset',
-      LANDING_PAGE: 'landingPage',
-      PURPOSE: 'purpose',
+  var Config = {
 
-      //statistics parameters
-      RELIABILITY: 'reliability',
-      RELIABILITY_MIN: 'reliability.min',
-      RELIABILITY_MAX: 'reliability.max',
-      ONLINE: 'online',
-      COMPLIANT: 'compliant',
-      SPEED: 'speed',
-      SPEED_MIN: 'speed.min',
-      SPEED_MAX: 'speed.max',
-      LIKES: 'likes',
-      LIKES_MIN: 'likes.min',
-      LIKES_MAX: 'likes.max',
-      VIEWS: 'views',
-      VIEWS_MIN: 'views.min',
-      VIEWS_MAX: 'views.max',
+      ualUrl: 'https://ual.geoplatform.gov',
+      //appId: '...',
 
-      //type-specific parameters
-      HREF: 'href', //service-specific
-      LAYER_TYPE: 'layerType', //layer-specific
-      LAYER_NAME: 'layerName', //...
-      PARENT_LAYER: 'parentLayer', //...
-      SUB_LAYER: 'subLayer', //...
-      SERVICE: 'service', //...
-      MAP_LAYER: 'mapLayer', //map-specific
-      GALLERY_ITEM: 'galleryItem', //gallery-specific
-
-      //meta-parameters
-      FACETS: 'includeFacets', //TODO change to 'facets'
-      FIELDS: 'fields',
-      SORT: 'sort',
-      PAGE: 'page',
-      PAGE_SIZE: 'size',
-
-      //recommender service-specific
-      FOR_TYPES: 'for'
+      configure: function configure(options) {
+          Object.assign(this, options);
+      }
   };
 
-  var SORT_OPTIONS_DEFAULT = [{ value: "label,asc", label: "Name (A-Z)" }, { value: "label,desc", label: "Name (Z-A)" }, { value: "type,asc", label: "Type (A-Z)" }, { value: "type,desc", label: "Type (Z-A)" }, { value: "modified,desc", label: "Most recently modified" }, { value: "modified,asc", label: "Least recently modified" }, { value: "_score,desc", label: "Relevance" }];
+  var ServiceProxy = {
+
+      bindRoutes: function bindRoutes(router, options) {
+          var _this = this;
+
+          options = options || {};
+          var paths = options.paths || {};
+
+          if (paths.search !== false) {
+              router.get('/' + (paths.search || options.pathBaseDefault), function (req, res, next) {
+                  _this.getService(req, false, options).search(req.query).then(function (response) {
+                      return res.json(response);
+                  }).catch(next);
+              });
+          }
+
+          if (paths.getById !== false) {
+              router.get('/' + (paths.getById || options.pathBaseDefault + "/:id"), function (req, res, next) {
+                  _this.getService(req, false, options).get(req.params.id).then(function (item) {
+                      return res.json(item);
+                  }).catch(next);
+              });
+          }
+
+          if (paths.create !== false) {
+              router.post('/' + (paths.create || options.pathBaseDefault + ''), function (req, res, next) {
+                  var input = req.body;
+                  _this.getService(req, true, options).save(input).then(function (item) {
+                      return res.json(item);
+                  }).catch(next);
+              });
+          }
+
+          if (paths.delete !== false) {
+              router.delete('/' + (paths.delete || options.pathBaseDefault + '/:id'), function (req, res, next) {
+                  _this.getService(req, true, options).remove(req.params.id).then(function (item) {
+                      return res.status(204).end();
+                  }).catch(next);
+              });
+          }
+
+          if (paths.update !== false) {
+              router.put('/' + (paths.update || options.pathBaseDefault + '/:id'), function (req, res, next) {
+                  var id = req.params.id;
+                  var obj = req.body;
+                  _this.getService(req, true, options).save(obj).then(function (item) {
+                      return res.json(item);
+                  }).catch(next);
+              });
+          }
+
+          if (paths.patch !== false) {
+              router.patch('/' + (paths.patch || options.pathBaseDefault + '/:id'), function (req, res, next) {
+                  var id = req.params.id;
+                  var obj = req.body;
+                  _this.getService(req, true, options).patch(id, obj).then(function (item) {
+                      return res.json(item);
+                  }).catch(next);
+              });
+          }
+
+          if (paths.export !== false) {
+              router.get('/' + (paths.export || options.pathBaseDefault + '/:id'), function (req, res, next) {
+                  var id = req.params.id;
+                  var format = req.query.format;
+
+                  _this.getService(req, false, options).export(id, format).then(function (response) {
+                      var mimeType = response.headers['content-type'];
+                      var disposition = response.headers['content-disposition'];
+                      res.set("Content-Type", mimeType);
+                      res.setHeader('Content-disposition', disposition);
+                      res.send(response.body);
+                  }).catch(next);
+              });
+          }
+      },
+
+      /**
+      * @param {Request} req - HttpRequest
+      * @param {boolean} needsAuth - flag indicating if the request must provide an authentication token
+      * @return {HttpClient} client to use to make requests to GeoPlatform API endpoint
+      */
+      getClient: function getClient(req, needsAuth, options) {
+
+          var token = req.accessToken || null;
+          if (needsAuth) {
+              if (!token && options.logger) options.logger.warn("ServiceProxy.getClient() - No Access Token was provided on incoming request header!");else if (!!options.debug && options.logger) {
+                  options.logger.debug('ServiceProxy.getClient() - Token: ' + token);
+                  options.logger.debug('ServiceProxy.getClient() - JWT: ' + req.jwt);
+              }
+          }
+
+          return new NodeHttpClient({
+              timeout: Config.timeout,
+              token: needsAuth ? token : null
+          });
+      },
+
+      /**
+       *
+       */
+      getService: function getService(req, needsAuth, options) {
+          var client = this.getClient(req, needsAuth, options);
+          var svcClass = options.serviceClass || ItemService;
+          var service = new svcClass(Config.ualUrl, client);
+          if (options.logger) {
+              service.setLogger(options.logger);
+          }
+          return service;
+      }
+  };
+
+  /**
+   *
+   */
+  function bindRoutes(router, options) {
+
+      var paths = options.paths || {};
+
+      //bind common endpoints
+      options.pathBaseDefault = "items";
+      options.serviceClass = ItemService;
+      ServiceProxy.bindRoutes(router, options);
+
+      //then bind those specific to this service
+
+      if (paths.uri !== false) {
+          router.post('/' + (paths.uri || 'items/uri'), function (req, res, next) {
+              ServiceProxy.getService(req, false, options).getUri(req.body).then(function (response) {
+                  return res.json({ uri: response });
+              }).catch(next);
+          });
+      }
+
+      if (paths.exists !== false) {
+          router.post('/' + (paths.exists || 'items/exists'), function (req, res, next) {
+              ServiceProxy.getService(req, false, options).getUri(req.body).then(function (uri) {
+                  var fields = ['serviceType', 'services', 'scheme', 'themes', 'publishers', 'keywords'];
+                  var query = new Query().uri(uri).fields(fields);
+                  return svc.search(query);
+              }).then(function (response) {
+                  return res.json(response);
+              }).catch(next);
+          });
+      }
+
+      if (paths.import !== false) {
+          router.post('/' + (paths.import || 'items/import'), function (req, res, next) {
+              var input = req.body.url || req.files.file;
+              ServiceProxy.getService(req, false, options).import(input, req.body.format).then(function (item) {
+                  res.json(item);
+              }).catch(next);
+          });
+      }
+
+      //TODO findMultiple
+  }
+
+  /**
+   * ItemServiceProxy
+   *
+   * see examples/node/item-proxy for an in-depth example
+   */
+  function ItemServiceProxy(options) {
+
+      if (typeof options === 'undefined') {
+          options = {};
+      }
+      var router = options.router;
+      if (!options.router) {
+          var express = require('express');
+          if (!express) {
+              throw new Error("ItemServiceProxy() - Must provide" + "'options.router' or include express as a dependency");
+          }
+          router = express.Router();
+      }
+
+      if (!router) throw new Error("ItemServiceProxy() - " + "Unable to create proxy route, missing router");
+
+      bindRoutes(router, options);
+
+      return router;
+  }
+
+  /**
+   *
+   */
+  function bindRoutes$1(router, options) {
+
+      var paths = options.paths || {};
+
+      options.pathBaseDefault = "services";
+      options.serviceClass = ServiceService;
+      ServiceProxy.bindRoutes(router, options);
+
+      if (paths.types !== false) {
+          router.get('/' + (paths.types || "serviceTypes"), function (req, res, next) {
+              console.log("Service Types");
+              ServiceProxy.getService(req, false, options).types().then(function (result) {
+                  res.json(result);
+              }).catch(next);
+          });
+      }
+
+      if (paths.import !== false) {
+          router.post('/' + (paths.import || "services/import"), function (req, res, next) {
+              ServiceProxy.getService(req, true, options).import(req.body).then(function (result) {
+                  return res.json(result);
+              }).catch(next);
+          });
+      }
+
+      if (paths.about !== false) {
+          router.get('/' + (paths.about || "services/:id/about"), function (req, res, next) {
+              var svc = ServiceProxy.getService(req, false, options);
+              svc.get(req.params.id).then(function (service) {
+                  return svc.about(service);
+              }).then(function (result) {
+                  return res.json(result);
+              }).catch(next);
+          });
+      }
+
+      if (paths.harvest !== false) {
+          router.get('/' + (paths.harvest || "services/:id/harvest"), function (req, res, next) {
+              ServiceProxy.getService(req, false, options).harvest(req.params.id).then(function (result) {
+                  return res.json(result);
+              }).catch(next);
+          });
+      }
+
+      if (paths.test !== false) {
+          router.get('/' + (paths.test || "services/:id/test"), function (req, res, next) {
+              ServiceProxy.getService(req, false, options).liveTest(req.params.id).then(function (result) {
+                  res.json(result);
+              }).catch(next);
+          });
+      }
+
+      if (paths.statistics !== false) {
+          router.get('/' + (paths.statistics || "services/:id/statistics"), function (req, res, next) {
+              ServiceProxy.getService(req, false, options).statistics(req.params.id).then(function (result) {
+                  res.json(result);
+              }).catch(next);
+          });
+      }
+  }
+
+  /**
+   *
+   * Example:
+   *
+   *   const Logger = require('./logger');
+   *
+   *   //define GP API Client config options before creating proxy
+   *   const Config = require('geoplatform.client');
+   *   Config.configure( {
+   *     timeout: 20000,
+   *     ualUrl: 'https://ual.geoplatform.gov'
+   *   });
+   *
+   *   //optionally, define parent router
+   *   router = require('express').Router();
+   *   router.use('/api', ServiceServiceProxy({
+   *     logger: Logger,
+   *     debug: true,
+   *     //optionally, provide router instance
+   *     router: require('express').Router()
+   *   }));
+   *
+   */
+  function ServiceServiceProxy(options) {
+
+      if (typeof options === 'undefined') {
+          options = {};
+      }
+      var router = options.router;
+      if (!options.router) {
+          var express = require('express');
+          if (!express) {
+              throw new Error("ServiceServiceProxy() - Must provide" + "'options.router' or include express as a dependency");
+          }
+          router = express.Router();
+      }
+
+      if (!router) throw new Error("ServiceServiceProxy() - " + "Unable to create proxy route, missing router");
+
+      bindRoutes$1(router, options);
+
+      return router;
+  }
+
+  /**
+   *
+   */
+  function bindRoutes$2(router, options) {
+
+      var paths = options.paths || {};
+
+      options.pathBaseDefault = "layers";
+      ServiceProxy.bindRoutes(router, options);
+
+      if (paths.style !== false) {
+          router.get('/' + (paths.style || "layers/:id/style"), function (req, res, next) {
+              ServiceProxy.getService(req, true, options).style(req.params.id).then(function (result) {
+                  return res.json(result);
+              }).catch(next);
+          });
+      }
+
+      if (paths.describe !== false) {
+          router.post('/' + (paths.describe || "layers/:id/describe"), function (req, res, next) {
+              ServiceProxy.getService(req, false, options).describe(req.params.id, req.body).then(function (result) {
+                  return res.json(result);
+              }).catch(next);
+          });
+      }
+
+      if (paths.validate !== false) {
+          router.post('/' + (paths.validate || "layers/:id/validate"), function (req, res, next) {
+              ServiceProxy.getService(req, false, options).validate(req.params.id, req.body).then(function (result) {
+                  return res.json(result);
+              }).catch(next);
+          });
+      }
+  }
+
+  /**
+   *
+   * Example:
+   *
+   *   const Logger = require('./logger');
+   *
+   *   //define GP API Client config options before creating proxy
+   *   const Config = require('geoplatform.client');
+   *   Config.configure( {
+   *     timeout: 20000,
+   *     ualUrl: 'https://ual.geoplatform.gov'
+   *   });
+   *
+   *   //optionally, define parent router
+   *   router = require('express').Router();
+   *   router.use('/api', LayerServiceProxy({
+   *     logger: Logger,
+   *     debug: true,
+   *     //optionally, provide router instance
+   *     router: require('express').Router()
+   *   }));
+   *
+   */
+  function LayerServiceProxy(options) {
+
+      if (typeof options === 'undefined') {
+          options = {};
+      }
+      var router = options.router;
+      if (!options.router) {
+          var express = require('express');
+          if (!express) {
+              throw new Error("LayerServiceProxy() - Must provide" + "'options.router' or include express as a dependency");
+          }
+          router = express.Router();
+      }
+
+      if (!router) throw new Error("LayerServiceProxy() - " + "Unable to create proxy route, missing router");
+
+      options.serviceClass = LayerService;
+      bindRoutes$2(router, options);
+
+      return router;
+  }
+
+  /**
+   * DatasetServiceProxy
+   *
+   * see examples/node/item-proxy for an in-depth example
+   */
+  function DatasetServiceProxy(options) {
+
+      if (typeof options === 'undefined') {
+          options = {};
+      }
+      var router = options.router;
+      if (!options.router) {
+          var express = require('express');
+          if (!express) {
+              throw new Error("DatasetServiceProxy() - Must provide" + "'options.router' or include express as a dependency");
+          }
+          router = express.Router();
+      }
+
+      if (!router) throw new Error("DatasetServiceProxy() - " + "Unable to create proxy route, missing router");
+
+      options.pathBaseDefault = "datasets";
+      options.serviceClass = ItemService;
+      ServiceProxy.bindRoutes(router, options);
+
+      return router;
+  }
+
+  /**
+   * MapServiceProxy
+   *
+   * see examples/node/item-proxy for an in-depth example
+   */
+  function MapServiceProxy(options) {
+
+      if (typeof options === 'undefined') {
+          options = {};
+      }
+      var router = options.router;
+      if (!options.router) {
+          var express = require('express');
+          if (!express) {
+              throw new Error("MapServiceProxy() - Must provide" + "'options.router' or include express as a dependency");
+          }
+          router = express.Router();
+      }
+
+      if (!router) throw new Error("MapServiceProxy() - " + "Unable to create proxy route, missing router");
+
+      options.pathBaseDefault = "maps";
+      options.serviceClass = ItemService;
+      ServiceProxy.bindRoutes(router, options);
+
+      return router;
+  }
+
+  /**
+   * GalleryServiceProxy
+   *
+   * see examples/node/item-proxy for an in-depth example
+   */
+  function GalleryServiceProxy(options) {
+
+      if (typeof options === 'undefined') {
+          options = {};
+      }
+      var router = options.router;
+      if (!options.router) {
+          var express = require('express');
+          if (!express) {
+              throw new Error("GalleryServiceProxy() - Must provide" + "'options.router' or include express as a dependency");
+          }
+          router = express.Router();
+      }
+
+      if (!router) throw new Error("GalleryServiceProxy() - " + "Unable to create proxy route, missing router");
+
+      options.pathBaseDefault = "galleries";
+      options.serviceClass = ItemService;
+      ServiceProxy.bindRoutes(router, options);
+
+      return router;
+  }
+
+  /**
+   *
+   */
+  function bindRoutes$3(router, options) {
+
+      var paths = options.paths || {};
+
+      if (paths.locate !== false) {
+          router.get('/' + (paths.locate || "utils/locate"), function (req, res, next) {
+              ServiceProxy.getService(req, false, options).locate(req.query.q).then(function (response) {
+                  return res.json(response);
+              }).catch(next);
+          });
+      }
+
+      if (paths.parseFile !== false) {
+          router.post('/' + (paths.parseFile || "utils/parse"), function (req, res, next) {
+              ServiceProxy.getService(req, false, options).parseFile(req.files.file, req.body.format).then(function (result) {
+                  return res.json(result);
+              }).catch(next);
+          });
+      }
+
+      if (paths.capabilities !== false) {
+          router.get('/' + (paths.capabilities || "utils/capabilities"), function (req, res, next) {
+              ServiceProxy.getService(req, false, options).capabilities(req.query.property).then(function (result) {
+                  return res.json(result);
+              }).catch(next);
+          });
+      }
+  }
+
+  /**
+   *
+   * Example:
+   *
+   *   const Logger = require('./logger');
+   *
+   *   //define GP API Client config options before creating proxy
+   *   const Config = require('geoplatform.client');
+   *   Config.configure( {
+   *     timeout: 20000,
+   *     ualUrl: 'https://ual.geoplatform.gov'
+   *   });
+   *
+   *   //optionally, define parent router
+   *   router = require('express').Router();
+   *   router.use('/api', UtilsServiceProxy({
+   *     logger: Logger,
+   *     debug: true,
+   *     //optionally, provide router instance
+   *     router: require('express').Router()
+   *   }));
+   *
+   */
+  function UtilsServiceProxy(options) {
+
+      if (typeof options === 'undefined') {
+          options = {};
+      }
+      var router = options.router;
+      if (!options.router) {
+          var express = require('express');
+          if (!express) {
+              throw new Error("UtilsServiceProxy() - Must provide" + "'options.router' or include express as a dependency");
+          }
+          router = express.Router();
+      }
+
+      if (!router) throw new Error("UtilsServiceProxy() - " + "Unable to create proxy route, missing router");
+
+      options.serviceClass = ServiceService;
+      bindRoutes$3(router, options);
+
+      return router;
+  }
+
+  /**
+   *
+   */
+  function bindRoutes$4(router, options) {
+
+      var paths = options.paths || {};
+
+      if (paths.searchItems !== false) {
+          router.get('/' + (paths.searchItems || "agol/searchItems"), function (req, res, next) {
+              getService(req, false, options).searchItems(req.query).then(function (response) {
+                  return res.json(response);
+              }).catch(next);
+          });
+      }
+
+      if (paths.searchGroups !== false) {
+          router.get('/' + (paths.searchGroups || "agol/searchGroups"), function (req, res, next) {
+              getService(req, false, options).searchGroups(req.query).then(function (response) {
+                  return res.json(response);
+              }).catch(next);
+          });
+      }
+
+      if (paths.searchOrgs !== false) {
+          router.get('/' + (paths.searchOrgs || "agol/orgs"), function (req, res, next) {
+              getService(req, false, options).searchOrgs(req.query).then(function (response) {
+                  return res.json(response);
+              }).catch(next);
+          });
+      }
+
+      if (paths.getItem !== false) {
+          router.get('/' + (paths.getItem || "agol/items/:id"), function (req, res, next) {
+              getService(req, false, options).getItem(req.params.id).then(function (item) {
+                  return res.json(item);
+              }).catch(next);
+          });
+      }
+
+      if (paths.getGroup !== false) {
+          router.get('/' + (paths.getGroup || "agol/groups/:id"), function (req, res, next) {
+              getService(req, false, options).getGroup(input).then(function (item) {
+                  return res.json(item);
+              }).catch(next);
+          });
+      }
+
+      if (paths.getOrg !== false) {
+          router.get('/' + (paths.getOrg || "agol/orgs/:id"), function (req, res, next) {
+              getService(req, false, options).getOrg(req.params.id).then(function (item) {
+                  return res.status(204).end();
+              }).catch(next);
+          });
+      }
+  }
+
+  /**
+  * @param {Request} req - HttpRequest
+  * @param {boolean} needsAuth - flag indicating if the request must provide an authentication token
+  * @return {HttpClient} client to use to make requests to GeoPlatform API endpoint
+  */
+  function getClient(req, needsAuth, options) {
+
+      var token = req.accessToken || null;
+      if (needsAuth) {
+          if (!token && options.logger) options.logger.warn("AgolServiceProxy.getClient() - No Access Token was provided on incoming request header!");else if (!!options.debug && options.logger) {
+              options.logger.debug('AgolServiceProxy.getClient() - Token: ' + token);
+              options.logger.debug('AgolServiceProxy.getClient() - JWT: ' + req.jwt);
+          }
+      }
+
+      return new NodeHttpClient({
+          timeout: Config.timeout,
+          token: needsAuth ? token : null
+      });
+  }
+
+  /**
+   *
+   */
+  function getService(req, needsAuth, options) {
+      var client = getClient(req, needsAuth, options);
+      var service = new ItemService(Config.ualUrl, client);
+      if (options.logger) {
+          service.setLogger(options.logger);
+      }
+      return service;
+  }
+
+  /**
+   *
+   * Example:
+   *
+   *   const Logger = require('./logger');
+   *
+   *   //define GP API Client config options before creating proxy
+   *   const Config = require('geoplatform.client');
+   *   Config.configure( {
+   *     timeout: 20000,
+   *     ualUrl: 'https://ual.geoplatform.gov'
+   *   });
+   *
+   *   //optionally, define parent router
+   *   router = require('express').Router();
+   *   router.use('/api', AgolServiceProxy({
+   *     logger: Logger,
+   *     debug: true,
+   *     //optionally, provide router instance
+   *     router: require('express').Router()
+   *   }));
+   *
+   */
+  function AgolServiceProxy(options) {
+
+      if (typeof options === 'undefined') {
+          options = {};
+      }
+      var router = options.router;
+      if (!options.router) {
+          var express = require('express');
+          if (!express) {
+              throw new Error("AgolServiceProxy() - Must provide" + "'options.router' or include express as a dependency");
+          }
+          router = express.Router();
+      }
+
+      if (!router) throw new Error("AgolServiceProxy() - " + "Unable to create proxy route, missing router");
+
+      bindRoutes$4(router, options);
+
+      return router;
+  }
+
+  var SORT_OPTIONS_DEFAULT$1 = [{ value: "label,asc", label: "Name (A-Z)" }, { value: "label,desc", label: "Name (Z-A)" }, { value: "type,asc", label: "Type (A-Z)" }, { value: "type,desc", label: "Type (Z-A)" }, { value: "modified,desc", label: "Most recently modified" }, { value: "modified,asc", label: "Least recently modified" }, { value: "_score,desc", label: "Relevance" }];
 
   var KGQuery = function () {
       function KGQuery() {
@@ -2213,12 +4035,12 @@
       }, {
           key: "setQ",
           value: function setQ(text) {
-              this.setParameter(Parameters.QUERY, text);
+              this.setParameter(QueryParameters.QUERY, text);
           }
       }, {
           key: "getQ",
           value: function getQ() {
-              return this.getParameter(Parameters.QUERY);
+              return this.getParameter(QueryParameters.QUERY);
           }
 
           // -----------------------------------------------------------
@@ -2243,7 +4065,7 @@
           key: "setClassifiers",
           value: function setClassifiers(types) {
               if (types && typeof types.push === 'undefined') types = [types];
-              this.setParameter(Parameters.TYPES, types);
+              this.setParameter(QueryParameters.TYPES, types);
           }
 
           /**
@@ -2253,7 +4075,7 @@
       }, {
           key: "getClassifiers",
           value: function getClassifiers() {
-              return this.getParameter(Parameters.TYPES);
+              return this.getParameter(QueryParameters.TYPES);
           }
 
           // -----------------------------------------------------------
@@ -2286,7 +4108,7 @@
           key: "setTypes",
           value: function setTypes(objTypes) {
               if (objTypes && typeof objTypes.push === 'undefined') objTypes = [objTypes];
-              this.setParameter(Parameters.FOR_TYPES, objTypes);
+              this.setParameter(QueryParameters.FOR_TYPES, objTypes);
           }
 
           /**
@@ -2300,7 +4122,7 @@
       }, {
           key: "getTypes",
           value: function getTypes() {
-              return this.getParameter(Parameters.FOR_TYPES);
+              return this.getParameter(QueryParameters.FOR_TYPES);
           }
 
           // -----------------------------------------------------------
@@ -2413,7 +4235,7 @@
       }, {
           key: "getSortOptions",
           value: function getSortOptions() {
-              return SORT_OPTIONS_DEFAULT.slice(0);
+              return SORT_OPTIONS_DEFAULT$1.slice(0);
           }
 
           // -----------------------------------------------------------
@@ -2576,1151 +4398,6 @@
       CATEGORY: 'categories'
   };
 
-  var Fields = {
-      ACCESS_RIGHTS: 'rights',
-      ALTERNATE_TITLES: 'alternateTitles',
-      ANNOTATIONS: 'annotations',
-      CLASSIFIERS: 'classifiers',
-      CONCEPT_SCHEME: 'scheme',
-      CONTACTS: 'contacts',
-      CREATED: 'created',
-      CREATED_BY: 'createdBy',
-      DATASETS: 'datasets',
-      DESCRIPTION: 'description',
-      DISTRIBUTIONS: 'distributions',
-      EXTENT: 'extent',
-      GALLERY_ITEMS: 'items',
-      HREF: 'href',
-      IDENTIFIERS: 'identifiers',
-      KEYWORDS: 'keywords',
-      LABEL: 'label',
-      LAST_MODIFIED_BY: 'lastModifiedBy',
-      LAYERS: 'layers',
-      LAYER_TYPE: 'layerType',
-      LAYER_NAME: 'layerName',
-      LEGEND: 'legend',
-      MODIFIED: 'modified',
-      PARENT_LAYER: 'parentLayer',
-      PUBLISHERS: 'publishers',
-      RESOURCE_TYPES: 'resourceTypes',
-      SERVICE_TYPE: 'serviceType',
-      SERVICES: 'services',
-      SPATIAL: 'spatial',
-      STATISTICS: 'statistics',
-      STATUS: 'status',
-      SUB_LAYERS: 'subLayers',
-      TEMPORAL: 'temporal',
-      THEMES: 'themes',
-      THUMBNAIL: 'thumbnail',
-      USED_BY: 'usedBy',
-      VISIBILITY: 'visibility',
-      LANDING_PAGE: 'landingPage'
-  };
-
-  var FIELDS_DEFAULT = [Fields.CREATED, Fields.MODIFIED, Fields.CREATED_BY, Fields.PUBLISHERS, Fields.THEMES, Fields.DESCRIPTION];
-
-  /* --------------------------------------------------------- */
-
-  var Facets = {
-      ALTERNATE_TITLES: 'alternateTitles',
-      CONCEPT_SCHEMES: 'schemes',
-      CREATED_BY: 'createdBy',
-      HREF: 'href',
-      IDENTIFIERS: "identifiers",
-      LAYER_TYPE: 'layerType',
-      LAYER_NAME: 'layerName',
-      LIKES: 'likes',
-      ONLINE: 'online',
-      PUBLISHERS: 'publishers',
-      CONTACTS: 'contacts',
-      RELIABILITY: 'reliability',
-      SERVICE_TYPES: 'serviceTypes',
-      SPEED: 'speed',
-      STATUS: 'status',
-      THEMES: 'themes',
-      TYPES: 'type', //TODO change to 'types'
-      USED_BY: 'usedBy',
-      VIEWS: 'views',
-      VISIBILITY: 'visibility'
-  };
-
-  var FACETS_DEFAULT = [Facets.TYPES, Facets.PUBLISHERS, Facets.SERVICE_TYPES, Facets.CONCEPT_SCHEMES, Facets.VISIBILITY, Facets.CREATED_BY];
-
-  /*
-      Map facet keys to parameters so clients can set
-      query params using faceted results
-
-      //TODO remove these and their function below
-   */
-  var FacetToParam = {};
-  FacetToParam[Facets.TYPES] = Parameters.TYPES;
-  FacetToParam[Facets.THEMES] = Parameters.THEMES_ID;
-  FacetToParam[Facets.PUBLISHERS] = Parameters.PUBLISHERS_ID;
-  FacetToParam[Facets.CONTACTS] = Parameters.CONTACTS_ID;
-  FacetToParam[Facets.CONCEPT_SCHEMES] = Parameters.SCHEMES_ID;
-  FacetToParam[Facets.USED_BY] = Parameters.USED_BY_ID;
-
-  /* --------------------------------------------------------- */
-
-  var SORT_OPTIONS_DEFAULT$1 = [{ value: "label,asc", label: "Name (A-Z)" }, { value: "label,desc", label: "Name (Z-A)" }, { value: "type,asc", label: "Type (A-Z)" }, { value: "type,desc", label: "Type (Z-A)" }, { value: "modified,desc", label: "Most recently modified" }, { value: "modified,asc", label: "Least recently modified" }, { value: "_score,desc", label: "Relevance" }];
-
-  var BBOX_REGEX = /^\-?\d+(\.\d*)?,\-?\d+(\.\d*)?,\-?\d+(\.\d*)?,\-?\d+(\.\d*)?$/;
-
-  function toArray$1(value) {
-      var result = value;
-      //if given a non-array value, wrap in array
-      if (result !== null && typeof result.push === 'undefined') result = [result];
-      //if array value is empty, nullify the result
-      if (result !== null && !result.length) result = null;
-      return result;
-  }
-
-  /**
-   * Query
-   *
-   * Specify the "default" query constraints to use by passing in 'options.defaults = {...}';
-   *
-   * @constructor
-   */
-
-  var Query$1 = function () {
-
-      /**
-       * @param {Object} options - set of initial constraints
-       */
-      function Query(options) {
-          classCallCheck(this, Query);
-
-          this.defaultQuery = {};
-          this.defaultQuery[Parameters.PAGE] = 0;
-          this.defaultQuery[Parameters.PAGE_SIZE] = 10;
-          this.defaultQuery[Parameters.SORT] = "modified,desc";
-          this.defaultQuery[Parameters.FIELDS] = FIELDS_DEFAULT.slice(0);
-          this.defaultQuery[Parameters.FACETS] = FACETS_DEFAULT.slice(0);
-          if (options && options.defaults) {
-              Object.assign(this.defaultQuery, options.defaults);
-              delete options.defaults;
-          }
-          this.query = JSON.parse(JSON.stringify(this.defaultQuery));
-          if (options) {
-              this.applyParameters(options);
-          }
-      }
-
-      /**
-       * @return {object} containing request-ready parameters/values
-       */
-
-
-      createClass(Query, [{
-          key: 'getQuery',
-          value: function getQuery() {
-              var result = {};
-              for (var prop in this.query) {
-                  var value = this.query[prop];
-                  if (value !== null && typeof value.push !== 'undefined') {
-                      value = value.join(',');
-                  }
-                  result[prop] = value;
-              }
-              return result;
-          }
-
-          /**
-           * @return {Query}
-           */
-
-      }, {
-          key: 'clone',
-          value: function clone() {
-              var result = new Query();
-              var json = JSON.parse(JSON.stringify(this.query));
-              result.applyParameters(json);
-              return result;
-          }
-
-          // -----------------------------------------------------------
-
-          /**
-           * @param {string} name
-           * @param {any} value
-           * @return {Query} this
-           */
-
-      }, {
-          key: 'parameter',
-          value: function parameter(name, value) {
-              this.setParameter(name, value);
-              return this;
-          }
-
-          /**
-           * @param {string} name
-           * @param {any} value
-           */
-
-      }, {
-          key: 'setParameter',
-          value: function setParameter(name, value) {
-              if (value === null || value === undefined || //if no value was provide
-              typeof value.push !== 'undefined' && !value.length) //or empty array
-                  delete this.query[name];else this.query[name] = value;
-          }
-
-          /**
-           * @param {string} key - name of parameter
-           * @return {string} value of parameter
-           */
-
-      }, {
-          key: 'getParameter',
-          value: function getParameter(key) {
-              return this.query[key];
-          }
-
-          /**
-           * @param {object} obj - set of parameter/values to apply to this query
-           */
-
-      }, {
-          key: 'applyParameters',
-          value: function applyParameters(obj) {
-              for (var p in obj) {
-                  if (obj.hasOwnProperty(p)) {
-                      this.setParameter(p, obj[p]);
-                  }
-              }
-          }
-
-          /**
-           * @param {string} facet - name of facet to set the value for as a parameter
-           * @param {string} value - value of the facet to use as the parameter's value
-           */
-          //TODO remove this function
-
-      }, {
-          key: 'setFacetParameter',
-          value: function setFacetParameter(facet, value) {
-              var param = FacetToParam[facet];
-              if (!param) {
-                  console.log("WARN : Query.applyFacetParameter() - " + "unable to map facet to known parameter '" + facet + "', using " + "as direct parameter which may not operate as intended");
-              }
-              this.setParameter(param || facet, value);
-          }
-
-          // -----------------------------------------------------------
-
-          /**
-           * @param {string} text
-           * @return {Query} this
-           */
-
-      }, {
-          key: 'q',
-          value: function q(text) {
-              this.setQ(text);return this;
-          }
-          /** @param {string} text - free text query */
-
-      }, {
-          key: 'setQ',
-          value: function setQ(text) {
-              this.setParameter(Parameters.QUERY, text);
-          }
-          /** @return {string} */
-
-      }, {
-          key: 'getQ',
-          value: function getQ() {
-              return this.getParameter(Parameters.QUERY);
-          }
-
-          // -----------------------------------------------------------
-
-
-      }, {
-          key: 'keywords',
-          value: function keywords(text) {
-              this.setKeywords(text);
-              return this;
-          }
-
-          /**
-           * @param {string} text - free text query
-           */
-
-      }, {
-          key: 'setKeywords',
-          value: function setKeywords(text) {
-              this.setParameter(Parameters.KEYWORDS, toArray$1(text));
-          }
-      }, {
-          key: 'getKeywords',
-          value: function getKeywords() {
-              return this.getParameter(Parameters.KEYWORDS);
-          }
-
-          // -----------------------------------------------------------
-
-
-      }, {
-          key: 'uri',
-          value: function uri(_uri) {
-              this.setUri(_uri);
-              return this;
-          }
-      }, {
-          key: 'setUri',
-          value: function setUri(uri) {
-              this.setParameter(Parameters.URI, uri);
-          }
-      }, {
-          key: 'getUri',
-          value: function getUri() {
-              return this.getParameter(Parameters.URI);
-          }
-
-          // -----------------------------------------------------------
-
-
-      }, {
-          key: 'types',
-          value: function types(_types) {
-              this.setTypes(_types);
-              return this;
-          }
-
-          /**
-           * @param {array[string]} types - name of class(es) to request
-           */
-
-      }, {
-          key: 'setTypes',
-          value: function setTypes(types) {
-              this.setParameter(Parameters.TYPES, toArray$1(types));
-          }
-      }, {
-          key: 'getTypes',
-          value: function getTypes() {
-              return this.getParameter(Parameters.TYPES);
-          }
-
-          // -----------------------------------------------------------
-
-
-      }, {
-          key: 'createdBy',
-          value: function createdBy(user) {
-              this.setCreatedBy(user);
-              return this;
-          }
-
-          /** @param {string} user - username */
-
-      }, {
-          key: 'setCreatedBy',
-          value: function setCreatedBy(user) {
-              this.setParameter(Parameters.CREATED_BY, user);
-          }
-
-          /** @return {string} username */
-
-      }, {
-          key: 'getCreatedBy',
-          value: function getCreatedBy() {
-              return this.getParameter(Parameters.CREATED_BY);
-          }
-
-          // -----------------------------------------------------------
-
-
-      }, {
-          key: 'lastModifiedBy',
-          value: function lastModifiedBy(user) {
-              this.setLastModifiedBy(user);
-              return this;
-          }
-
-          /** @param {string} user - username */
-
-      }, {
-          key: 'setLastModifiedBy',
-          value: function setLastModifiedBy(user) {
-              this.setParameter(Parameters.LAST_MODIFIED_BY, user);
-          }
-
-          /** @return {string} username */
-
-      }, {
-          key: 'getLastModifiedBy',
-          value: function getLastModifiedBy() {
-              return this.getParameter(Parameters.LAST_MODIFIED_BY);
-          }
-
-          // -----------------------------------------------------------
-
-
-          /**
-           * Specify a Theme or set of Themes to constrain results. By
-           * default, values are assumed to be theme identifiers. If using
-           * theme labels or theme uris, specify the optional second parameter
-           * to be either Parameters.THEMES_LABEL or Parameters.THEMES_URI
-           * respectively.
-           * @param {array[string]} themes - string or array of strings containing theme constraint
-           * @param {string} parameter - optional, to indicate the parameter to use
-           * @return {Query}
-           */
-
-      }, {
-          key: 'themes',
-          value: function themes(_themes, parameter) {
-              this.setThemes(_themes, parameter);
-              return this;
-          }
-
-          /**
-           * Specify a Theme or set of Themes to constrain results. By
-           * default, values are assumed to be theme identifiers. If using
-           * theme labels or theme uris, specify the optional second parameter
-           * to be either Parameters.THEMES_LABEL or Parameters.THEMES_URI
-           * respectively.
-           * @param {array[string]} themes - theme or themes to constrain by
-           */
-
-      }, {
-          key: 'setThemes',
-          value: function setThemes(themes, parameter) {
-
-              //clear existing
-              this.setParameter(Parameters.THEMES_ID, null);
-              this.setParameter(Parameters.THEMES_LABEL, null);
-              this.setParameter(Parameters.THEMES_URI, null);
-
-              var param = parameter || Parameters.THEMES_ID;
-              this.setParameter(param, toArray$1(themes));
-          }
-      }, {
-          key: 'getThemes',
-          value: function getThemes() {
-              return this.getParameter(Parameters.THEMES_ID) || this.getParameter(Parameters.THEMES_LABEL) || this.getParameter(Parameters.THEMES_URI);
-          }
-
-          // -----------------------------------------------------------
-
-
-          /**
-           * Specify a Publisher or set of Publishers to constrain results. By
-           * default, values are assumed to be identifiers. If using labels or uris,
-           * specify the optional second parameter to be either
-           * Parameters.PUBLISHERS_LABEL or Parameters.PUBLISHERS_URI respectively.
-           * @param {string} parameter - optional, to indicate the parameter to use
-           * @return {Query}
-           */
-
-      }, {
-          key: 'publishers',
-          value: function publishers(_publishers, parameter) {
-              this.setPublishers(_publishers, parameter);
-              return this;
-          }
-
-          /**
-           * Specify a Publisher or set of Publishers to constrain results. By
-           * default, values are assumed to be identifiers. If using labels or uris,
-           * specify the optional second parameter to be either
-           * Parameters.PUBLISHERS_LABEL or Parameters.PUBLISHERS_URI respectively.
-           * @param {array[string]} publishers - publishing orgs to constrain by
-           */
-
-      }, {
-          key: 'setPublishers',
-          value: function setPublishers(publishers, parameter) {
-
-              //clear existing
-              this.setParameter(Parameters.PUBLISHERS_ID, null);
-              this.setParameter(Parameters.PUBLISHERS_LABEL, null);
-              this.setParameter(Parameters.PUBLISHERS_URI, null);
-
-              var param = parameter || Parameters.PUBLISHERS_ID;
-              this.setParameter(param, toArray$1(publishers));
-          }
-      }, {
-          key: 'getPublishers',
-          value: function getPublishers() {
-              return this.getParameter(Parameters.PUBLISHERS_ID) || this.getParameter(Parameters.PUBLISHERS_LABEL) || this.getParameter(Parameters.PUBLISHERS_URI);
-          }
-
-          // -----------------------------------------------------------
-
-
-          /**
-           * Specify a Point of Contact or set of Contacts to constrain results. By
-           * default, values are assumed to be identifiers. If using
-           * labels or uris, specify the optional second parameter to be either
-           * Parameters.CONTACTS_LABEL or Parameters.CONTACTS_URI respectively.
-           * @param {string} parameter - optional, to indicate the parameter to use
-           * @return {Query}
-           */
-
-      }, {
-          key: 'contacts',
-          value: function contacts(_contacts, parameter) {
-              this.setContacts(_contacts, parameter);
-              return this;
-          }
-
-          /**
-           * Specify a Contact or set of Contacts to constrain results. By
-           * default, values are assumed to be identifiers. If using
-           * labels or uris, specify the optional second parameter to be either
-           * Parameters.CONTACTS_LABEL or Parameters.CONTACTS_URI respectively.
-           * @param {array[string]} contacts - publishing orgs to constrain by
-           */
-
-      }, {
-          key: 'setContacts',
-          value: function setContacts(contacts, parameter) {
-
-              //clear existing
-              this.setParameter(Parameters.CONTACTS_ID, null);
-              this.setParameter(Parameters.CONTACTS_LABEL, null);
-              this.setParameter(Parameters.CONTACTS_URI, null);
-
-              var param = parameter || Parameters.CONTACTS_ID;
-              this.setParameter(param, toArray$1(contacts));
-          }
-      }, {
-          key: 'getContacts',
-          value: function getContacts() {
-              return this.getParameter(Parameters.CONTACTS_ID) || this.getParameter(Parameters.CONTACTS_LABEL) || this.getParameter(Parameters.CONTACTS_URI);
-          }
-
-          // -----------------------------------------------------------
-
-
-          /**
-           * Specify the identifier of an Agent (Community, Group, etc) that
-           * uses items you wish to find in search results. By
-           * default, values are assumed to be identifiers. If using
-           * labels or uris, specify the optional second parameter
-           * to be either Parameters.USED_BY_LABEL or Parameters.USED_BY_URI
-           * respectively.
-           * @param {string} parameter - optional, to indicate the parameter to use
-           * @return {Query}
-           */
-
-      }, {
-          key: 'usedBy',
-          value: function usedBy(ids, parameter) {
-              this.setUsedBy(ids, parameter);
-              return this;
-          }
-
-          /**
-           * Specify the identifier of an Agent (Community, Group, etc) that
-           * uses items you wish to find in search results. By
-           * default, values are assumed to be identifiers. If using
-           * labels or uris, specify the optional second parameter
-           * to be either Parameters.USED_BY_LABEL or Parameters.USED_BY_URI
-           * respectively.
-           * @param {array[string]} ids - publishing orgs to constrain by
-           */
-
-      }, {
-          key: 'setUsedBy',
-          value: function setUsedBy(ids, parameter) {
-
-              //clear existing
-              this.setParameter(Parameters.USED_BY_ID, null);
-              this.setParameter(Parameters.USED_BY_LABEL, null);
-              this.setParameter(Parameters.USED_BY_URI, null);
-
-              var param = parameter || Parameters.USED_BY_ID;
-              this.setParameter(param, toArray$1(ids));
-          }
-      }, {
-          key: 'getUsedBy',
-          value: function getUsedBy() {
-              return this.getParameter(Parameters.USED_BY_ID) || this.getParameter(Parameters.USED_BY_LABEL) || this.getParameter(Parameters.USED_BY_URI);
-          }
-
-          // -----------------------------------------------------------
-
-
-          /**
-           * Specify a Concept Scheme or set of Concept Schemes to constrain results. By
-           * default, values are assumed to be identifiers. If using
-           * labels or uris, specify the optional second parameter
-           * to be either Parameters.SCHEMES_LABEL or Parameters.SCHEMES_URI
-           * respectively.
-           * @param {array[string]} schemes - schemes to constrain by
-           * @param {string} parameter - optional, to indicate the parameter to use
-           * @return {Query}
-           */
-
-      }, {
-          key: 'schemes',
-          value: function schemes(_schemes, parameter) {
-              this.setSchemes(_schemes, parameter);
-              return this;
-          }
-
-          /**
-           * Specify a Concept Scheme or set of Concept Schemes to constrain results. By
-           * default, values are assumed to be theme identifiers. If using
-           * theme labels or theme uris, specify the optional second parameter
-           * to be either Parameters.SCHEMES_LABEL or Parameters.SCHEMES_URI
-           * respectively.
-           * @param {array[string]} schemes - schemes to constrain by
-           * @param {string} parameter - optional, to indicate the parameter to use
-           */
-
-      }, {
-          key: 'setSchemes',
-          value: function setSchemes(schemes, parameter) {
-
-              //clear existing
-              this.setParameter(Parameters.SCHEMES_ID, null);
-              this.setParameter(Parameters.SCHEMES_LABEL, null);
-              this.setParameter(Parameters.SCHEMES_URI, null);
-
-              var param = parameter || Parameters.SCHEMES_ID;
-              this.setParameter(param, toArray$1(schemes));
-          }
-      }, {
-          key: 'getSchemes',
-          value: function getSchemes() {
-              return this.getParameter(Parameters.SCHEMES_ID) || this.getParameter(Parameters.SCHEMES_LABEL) || this.getParameter(Parameters.SCHEMES_URI);
-          }
-
-          // -----------------------------------------------------------
-
-          /**
-           *
-           */
-
-      }, {
-          key: 'serviceTypes',
-          value: function serviceTypes(types) {
-              this.setServiceTypes(types);
-              return this;
-          }
-
-          /**
-           * @param {array[string]} types - ids
-           */
-
-      }, {
-          key: 'setServiceTypes',
-          value: function setServiceTypes(types) {
-              this.setParameter(Parameters.SERVICE_TYPES, toArray$1(types));
-          }
-      }, {
-          key: 'getServiceTypes',
-          value: function getServiceTypes() {
-              return this.getParameter(Parameters.SERVICE_TYPES);
-          }
-
-          // -----------------------------------------------------------
-
-
-      }, {
-          key: 'visibility',
-          value: function visibility(vis) {
-              this.setVisibility(vis);
-              return this;
-          }
-
-          /**
-           * @param {string} visibility - one of 'public' or 'private'
-           */
-
-      }, {
-          key: 'setVisibility',
-          value: function setVisibility(visibility) {
-              this.setParameter(Parameters.VISIBILITY, visibility);
-          }
-      }, {
-          key: 'getVisibility',
-          value: function getVisibility() {
-              return this.getParameter(Parameters.VISIBILITY);
-          }
-
-          // -----------------------------------------------------------
-
-
-      }, {
-          key: 'status',
-          value: function status(value) {
-              this.setStatus(value);
-              return this;
-          }
-
-          /**
-           * @param {string} status - current status of Item
-           */
-
-      }, {
-          key: 'setStatus',
-          value: function setStatus(value) {
-              this.setParameter(Parameters.STATUS, value);
-          }
-      }, {
-          key: 'getStatus',
-          value: function getStatus() {
-              return this.getParameter(Parameters.STATUS);
-          }
-
-          // -----------------------------------------------------------
-
-
-      }, {
-          key: 'extent',
-          value: function extent(bbox) {
-              this.setExtent(bbox);
-              return this;
-          }
-
-          /**
-           * @param {string} bboxStr - form of "minx,miny,maxx,maxy"
-           */
-
-      }, {
-          key: 'setExtent',
-          value: function setExtent(bbox) {
-              if (bbox && typeof bbox.toBboxString !== 'undefined') {
-                  //Leaflet Bounds instance
-                  bbox = bbox.toBboxString();
-              } else if (typeof bbox.push !== 'undefined' && bbox.length &&
-              //Nested array (alternate Leaflet representation):
-              // [ [minLat,minLong], [maxLat,maxLong] ]
-              typeof bbox[0].push !== 'undefined') {
-                  bbox = bbox[0][1] + ',' + bbox[0][0] + ',' + bbox[1][1] + ',' + bbox[1][0];
-              } else if (typeof bbox === 'string') {
-                  if (!BBOX_REGEX.test(bbox)) {
-                      throw new Error("Invalid argument: bbox string must be " + "in form of 'minx,miny,maxx,maxy'");
-                  }
-              } else {
-                  throw new Error("Invalid argument: bbox must be one of " + "Leaflet.Bounds, nested array, or bbox string");
-              }
-              this.setParameter(Parameters.EXTENT, bbox);
-          }
-
-          /**
-           * @return {string} bbox string or null if not set
-           */
-
-      }, {
-          key: 'getExtent',
-          value: function getExtent() {
-              return this.getParameter(Parameters.EXTENT);
-          }
-
-          // -----------------------------------------------------------
-
-
-      }, {
-          key: 'modified',
-          value: function modified(date, beforeOrAfter) {
-              this.setModified(date, beforeOrAfter);
-              return this;
-          }
-
-          /**
-           * @param {Date} date - date to compare against
-           * @param {boolean} beforeOrAfter - flag specifying which boundary condition (true = before, false = after) flag specifying whether to trigger update automatically
-           */
-
-      }, {
-          key: 'setModified',
-          value: function setModified(date, beforeOrAfter) {
-
-              //if no date was supplied, consider it "unset" for both properties
-              if (!date) {
-                  this.setParameter(Parameters.MODIFIED_BEFORE, null);
-                  this.setParameter(Parameters.MODIFIED_AFTER, null);
-                  return;
-              }
-
-              var dir = beforeOrAfter && (beforeOrAfter === true || beforeOrAfter === "true");
-              var prop = dir ? Parameters.MODIFIED_BEFORE : Parameters.MODIFIED_AFTER; //property being set
-              var oppProp = dir ? Parameters.MODIFIED_AFTER : Parameters.MODIFIED_BEFORE; //unset opposite property
-              var arg = date && date.getTime ? date.getTime() : date;
-
-              this.setParameter(oppProp, null);
-              this.setParameter(prop, arg);
-          }
-      }, {
-          key: 'getModified',
-          value: function getModified() {
-              var value = this.getParameter(Parameters.MODIFIED_BEFORE) || this.getParameter(Parameters.MODIFIED_AFTER);
-              if (value && typeof value === 'number') {
-                  value = new Date(value);
-              }
-              return value;
-          }
-
-          // -----------------------------------------------------------
-
-
-      }, {
-          key: 'created',
-          value: function created(date, beforeOrAfter) {
-              this.setCreated(date, beforeOrAfter);
-              return this;
-          }
-
-          /**
-           * @param {Date} date - date to compare against
-           * @param {boolean} beforeOrAfter - flag specifying which boundary condition (true = before, false = after) flag specifying whether to trigger update automatically
-           */
-
-      }, {
-          key: 'setCreated',
-          value: function setCreated(date, beforeOrAfter) {
-
-              //if no date was supplied, consider it "unset" for both properties
-              if (!date) {
-                  this.setParameter(Parameters.CREATED_BEFORE, null);
-                  this.setParameter(Parameters.CREATED_AFTER, null);
-                  return;
-              }
-
-              var dir = beforeOrAfter && (beforeOrAfter === true || beforeOrAfter === "true");
-              var prop = dir ? Parameters.CREATED_BEFORE : Parameters.CREATED_AFTER; //property being set
-              var oppProp = dir ? Parameters.CREATED_AFTER : Parameters.CREATED_BEFORE; //unset opposite property
-              var arg = date && date.getTime ? date.getTime() : date;
-
-              this.setParameter(oppProp, null);
-              this.setParameter(prop, arg);
-          }
-      }, {
-          key: 'getCreated',
-          value: function getCreated() {
-              var value = this.getParameter(Parameters.CREATED_BEFORE) || this.getParameter(Parameters.CREATED_AFTER);
-              if (value && typeof value === 'number') {
-                  value = new Date(value);
-              }
-              return value;
-          }
-
-          // -----------------------------------------------------------
-
-
-      }, {
-          key: 'begins',
-          value: function begins(date) {
-              this.setBeginDate(date);
-              return this;
-          }
-      }, {
-          key: 'setBeginDate',
-          value: function setBeginDate(date) {
-              if (date && date instanceof Date) date = date.getTime();
-              this.setParameter(Parameters.BEGINS, date);
-          }
-      }, {
-          key: 'getBeginDate',
-          value: function getBeginDate() {
-              var date = this.getParameter(Parameters.BEGINS);
-              if (date) date = new Date(date);
-              return date;
-          }
-
-          // -----------------------------------------------------------
-
-
-      }, {
-          key: 'ends',
-          value: function ends(date) {
-              this.setEndDate(date);
-              return this;
-          }
-      }, {
-          key: 'setEndDate',
-          value: function setEndDate(date) {
-              if (date && date instanceof Date) date = date.getTime();
-              this.setParameter(Parameters.ENDS, date);
-          }
-      }, {
-          key: 'getEndDate',
-          value: function getEndDate() {
-              var date = this.getParameter(Parameters.ENDS);
-              if (date) date = new Date(date);
-              return date;
-          }
-
-          // -----------------------------------------------------------
-
-
-      }, {
-          key: 'between',
-          value: function between(begin, end) {
-              this.setBetween(begin, end);
-              return this;
-          }
-      }, {
-          key: 'setBetween',
-          value: function setBetween(begin, end) {
-              this.begins(begin);
-              this.ends(end);
-          }
-
-          // -----------------------------------------------------------
-
-
-      }, {
-          key: 'resourceTypes',
-          value: function resourceTypes(types) {
-              this.setResourceTypes(types);
-              return this;
-          }
-      }, {
-          key: 'setResourceTypes',
-          value: function setResourceTypes(types) {
-              this.setParameter(Parameters.RESOURCE_TYPE, toArray$1(types));
-          }
-      }, {
-          key: 'getResourceTypes',
-          value: function getResourceTypes() {
-              return this.getParameter(Parameters.RESOURCE_TYPE);
-          }
-
-          // -----------------------------------------------------------
-
-
-      }, {
-          key: 'facets',
-          value: function facets(names) {
-              this.setFacets(names);
-              return this;
-          }
-
-          /*
-           * @param {array[string]} names - names of facets
-           */
-
-      }, {
-          key: 'setFacets',
-          value: function setFacets(names) {
-              this.setParameter(Parameters.FACETS, toArray$1(names));
-          }
-      }, {
-          key: 'getFacets',
-          value: function getFacets() {
-              return this.getParameter(Parameters.FACETS);
-          }
-
-          /**
-           * @param {string} name - name of facet to add
-           */
-
-      }, {
-          key: 'addFacet',
-          value: function addFacet(name) {
-              var facets = this.getFacets() || [];
-              facets.push(name);
-              this.setFacets(facets);
-          }
-
-          /**
-           * @param {string} name - name of facet to remove
-           */
-
-      }, {
-          key: 'removeFacet',
-          value: function removeFacet(name) {
-              var facets = this.getFacets() || [];
-              var idx = facets.indexOf(name);
-              if (idx >= 0) {
-                  facets.splice(idx, 1);
-                  this.setFacets(facets);
-              }
-          }
-
-          // -----------------------------------------------------------
-
-
-      }, {
-          key: 'fields',
-          value: function fields(_fields) {
-              this.setFields(_fields);
-              return this;
-          }
-
-          /**
-           * @param {array[string]} fields - list of field names to request for each search result
-           */
-
-      }, {
-          key: 'setFields',
-          value: function setFields(fields) {
-              this.setParameter(Parameters.FIELDS, toArray$1(fields));
-          }
-      }, {
-          key: 'getFields',
-          value: function getFields() {
-              return this.getParameter(Parameters.FIELDS);
-          }
-
-          /**
-           * @param {string} field - name of field to remove
-           */
-
-      }, {
-          key: 'addField',
-          value: function addField(field) {
-              var fields = this.getFields() || [];
-              fields.push(field);
-              this.setFields(fields);
-          }
-
-          /**
-           * @param {string} field - name of field to remove
-           */
-
-      }, {
-          key: 'removeField',
-          value: function removeField(field) {
-              var fields = this.getFields() || [];
-              var idx = fields.indexOf(name);
-              if (idx >= 0) {
-                  fields.splice(idx, 1);
-                  this.setFields(fields);
-              }
-          }
-
-          // -----------------------------------------------------------
-
-
-          /**
-           * @param {int} page - page of results to fetch
-           */
-
-      }, {
-          key: 'page',
-          value: function page(_page) {
-              this.setPage(_page);
-              return this;
-          }
-      }, {
-          key: 'setPage',
-          value: function setPage(page) {
-              if (isNaN(page) || page * 1 < 0) return;
-              this.setParameter(Parameters.PAGE, page * 1);
-          }
-      }, {
-          key: 'getPage',
-          value: function getPage() {
-              return this.getParameter(Parameters.PAGE);
-          }
-      }, {
-          key: 'nextPage',
-          value: function nextPage() {
-              this.setPage(this.getPage() + 1);
-          }
-      }, {
-          key: 'previousPage',
-          value: function previousPage() {
-              this.setPage(this.getPage() - 1);
-          }
-
-          // -----------------------------------------------------------
-
-
-          /**
-           * @param {int} size - page size to request
-           */
-
-      }, {
-          key: 'pageSize',
-          value: function pageSize(size) {
-              this.setPageSize(size);
-              return this;
-          }
-      }, {
-          key: 'setPageSize',
-          value: function setPageSize(size) {
-              if (isNaN(size) || size * 1 < 0) return;
-              this.setParameter(Parameters.PAGE_SIZE, size * 1);
-          }
-      }, {
-          key: 'getPageSize',
-          value: function getPageSize() {
-              return this.getParameter(Parameters.PAGE_SIZE);
-          }
-
-          // -----------------------------------------------------------
-
-
-          /**
-           * @param {string} sort - form of <field>,<dir> or just field name
-           * @param {string} order - optional, either 'asc' or 'desc'
-           */
-
-      }, {
-          key: 'sort',
-          value: function sort(_sort, order) {
-              this.setSort(_sort, order);
-              return this;
-          }
-
-          /**
-           * @param {string} sort - form of <field>,<dir> or just field name
-           * @param {string} order - optional, either 'asc' or 'desc'
-           */
-
-      }, {
-          key: 'setSort',
-          value: function setSort(sort, order) {
-              order = order && (order !== 'asc' || order !== 'desc') ? 'desc' : order;
-              if (sort && sort.indexOf(',') < 0) sort = sort + ',' + order;
-              this.setParameter(Parameters.SORT, sort);
-          }
-      }, {
-          key: 'getSort',
-          value: function getSort() {
-              return this.getParameter(Parameters.SORT);
-          }
-      }, {
-          key: 'getSortField',
-          value: function getSortField() {
-              var value = this.getSort();
-              return value && value.length ? value.split(',')[0] : null;
-          }
-      }, {
-          key: 'getSortOrder',
-          value: function getSortOrder() {
-              var value = this.getSort();
-              return value && value.length ? value.split(',')[1] : null;
-          }
-
-          /**
-           * @return {array} list of key-value pairs of sort options
-           */
-
-      }, {
-          key: 'getSortOptions',
-          value: function getSortOptions() {
-              return SORT_OPTIONS_DEFAULT$1.slice(0);
-          }
-
-          // -----------------------------------------------------------
-
-
-          /**
-           *
-           */
-
-      }, {
-          key: 'clear',
-          value: function clear() {
-              this.query = JSON.parse(JSON.stringify(this.defaultQuery));
-          }
-      }]);
-      return Query;
-  }();
-
   function queryFactory () {
       return new Query$1();
   }
@@ -3748,16 +4425,6 @@
               return new DatasetService(baseUrl, httpClient);
           default:
               return new ItemService(baseUrl, httpClient);
-      }
-  };
-
-  var config = {
-
-      //ualUrl: '...',
-      //appId: '...',
-
-      configure: function configure(options) {
-          Object.assign(this, options);
       }
   };
 
@@ -4051,7 +4718,7 @@
   }();
 
   exports.ItemTypes = ItemTypes;
-  exports.QueryParameters = Parameters;
+  exports.QueryParameters = QueryParameters;
   exports.QueryFacets = Facets;
   exports.Query = Query$1;
   exports.QueryFactory = queryFactory;
@@ -4072,7 +4739,15 @@
   exports.AgolQuery = AgolQuery;
   exports.KGService = KGService;
   exports.ServiceFactory = ServiceFactory;
-  exports.Config = config;
+  exports.ItemServiceProxy = ItemServiceProxy;
+  exports.ServiceServiceProxy = ServiceServiceProxy;
+  exports.LayerServiceProxy = LayerServiceProxy;
+  exports.DatasetServiceProxy = DatasetServiceProxy;
+  exports.MapServiceProxy = MapServiceProxy;
+  exports.GalleryServiceProxy = GalleryServiceProxy;
+  exports.UtilsServiceProxy = UtilsServiceProxy;
+  exports.AgolServiceProxy = AgolServiceProxy;
+  exports.Config = Config;
   exports.TrackingEvent = Event;
   exports.TrackingService = TrackingService;
   exports.TrackingCategories = Categories;

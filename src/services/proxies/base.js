@@ -13,7 +13,8 @@ const ServiceProxy = {
         let paths = options.paths || {};
 
         if(paths.search !== false) {
-            router.get('/' + (paths.search||options.pathBaseDefault), (req, res, next) => {
+            let path = '/' + (paths.search||options.pathBaseDefault);
+            router.get(path, (req, res, next) => {
                 this.getService(req, false, options)
                 .search(req.query)
                 .then( response => res.json(response) )
@@ -22,7 +23,8 @@ const ServiceProxy = {
         }
 
         if(paths.getById !== false) {
-            router.get('/' + (paths.getById||options.pathBaseDefault+"/:id"), (req, res, next) => {
+            let path = '/' + (paths.getById||options.pathBaseDefault+"/:id");
+            router.get(path, (req, res, next) => {
                 this.getService(req, false, options)
                 .get(req.params.id)
                 .then( item => res.json(item) )
@@ -31,7 +33,8 @@ const ServiceProxy = {
         }
 
         if(paths.create !== false) {
-            router.post('/' + (paths.create||options.pathBaseDefault+''), (req, res, next) => {
+            let path = '/' + (paths.create||options.pathBaseDefault);
+            router.post(path, (req, res, next) => {
                 var input = req.body;
                 this.getService(req, true, options)
                 .save(input)
@@ -41,7 +44,8 @@ const ServiceProxy = {
         }
 
         if(paths.delete !== false) {
-            router.delete('/' + (paths.delete||options.pathBaseDefault+'/:id'), (req, res, next) => {
+            let path = '/' + (paths.delete||options.pathBaseDefault+'/:id');
+            router.delete(path, (req, res, next) => {
                 this.getService(req, true, options)
                 .remove(req.params.id)
                 .then( item => res.status(204).end() )
@@ -50,7 +54,8 @@ const ServiceProxy = {
         }
 
         if(paths.update !== false) {
-            router.put('/' + (paths.update||options.pathBaseDefault+'/:id'), (req, res, next) => {
+            let path = '/' + (paths.update||options.pathBaseDefault+'/:id');
+            router.put(path, (req, res, next) => {
                 var id = req.params.id;
                 var obj = req.body;
                 this.getService(req, true, options)
@@ -61,7 +66,8 @@ const ServiceProxy = {
         }
 
         if(paths.patch !== false) {
-            router.patch('/' + (paths.patch||options.pathBaseDefault+'/:id'), (req, res, next) => {
+            let path = '/' + (paths.patch||options.pathBaseDefault+'/:id');
+            router.patch(path, (req, res, next) => {
                 var id = req.params.id;
                 var obj = req.body;
                 this.getService(req, true, options)
@@ -72,7 +78,8 @@ const ServiceProxy = {
         }
 
         if(paths.export !== false) {
-            router.get('/' + (paths.export||options.pathBaseDefault+'/:id'), (req, res, next) => {
+            let path = '/' + (paths.export||options.pathBaseDefault+'/:id/export');
+            router.get(path, (req, res, next) => {
                 var id = req.params.id;
                 var format = req.query.format;
 
@@ -88,7 +95,6 @@ const ServiceProxy = {
                 .catch(next);
             });
         }
-
     },
 
     /**

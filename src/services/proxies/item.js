@@ -10,13 +10,15 @@ import ServiceProxy from './base';
  */
 function bindRoutes(router, options) {
 
-    let paths = options.paths || {};
-
     //bind common endpoints
     options.pathBaseDefault = "items";
     options.serviceClass = ItemService;
     ServiceProxy.bindRoutes(router, options);
 
+
+    let paths = options.paths || {};
+
+    
     //then bind those specific to this service
 
     if(paths.uri !== false) {
@@ -53,6 +55,8 @@ function bindRoutes(router, options) {
     }
 
     //TODO findMultiple
+
+
 }
 
 

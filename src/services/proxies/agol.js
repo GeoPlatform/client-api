@@ -13,7 +13,7 @@ function bindRoutes(router, options) {
     let paths = options.paths || {};
 
     if(paths.searchItems !== false) {
-        router.get('/' + (paths.searchItems||"agol/searchItems"), (req, res, next) => {
+        router.get('/' + (paths.searchItems||"agol/items"), (req, res, next) => {
             getService(req, false, options)
             .searchItems(req.query)
             .then( response => res.json(response) )
@@ -22,7 +22,7 @@ function bindRoutes(router, options) {
     }
 
     if(paths.searchGroups !== false) {
-        router.get('/' + (paths.searchGroups||"agol/searchGroups"), (req, res, next) => {
+        router.get('/' + (paths.searchGroups||"agol/groups"), (req, res, next) => {
             getService(req, false, options)
             .searchGroups(req.query)
             .then( response => res.json(response) )

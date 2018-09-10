@@ -3298,7 +3298,8 @@
           var paths = options.paths || {};
 
           if (paths.search !== false) {
-              router.get('/' + (paths.search || options.pathBaseDefault), function (req, res, next) {
+              var path = '/' + (paths.search || options.pathBaseDefault);
+              router.get(path, function (req, res, next) {
                   _this.getService(req, false, options).search(req.query).then(function (response) {
                       return res.json(response);
                   }).catch(next);
@@ -3306,7 +3307,8 @@
           }
 
           if (paths.getById !== false) {
-              router.get('/' + (paths.getById || options.pathBaseDefault + "/:id"), function (req, res, next) {
+              var _path = '/' + (paths.getById || options.pathBaseDefault + "/:id");
+              router.get(_path, function (req, res, next) {
                   _this.getService(req, false, options).get(req.params.id).then(function (item) {
                       return res.json(item);
                   }).catch(next);
@@ -3314,7 +3316,8 @@
           }
 
           if (paths.create !== false) {
-              router.post('/' + (paths.create || options.pathBaseDefault + ''), function (req, res, next) {
+              var _path2 = '/' + (paths.create || options.pathBaseDefault);
+              router.post(_path2, function (req, res, next) {
                   var input = req.body;
                   _this.getService(req, true, options).save(input).then(function (item) {
                       return res.json(item);
@@ -3323,7 +3326,8 @@
           }
 
           if (paths.delete !== false) {
-              router.delete('/' + (paths.delete || options.pathBaseDefault + '/:id'), function (req, res, next) {
+              var _path3 = '/' + (paths.delete || options.pathBaseDefault + '/:id');
+              router.delete(_path3, function (req, res, next) {
                   _this.getService(req, true, options).remove(req.params.id).then(function (item) {
                       return res.status(204).end();
                   }).catch(next);
@@ -3331,7 +3335,8 @@
           }
 
           if (paths.update !== false) {
-              router.put('/' + (paths.update || options.pathBaseDefault + '/:id'), function (req, res, next) {
+              var _path4 = '/' + (paths.update || options.pathBaseDefault + '/:id');
+              router.put(_path4, function (req, res, next) {
                   var id = req.params.id;
                   var obj = req.body;
                   _this.getService(req, true, options).save(obj).then(function (item) {
@@ -3341,7 +3346,8 @@
           }
 
           if (paths.patch !== false) {
-              router.patch('/' + (paths.patch || options.pathBaseDefault + '/:id'), function (req, res, next) {
+              var _path5 = '/' + (paths.patch || options.pathBaseDefault + '/:id');
+              router.patch(_path5, function (req, res, next) {
                   var id = req.params.id;
                   var obj = req.body;
                   _this.getService(req, true, options).patch(id, obj).then(function (item) {
@@ -3351,7 +3357,8 @@
           }
 
           if (paths.export !== false) {
-              router.get('/' + (paths.export || options.pathBaseDefault + '/:id'), function (req, res, next) {
+              var _path6 = '/' + (paths.export || options.pathBaseDefault + '/:id/export');
+              router.get(_path6, function (req, res, next) {
                   var id = req.params.id;
                   var format = req.query.format;
 
@@ -3406,12 +3413,12 @@
    */
   function bindRoutes(router, options) {
 
-      var paths = options.paths || {};
-
       //bind common endpoints
       options.pathBaseDefault = "items";
       options.serviceClass = ItemService;
       ServiceProxy.bindRoutes(router, options);
+
+      var paths = options.paths || {};
 
       //then bind those specific to this service
 
@@ -3445,6 +3452,7 @@
       }
 
       //TODO findMultiple
+
   }
 
   /**
@@ -3830,7 +3838,7 @@
       var paths = options.paths || {};
 
       if (paths.searchItems !== false) {
-          router.get('/' + (paths.searchItems || "agol/searchItems"), function (req, res, next) {
+          router.get('/' + (paths.searchItems || "agol/items"), function (req, res, next) {
               getService(req, false, options).searchItems(req.query).then(function (response) {
                   return res.json(response);
               }).catch(next);
@@ -3838,7 +3846,7 @@
       }
 
       if (paths.searchGroups !== false) {
-          router.get('/' + (paths.searchGroups || "agol/searchGroups"), function (req, res, next) {
+          router.get('/' + (paths.searchGroups || "agol/groups"), function (req, res, next) {
               getService(req, false, options).searchGroups(req.query).then(function (response) {
                   return res.json(response);
               }).catch(next);

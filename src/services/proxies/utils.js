@@ -12,7 +12,7 @@ import ServiceProxy from "./base";
 function bindRoutes(router, options) {
 
     let paths = options.paths || {};
-    
+
     if(paths.locate !== false) {
         router.get('/' + (paths.locate||"utils/locate"), (req, res, next) => {
             ServiceProxy.getService(req, false, options)
@@ -32,9 +32,9 @@ function bindRoutes(router, options) {
     }
 
     if(paths.capabilities !== false) {
-        router.get('/' + (paths.capabilities||"utils/capabilities"), (req, res, next) => {
+        router.get('/' + (paths.capabilities||"utils/capabilities/:id"), (req, res, next) => {
             ServiceProxy.getService(req, false, options)
-            .capabilities(req.query.property)
+            .capabilities(req.params.id, req.query)
             .then( result => res.json(result) )
             .catch(next);
         });

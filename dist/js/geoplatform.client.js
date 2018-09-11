@@ -3777,8 +3777,8 @@
       }
 
       if (paths.capabilities !== false) {
-          router.get('/' + (paths.capabilities || "utils/capabilities"), function (req, res, next) {
-              ServiceProxy.getService(req, false, options).capabilities(req.query.property).then(function (result) {
+          router.get('/' + (paths.capabilities || "utils/capabilities/:id"), function (req, res, next) {
+              ServiceProxy.getService(req, false, options).capabilities(req.params.id, req.query).then(function (result) {
                   return res.json(result);
               }).catch(next);
           });

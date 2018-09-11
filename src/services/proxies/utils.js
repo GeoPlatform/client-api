@@ -12,6 +12,7 @@ import ServiceProxy from "./base";
 function bindRoutes(router, options) {
 
     let paths = options.paths || {};
+    options.serviceClass = UtilsService;
 
     if(paths.locate !== false) {
         router.get('/' + (paths.locate||"utils/locate"), (req, res, next) => {

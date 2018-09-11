@@ -3408,10 +3408,15 @@
       }
   };
 
-  /**
-   *
-   */
-  function bindRoutes(router, options) {
+  var DEFAULT_PATHS = {
+      uri: "items/uri",
+      exists: "items/exists",
+      import: "items/import"
+
+      /**
+       *
+       */
+  };function bindRoutes(router, options) {
 
       //bind common endpoints
       options.pathBaseDefault = "items";
@@ -3423,7 +3428,7 @@
       //then bind those specific to this service
 
       if (paths.uri !== false) {
-          router.post('/' + (paths.uri || 'items/uri'), function (req, res, next) {
+          router.post('/' + (paths.uri || DEFAULT_PATHS.uri), function (req, res, next) {
               ServiceProxy.getService(req, false, options).getUri(req.body).then(function (response) {
                   return res.json({ uri: response });
               }).catch(next);
@@ -3431,7 +3436,7 @@
       }
 
       if (paths.exists !== false) {
-          router.post('/' + (paths.exists || 'items/exists'), function (req, res, next) {
+          router.post('/' + (paths.exists || DEFAULT_PATHS.exists), function (req, res, next) {
               ServiceProxy.getService(req, false, options).getUri(req.body).then(function (uri) {
                   var fields = ['serviceType', 'services', 'scheme', 'themes', 'publishers', 'keywords'];
                   var query = new Query().uri(uri).fields(fields);
@@ -3443,7 +3448,7 @@
       }
 
       if (paths.import !== false) {
-          router.post('/' + (paths.import || 'items/import'), function (req, res, next) {
+          router.post('/' + (paths.import || DEFAULT_PATHS.import), function (req, res, next) {
               var input = req.body.url || req.files.file;
               ServiceProxy.getService(req, false, options).import(input, req.body.format).then(function (item) {
                   res.json(item);
@@ -3481,6 +3486,15 @@
       return router;
   }
 
+  var DEFAULT_PATHS$1 = {
+      types: "serviceTypes",
+      import: "services/import",
+      about: "services/:id/about",
+      harvest: "services/:id/harvest",
+      test: "services/:id/test",
+      statistics: "services/:id/statistics"
+  };
+
   /**
    *
    */
@@ -3493,7 +3507,8 @@
       ServiceProxy.bindRoutes(router, options);
 
       if (paths.types !== false) {
-          router.get('/' + (paths.types || "serviceTypes"), function (req, res, next) {
+          var path = '/' + (paths.types || DEFAULT_PATHS$1.types);
+          router.get(path, function (req, res, next) {
               console.log("Service Types");
               ServiceProxy.getService(req, false, options).types().then(function (result) {
                   res.json(result);
@@ -3502,7 +3517,8 @@
       }
 
       if (paths.import !== false) {
-          router.post('/' + (paths.import || "services/import"), function (req, res, next) {
+          var _path = '/' + (paths.import || DEFAULT_PATHS$1.import);
+          router.post(_path, function (req, res, next) {
               ServiceProxy.getService(req, true, options).import(req.body).then(function (result) {
                   return res.json(result);
               }).catch(next);
@@ -3510,7 +3526,8 @@
       }
 
       if (paths.about !== false) {
-          router.get('/' + (paths.about || "services/:id/about"), function (req, res, next) {
+          var _path2 = '/' + (paths.about || DEFAULT_PATHS$1.about);
+          router.get(_path2, function (req, res, next) {
               var svc = ServiceProxy.getService(req, false, options);
               svc.get(req.params.id).then(function (service) {
                   return svc.about(service);
@@ -3521,7 +3538,8 @@
       }
 
       if (paths.harvest !== false) {
-          router.get('/' + (paths.harvest || "services/:id/harvest"), function (req, res, next) {
+          var _path3 = '/' + (paths.harvest || DEFAULT_PATHS$1.harvest);
+          router.get(_path3, function (req, res, next) {
               ServiceProxy.getService(req, false, options).harvest(req.params.id).then(function (result) {
                   return res.json(result);
               }).catch(next);
@@ -3529,7 +3547,8 @@
       }
 
       if (paths.test !== false) {
-          router.get('/' + (paths.test || "services/:id/test"), function (req, res, next) {
+          var _path4 = '/' + (paths.test || DEFAULT_PATHS$1.test);
+          router.get(_path4, function (req, res, next) {
               ServiceProxy.getService(req, false, options).liveTest(req.params.id).then(function (result) {
                   res.json(result);
               }).catch(next);
@@ -3537,7 +3556,8 @@
       }
 
       if (paths.statistics !== false) {
-          router.get('/' + (paths.statistics || "services/:id/statistics"), function (req, res, next) {
+          var _path5 = '/' + (paths.statistics || DEFAULT_PATHS$1.statistics);
+          router.get(_path5, function (req, res, next) {
               ServiceProxy.getService(req, false, options).statistics(req.params.id).then(function (result) {
                   res.json(result);
               }).catch(next);
@@ -3589,10 +3609,15 @@
       return router;
   }
 
-  /**
-   *
-   */
-  function bindRoutes$2(router, options) {
+  var DEFAULT_PATHS$2 = {
+      style: "layers/:id/style",
+      describe: "layers/:id/describe",
+      validate: "layers/:id/validate"
+
+      /**
+       *
+       */
+  };function bindRoutes$2(router, options) {
 
       var paths = options.paths || {};
 
@@ -3600,7 +3625,8 @@
       ServiceProxy.bindRoutes(router, options);
 
       if (paths.style !== false) {
-          router.get('/' + (paths.style || "layers/:id/style"), function (req, res, next) {
+          var path = '/' + (paths.style || DEFAULT_PATHS$2.style);
+          router.get(path, function (req, res, next) {
               ServiceProxy.getService(req, true, options).style(req.params.id).then(function (result) {
                   return res.json(result);
               }).catch(next);
@@ -3608,7 +3634,8 @@
       }
 
       if (paths.describe !== false) {
-          router.post('/' + (paths.describe || "layers/:id/describe"), function (req, res, next) {
+          var _path = '/' + (paths.describe || DEFAULT_PATHS$2.describe);
+          router.post(_path, function (req, res, next) {
               ServiceProxy.getService(req, false, options).describe(req.params.id, req.body).then(function (result) {
                   return res.json(result);
               }).catch(next);
@@ -3616,7 +3643,8 @@
       }
 
       if (paths.validate !== false) {
-          router.post('/' + (paths.validate || "layers/:id/validate"), function (req, res, next) {
+          var _paths = '/' + (_paths.validate || DEFAULT_PATHS$2.validate);
+          router.post(_paths, function (req, res, next) {
               ServiceProxy.getService(req, false, options).validate(req.params.id, req.body).then(function (result) {
                   return res.json(result);
               }).catch(next);
@@ -3753,17 +3781,24 @@
       return router;
   }
 
-  /**
-   *
-   */
-  function bindRoutes$3(router, options) {
+  var DEFAULT_PATHS$3 = {
+      locate: "utils/locate",
+      parseFile: "utils/parse",
+      capabilities: "utils/capabilities",
+      capabilitiesProperty: "utils/capabilities/:id"
+
+      /**
+       *
+       */
+  };function bindRoutes$3(router, options) {
 
       var paths = options.paths || {};
 
       options.serviceClass = UtilsService;
 
       if (paths.locate !== false) {
-          router.get('/' + (paths.locate || "utils/locate"), function (req, res, next) {
+          var path = '/' + (paths.locate || DEFAULT_PATHS$3.locate);
+          router.get(path, function (req, res, next) {
               ServiceProxy.getService(req, false, options).locate(req.query.q).then(function (response) {
                   return res.json(response);
               }).catch(next);
@@ -3771,7 +3806,8 @@
       }
 
       if (paths.parseFile !== false) {
-          router.post('/' + (paths.parseFile || "utils/parse"), function (req, res, next) {
+          var _path = '/' + (paths.parseFile || DEFAULT_PATHS$3.parseFile);
+          router.post(_path, function (req, res, next) {
               ServiceProxy.getService(req, false, options).parseFile(req.files.file, req.body.format).then(function (result) {
                   return res.json(result);
               }).catch(next);
@@ -3779,12 +3815,17 @@
       }
 
       if (paths.capabilities !== false) {
-          router.get('/' + (paths.capabilities || "utils/capabilities"), function (req, res, next) {
+          var _path2 = '/' + (paths.capabilities || DEFAULT_PATHS$3.capabilities);
+          router.get(_path2, function (req, res, next) {
               ServiceProxy.getService(req, false, options).capabilities(null, req.query).then(function (result) {
                   return res.json(result);
               }).catch(next);
           });
-          router.get('/' + (paths.capabilities || "utils/capabilities/:id"), function (req, res, next) {
+      }
+
+      if (paths.capabilitiesProperty !== false) {
+          var _path3 = '/' + (paths.capabilitiesProperty || DEFAULT_PATHS$3.capabilitiesProperty);
+          router.get(_path3, function (req, res, next) {
               ServiceProxy.getService(req, false, options).capabilities(req.params.id, req.query).then(function (result) {
                   return res.json(result);
               }).catch(next);
@@ -3816,17 +3857,26 @@
       return router;
   }
 
-  /**
-   *
-   */
-  function bindRoutes$4(router, options) {
+  var DEFAULT_PATHS$4 = {
+      searchItems: "agol/items",
+      searchGroups: "agol/groups",
+      searchOrgs: "agol/orgs",
+      getItem: 'agol/items/:id',
+      getGroup: 'agol/groups/:id',
+      getOrg: 'agol/orgs/:id'
+
+      /**
+       *
+       */
+  };function bindRoutes$4(router, options) {
 
       var paths = options.paths || {};
 
       options.serviceClass = AgolService;
 
       if (paths.searchItems !== false) {
-          router.get('/' + (paths.searchItems || "agol/items"), function (req, res, next) {
+          var path = '/' + (paths.searchItems || DEFAULT_PATHS$4.searchItems);
+          router.get(path, function (req, res, next) {
               ServiceProxy.getService(req, false, options).searchItems(req.query).then(function (response) {
                   return res.json(response);
               }).catch(next);
@@ -3834,7 +3884,8 @@
       }
 
       if (paths.searchGroups !== false) {
-          router.get('/' + (paths.searchGroups || "agol/groups"), function (req, res, next) {
+          var _path = '/' + (paths.searchGroups || DEFAULT_PATHS$4.searchGroups);
+          router.get(_path, function (req, res, next) {
               ServiceProxy.getService(req, false, options).searchGroups(req.query).then(function (response) {
                   return res.json(response);
               }).catch(next);
@@ -3842,7 +3893,8 @@
       }
 
       if (paths.searchOrgs !== false) {
-          router.get('/' + (paths.searchOrgs || "agol/orgs"), function (req, res, next) {
+          var _path2 = '/' + (paths.searchOrgs || DEFAULT_PATHS$4.searchOrgs);
+          router.get(_path2, function (req, res, next) {
               ServiceProxy.getService(req, false, options).searchOrgs(req.query).then(function (response) {
                   return res.json(response);
               }).catch(next);
@@ -3850,7 +3902,8 @@
       }
 
       if (paths.getItem !== false) {
-          router.get('/' + (paths.getItem || "agol/items/:id"), function (req, res, next) {
+          var _path3 = '/' + (paths.getItem || DEFAULT_PATHS$4.getItem);
+          router.get(_path3, function (req, res, next) {
               ServiceProxy.getService(req, false, options).getItem(req.params.id).then(function (item) {
                   return res.json(item);
               }).catch(next);
@@ -3858,7 +3911,8 @@
       }
 
       if (paths.getGroup !== false) {
-          router.get('/' + (paths.getGroup || "agol/groups/:id"), function (req, res, next) {
+          var _path4 = '/' + (paths.getGroup || DEFAULT_PATHS$4.getGroup);
+          router.get(_path4, function (req, res, next) {
               ServiceProxy.getService(req, false, options).getGroup(input).then(function (item) {
                   return res.json(item);
               }).catch(next);
@@ -3866,7 +3920,8 @@
       }
 
       if (paths.getOrg !== false) {
-          router.get('/' + (paths.getOrg || "agol/orgs/:id"), function (req, res, next) {
+          var _path5 = '/' + (paths.getOrg || DEFAULT_PATHS$4.getOrg);
+          router.get(_path5, function (req, res, next) {
               ServiceProxy.getService(req, false, options).getOrg(req.params.id).then(function (item) {
                   return res.status(204).end();
               }).catch(next);

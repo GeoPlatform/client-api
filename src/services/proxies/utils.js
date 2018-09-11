@@ -6,6 +6,15 @@ import UtilsService from "../utils";
 import Config from '../../shared/config';
 import ServiceProxy from "./base";
 
+
+const DEFAULT_PATHS = {
+    locate: "utils/locate",
+    parseFile: "utils/parse",
+    capabilities: "utils/capabilities",
+    capabilitiesProperty: "utils/capabilities/:id"
+}
+
+
 /**
  *
  */
@@ -16,7 +25,8 @@ function bindRoutes(router, options) {
     options.serviceClass = UtilsService;
 
     if(paths.locate !== false) {
-        router.get('/' + (paths.locate||"utils/locate"), (req, res, next) => {
+        let path = '/' + ( paths.locate || DEFAULT_PATHS.locate );
+        router.get(path, (req, res, next) => {
             ServiceProxy.getService(req, false, options)
             .locate(req.query.q)
             .then( response => res.json(response) )
@@ -25,7 +35,8 @@ function bindRoutes(router, options) {
     }
 
     if(paths.parseFile !== false) {
-        router.post('/' + (paths.parseFile||"utils/parse"), (req, res, next) => {
+        let path = '/' + ( paths.parseFile || DEFAULT_PATHS.parseFile );
+        router.post(path, (req, res, next) => {
             ServiceProxy.getService(req, false, options)
             .parseFile(req.files.file, req.body.format)
             .then( result => res.json(result) )
@@ -34,13 +45,18 @@ function bindRoutes(router, options) {
     }
 
     if(paths.capabilities !== false) {
-        router.get('/' + (paths.capabilities||"utils/capabilities"), (req, res, next) => {
+        let path = '/' + ( paths.capabilities || DEFAULT_PATHS.capabilities );
+        router.get(path, (req, res, next) => {
             ServiceProxy.getService(req, false, options)
             .capabilities(null, req.query)
             .then( result => res.json(result) )
             .catch(next);
         });
-        router.get('/' + (paths.capabilities||"utils/capabilities/:id"), (req, res, next) => {
+    }
+
+    if(paths.capabilitiesProperty !== false) {
+        let path = '/' + ( paths.capabilitiesProperty || DEFAULT_PATHS.capabilitiesProperty );
+        router.get(path, (req, res, next) => {
             ServiceProxy.getService(req, false, options)
             .capabilities(req.params.id, req.query)
             .then( result => res.json(result) )

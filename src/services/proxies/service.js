@@ -6,6 +6,15 @@ import ServiceService from "../service";
 import Config from '../../shared/config';
 import ServiceProxy from "./base";
 
+const DEFAULT_PATHS = {
+    types: "serviceTypes",
+    import: "services/import",
+    about: "services/:id/about",
+    harvest: "services/:id/harvest",
+    test: "services/:id/test",
+    statistics: "services/:id/statistics"
+};
+
 /**
  *
  */
@@ -19,7 +28,8 @@ function bindRoutes(router, options) {
 
 
     if(paths.types !== false) {
-        router.get('/' + (paths.types||"serviceTypes"), (req, res, next) => {
+        let path = '/' + ( paths.types || DEFAULT_PATHS.types );
+        router.get(path, (req, res, next) => {
             console.log("Service Types");
             ServiceProxy.getService(req, false, options)
             .types()
@@ -29,7 +39,8 @@ function bindRoutes(router, options) {
     }
 
     if(paths.import !== false) {
-        router.post('/' + (paths.import||"services/import"), (req, res, next) => {
+        let path = '/' + ( paths.import || DEFAULT_PATHS.import );
+        router.post(path, (req, res, next) => {
             ServiceProxy.getService(req, true, options)
             .import(req.body)
             .then( result => res.json(result) )
@@ -38,7 +49,8 @@ function bindRoutes(router, options) {
     }
 
     if(paths.about !== false) {
-        router.get('/' + (paths.about||"services/:id/about"), (req, res, next) => {
+        let path = '/' + ( paths.about || DEFAULT_PATHS.about );
+        router.get(path, (req, res, next) => {
             let svc = ServiceProxy.getService(req, false, options);
             svc.get(req.params.id)
             .then( service => svc.about(service) )
@@ -48,7 +60,8 @@ function bindRoutes(router, options) {
     }
 
     if(paths.harvest !== false) {
-        router.get('/' + (paths.harvest||"services/:id/harvest"), (req, res, next) => {
+        let path = '/' + ( paths.harvest || DEFAULT_PATHS.harvest );
+        router.get(path, (req, res, next) => {
             ServiceProxy.getService(req, false, options)
             .harvest(req.params.id)
             .then( result => res.json(result) )
@@ -57,7 +70,8 @@ function bindRoutes(router, options) {
     }
 
     if(paths.test !== false) {
-        router.get('/' + (paths.test||"services/:id/test"), (req, res, next) => {
+        let path = '/' + ( paths.test || DEFAULT_PATHS.test );
+        router.get(path, (req, res, next) => {
             ServiceProxy.getService(req, false, options)
             .liveTest(req.params.id)
             .then( result => { res.json(result) })
@@ -66,7 +80,8 @@ function bindRoutes(router, options) {
     }
 
     if(paths.statistics !== false) {
-        router.get('/' + (paths.statistics||"services/:id/statistics"), (req, res, next) => {
+        let path = '/' + ( paths.statistics || DEFAULT_PATHS.statistics );
+        router.get(path, (req, res, next) => {
             ServiceProxy.getService(req, false, options)
             .statistics(req.params.id)
             .then( result => { res.json(result) })

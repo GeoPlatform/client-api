@@ -6,6 +6,15 @@ import LayerService from "../layer";
 import Config from '../../shared/config';
 import ServiceProxy from "./base";
 
+
+const DEFAULT_PATHS = {
+    style:    "layers/:id/style",
+    describe: "layers/:id/describe",
+    validate: "layers/:id/validate"
+}
+
+
+
 /**
  *
  */
@@ -17,7 +26,8 @@ function bindRoutes(router, options) {
     ServiceProxy.bindRoutes(router, options);
 
     if(paths.style !== false) {
-        router.get('/' + (paths.style||"layers/:id/style"), (req, res, next) => {
+        let path = '/' + ( paths.style || DEFAULT_PATHS.style );
+        router.get(path, (req, res, next) => {
             ServiceProxy.getService(req, true, options)
             .style(req.params.id)
             .then( result => res.json(result) )
@@ -26,7 +36,8 @@ function bindRoutes(router, options) {
     }
 
     if(paths.describe !== false) {
-        router.post('/' + (paths.describe||"layers/:id/describe"), (req, res, next) => {
+        let path = '/' + ( paths.describe || DEFAULT_PATHS.describe );
+        router.post(path, (req, res, next) => {
             ServiceProxy.getService(req, false, options)
             .describe(req.params.id, req.body)
             .then( result => res.json(result) )
@@ -35,7 +46,8 @@ function bindRoutes(router, options) {
     }
 
     if(paths.validate !== false) {
-        router.post('/' + (paths.validate||"layers/:id/validate"), (req, res, next) => {
+        let paths = '/' + ( paths.validate || DEFAULT_PATHS.validate );
+        router.post(paths, (req, res, next) => {
             ServiceProxy.getService(req, false, options)
             .validate(req.params.id, req.body)
             .then( result => res.json(result) )

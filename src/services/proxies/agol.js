@@ -6,6 +6,15 @@ import AgolService from "../agol";
 import Config from '../../shared/config';
 import ServiceProxy from './base';
 
+const DEFAULT_PATHS = {
+    searchItems: "agol/items",
+    searchGroups: "agol/groups",
+    searchOrgs: "agol/orgs",
+    getItem: 'agol/items/:id',
+    getGroup: 'agol/groups/:id',
+    getOrg: 'agol/orgs/:id'
+}
+
 /**
  *
  */
@@ -16,7 +25,8 @@ function bindRoutes(router, options) {
     options.serviceClass = AgolService;
 
     if(paths.searchItems !== false) {
-        router.get('/' + (paths.searchItems||"agol/items"), (req, res, next) => {
+        let path = '/' + ( paths.searchItems || DEFAULT_PATHS.searchItems );
+        router.get(path, (req, res, next) => {
             ServiceProxy.getService(req, false, options)
             .searchItems(req.query)
             .then( response => res.json(response) )
@@ -25,7 +35,8 @@ function bindRoutes(router, options) {
     }
 
     if(paths.searchGroups !== false) {
-        router.get('/' + (paths.searchGroups||"agol/groups"), (req, res, next) => {
+        let path = '/' + ( paths.searchGroups || DEFAULT_PATHS.searchGroups );
+        router.get(path, (req, res, next) => {
             ServiceProxy.getService(req, false, options)
             .searchGroups(req.query)
             .then( response => res.json(response) )
@@ -34,7 +45,8 @@ function bindRoutes(router, options) {
     }
 
     if(paths.searchOrgs !== false) {
-        router.get('/' + (paths.searchOrgs||"agol/orgs"), (req, res, next) => {
+        let path = '/' + ( paths.searchOrgs || DEFAULT_PATHS.searchOrgs );
+        router.get(path, (req, res, next) => {
             ServiceProxy.getService(req, false, options)
             .searchOrgs(req.query)
             .then( response => res.json(response) )
@@ -43,7 +55,8 @@ function bindRoutes(router, options) {
     }
 
     if(paths.getItem !== false) {
-        router.get('/' + (paths.getItem||"agol/items/:id"), (req, res, next) => {
+        let path = '/' + ( paths.getItem || DEFAULT_PATHS.getItem );
+        router.get(path, (req, res, next) => {
             ServiceProxy.getService(req, false, options)
             .getItem(req.params.id)
             .then( item => res.json(item) )
@@ -52,7 +65,8 @@ function bindRoutes(router, options) {
     }
 
     if(paths.getGroup !== false) {
-        router.get('/' + (paths.getGroup||"agol/groups/:id"), (req, res, next) => {
+        let path = '/' + ( paths.getGroup || DEFAULT_PATHS.getGroup );
+        router.get(path, (req, res, next) => {
             ServiceProxy.getService(req, false, options)
             .getGroup(input)
             .then( item => res.json(item) )
@@ -61,7 +75,8 @@ function bindRoutes(router, options) {
     }
 
     if(paths.getOrg !== false) {
-        router.get('/' + (paths.getOrg||"agol/orgs/:id"), (req, res, next) => {
+        let path = '/' + ( paths.getOrg || DEFAULT_PATHS.getOrg );
+        router.get(path, (req, res, next) => {
             ServiceProxy.getService(req, false, options)
             .getOrg(req.params.id)
             .then( item => res.status(204).end() )

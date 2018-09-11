@@ -5,6 +5,14 @@ import NodeHttpClient from '../../http/node';
 import ItemService from "../item";
 import Config from '../../shared/config';
 import ServiceProxy from './base';
+
+
+const DEFAULT_PATHS = {
+    uri: "items/uri",
+    exists: "items/exists",
+    import: "items/import"
+}
+
 /**
  *
  */
@@ -18,11 +26,11 @@ function bindRoutes(router, options) {
 
     let paths = options.paths || {};
 
-    
+
     //then bind those specific to this service
 
     if(paths.uri !== false) {
-        router.post('/' + (paths.uri||'items/uri'), (req, res, next) => {
+        router.post('/' + ( paths.uri|| DEFAULT_PATHS.uri ), (req, res, next) => {
             ServiceProxy.getService(req, false, options)
             .getUri(req.body)
             .then( response => res.json({uri: response}) )
@@ -31,7 +39,7 @@ function bindRoutes(router, options) {
     }
 
     if(paths.exists !== false) {
-        router.post('/' + (paths.exists||'items/exists'), (req, res, next) => {
+        router.post('/' + ( paths.exists || DEFAULT_PATHS.exists ), (req, res, next) => {
             ServiceProxy.getService(req, false, options)
             .getUri(req.body)
             .then( uri => {
@@ -45,7 +53,7 @@ function bindRoutes(router, options) {
     }
 
     if(paths.import !== false) {
-        router.post('/' + (paths.import||'items/import'), (req, res, next) => {
+        router.post('/' + ( paths.import || DEFAULT_PATHS.import ), (req, res, next) => {
             let input = req.body.url || req.files.file;
             ServiceProxy.getService(req, false, options)
             .import(input, req.body.format)

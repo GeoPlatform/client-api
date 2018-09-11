@@ -3691,7 +3691,7 @@
       if (!router) throw new Error("DatasetServiceProxy() - " + "Unable to create proxy route, missing router");
 
       options.pathBaseDefault = "datasets";
-      options.serviceClass = ItemService;
+      options.serviceClass = DatasetService;
       ServiceProxy.bindRoutes(router, options);
 
       return router;
@@ -3719,7 +3719,7 @@
       if (!router) throw new Error("MapServiceProxy() - " + "Unable to create proxy route, missing router");
 
       options.pathBaseDefault = "maps";
-      options.serviceClass = ItemService;
+      options.serviceClass = MapService;
       ServiceProxy.bindRoutes(router, options);
 
       return router;
@@ -3747,7 +3747,7 @@
       if (!router) throw new Error("GalleryServiceProxy() - " + "Unable to create proxy route, missing router");
 
       options.pathBaseDefault = "galleries";
-      options.serviceClass = ItemService;
+      options.serviceClass = GalleryService;
       ServiceProxy.bindRoutes(router, options);
 
       return router;
@@ -3759,7 +3759,8 @@
   function bindRoutes$3(router, options) {
 
       var paths = options.paths || {};
-      options.serviceClass = ServiceService;
+
+      options.serviceClass = UtilsService;
 
       if (paths.locate !== false) {
           router.get('/' + (paths.locate || "utils/locate"), function (req, res, next) {
@@ -3778,6 +3779,11 @@
       }
 
       if (paths.capabilities !== false) {
+          router.get('/' + (paths.capabilities || "utils/capabilities"), function (req, res, next) {
+              ServiceProxy.getService(req, false, options).capabilities(null, req.query).then(function (result) {
+                  return res.json(result);
+              }).catch(next);
+          });
           router.get('/' + (paths.capabilities || "utils/capabilities/:id"), function (req, res, next) {
               ServiceProxy.getService(req, false, options).capabilities(req.params.id, req.query).then(function (result) {
                   return res.json(result);
@@ -3787,26 +3793,6 @@
   }
 
   /**
-   *
-   * Example:
-   *
-   *   const Logger = require('./logger');
-   *
-   *   //define GP API Client config options before creating proxy
-   *   const Config = require('geoplatform.client');
-   *   Config.configure( {
-   *     timeout: 20000,
-   *     ualUrl: 'https://ual.geoplatform.gov'
-   *   });
-   *
-   *   //optionally, define parent router
-   *   router = require('express').Router();
-   *   router.use('/api', UtilsServiceProxy({
-   *     logger: Logger,
-   *     debug: true,
-   *     //optionally, provide router instance
-   *     router: require('express').Router()
-   *   }));
    *
    */
   function UtilsServiceProxy(options) {
@@ -3825,7 +3811,6 @@
 
       if (!router) throw new Error("UtilsServiceProxy() - " + "Unable to create proxy route, missing router");
 
-      options.serviceClass = ServiceService;
       bindRoutes$3(router, options);
 
       return router;
@@ -3838,7 +3823,7 @@
 
       var paths = options.paths || {};
 
-      options.serviceClass = ItemService;
+      options.serviceClass = AgolService;
 
       if (paths.searchItems !== false) {
           router.get('/' + (paths.searchItems || "agol/items"), function (req, res, next) {

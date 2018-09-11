@@ -2,7 +2,7 @@
 
 import Q from 'q';
 import NodeHttpClient from '../../http/node';
-import GalleryService from "../item";
+import GalleryService from "../gallery";
 import Config from '../../shared/config';
 import ServiceProxy from './base';
 

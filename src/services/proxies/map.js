@@ -2,7 +2,7 @@
 
 import Q from 'q';
 import NodeHttpClient from '../../http/node';
-import MapService from "../item";
+import MapService from "../map";
 import Config from '../../shared/config';
 import ServiceProxy from "./base";
 

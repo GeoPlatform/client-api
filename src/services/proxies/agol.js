@@ -2,7 +2,7 @@
 
 import Q from 'q';
 import NodeHttpClient from '../../http/node';
-import AgolService from "../item";
+import AgolService from "../agol";
 import Config from '../../shared/config';
 import ServiceProxy from './base';
 

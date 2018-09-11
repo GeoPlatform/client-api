@@ -2,7 +2,7 @@
 
 import Q from 'q';
 import NodeHttpClient from '../../http/node';
-import DatasetService from "../item";
+import DatasetService from "../dataset";
 import Config from '../../shared/config';
 import ServiceProxy from './base';
 

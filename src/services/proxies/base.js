@@ -9,99 +9,49 @@ import ItemService from "../item";
 
 const ServiceProxy = {
 
-    bindRoutes: function(router, options) {
+    /**
+     * @param {Router} router - ExpressJS router instance
+     * @param {array[object]} routes - list of routes to map to the router
+     * @param {object} options - additional configuration needed
+     */
+    bindRoutes: function(router, routes, options) {
 
         options = options || {};
         let paths = options.paths || {};
 
-        if(paths.search !== false) {
-            let path = '/' + (paths.search||options.pathBaseDefault);
-            router.get(path, (req, res, next) => {
-                this.getService(req, false, options)
-                .search(req.query)
-                .then( response => res.json(response) )
-                .catch(next);
-            });
-        }
+        routes.forEach( route => {
 
-        if(paths.getById !== false) {
-            let path = '/' + (paths.getById||options.pathBaseDefault+"/:id");
-            router.get(path, (req, res, next) => {
-                this.getService(req, false, options)
-                .get(req.params.id)
-                .then( item => res.json(item) )
-                .catch(next);
-            });
-        }
+            if(paths[route.key] === false) return;  //disabled endpoint
+            if(!paths[route.key] && !route.path) return; //something is wrong with route
 
-        if(paths.create !== false) {
-            let path = '/' + (paths.create||options.pathBaseDefault);
-            router.post(path, (req, res, next) => {
-                var input = req.body;
-                this.getService(req, true, options)
-                .save(input)
-                .then( item => res.json(item) )
-                .catch(next);
-            });
-        }
+            // let path = '/' + ( paths[route.key] || route.pathFn(pathBase) );
+            let path = '/' + ( paths[route.key] || route.path );
 
-        if(paths.delete !== false) {
-            let path = '/' + (paths.delete||options.pathBaseDefault+'/:id');
-            router.delete(path, (req, res, next) => {
-                this.getService(req, true, options)
-                .remove(req.params.id)
-                .then( item => res.status(204).end() )
-                .catch(next);
-            });
-        }
-
-        if(paths.update !== false) {
-            let path = '/' + (paths.update||options.pathBaseDefault+'/:id');
-            router.put(path, (req, res, next) => {
-                var id = req.params.id;
-                var obj = req.body;
-                this.getService(req, true, options)
-                .save(obj)
-                .then( item => res.json(item) )
-                .catch(next);
-            });
-        }
-
-        if(paths.patch !== false) {
-            let path = '/' + (paths.patch||options.pathBaseDefault+'/:id');
-            router.patch(path, (req, res, next) => {
-                var id = req.params.id;
-                var obj = req.body;
-                this.getService(req, true, options)
-                .patch(id, obj)
-                .then( item => res.json(item) )
-                .catch(next);
-            });
-        }
-
-        if(paths.export !== false) {
-            let path = '/' + (paths.export||options.pathBaseDefault+'/:id/export');
-            router.get(path, (req, res, next) => {
-                var id = req.params.id;
-                var format = req.query.format;
-
-                this.getService(req, false, options)
-                .export(id, format)
-                .then( response => {
-                    let mimeType = response.headers['content-type'];
-                    let disposition = response.headers['content-disposition'];
-                    res.set("Content-Type", mimeType);
-                    res.setHeader('Content-disposition', disposition);
-                    res.send(response.body);
+            router[route.method]( path, (req, res, next) => {
+                let svc = this.getService(req, route.auth, options);
+                let promise = route.execFn(svc, req)
+                promise.then( result => {
+                    if(route.respFn) route.respFn(result, res, next);
+                    else res.json(result)
                 })
-                .catch(next);
-            });
-        }
+                .catch( (err) => {
+                    if(options.onError)
+                        options.onError(route.key, err);
+                    next(err);
+                })
+                .finally( () => {
+                    if(options.onFinish)
+                        options.onFinish(route.key, req, res);
+                });
+            })
+        });
+
     },
 
     /**
-    * @param {Request} req - HttpRequest
+    * @param {HttpRequest} req - incoming http request being proxied
     * @param {boolean} needsAuth - flag indicating if the request must provide an authentication token
+    * @param {object} options - additional configuration options
     * @return {HttpClient} client to use to make requests to GeoPlatform API endpoint
     */
     getClient: function(req, needsAuth, options) {
@@ -125,7 +75,9 @@ const ServiceProxy = {
 
 
     /**
-     *
+     * @param {HttpRequest} req - incoming http request being proxied
+     * @param {boolean} needsAuth - flag indicating if request requires authorization token
+     * @param {object} options - additional configuration options
      */
     getService: function(req, needsAuth, options) {
         let client = this.getClient(req, needsAuth, options);

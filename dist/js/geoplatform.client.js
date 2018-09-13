@@ -3291,91 +3291,44 @@
 
   var ServiceProxy = {
 
-      bindRoutes: function bindRoutes(router, options) {
+      /**
+       * @param {Router} router - ExpressJS router instance
+       * @param {array[object]} routes - list of routes to map to the router
+       * @param {object} options - additional configuration needed
+       */
+      bindRoutes: function bindRoutes(router, routes, options) {
           var _this = this;
 
           options = options || {};
           var paths = options.paths || {};
 
-          if (paths.search !== false) {
-              var path = '/' + (paths.search || options.pathBaseDefault);
-              router.get(path, function (req, res, next) {
-                  _this.getService(req, false, options).search(req.query).then(function (response) {
-                      return res.json(response);
-                  }).catch(next);
-              });
-          }
+          routes.forEach(function (route) {
 
-          if (paths.getById !== false) {
-              var _path = '/' + (paths.getById || options.pathBaseDefault + "/:id");
-              router.get(_path, function (req, res, next) {
-                  _this.getService(req, false, options).get(req.params.id).then(function (item) {
-                      return res.json(item);
-                  }).catch(next);
-              });
-          }
+              if (paths[route.key] === false) return; //disabled endpoint
+              if (!paths[route.key] && !route.path) return; //something is wrong with route
 
-          if (paths.create !== false) {
-              var _path2 = '/' + (paths.create || options.pathBaseDefault);
-              router.post(_path2, function (req, res, next) {
-                  var input = req.body;
-                  _this.getService(req, true, options).save(input).then(function (item) {
-                      return res.json(item);
-                  }).catch(next);
-              });
-          }
+              // let path = '/' + ( paths[route.key] || route.pathFn(pathBase) );
+              var path = '/' + (paths[route.key] || route.path);
 
-          if (paths.delete !== false) {
-              var _path3 = '/' + (paths.delete || options.pathBaseDefault + '/:id');
-              router.delete(_path3, function (req, res, next) {
-                  _this.getService(req, true, options).remove(req.params.id).then(function (item) {
-                      return res.status(204).end();
-                  }).catch(next);
+              router[route.method](path, function (req, res, next) {
+                  var svc = _this.getService(req, route.auth, options);
+                  var promise = route.execFn(svc, req);
+                  promise.then(function (result) {
+                      if (route.respFn) route.respFn(result, res, next);else res.json(result);
+                  }).catch(function (err) {
+                      if (options.onError) options.onError(route.key, err);
+                      next(err);
+                  }).finally(function () {
+                      if (options.onFinish) options.onFinish(route.key, req, res);
+                  });
               });
-          }
-
-          if (paths.update !== false) {
-              var _path4 = '/' + (paths.update || options.pathBaseDefault + '/:id');
-              router.put(_path4, function (req, res, next) {
-                  var id = req.params.id;
-                  var obj = req.body;
-                  _this.getService(req, true, options).save(obj).then(function (item) {
-                      return res.json(item);
-                  }).catch(next);
-              });
-          }
-
-          if (paths.patch !== false) {
-              var _path5 = '/' + (paths.patch || options.pathBaseDefault + '/:id');
-              router.patch(_path5, function (req, res, next) {
-                  var id = req.params.id;
-                  var obj = req.body;
-                  _this.getService(req, true, options).patch(id, obj).then(function (item) {
-                      return res.json(item);
-                  }).catch(next);
-              });
-          }
-
-          if (paths.export !== false) {
-              var _path6 = '/' + (paths.export || options.pathBaseDefault + '/:id/export');
-              router.get(_path6, function (req, res, next) {
-                  var id = req.params.id;
-                  var format = req.query.format;
-
-                  _this.getService(req, false, options).export(id, format).then(function (response) {
-                      var mimeType = response.headers['content-type'];
-                      var disposition = response.headers['content-disposition'];
-                      res.set("Content-Type", mimeType);
-                      res.setHeader('Content-disposition', disposition);
-                      res.send(response.body);
-                  }).catch(next);
-              });
-          }
+          });
       },
 
       /**
-      * @param {Request} req - HttpRequest
+      * @param {HttpRequest} req - incoming http request being proxied
       * @param {boolean} needsAuth - flag indicating if the request must provide an authentication token
+      * @param {object} options - additional configuration options
       * @return {HttpClient} client to use to make requests to GeoPlatform API endpoint
       */
       getClient: function getClient(req, needsAuth, options) {
@@ -3395,7 +3348,9 @@
       },
 
       /**
-       *
+       * @param {HttpRequest} req - incoming http request being proxied
+       * @param {boolean} needsAuth - flag indicating if request requires authorization token
+       * @param {object} options - additional configuration options
        */
       getService: function getService(req, needsAuth, options) {
           var client = this.getClient(req, needsAuth, options);
@@ -3408,53 +3363,178 @@
       }
   };
 
-  var DEFAULT_PATHS = {
-      uri: "items/uri",
-      exists: "items/exists",
-      import: "items/import"
+  var Routes = [{
+      key: 'search',
+      method: 'get',
+      path: 'items',
+      auth: false,
+      execFn: function execFn(svc, req) {
+          return svc.search(req.query);
+      }
+  }, {
+      key: 'get',
+      method: 'get',
+      path: 'items/:id',
+      auth: false,
+      execFn: function execFn(svc, req) {
+          return svc.get(req.params.id);
+      }
+  }, {
+      key: 'create',
+      method: 'post',
+      path: 'items',
+      auth: true,
+      execFn: function execFn(svc, req) {
+          return svc.save(req.body);
+      }
+  }, {
+      key: 'update',
+      method: 'put',
+      path: 'items/:id',
+      auth: true,
+      execFn: function execFn(svc, req) {
+          return svc.save(req.body);
+      }
+  }, {
+      key: 'delete',
+      method: 'delete',
+      path: 'items/:id',
+      auth: true,
+      execFn: function execFn(svc, req) {
+          return svc.remove(req.params.id);
+      },
+      respFn: function respFn(result, res, next) {
+          res.status(204).end();
+      }
+  }, {
+      key: 'patch',
+      method: 'patch',
+      path: 'items/:id',
+      auth: true,
+      execFn: function execFn(svc, req) {
+          return svc.patch(req.params.id, req.body);
+      }
+  }, {
+      key: 'export',
+      method: 'get',
+      path: 'items/:id/export',
+      auth: false,
+      execFn: function execFn(svc, req) {
+          return svc.export(req.params.id, req.query.format);
+      },
+      respFn: function respFn(result, res, next) {
+          var mimeType = result.headers['content-type'];
+          var disposition = result.headers['content-disposition'];
+          res.set("Content-Type", mimeType);
+          res.setHeader('Content-disposition', disposition);
+          res.send(response.body);
+      }
+  }, {
+      key: 'uri',
+      method: 'post',
+      path: 'items/uri',
+      auth: false,
+      execFn: function execFn(svc, req) {
+          return svc.getUri(req.body);
+      },
+      respFn: function respFn(result, req, res) {
+          res.json({ uri: result });
+      }
+  }, {
+      key: 'exists',
+      method: 'post',
+      path: 'items/exists',
+      auth: false,
+      execFn: function execFn(svc, req) {
+          return svc.getUri(req.body).then(function (uri) {
+              var fields = ['serviceType', 'services', 'scheme', 'themes', 'publishers', 'keywords'];
+              var query = new Query().uri(uri).fields(fields);
+              return svc.search(query);
+          });
+      }
+  }, {
+      key: 'import',
+      method: 'post',
+      path: 'items/import',
+      auth: true,
+      execFn: function execFn(svc, req) {
+          var input = req.body.url || req.files.file;
+          return svc.import(input, req.query.format);
+      }
+      // TODO findMultiple
+  }];
 
-      /**
-       *
-       */
-  };function bindRoutes(router, options) {
+  /**
+   *
+   */
+  function bindRoutes(router, options) {
 
       //bind common endpoints
       options.pathBaseDefault = "items";
       options.serviceClass = ItemService;
-      ServiceProxy.bindRoutes(router, options);
+      ServiceProxy.bindRoutes(router, Routes, options);
 
-      var paths = options.paths || {};
+      // let paths = options.paths || {};
+
 
       //then bind those specific to this service
 
-      if (paths.uri !== false) {
-          router.post('/' + (paths.uri || DEFAULT_PATHS.uri), function (req, res, next) {
-              ServiceProxy.getService(req, false, options).getUri(req.body).then(function (response) {
-                  return res.json({ uri: response });
-              }).catch(next);
-          });
-      }
+      // if(paths.uri !== false) {
+      //     router.post('/' + ( paths.uri|| DEFAULT_PATHS.uri ), (req, res, next) => {
+      //         ServiceProxy.getService(req, false, options)
+      //         .getUri(req.body)
+      //         .then( response => res.json({uri: response}) )
+      //         .catch( (err) => {
+      //             if(options.onError)
+      //                 options.onError('uri', err);
+      //             next(err);
+      //         })
+      //         .finally( () => {
+      //             if(options.onFinish)
+      //                 options.onFinish('uri', req, res);
+      //         });
+      //     });
+      // }
 
-      if (paths.exists !== false) {
-          router.post('/' + (paths.exists || DEFAULT_PATHS.exists), function (req, res, next) {
-              ServiceProxy.getService(req, false, options).getUri(req.body).then(function (uri) {
-                  var fields = ['serviceType', 'services', 'scheme', 'themes', 'publishers', 'keywords'];
-                  var query = new Query().uri(uri).fields(fields);
-                  return svc.search(query);
-              }).then(function (response) {
-                  return res.json(response);
-              }).catch(next);
-          });
-      }
+      // if(paths.exists !== false) {
+      //     router.post('/' + ( paths.exists || DEFAULT_PATHS.exists ), (req, res, next) => {
+      //         ServiceProxy.getService(req, false, options)
+      //         .getUri(req.body)
+      //         .then( uri => {
+      //             let fields = ['serviceType','services','scheme','themes','publishers','keywords'];
+      //             let query = new Query().uri(uri).fields(fields);
+      //             return svc.search(query);
+      //         })
+      //         .then( response => res.json(response) )
+      //         .catch( (err) => {
+      //             if(options.onError)
+      //                 options.onError('exists', err);
+      //             next(err);
+      //         })
+      //         .finally( () => {
+      //             if(options.onFinish)
+      //                 options.onFinish('exists', req, res);
+      //         });
+      //     });
+      // }
 
-      if (paths.import !== false) {
-          router.post('/' + (paths.import || DEFAULT_PATHS.import), function (req, res, next) {
-              var input = req.body.url || req.files.file;
-              ServiceProxy.getService(req, false, options).import(input, req.body.format).then(function (item) {
-                  res.json(item);
-              }).catch(next);
-          });
-      }
+      // if(paths.import !== false) {
+      //     router.post('/' + ( paths.import || DEFAULT_PATHS.import ), (req, res, next) => {
+      //         let input = req.body.url || req.files.file;
+      //         ServiceProxy.getService(req, false, options)
+      //         .import(input, req.body.format)
+      //         .then( item => { res.json(item) })
+      //         .catch( (err) => {
+      //             if(options.onError)
+      //                 options.onError('import', err);
+      //             next(err);
+      //         })
+      //         .finally( () => {
+      //             if(options.onFinish)
+      //                 options.onFinish('import', req, res);
+      //         });
+      //     });
+      // }
 
       //TODO findMultiple
 
@@ -3486,106 +3566,123 @@
       return router;
   }
 
-  var DEFAULT_PATHS$1 = {
-      types: "serviceTypes",
-      import: "services/import",
-      about: "services/:id/about",
-      harvest: "services/:id/harvest",
-      test: "services/:id/test",
-      statistics: "services/:id/statistics"
-  };
+  var Routes$1 = [{
+      key: 'search',
+      method: 'get',
+      path: 'services',
+      auth: false,
+      execFn: function execFn(svc, req) {
+          return svc.search(req.query);
+      }
+  }, {
+      key: 'get',
+      method: 'get',
+      path: 'services/:id',
+      auth: false,
+      execFn: function execFn(svc, req) {
+          return svc.get(req.params.id);
+      }
+  }, {
+      key: 'create',
+      method: 'post',
+      path: 'services',
+      auth: true,
+      execFn: function execFn(svc, req) {
+          return svc.save(req.body);
+      }
+  }, {
+      key: 'update',
+      method: 'put',
+      path: 'services/:id',
+      auth: true,
+      execFn: function execFn(svc, req) {
+          return svc.save(req.body);
+      }
+  }, {
+      key: 'delete',
+      method: 'delete',
+      path: 'services/:id',
+      auth: true,
+      execFn: function execFn(svc, req) {
+          return svc.remove(req.params.id);
+      },
+      respFn: function respFn(result, res, next) {
+          res.status(204).end();
+      }
+  }, {
+      key: 'patch',
+      method: 'patch',
+      path: 'services/:id',
+      auth: true,
+      execFn: function execFn(svc, req) {
+          return svc.patch(req.params.id, req.body);
+      }
+  }, {
+      key: 'export',
+      method: 'get',
+      path: 'services/:id/export',
+      auth: false,
+      execFn: function execFn(svc, req) {
+          return svc.export(req.params.id, req.query.format);
+      },
+      respFn: function respFn(result, res, next) {
+          var mimeType = result.headers['content-type'];
+          var disposition = result.headers['content-disposition'];
+          res.set("Content-Type", mimeType);
+          res.setHeader('Content-disposition', disposition);
+          res.send(response.body);
+      }
+  }, {
+      key: 'types',
+      method: 'get',
+      path: 'serviceTypes',
+      auth: false,
+      execFn: function execFn(svc, req) {
+          return svc.types();
+      }
+  }, {
+      key: 'import',
+      method: 'post',
+      path: 'services/import',
+      auth: true,
+      execFn: function execFn(svc, req) {
+          return svc.import(req.body);
+      }
+  }, {
+      key: 'about',
+      method: 'get',
+      path: 'services/:id/about',
+      auth: false,
+      execFn: function execFn(svc, req) {
+          return svc.about(req.params.id);
+      }
+  }, {
+      key: 'harvest',
+      method: 'get',
+      path: 'services/:id/harvest',
+      auth: false,
+      execFn: function execFn(svc, req) {
+          return svc.harvest(req.params.id);
+      }
+  }, {
+      key: 'test',
+      method: 'get',
+      path: 'services/:id/test',
+      auth: false,
+      execFn: function execFn(svc, req) {
+          return svc.liveTest(req.params.id);
+      }
+  }, {
+      key: 'statistics',
+      method: 'get',
+      path: 'services/:id/statistics',
+      auth: false,
+      execFn: function execFn(svc, req) {
+          return svc.statistics(req.params.id);
+      }
+  }];
 
   /**
-   *
-   */
-  function bindRoutes$1(router, options) {
-
-      var paths = options.paths || {};
-
-      options.pathBaseDefault = "services";
-      options.serviceClass = ServiceService;
-      ServiceProxy.bindRoutes(router, options);
-
-      if (paths.types !== false) {
-          var path = '/' + (paths.types || DEFAULT_PATHS$1.types);
-          router.get(path, function (req, res, next) {
-              console.log("Service Types");
-              ServiceProxy.getService(req, false, options).types().then(function (result) {
-                  res.json(result);
-              }).catch(next);
-          });
-      }
-
-      if (paths.import !== false) {
-          var _path = '/' + (paths.import || DEFAULT_PATHS$1.import);
-          router.post(_path, function (req, res, next) {
-              ServiceProxy.getService(req, true, options).import(req.body).then(function (result) {
-                  return res.json(result);
-              }).catch(next);
-          });
-      }
-
-      if (paths.about !== false) {
-          var _path2 = '/' + (paths.about || DEFAULT_PATHS$1.about);
-          router.get(_path2, function (req, res, next) {
-              var svc = ServiceProxy.getService(req, false, options);
-              svc.get(req.params.id).then(function (service) {
-                  return svc.about(service);
-              }).then(function (result) {
-                  return res.json(result);
-              }).catch(next);
-          });
-      }
-
-      if (paths.harvest !== false) {
-          var _path3 = '/' + (paths.harvest || DEFAULT_PATHS$1.harvest);
-          router.get(_path3, function (req, res, next) {
-              ServiceProxy.getService(req, false, options).harvest(req.params.id).then(function (result) {
-                  return res.json(result);
-              }).catch(next);
-          });
-      }
-
-      if (paths.test !== false) {
-          var _path4 = '/' + (paths.test || DEFAULT_PATHS$1.test);
-          router.get(_path4, function (req, res, next) {
-              ServiceProxy.getService(req, false, options).liveTest(req.params.id).then(function (result) {
-                  res.json(result);
-              }).catch(next);
-          });
-      }
-
-      if (paths.statistics !== false) {
-          var _path5 = '/' + (paths.statistics || DEFAULT_PATHS$1.statistics);
-          router.get(_path5, function (req, res, next) {
-              ServiceProxy.getService(req, false, options).statistics(req.params.id).then(function (result) {
-                  res.json(result);
-              }).catch(next);
-          });
-      }
-  }
-
-  /**
-   *
-   * Example:
-   *
-   *   const Logger = require('./logger');
-   *
-   *   //define GP API Client config options before creating proxy
-   *   const Config = require('geoplatform.client');
-   *   Config.configure( {
-   *     timeout: 20000,
-   *     ualUrl: 'https://ual.geoplatform.gov'
-   *   });
-   *
-   *   //optionally, define parent router
-   *   router = require('express').Router();
-   *   router.use('/api', ServiceServiceProxy({
-   *     logger: Logger,
-   *     debug: true,
-   *     //optionally, provide router instance
-   *     router: require('express').Router()
-   *   }));
    *
    */
   function ServiceServiceProxy(options) {
@@ -3604,75 +3701,105 @@
 
       if (!router) throw new Error("ServiceServiceProxy() - " + "Unable to create proxy route, missing router");
 
-      bindRoutes$1(router, options);
+      options.serviceClass = ServiceService;
+      ServiceProxy.bindRoutes(router, Routes$1, options);
 
       return router;
   }
 
-  var DEFAULT_PATHS$2 = {
-      style: "layers/:id/style",
-      describe: "layers/:id/describe",
-      validate: "layers/:id/validate"
-
-      /**
-       *
-       */
-  };function bindRoutes$2(router, options) {
-
-      var paths = options.paths || {};
-
-      options.pathBaseDefault = "layers";
-      ServiceProxy.bindRoutes(router, options);
-
-      if (paths.style !== false) {
-          var path = '/' + (paths.style || DEFAULT_PATHS$2.style);
-          router.get(path, function (req, res, next) {
-              ServiceProxy.getService(req, true, options).style(req.params.id).then(function (result) {
-                  return res.json(result);
-              }).catch(next);
-          });
+  var Routes$2 = [{
+      key: 'search',
+      method: 'get',
+      path: 'layers',
+      auth: false,
+      execFn: function execFn(svc, req) {
+          return svc.search(req.query);
       }
-
-      if (paths.describe !== false) {
-          var _path = '/' + (paths.describe || DEFAULT_PATHS$2.describe);
-          router.post(_path, function (req, res, next) {
-              ServiceProxy.getService(req, false, options).describe(req.params.id, req.body).then(function (result) {
-                  return res.json(result);
-              }).catch(next);
-          });
+  }, {
+      key: 'get',
+      method: 'get',
+      path: 'layers/:id',
+      auth: false,
+      execFn: function execFn(svc, req) {
+          return svc.get(req.params.id);
       }
-
-      if (paths.validate !== false) {
-          var _paths = '/' + (_paths.validate || DEFAULT_PATHS$2.validate);
-          router.post(_paths, function (req, res, next) {
-              ServiceProxy.getService(req, false, options).validate(req.params.id, req.body).then(function (result) {
-                  return res.json(result);
-              }).catch(next);
-          });
+  }, {
+      key: 'create',
+      method: 'post',
+      path: 'layers',
+      auth: true,
+      execFn: function execFn(svc, req) {
+          return svc.save(req.body);
       }
-  }
+  }, {
+      key: 'update',
+      method: 'put',
+      path: 'layers/:id',
+      auth: true,
+      execFn: function execFn(svc, req) {
+          return svc.save(req.body);
+      }
+  }, {
+      key: 'delete',
+      method: 'delete',
+      path: 'layers/:id',
+      auth: true,
+      execFn: function execFn(svc, req) {
+          return svc.remove(req.params.id);
+      },
+      respFn: function respFn(result, res, next) {
+          res.status(204).end();
+      }
+  }, {
+      key: 'patch',
+      method: 'patch',
+      path: 'layers/:id',
+      auth: true,
+      execFn: function execFn(svc, req) {
+          return svc.patch(req.params.id, req.body);
+      }
+  }, {
+      key: 'export',
+      method: 'get',
+      path: 'layers/:id/export',
+      auth: false,
+      execFn: function execFn(svc, req) {
+          return svc.export(req.params.id, req.query.format);
+      },
+      respFn: function respFn(result, res, next) {
+          var mimeType = result.headers['content-type'];
+          var disposition = result.headers['content-disposition'];
+          res.set("Content-Type", mimeType);
+          res.setHeader('Content-disposition', disposition);
+          res.send(response.body);
+      }
+  }, {
+      key: 'style',
+      method: 'get',
+      path: 'layers/:id/style',
+      auth: false,
+      execFn: function execFn(svc, req) {
+          return svc.style(req.params.id);
+      }
+  }, {
+      key: 'describe',
+      method: 'post',
+      path: 'layers/:id/describe',
+      auth: false,
+      execFn: function execFn(svc, req) {
+          return svc.describe(req.params.id, req.body);
+      }
+  }, {
+      key: 'validate',
+      method: 'post',
+      path: 'layers/:id/validate',
+      auth: false,
+      execFn: function execFn(svc, req) {
+          return svc.validate(req.params.id, req.body);
+      }
+  }];
 
   /**
-   *
-   * Example:
-   *
-   *   const Logger = require('./logger');
-   *
-   *   //define GP API Client config options before creating proxy
-   *   const Config = require('geoplatform.client');
-   *   Config.configure( {
-   *     timeout: 20000,
-   *     ualUrl: 'https://ual.geoplatform.gov'
-   *   });
-   *
-   *   //optionally, define parent router
-   *   router = require('express').Router();
-   *   router.use('/api', LayerServiceProxy({
-   *     logger: Logger,
-   *     debug: true,
-   *     //optionally, provide router instance
-   *     router: require('express').Router()
-   *   }));
    *
    */
   function LayerServiceProxy(options) {
@@ -3692,10 +3819,78 @@
       if (!router) throw new Error("LayerServiceProxy() - " + "Unable to create proxy route, missing router");
 
       options.serviceClass = LayerService;
-      bindRoutes$2(router, options);
+      ServiceProxy.bindRoutes(router, Routes$2, options);
 
       return router;
   }
+
+  var Routes$3 = [{
+      key: 'search',
+      method: 'get',
+      path: 'datasets',
+      auth: false,
+      execFn: function execFn(svc, req) {
+          return svc.search(req.query);
+      }
+  }, {
+      key: 'get',
+      method: 'get',
+      path: 'datasets/:id',
+      auth: false,
+      execFn: function execFn(svc, req) {
+          return svc.get(req.params.id);
+      }
+  }, {
+      key: 'create',
+      method: 'post',
+      path: 'datasets',
+      auth: true,
+      execFn: function execFn(svc, req) {
+          return svc.save(req.body);
+      }
+  }, {
+      key: 'update',
+      method: 'put',
+      path: 'datasets/:id',
+      auth: true,
+      execFn: function execFn(svc, req) {
+          return svc.save(req.body);
+      }
+  }, {
+      key: 'delete',
+      method: 'delete',
+      path: 'datasets/:id',
+      auth: true,
+      execFn: function execFn(svc, req) {
+          return svc.remove(req.params.id);
+      },
+      respFn: function respFn(result, res, next) {
+          res.status(204).end();
+      }
+  }, {
+      key: 'patch',
+      method: 'patch',
+      path: 'datasets/:id',
+      auth: true,
+      execFn: function execFn(svc, req) {
+          return svc.patch(req.params.id, req.body);
+      }
+  }, {
+      key: 'export',
+      method: 'get',
+      path: 'datasets/:id/export',
+      auth: false,
+      execFn: function execFn(svc, req) {
+          return svc.export(req.params.id, req.query.format);
+      },
+      respFn: function respFn(result, res, next) {
+          var mimeType = result.headers['content-type'];
+          var disposition = result.headers['content-disposition'];
+          res.set("Content-Type", mimeType);
+          res.setHeader('Content-disposition', disposition);
+          res.send(response.body);
+      }
+  }];
 
   /**
    * DatasetServiceProxy
@@ -3718,12 +3913,79 @@
 
       if (!router) throw new Error("DatasetServiceProxy() - " + "Unable to create proxy route, missing router");
 
-      options.pathBaseDefault = "datasets";
       options.serviceClass = DatasetService;
-      ServiceProxy.bindRoutes(router, options);
+      ServiceProxy.bindRoutes(router, Routes$3, options);
 
       return router;
   }
+
+  var Routes$4 = [{
+      key: 'search',
+      method: 'get',
+      path: 'maps',
+      auth: false,
+      execFn: function execFn(svc, req) {
+          return svc.search(req.query);
+      }
+  }, {
+      key: 'get',
+      method: 'get',
+      path: 'maps/:id',
+      auth: false,
+      execFn: function execFn(svc, req) {
+          return svc.get(req.params.id);
+      }
+  }, {
+      key: 'create',
+      method: 'post',
+      path: 'maps',
+      auth: true,
+      execFn: function execFn(svc, req) {
+          return svc.save(req.body);
+      }
+  }, {
+      key: 'update',
+      method: 'put',
+      path: 'maps/:id',
+      auth: true,
+      execFn: function execFn(svc, req) {
+          return svc.save(req.body);
+      }
+  }, {
+      key: 'delete',
+      method: 'delete',
+      path: 'maps/:id',
+      auth: true,
+      execFn: function execFn(svc, req) {
+          return svc.remove(req.params.id);
+      },
+      respFn: function respFn(result, res, next) {
+          res.status(204).end();
+      }
+  }, {
+      key: 'patch',
+      method: 'patch',
+      path: 'maps/:id',
+      auth: true,
+      execFn: function execFn(svc, req) {
+          return svc.patch(req.params.id, req.body);
+      }
+  }, {
+      key: 'export',
+      method: 'get',
+      path: 'maps/:id/export',
+      auth: false,
+      execFn: function execFn(svc, req) {
+          return svc.export(req.params.id, req.query.format);
+      },
+      respFn: function respFn(result, res, next) {
+          var mimeType = result.headers['content-type'];
+          var disposition = result.headers['content-disposition'];
+          res.set("Content-Type", mimeType);
+          res.setHeader('Content-disposition', disposition);
+          res.send(response.body);
+      }
+  }];
 
   /**
    * MapServiceProxy
@@ -3746,12 +4008,79 @@
 
       if (!router) throw new Error("MapServiceProxy() - " + "Unable to create proxy route, missing router");
 
-      options.pathBaseDefault = "maps";
       options.serviceClass = MapService;
-      ServiceProxy.bindRoutes(router, options);
+      ServiceProxy.bindRoutes(router, Routes$4, options);
 
       return router;
   }
+
+  var Routes$5 = [{
+      key: 'search',
+      method: 'get',
+      path: 'galleries',
+      auth: false,
+      execFn: function execFn(svc, req) {
+          return svc.search(req.query);
+      }
+  }, {
+      key: 'get',
+      method: 'get',
+      path: 'galleries/:id',
+      auth: false,
+      execFn: function execFn(svc, req) {
+          return svc.get(req.params.id);
+      }
+  }, {
+      key: 'create',
+      method: 'post',
+      path: 'galleries',
+      auth: true,
+      execFn: function execFn(svc, req) {
+          return svc.save(req.body);
+      }
+  }, {
+      key: 'update',
+      method: 'put',
+      path: 'galleries/:id',
+      auth: true,
+      execFn: function execFn(svc, req) {
+          return svc.save(req.body);
+      }
+  }, {
+      key: 'delete',
+      method: 'delete',
+      path: 'galleries/:id',
+      auth: true,
+      execFn: function execFn(svc, req) {
+          return svc.remove(req.params.id);
+      },
+      respFn: function respFn(result, res, next) {
+          res.status(204).end();
+      }
+  }, {
+      key: 'patch',
+      method: 'patch',
+      path: 'galleries/:id',
+      auth: true,
+      execFn: function execFn(svc, req) {
+          return svc.patch(req.params.id, req.body);
+      }
+  }, {
+      key: 'export',
+      method: 'get',
+      path: 'galleries/:id/export',
+      auth: false,
+      execFn: function execFn(svc, req) {
+          return svc.export(req.params.id, req.query.format);
+      },
+      respFn: function respFn(result, res, next) {
+          var mimeType = result.headers['content-type'];
+          var disposition = result.headers['content-disposition'];
+          res.set("Content-Type", mimeType);
+          res.setHeader('Content-disposition', disposition);
+          res.send(response.body);
+      }
+  }];
 
   /**
    * GalleryServiceProxy
@@ -3774,64 +4103,45 @@
 
       if (!router) throw new Error("GalleryServiceProxy() - " + "Unable to create proxy route, missing router");
 
-      options.pathBaseDefault = "galleries";
       options.serviceClass = GalleryService;
-      ServiceProxy.bindRoutes(router, options);
+      ServiceProxy.bindRoutes(router, Routes$5, options);
 
       return router;
   }
 
-  var DEFAULT_PATHS$3 = {
-      locate: "utils/locate",
-      parseFile: "utils/parse",
-      capabilities: "utils/capabilities",
-      capabilitiesProperty: "utils/capabilities/:id"
-
-      /**
-       *
-       */
-  };function bindRoutes$3(router, options) {
-
-      var paths = options.paths || {};
-
-      options.serviceClass = UtilsService;
-
-      if (paths.locate !== false) {
-          var path = '/' + (paths.locate || DEFAULT_PATHS$3.locate);
-          router.get(path, function (req, res, next) {
-              ServiceProxy.getService(req, false, options).locate(req.query.q).then(function (response) {
-                  return res.json(response);
-              }).catch(next);
-          });
+  var Routes$6 = [{
+      key: 'locate',
+      method: 'get',
+      path: 'utils/locate',
+      auth: false,
+      execFn: function execFn(svc, req) {
+          return svc.locate(req.query.q);
       }
-
-      if (paths.parseFile !== false) {
-          var _path = '/' + (paths.parseFile || DEFAULT_PATHS$3.parseFile);
-          router.post(_path, function (req, res, next) {
-              ServiceProxy.getService(req, false, options).parseFile(req.files.file, req.body.format).then(function (result) {
-                  return res.json(result);
-              }).catch(next);
-          });
+  }, {
+      key: 'parseFile',
+      method: 'post',
+      path: 'utils/parse',
+      auth: false,
+      execFn: function execFn(svc, req) {
+          return svc.parseFile(req.files.file, req.body.format);
       }
-
-      if (paths.capabilities !== false) {
-          var _path2 = '/' + (paths.capabilities || DEFAULT_PATHS$3.capabilities);
-          router.get(_path2, function (req, res, next) {
-              ServiceProxy.getService(req, false, options).capabilities(null, req.query).then(function (result) {
-                  return res.json(result);
-              }).catch(next);
-          });
+  }, {
+      key: 'capabilities',
+      method: 'get',
+      path: 'utils/capabilities',
+      auth: false,
+      execFn: function execFn(svc, req) {
+          return svc.capabilities(null, req.query);
       }
-
-      if (paths.capabilitiesProperty !== false) {
-          var _path3 = '/' + (paths.capabilitiesProperty || DEFAULT_PATHS$3.capabilitiesProperty);
-          router.get(_path3, function (req, res, next) {
-              ServiceProxy.getService(req, false, options).capabilities(req.params.id, req.query).then(function (result) {
-                  return res.json(result);
-              }).catch(next);
-          });
+  }, {
+      key: 'capabilitiesProperty',
+      method: 'get',
+      path: 'utils/capabilities/:id',
+      auth: false,
+      execFn: function execFn(svc, req) {
+          return svc.capabilities(req.params.id, req.query);
       }
-  }
+  }];
 
   /**
    *
@@ -3852,82 +4162,61 @@
 
       if (!router) throw new Error("UtilsServiceProxy() - " + "Unable to create proxy route, missing router");
 
-      bindRoutes$3(router, options);
+      options.serviceClass = UtilsService;
+      ServiceProxy.bindRoutes(router, Routes$6, options);
 
       return router;
   }
 
-  var DEFAULT_PATHS$4 = {
-      searchItems: "agol/items",
-      searchGroups: "agol/groups",
-      searchOrgs: "agol/orgs",
-      getItem: 'agol/items/:id',
-      getGroup: 'agol/groups/:id',
-      getOrg: 'agol/orgs/:id'
-
-      /**
-       *
-       */
-  };function bindRoutes$4(router, options) {
-
-      var paths = options.paths || {};
-
-      options.serviceClass = AgolService;
-
-      if (paths.searchItems !== false) {
-          var path = '/' + (paths.searchItems || DEFAULT_PATHS$4.searchItems);
-          router.get(path, function (req, res, next) {
-              ServiceProxy.getService(req, false, options).searchItems(req.query).then(function (response) {
-                  return res.json(response);
-              }).catch(next);
-          });
+  var Routes$7 = [{
+      key: 'searchItems',
+      method: 'get',
+      path: 'agol/items',
+      auth: false,
+      execFn: function execFn(svc, req) {
+          return svc.searchItems(req.query);
       }
-
-      if (paths.searchGroups !== false) {
-          var _path = '/' + (paths.searchGroups || DEFAULT_PATHS$4.searchGroups);
-          router.get(_path, function (req, res, next) {
-              ServiceProxy.getService(req, false, options).searchGroups(req.query).then(function (response) {
-                  return res.json(response);
-              }).catch(next);
-          });
+  }, {
+      key: 'searchGroups',
+      method: 'get',
+      path: 'agol/groups',
+      auth: false,
+      execFn: function execFn(svc, req) {
+          return svc.searchGroups(req.query);
       }
-
-      if (paths.searchOrgs !== false) {
-          var _path2 = '/' + (paths.searchOrgs || DEFAULT_PATHS$4.searchOrgs);
-          router.get(_path2, function (req, res, next) {
-              ServiceProxy.getService(req, false, options).searchOrgs(req.query).then(function (response) {
-                  return res.json(response);
-              }).catch(next);
-          });
+  }, {
+      key: 'searchOrgs',
+      method: 'get',
+      path: 'agol/orgs',
+      auth: false,
+      execFn: function execFn(svc, req) {
+          return svc.searchOrgs(req.query);
       }
-
-      if (paths.getItem !== false) {
-          var _path3 = '/' + (paths.getItem || DEFAULT_PATHS$4.getItem);
-          router.get(_path3, function (req, res, next) {
-              ServiceProxy.getService(req, false, options).getItem(req.params.id).then(function (item) {
-                  return res.json(item);
-              }).catch(next);
-          });
+  }, {
+      key: 'getItem',
+      method: 'get',
+      path: 'agol/items/:id',
+      auth: false,
+      execFn: function execFn(svc, req) {
+          return svc.getItem(req.params.id);
       }
-
-      if (paths.getGroup !== false) {
-          var _path4 = '/' + (paths.getGroup || DEFAULT_PATHS$4.getGroup);
-          router.get(_path4, function (req, res, next) {
-              ServiceProxy.getService(req, false, options).getGroup(input).then(function (item) {
-                  return res.json(item);
-              }).catch(next);
-          });
+  }, {
+      key: 'getGroup',
+      method: 'get',
+      path: 'agol/groups/:id',
+      auth: false,
+      execFn: function execFn(svc, req) {
+          return svc.getGroup(req.params.id);
       }
-
-      if (paths.getOrg !== false) {
-          var _path5 = '/' + (paths.getOrg || DEFAULT_PATHS$4.getOrg);
-          router.get(_path5, function (req, res, next) {
-              ServiceProxy.getService(req, false, options).getOrg(req.params.id).then(function (item) {
-                  return res.status(204).end();
-              }).catch(next);
-          });
+  }, {
+      key: 'getOrg',
+      method: 'get',
+      path: 'agol/orgs/:id',
+      auth: false,
+      execFn: function execFn(svc, req) {
+          return svc.getOrg(req.params.id);
       }
-  }
+  }];
 
   /**
    *
@@ -3948,7 +4237,8 @@
 
       if (!router) throw new Error("AgolServiceProxy() - " + "Unable to create proxy route, missing router");
 
-      bindRoutes$4(router, options);
+      options.serviceClass = AgolService;
+      ServiceProxy.bindRoutes(router, Routes$7, options);
 
       return router;
   }

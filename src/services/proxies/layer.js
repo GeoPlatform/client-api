@@ -7,78 +7,91 @@ import Config from '../../shared/config';
 import ServiceProxy from "./base";
 
 
-const DEFAULT_PATHS = {
-    style:    "layers/:id/style",
-    describe: "layers/:id/describe",
-    validate: "layers/:id/validate"
-}
+
+const Routes = [
+    {
+        key: 'search',
+        method: 'get',
+        path: 'layers',
+        auth: false,
+        execFn: function(svc, req) { return svc.search(req.query); }
+    },
+    {
+        key: 'get',
+        method: 'get',
+        path: 'layers/:id',
+        auth: false,
+        execFn: function(svc, req) { return svc.get(req.params.id); }
+    },
+    {
+        key: 'create',
+        method: 'post',
+        path: 'layers',
+        auth: true,
+        execFn: function(svc, req) { return svc.save(req.body); }
+    },
+    {
+        key: 'update',
+        method: 'put',
+        path: 'layers/:id',
+        auth: true,
+        execFn: function(svc, req) { return svc.save(req.body); }
+    },
+    {
+        key: 'delete',
+        method: 'delete',
+        path: 'layers/:id',
+        auth: true,
+        execFn: function(svc, req) { return svc.remove(req.params.id); },
+        respFn: function(result, res, next) { res.status(204).end(); }
+    },
+    {
+        key: 'patch',
+        method: 'patch',
+        path: 'layers/:id',
+        auth: true,
+        execFn: function(svc, req) { return svc.patch(req.params.id, req.body); }
+    },
+    {
+        key: 'export',
+        method: 'get',
+        path: 'layers/:id/export',
+        auth: false,
+        execFn: function(svc, req) { return svc.export(req.params.id, req.query.format); },
+        respFn: function(result, res, next) {
+            let mimeType = result.headers['content-type'];
+            let disposition = result.headers['content-disposition'];
+            res.set("Content-Type", mimeType);
+            res.setHeader('Content-disposition', disposition);
+            res.send(response.body);
+        }
+    },
+    {
+        key: 'style',
+        method: 'get',
+        path: 'layers/:id/style',
+        auth: false,
+        execFn: function(svc, req) { return svc.style(req.params.id); }
+    },
+    {
+        key: 'describe',
+        method: 'post',
+        path: 'layers/:id/describe',
+        auth: false,
+        execFn: function(svc, req) { return svc.describe(req.params.id, req.body); }
+    },
+    {
+        key: 'validate',
+        method: 'post',
+        path: 'layers/:id/validate',
+        auth: false,
+        execFn: function(svc, req) { return svc.validate(req.params.id, req.body); }
+    }
+];
 
 
 
 /**
- *
- */
-function bindRoutes(router, options) {
-
-    let paths = options.paths || {};
-
-    options.pathBaseDefault = "layers";
-    ServiceProxy.bindRoutes(router, options);
-
-    if(paths.style !== false) {
-        let path = '/' + ( paths.style || DEFAULT_PATHS.style );
-        router.get(path, (req, res, next) => {
-            ServiceProxy.getService(req, true, options)
-            .style(req.params.id)
-            .then( result => res.json(result) )
-            .catch(next);
-        });
-    }
-
-    if(paths.describe !== false) {
-        let path = '/' + ( paths.describe || DEFAULT_PATHS.describe );
-        router.post(path, (req, res, next) => {
-            ServiceProxy.getService(req, false, options)
-            .describe(req.params.id, req.body)
-            .then( result => res.json(result) )
-            .catch(next);
-        });
-    }
-
-    if(paths.validate !== false) {
-        let paths = '/' + ( paths.validate || DEFAULT_PATHS.validate );
-        router.post(paths, (req, res, next) => {
-            ServiceProxy.getService(req, false, options)
-            .validate(req.params.id, req.body)
-            .then( result => res.json(result) )
-            .catch(next);
-        });
-    }
-
-}
-
-
-/**
- *
- * Example:
- *
- *   const Logger = require('./logger');
- *
- *   //define GP API Client config options before creating proxy
- *   const Config = require('geoplatform.client');
- *   Config.configure( {
- *     timeout: 20000,
- *     ualUrl: 'https://ual.geoplatform.gov'
- *   });
- *
- *   //optionally, define parent router
- *   router = require('express').Router();
- *   router.use('/api', LayerServiceProxy({
- *     logger: Logger,
- *     debug: true,
- *     //optionally, provide router instance
- *     router: require('express').Router()
- *   }));
  *
  */
 function LayerServiceProxy( options ) {
@@ -101,7 +114,7 @@ function LayerServiceProxy( options ) {
         "Unable to create proxy route, missing router");
 
     options.serviceClass = LayerService;
-    bindRoutes(router, options);
+    ServiceProxy.bindRoutes(router, Routes, options);
 
     return router;
 }

@@ -7,64 +7,37 @@ import Config from '../../shared/config';
 import ServiceProxy from "./base";
 
 
-const DEFAULT_PATHS = {
-    locate: "utils/locate",
-    parseFile: "utils/parse",
-    capabilities: "utils/capabilities",
-    capabilitiesProperty: "utils/capabilities/:id"
-}
-
-
-/**
- *
- */
-function bindRoutes(router, options) {
-
-    let paths = options.paths || {};
-
-    options.serviceClass = UtilsService;
-
-    if(paths.locate !== false) {
-        let path = '/' + ( paths.locate || DEFAULT_PATHS.locate );
-        router.get(path, (req, res, next) => {
-            ServiceProxy.getService(req, false, options)
-            .locate(req.query.q)
-            .then( response => res.json(response) )
-            .catch(next);
-        });
+const Routes = [
+    {
+        key: 'locate',
+        method: 'get',
+        path: 'utils/locate',
+        auth: false,
+        execFn: function(svc, req) { return svc.locate(req.query.q); }
+    },
+    {
+        key: 'parseFile',
+        method: 'post',
+        path: 'utils/parse',
+        auth: false,
+        execFn: function(svc, req) { return svc.parseFile(req.files.file, req.body.format); }
+    },
+    {
+        key: 'capabilities',
+        method: 'get',
+        path: 'utils/capabilities',
+        auth: false,
+        execFn: function(svc, req) { return svc.capabilities(null, req.query); }
+    },
+    {
+        key: 'capabilitiesProperty',
+        method: 'get',
+        path: 'utils/capabilities/:id',
+        auth: false,
+        execFn: function(svc, req) { return svc.capabilities(req.params.id, req.query); }
     }
+];
 
-    if(paths.parseFile !== false) {
-        let path = '/' + ( paths.parseFile || DEFAULT_PATHS.parseFile );
-        router.post(path, (req, res, next) => {
-            ServiceProxy.getService(req, false, options)
-            .parseFile(req.files.file, req.body.format)
-            .then( result => res.json(result) )
-            .catch(next);
-        });
-    }
-
-    if(paths.capabilities !== false) {
-        let path = '/' + ( paths.capabilities || DEFAULT_PATHS.capabilities );
-        router.get(path, (req, res, next) => {
-            ServiceProxy.getService(req, false, options)
-            .capabilities(null, req.query)
-            .then( result => res.json(result) )
-            .catch(next);
-        });
-    }
-
-    if(paths.capabilitiesProperty !== false) {
-        let path = '/' + ( paths.capabilitiesProperty || DEFAULT_PATHS.capabilitiesProperty );
-        router.get(path, (req, res, next) => {
-            ServiceProxy.getService(req, false, options)
-            .capabilities(req.params.id, req.query)
-            .then( result => res.json(result) )
-            .catch(next);
-        });
-    }
-
-}
 
 
 /**
@@ -89,7 +62,8 @@ function UtilsServiceProxy( options ) {
     if(!router) throw new Error("UtilsServiceProxy() - " +
         "Unable to create proxy route, missing router");
 
-    bindRoutes(router, options);
+    options.serviceClass = UtilsService;
+    ServiceProxy.bindRoutes(router, Routes, options);
 
     return router;
 }

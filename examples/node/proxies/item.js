@@ -53,6 +53,13 @@ const proxyOptions = {
     paths: {              //optional routing configuration...
         search: 'query',  //  - override default proxy route path
         import: false     //  - disable certain routes
+    },
+    onError: function(path, err) {
+        console.log("Proxy.onError() - " + path + " : " + err.message);
+    },
+    onFinish: function(path, req, res) {
+        if(path === 'search')
+            console.log("Proxy.onFinish() - Search Completed");
     }
 }
 app.use( '/api', Proxy(proxyOptions) );

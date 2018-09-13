@@ -6,85 +6,51 @@ import AgolService from "../agol";
 import Config from '../../shared/config';
 import ServiceProxy from './base';
 
-const DEFAULT_PATHS = {
-    searchItems: "agol/items",
-    searchGroups: "agol/groups",
-    searchOrgs: "agol/orgs",
-    getItem: 'agol/items/:id',
-    getGroup: 'agol/groups/:id',
-    getOrg: 'agol/orgs/:id'
-}
 
-/**
- *
- */
-function bindRoutes(router, options) {
-
-    let paths = options.paths || {};
-
-    options.serviceClass = AgolService;
-
-    if(paths.searchItems !== false) {
-        let path = '/' + ( paths.searchItems || DEFAULT_PATHS.searchItems );
-        router.get(path, (req, res, next) => {
-            ServiceProxy.getService(req, false, options)
-            .searchItems(req.query)
-            .then( response => res.json(response) )
-            .catch(next);
-        });
+const Routes = [
+    {
+        key: 'searchItems',
+        method: 'get',
+        path: 'agol/items',
+        auth: false,
+        execFn: function(svc, req) { return svc.searchItems(req.query); }
+    },
+    {
+        key: 'searchGroups',
+        method: 'get',
+        path: 'agol/groups',
+        auth: false,
+        execFn: function(svc, req) { return svc.searchGroups(req.query); }
+    },
+    {
+        key: 'searchOrgs',
+        method: 'get',
+        path: 'agol/orgs',
+        auth: false,
+        execFn: function(svc, req) { return svc.searchOrgs(req.query); }
+    },
+    {
+        key: 'getItem',
+        method: 'get',
+        path: 'agol/items/:id',
+        auth: false,
+        execFn: function(svc, req) { return svc.getItem(req.params.id); }
+    },
+    {
+        key: 'getGroup',
+        method: 'get',
+        path: 'agol/groups/:id',
+        auth: false,
+        execFn: function(svc, req) { return svc.getGroup(req.params.id); }
+    },
+    {
+        key: 'getOrg',
+        method: 'get',
+        path: 'agol/orgs/:id',
+        auth: false,
+        execFn: function(svc, req) { return svc.getOrg(req.params.id); }
     }
-
-    if(paths.searchGroups !== false) {
-        let path = '/' + ( paths.searchGroups || DEFAULT_PATHS.searchGroups );
-        router.get(path, (req, res, next) => {
-            ServiceProxy.getService(req, false, options)
-            .searchGroups(req.query)
-            .then( response => res.json(response) )
-            .catch(next);
-        });
-    }
-
-    if(paths.searchOrgs !== false) {
-        let path = '/' + ( paths.searchOrgs || DEFAULT_PATHS.searchOrgs );
-        router.get(path, (req, res, next) => {
-            ServiceProxy.getService(req, false, options)
-            .searchOrgs(req.query)
-            .then( response => res.json(response) )
-            .catch(next);
-        });
-    }
-
-    if(paths.getItem !== false) {
-        let path = '/' + ( paths.getItem || DEFAULT_PATHS.getItem );
-        router.get(path, (req, res, next) => {
-            ServiceProxy.getService(req, false, options)
-            .getItem(req.params.id)
-            .then( item => res.json(item) )
-            .catch(next);
-        });
-    }
-
-    if(paths.getGroup !== false) {
-        let path = '/' + ( paths.getGroup || DEFAULT_PATHS.getGroup );
-        router.get(path, (req, res, next) => {
-            ServiceProxy.getService(req, false, options)
-            .getGroup(input)
-            .then( item => res.json(item) )
-            .catch(next);
-        });
-    }
-
-    if(paths.getOrg !== false) {
-        let path = '/' + ( paths.getOrg || DEFAULT_PATHS.getOrg );
-        router.get(path, (req, res, next) => {
-            ServiceProxy.getService(req, false, options)
-            .getOrg(req.params.id)
-            .then( item => res.status(204).end() )
-            .catch(next);
-        });
-    }
-
-}
+];
 
 
 
@@ -110,7 +76,8 @@ function AgolServiceProxy( options ) {
     if(!router) throw new Error("AgolServiceProxy() - " +
         "Unable to create proxy route, missing router");
 
-    bindRoutes(router, options);
+    options.serviceClass = AgolService;
+    ServiceProxy.bindRoutes(router, Routes, options);
 
     return router;
 }

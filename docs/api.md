@@ -1,37 +1,48 @@
 # GeoPlatform APIs
 
+## Table of Contents
+- [Services](#services)
+- [Http Clients](#http-clients)
+- [Service API](#service-api)
+  - [Layer Service API](#layers-api)
+  - [Services Service API](#services-api)
+  - [Utils Service API](#utils-service-api)
+  - [AgolService API](#agolservice-api)
+  - [TrackingService API](#trackingservice-api)
+
+
 ## Services
-[ItemService](src/services/item.js) is the primary class for interacting with
+[ItemService](../src/services/item.js) is the primary class for interacting with
 GeoPlatform model objects such as Maps, Layers, Services, etc.  
 Included with the the library's main build file are implementations of ItemService
 which provide specialized support for specific item types
 
-- [MapService](src/services/map.js) - extension of ItemService which works with GP Map objects
-- [LayerService](src/services/layer.js) - extension of ItemService which works with GP Layer objects
-- [ServiceService](src/services/service.js) - extension of ItemService which works with GP Service objects
-- [GalleryService](src/services/gallery.js) - extension of ItemService which works with GP Gallery objects
-- [DatasetService](src/services/dataset.js) - extension of ItemService which works with GP Dataset objects
+- [MapService](../src/services/map.js) - extension of ItemService which works with GP Map objects
+- [LayerService](../src/services/layer.js) - extension of ItemService which works with GP Layer objects
+- [ServiceService](../src/services/service.js) - extension of ItemService which works with GP Service objects
+- [GalleryService](../src/services/gallery.js) - extension of ItemService which works with GP Gallery objects
+- [DatasetService](../src/services/dataset.js) - extension of ItemService which works with GP Dataset objects
 
 ### Non-Item Support
 
 ### Utils Service
-The [UtilsService](src/services/utils.js) class is provided for working with non-item API endpoints, such as GeoPlatform capabilities queries.
+The [UtilsService](../src/services/utils.js) class is provided for working with non-item API endpoints, such as GeoPlatform capabilities queries.
 
 ### Knowledge Graph Service
-The [KGService](src/services/kg.js) class is provided for recommending concepts to be associated with GeoPlatform Items.
+The [KGService](../src/services/kg.js) class is provided for recommending concepts to be associated with GeoPlatform Items.
 
-__Note:__ You must use [KGQuery](src/shared/kg-query.js) instances with the `KGService` instead of the a normal [Query](src/shared/query.js).
+__Note:__ You must use [KGQuery](../src/shared/kg-query.js) instances with the `KGService` instead of the a normal [Query](../src/shared/query.js).
 
 ### ArcGIS Online Service
-The [AgolService][src/services/agol.js] class allows searching ArcGIS Online data including Web Maps, Services, Organizations, and Groups. Items matching queries are transformed into
+The [AgolService][../src/services/agol.js] class allows searching ArcGIS Online data including Web Maps, Services, Organizations, and Groups. Items matching queries are transformed into
 their appropriate GeoPlatform business object instance prior to being returned but
 are not automatically inserted into the GeoPlatform.
 
-__Note:__ You must use [AgolQuery](src/shared/agol.js) instances with this service
+__Note:__ You must use [AgolQuery](../src/shared/agol.js) instances with this service
 instead of normal `Query` instances.
 
 
-### HttpClients
+## Http Clients
 
 To allow using this api library across both front-end and back-end applications, these
 services support different HTTP mechanisms by accepting an HttpClient which contains
@@ -62,15 +73,15 @@ let svc = new ItemService(url, client);
 
 HttpClients provided by this library are:
 
-- [JQueryHttpClient](src/http/jq.js) - client capable of using jQuery ajax support
+- [JQueryHttpClient](../src/http/jq.js) - client capable of using jQuery ajax support
   - _requires jQuery v3.x to be included in your application._
-- [NGHttpClient](src/http/ng.js) - client capable of using Angular 1.x $http
+- [NGHttpClient](../src/http/ng.js) - client capable of using Angular 1.x $http
   - _requires Angular v1.x to be included in your application._
-- [NodeHttpClient](src/http/node.js) - client capable of using [RequestJS](https://github.com/request/request)
+- [NodeHttpClient](../src/http/node.js) - client capable of using [RequestJS](https://github.com/request/request)
   - _requires requestJS version ? to be included in your application_
 
 
-#### Angular $http defaults
+### Angular $http defaults
 If you are using GeoPlatform's ng-common library, which updates the $http defaults to include the 'Authorization' header with the user's token, please note that you must still provide the token to the NGHttpClient or you must provide the $http instance. NGClient by default uses the default angular injector to gain access to $http, which results in a different instance than one injected within your application.
 
 ```javascript
@@ -103,9 +114,9 @@ angular.module('myApp').service('MyService', ['$http',  'AuthenticationService',
 
 
 
-### Service API
+## Service API
 
-#### Constructor
+### Constructor
 Creates a new instance of the service and points api calls to the specified GP API
 
 | Parameter | required   | description |
@@ -121,7 +132,7 @@ let client = new JQueryHttpClient();
 let itemSvc = new ItemService(url, client);
 ```
 
-#### Search
+### Search
 Searches items using specified query parameters.
 
 | Parameter | required   | description |
@@ -141,7 +152,7 @@ itemSvc.search(query)
 .catch(e=>{...});
 ```
 
-#### Get
+### Get
 Fetch item with specified identifier
 
 | Parameter | required   | description |
@@ -156,7 +167,7 @@ itemSvc.get(itemId)
 .catch(e=>{...});
 ```
 
-#### Get Multiple By Id
+### Get Multiple By Id
 Fetch one or more items using an array of identifiers.
 
 | Parameter | required   | description |
@@ -174,7 +185,7 @@ itemSvc.getMultiple([id1, id2, id3])
 ```
 
 
-#### Save
+### Save
 Create or update the specified item. If 'item.id' exists, updates with HTTP-PUT. Otherwise, creates using HTTP-POST.
 
 | Parameter | required   | description |
@@ -197,7 +208,7 @@ itemSvc.save(item)
 ```
 
 
-#### Patch
+### Patch
 Partial update of item with specified identifier using the specified HTTP-PATCH ops. |
 
 | Parameter | required   | description |
@@ -217,7 +228,7 @@ itemSvc.patch(itemId, changes)
 ```
 
 
-#### Remove
+### Remove
 Delete item with specified identifier.
 
 | Parameter | required   | description |
@@ -231,7 +242,7 @@ itemSvc.remove(itemId)
 ```
 
 
-#### Import
+### Import
 (:arg, :format) |
 Create a new Item using either a URL or a File (see implementation for specific requirements).
 
@@ -255,7 +266,7 @@ itemSvc.import(metadataUrl, 'iso19139')
 ```
 
 
-#### Export
+### Export
 Export the specified Item in the specified format.
 
 | Parameter | required   | description |
@@ -282,7 +293,7 @@ itemSvc.export(itemId, 'iso19139')
 **Note:** The default representation for GeoPlatform items is in JSON, so there is no need
 to use the export method with a "json" format. Use the `get(_id_)` method instead.
 
-#### Get URI
+### Get URI
 Given an un-persisted GeoPlatform Item, generate and return a valid URI for it.
 
 | Parameter | required   | description |

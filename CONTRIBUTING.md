@@ -14,8 +14,8 @@ Thanks for taking an interest in contributing!
 
 ## Quick Links
 - [Adding Client API to your application](README.md)
-- [How Client API works](api.md)
-- [How to construct queries](query.md)
+- [How Client API works](docs/api.md)
+- [How to construct queries](docs/query.md)
 
 ## Testing
 Tests are run using the Mocha framework and can be found inside the test/ folder.
@@ -70,7 +70,7 @@ be sure to include the following information:
 - Links to Applicable Issues
 - All code changes must provide tests that verify correctness and help prevent regressions
 
-__Note:__ Not providing any of the above when creating a pull request may result in the request 
+__Note:__ Not providing any of the above when creating a pull request may result in the request
 being closed (denied) at the maintainer's discretion.
 
 

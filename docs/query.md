@@ -125,7 +125,7 @@ By default, the following facets are requested with each search:
 - QueryFacets.VISIBILITY - visible status of Items
 - QueryFacets.CREATED_BY - authors of Items
 
-See [QueryFacets](src/shared/query.js) for a larger list of available facets.
+See [QueryFacets](../src/shared/query.js) for a larger list of available facets.
 
 
 ## Sorting results
@@ -185,8 +185,8 @@ __Note:__ Default constraints will remain applied when queries are reset using
 
 ## KG Queries
 
-When using a [KGService](src/services/kg.js), you should use an instance of
-[KGQuery](src/shared/kg-query.js).  `KGQuery` provides a shorter list of parameter
+When using a [KGService](../src/services/kg.js), you should use an instance of
+[KGQuery](../src/shared/kg-query.js).  `KGQuery` provides a shorter list of parameter
 methods as listed below:
 
 - q / setQ / getQ - same as the equivalent `Query` methods

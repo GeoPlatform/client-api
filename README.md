@@ -12,7 +12,7 @@ and the NodeJS implementation requires a NodeJS environment of at least 6.9 or l
 
 ## Table of Contents
 - [Dependencies and Requirements](#dependencies-and-requirements)
-- [Using GeoPlatform API Client in Your App](#using-geoPlatform-api-client-in-your-app)
+- [Using GeoPlatform API Client in Your App](#using-geoplatform-api-client-in-your-app)
 - [Service and Query Documentation](#service-and-query-documentation)
 - [Server-side Proxies](#server-side-proxies)
 - [User Authentication and Authorization](#user-authentication-and-authorization)
@@ -149,4 +149,7 @@ the desired example JS file (e.g., `node examples/node/item.js`)
 ## Miscellaneous
 
 ### Conventions
-If defining a class or object or constant, use upper case. If defining a function, use camel case.
+#### Code Case
+- Classes use capitalized case (e.g., `class MyClass { ... }`)
+- Variables and functions use camel-case (e.g., `let myObj = ...`)
+- Constants use uppercase (e.g., `const DEFINITIONS = { ... }`)

@@ -3427,7 +3427,7 @@
           var disposition = result.headers['content-disposition'];
           res.set("Content-Type", mimeType);
           res.setHeader('Content-disposition', disposition);
-          res.send(response.body);
+          res.send(result.body);
       }
   }, {
       key: 'uri',
@@ -3630,7 +3630,7 @@
           var disposition = result.headers['content-disposition'];
           res.set("Content-Type", mimeType);
           res.setHeader('Content-disposition', disposition);
-          res.send(response.body);
+          res.send(result.body);
       }
   }, {
       key: 'types',
@@ -3771,7 +3771,7 @@
           var disposition = result.headers['content-disposition'];
           res.set("Content-Type", mimeType);
           res.setHeader('Content-disposition', disposition);
-          res.send(response.body);
+          res.send(result.body);
       }
   }, {
       key: 'style',
@@ -3888,7 +3888,7 @@
           var disposition = result.headers['content-disposition'];
           res.set("Content-Type", mimeType);
           res.setHeader('Content-disposition', disposition);
-          res.send(response.body);
+          res.send(result.body);
       }
   }];
 
@@ -3983,7 +3983,7 @@
           var disposition = result.headers['content-disposition'];
           res.set("Content-Type", mimeType);
           res.setHeader('Content-disposition', disposition);
-          res.send(response.body);
+          res.send(result.body);
       }
   }];
 
@@ -4078,7 +4078,7 @@
           var disposition = result.headers['content-disposition'];
           res.set("Content-Type", mimeType);
           res.setHeader('Content-disposition', disposition);
-          res.send(response.body);
+          res.send(result.body);
       }
   }];
 

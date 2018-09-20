@@ -76,7 +76,7 @@ app.use( '/api', Proxy(proxyOptions) );
 
 
 //SEARCH ALL
-request(app).get('/api/query')
+request(app).get('/api/query?type=dcat:Dataset')
 .then((res) => {
 
     if(res.status < 200 || res.status > 201) {
@@ -98,9 +98,11 @@ request(app).get('/api/query')
     var response = JSON.parse(res.text);
     Logger.info("GetById: " + response.label);
 
+    return request(app).get('/api/items/' + response.id + '/export?format=gpfm');
+})
+.then( () => {
 
     return request(app).post('/api/items/import', {});
-
 })
 .then( res => {
     if(res.status !== 404) {

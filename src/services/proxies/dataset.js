@@ -62,7 +62,7 @@ const Routes = [
             let disposition = result.headers['content-disposition'];
             res.set("Content-Type", mimeType);
             res.setHeader('Content-disposition', disposition);
-            res.send(response.body);
+            res.send(result.body);
         }
     }
 ];

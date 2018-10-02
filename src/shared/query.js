@@ -640,22 +640,26 @@ class Query {
      * @param {string} bboxStr - form of "minx,miny,maxx,maxy"
      */
     setExtent (bbox) {
-        if(bbox && typeof(bbox.toBboxString) !== 'undefined') {
-            //Leaflet Bounds instance
-            bbox = bbox.toBboxString();
-        } else if(typeof(bbox.push) !== 'undefined' && bbox.length &&
-            //Nested array (alternate Leaflet representation):
-            // [ [minLat,minLong], [maxLat,maxLong] ]
-            typeof(bbox[0].push) !== 'undefined') {
-            bbox = bbox[0][1]+','+bbox[0][0]+','+bbox[1][1]+','+bbox[1][0];
-        } else if(typeof(bbox) === 'string') {
-            if(!BBOX_REGEX.test(bbox)) {
-                throw new Error("Invalid argument: bbox string must be " +
-                    "in form of 'minx,miny,maxx,maxy'");
+        if(bbox) {
+            if(typeof(bbox.toBboxString) !== 'undefined') {
+                //Leaflet Bounds instance
+                bbox = bbox.toBboxString();
+
+            } else if(typeof(bbox.push) !== 'undefined' && bbox.length &&
+                //Nested array (alternate Leaflet representation):
+                // [ [minLat,minLong], [maxLat,maxLong] ]
+                typeof(bbox[0].push) !== 'undefined') {
+                bbox = bbox[0][1]+','+bbox[0][0]+','+bbox[1][1]+','+bbox[1][0];
+
+            } else if(typeof(bbox) === 'string') {
+                if(!BBOX_REGEX.test(bbox)) {
+                    throw new Error("Invalid argument: bbox string must be " +
+                        "in form of 'minx,miny,maxx,maxy'");
+                }
+            } else {
+                throw new Error("Invalid argument: bbox must be one of " +
+                    "Leaflet.Bounds, nested array, or bbox string");
             }
-        } else {
-            throw new Error("Invalid argument: bbox must be one of " +
-                "Leaflet.Bounds, nested array, or bbox string");
         }
         this.setParameter(Parameters.EXTENT, bbox);
     }

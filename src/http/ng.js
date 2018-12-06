@@ -44,8 +44,10 @@ class NGHttpClient {
             timeout: options.timeout || this.timeout
         };
 
-        if(options.json === true)
+        if(options.json === true || 'json' === options.responseType)
             opts.dataType = 'json';
+        else if('text' === options.responseType)
+            opts.dataType = 'text';
 
         if(options.params) {
             opts.params = options.params;

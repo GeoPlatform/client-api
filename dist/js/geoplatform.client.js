@@ -261,7 +261,7 @@
                   timeout: options.timeout || this.timeout
               };
 
-              if (options.json === true) opts.dataType = 'json';
+              if (options.json === true || 'json' === options.responseType) opts.dataType = 'json';else if ('text' === options.responseType) opts.dataType = 'text';
 
               if (options.params) {
                   opts.params = options.params;
@@ -887,6 +887,8 @@
               return Q.resolve(object).then(function (obj) {
                   if (!obj || !obj.type) throw new Error("Must provide an object with a type property");
                   var url = _this8.apiBase + '/api/utils/uri';
+                  options = options || {};
+                  options.responseType = 'text'; //to ensure plaintext is expected
                   var opts = _this8.buildRequest({
                       method: "POST", url: url, data: obj, options: options
                   });
@@ -4676,16 +4678,16 @@
   }();
 
   var classifiers = {
-      PURPOSE: 'purposes',
-      FUNCTION: 'functions',
-      TOPIC_PRIMARY: 'primaryTopics',
-      TOPIC_SECONDARY: 'secondaryTopics',
-      SUBJECT_PRIMARY: 'primarySubjects',
-      SUBJECT_SECONDARY: 'secondarySubjects',
-      COMMUNITY: 'communities',
-      AUDIENCE: 'audiences',
-      PLACE: 'places',
-      CATEGORY: 'categories'
+      PURPOSE: 'purpose',
+      FUNCTION: 'function',
+      TOPIC_PRIMARY: 'primaryTopic',
+      TOPIC_SECONDARY: 'secondaryTopic',
+      SUBJECT_PRIMARY: 'primarySubject',
+      SUBJECT_SECONDARY: 'secondarySubject',
+      COMMUNITY: 'community',
+      AUDIENCE: 'audience',
+      PLACE: 'place',
+      CATEGORY: 'category'
   };
 
   function queryFactory () {

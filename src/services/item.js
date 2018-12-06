@@ -301,6 +301,8 @@ class ItemService {
             if(!obj || !obj.type)
                 throw new Error("Must provide an object with a type property");
             let url = this.apiBase + '/api/utils/uri';
+            options = options || {};
+            options.responseType = 'text';  //to ensure plaintext is expected
             let opts = this.buildRequest({
                 method: "POST", url: url, data: obj, options: options
             });

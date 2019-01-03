@@ -4884,6 +4884,11 @@
           //     console.log("PAGEVIEW " + view + (data ? " : " + JSON.stringify(data) : '') );
           // }
 
+      }, {
+          key: 'logSearch',
+          value: function logSearch(params, resultCount) {
+              console.log("Query : " + JSON.stringify(params) + " found " + resultCount + " matches");
+          }
       }]);
       return DefaultTrackingServiceProvider;
   }();

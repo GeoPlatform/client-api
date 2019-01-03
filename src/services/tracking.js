@@ -138,6 +138,9 @@ class DefaultTrackingServiceProvider {
     // logPageView( view, data ) {
     //     console.log("PAGEVIEW " + view + (data ? " : " + JSON.stringify(data) : '') );
     // }
+    logSearch(params, resultCount) {
+        console.log( "Query : " + JSON.stringify(params) + " found " + resultCount+ " matches");
+    }
 }
 
 

@@ -5005,6 +5005,17 @@
               //     this.provider.logPageView(view, data);
               // }
           }
+
+          /**
+           * @param {object|string} params
+           * @param {integer} resultCount
+           */
+
+      }, {
+          key: 'logSearch',
+          value: function logSearch(params, resultCount) {
+              this.provider.logSearch(params, resultCount);
+          }
       }]);
       return TrackingService;
   }();

@@ -254,6 +254,14 @@ class TrackingService {
         // }
     }
 
+    /**
+     * @param {object|string} params
+     * @param {integer} resultCount
+     */
+    logSearch (params, resultCount) {
+        this.provider.logSearch(params, resultCount);
+    }
+
 }
 
 

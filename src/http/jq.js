@@ -80,7 +80,22 @@ class JQueryHttpClient {
         }
         let d = Q.defer();
         opts.success = function(data) { d.resolve(data); };
-        opts.error = function(xhr, status, message) { d.reject(new Error(message)); };
+        opts.error = function(xhr, status, message) {
+            let err = new Error(message);
+            if(xhr.responseText) {
+                try {
+                    let json = JSON.parse(xhr.responseText);
+                    if(json) {
+                        err = new Error(message);
+                        err.error = json.error; //label
+                        err.status = json.status; //code
+                    }
+                } catch(e) {
+                    console.log("JQHttpClient.execute() - Failed to parse JSON from error message: " + e.message);
+                }
+            }
+            d.reject(err);
+        };
         jQuery.ajax(opts);
         return d.promise;
     }

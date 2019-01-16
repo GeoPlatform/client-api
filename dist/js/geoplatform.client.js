@@ -215,7 +215,20 @@
                   d.resolve(data);
               };
               opts.error = function (xhr, status, message) {
-                  d.reject(new Error(message));
+                  var err = new Error(message);
+                  if (xhr.responseText) {
+                      try {
+                          var json = JSON.parse(xhr.responseText);
+                          if (json) {
+                              err = new Error(message);
+                              err.error = json.error; //label
+                              err.status = json.status; //code
+                          }
+                      } catch (e) {
+                          console.log("JQHttpClient.execute() - Failed to parse JSON from error message: " + e.message);
+                      }
+                  }
+                  d.reject(err);
               };
               jQuery.ajax(opts);
               return d.promise;
@@ -1178,7 +1191,7 @@
                   });
                   return _this4.execute(opts);
               }).catch(function (e) {
-                  var err = new Error('LayerService.describe() - Error describing layer feature: ' + e.message);
+                  var err = new Error('LayerService.describe() - Error validating layer request: ' + e.message);
                   _this4.logError(err);
                   return Q.reject(err);
               });

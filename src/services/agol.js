@@ -2,7 +2,7 @@
 
 import Q from 'q';
 import ItemTypes from '../shared/types';
-
+import Config from '../shared/config';
 
 class AgolQuery {
 

@@ -1,6 +1,6 @@
 
-
 import Q from 'q';
+import Config from '../shared/config';
 
 class UtilsService {
 

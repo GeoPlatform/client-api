@@ -1,5 +1,6 @@
 
 import Q from 'q';
+import Config from '../shared/config';
 import QueryParameters from '../shared/parameters';
 
 

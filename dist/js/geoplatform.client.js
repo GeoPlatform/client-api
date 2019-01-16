@@ -39,6 +39,16 @@
     });
   }
 
+  var Config = {
+
+      ualUrl: 'https://ual.geoplatform.gov',
+      //appId: '...',
+
+      configure: function configure(options) {
+          Object.assign(this, options);
+      }
+  };
+
   var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
     return typeof obj;
   } : function (obj) {
@@ -597,7 +607,7 @@
       }
 
       createClass(ItemService, [{
-          key: "setUrl",
+          key: 'setUrl',
           value: function setUrl(baseUrl) {
               this.apiBase = baseUrl;
               this.baseUrl = baseUrl + '/api/items';
@@ -608,7 +618,7 @@
            */
 
       }, {
-          key: "setTimeout",
+          key: 'setTimeout',
           value: function setTimeout(milliseconds) {
               this.timeout = milliseconds;
           }
@@ -618,7 +628,7 @@
            */
 
       }, {
-          key: "timeout",
+          key: 'timeout',
           value: function timeout(milliseconds) {
               this.setTimeout(milliseconds);
               return this;
@@ -629,7 +639,7 @@
            */
 
       }, {
-          key: "setLogger",
+          key: 'setLogger',
           value: function setLogger(logger) {
               this.logger = logger;
           }
@@ -639,7 +649,7 @@
            */
 
       }, {
-          key: "logError",
+          key: 'logError',
           value: function logError(e) {
               if (this.logger && this.logger.error) {
                   this.logger.error(e);
@@ -651,7 +661,7 @@
            */
 
       }, {
-          key: "logDebug",
+          key: 'logDebug',
           value: function logDebug(msg) {
               if (this.logger && this.logger.debug) {
                   this.logger.debug(msg);
@@ -665,7 +675,7 @@
            */
 
       }, {
-          key: "get",
+          key: 'get',
           value: function get$$1(id, options) {
               var _this = this;
 
@@ -675,7 +685,7 @@
                   });
                   return _this.execute(opts);
               }).catch(function (e) {
-                  var err = new Error("ItemService.get() - Error fetching item " + id + ": " + e.message);
+                  var err = new Error('ItemService.get() - Error fetching item ' + id + ': ' + e.message);
                   _this.logError(err);
                   return Q.reject(err);
               });
@@ -688,7 +698,7 @@
            */
 
       }, {
-          key: "save",
+          key: 'save',
           value: function save(itemObj, options) {
               var _this2 = this;
 
@@ -715,7 +725,7 @@
                   var opts = _this2.buildRequest({ method: method, url: url, data: item, options: options });
                   return _this2.execute(opts);
               }).catch(function (e) {
-                  var err = new Error("ItemService.save() - Error saving item: " + e.message);
+                  var err = new Error('ItemService.save() - Error saving item: ' + e.message);
                   _this2.logError(err);
                   return Q.reject(err);
               });
@@ -728,7 +738,7 @@
            */
 
       }, {
-          key: "remove",
+          key: 'remove',
           value: function remove(id, options) {
               var _this3 = this;
 
@@ -740,7 +750,7 @@
               }).then(function (response) {
                   return true;
               }).catch(function (e) {
-                  var err = new Error("ItemService.remove() - Error deleting item " + id + ": " + e.message);
+                  var err = new Error('ItemService.remove() - Error deleting item ' + id + ': ' + e.message);
                   _this3.logError(err);
                   return Q.reject(err);
               });
@@ -754,7 +764,7 @@
            */
 
       }, {
-          key: "patch",
+          key: 'patch',
           value: function patch(id, _patch, options) {
               var _this4 = this;
 
@@ -764,7 +774,7 @@
                   });
                   return _this4.execute(opts);
               }).catch(function (e) {
-                  var err = new Error("ItemService.patch() - Error patching item " + id + ": " + e.message);
+                  var err = new Error('ItemService.patch() - Error patching item ' + id + ': ' + e.message);
                   _this4.logError(err);
                   return Q.reject(err);
               });
@@ -777,7 +787,7 @@
            */
 
       }, {
-          key: "search",
+          key: 'search',
           value: function search(arg, options) {
               var _this5 = this;
 
@@ -793,7 +803,7 @@
                   });
                   return _this5.execute(opts);
               }).catch(function (e) {
-                  var err = new Error("ItemService.search() - Error searching items: " + e.message);
+                  var err = new Error('ItemService.search() - Error searching items: ' + e.message);
                   _this5.logError(err);
                   return Q.reject(err);
               });
@@ -807,7 +817,7 @@
            */
 
       }, {
-          key: "import",
+          key: 'import',
           value: function _import(arg, format, options) {
               var _this6 = this;
 
@@ -833,7 +843,7 @@
                   var opts = _this6.buildRequest(ro);
                   return _this6.execute(opts);
               }).catch(function (e) {
-                  var err = new Error("ItemService.import() - Error importing item: " + e.message);
+                  var err = new Error('ItemService.import() - Error importing item: ' + e.message);
                   if (e.status === 409 || ~e.message.indexOf('Item already exists')) err.status = 409;
                   if (e.item) err.item = e.item;
                   _this6.logError(err);
@@ -848,7 +858,7 @@
            */
 
       }, {
-          key: "export",
+          key: 'export',
           value: function _export(id, format, options) {
               var _this7 = this;
 
@@ -865,9 +875,9 @@
                   var msg = e.message;
                   //https://github.com/GeoPlatform/client-api/issues/1
                   if (e.statusCode && e.statusCode === 406 || e.statusCode === '406') {
-                      msg = "Unsupported export format specified '" + format + "'";
+                      msg = 'Unsupported export format specified \'' + format + '\'';
                   }
-                  var err = new Error("ItemService.export() - Error exporting item: " + msg);
+                  var err = new Error('ItemService.export() - Error exporting item: ' + msg);
                   _this7.logError(err);
                   return Q.reject(err);
               });
@@ -880,7 +890,7 @@
            */
 
       }, {
-          key: "getUri",
+          key: 'getUri',
           value: function getUri(object, options) {
               var _this8 = this;
 
@@ -894,7 +904,7 @@
                   });
                   return _this8.execute(opts);
               }).catch(function (e) {
-                  var err = new Error("ItemService.getUri() - Error getting URI for item: " + e.message);
+                  var err = new Error('ItemService.getUri() - Error getting URI for item: ' + e.message);
                   _this8.logError(err);
                   return Q.reject(err);
               });
@@ -907,7 +917,7 @@
            */
 
       }, {
-          key: "getMultiple",
+          key: 'getMultiple',
           value: function getMultiple(ids, options) {
               var _this9 = this;
 
@@ -919,7 +929,7 @@
                   var opts = _this9.buildRequest({ method: method, url: url, data: identifiers, options: options });
                   return _this9.execute(opts);
               }).catch(function (e) {
-                  var err = new Error("ItemService.getMultiple() - Error fetching items: " + e.message);
+                  var err = new Error('ItemService.getMultiple() - Error fetching items: ' + e.message);
                   _this9.logError(err);
                   return Q.reject(err);
               });
@@ -932,7 +942,7 @@
            */
 
       }, {
-          key: "exists",
+          key: 'exists',
           value: function exists(uris, options) {
               var _this10 = this;
 
@@ -942,7 +952,7 @@
                   var opts = _this10.buildRequest({ method: method, url: url, data: uris, options: options });
                   return _this10.execute(opts);
               }).catch(function (e) {
-                  var err = new Error("ItemService.exists() - Error resolving items: " + e.message);
+                  var err = new Error('ItemService.exists() - Error resolving items: ' + e.message);
                   _this10.logError(err);
                   return Q.reject(err);
               });
@@ -960,12 +970,12 @@
            */
 
       }, {
-          key: "buildRequest",
+          key: 'buildRequest',
           value: function buildRequest(options) {
 
-              if (this.httpMethods.indexOf(options.method) < 0) throw new Error("Unsupported HTTP method " + options.method);
+              if (this.httpMethods.indexOf(options.method) < 0) throw new Error('Unsupported HTTP method ' + options.method);
 
-              if (!options.url) throw new Error("Must specify a URL for HTTP requests");
+              if (!options.url) throw new Error('Must specify a URL for HTTP requests');
 
               options.timeout = this.timeout || Config.timeout || 30000;
 
@@ -974,14 +984,14 @@
               return opts;
           }
       }, {
-          key: "createRequestOpts",
+          key: 'createRequestOpts',
           value: function createRequestOpts(options) {
               var request = this.client.createRequestOpts(options);
               this.logDebug("ItemService.createRequestOpts() - " + JSON.stringify(request));
               return request;
           }
       }, {
-          key: "execute",
+          key: 'execute',
           value: function execute(opts) {
               return this.client.execute(opts).catch(function (e) {
                   if (e === null || typeof e === 'undefined') {
@@ -2653,7 +2663,7 @@
       }
 
       createClass(UtilsService, [{
-          key: "setUrl",
+          key: 'setUrl',
           value: function setUrl(baseUrl) {
               this.baseUrl = baseUrl;
           }
@@ -2663,7 +2673,7 @@
            */
 
       }, {
-          key: "setLogger",
+          key: 'setLogger',
           value: function setLogger(logger) {
               this.logger = logger;
           }
@@ -2673,7 +2683,7 @@
            */
 
       }, {
-          key: "logError",
+          key: 'logError',
           value: function logError(e) {
               if (this.logger && this.logger.error) {
                   this.logger.error(e);
@@ -2685,7 +2695,7 @@
            */
 
       }, {
-          key: "logDebug",
+          key: 'logDebug',
           value: function logDebug(msg) {
               if (this.logger && this.logger.debug) {
                   this.logger.debug(msg);
@@ -2700,7 +2710,7 @@
            */
 
       }, {
-          key: "capabilities",
+          key: 'capabilities',
           value: function capabilities(property, query, options) {
               var _this = this;
 
@@ -2713,7 +2723,7 @@
                   });
                   return _this.execute(opts);
               }).catch(function (e) {
-                  var err = new Error("UtilsService.capabilities() - Error getting capabilities: " + e.message);
+                  var err = new Error('UtilsService.capabilities() - Error getting capabilities: ' + e.message);
                   _this.logError(err);
                   return Q.reject(err);
               });
@@ -2727,7 +2737,7 @@
            */
 
       }, {
-          key: "parseFile",
+          key: 'parseFile',
           value: function parseFile(file, format, options) {
               var _this2 = this;
 
@@ -2746,7 +2756,7 @@
               }).then(function (response) {
                   return response;
               }).catch(function (e) {
-                  var err = new Error("UtilsService.parseFile() - Error parsing file: " + e.message);
+                  var err = new Error('UtilsService.parseFile() - Error parsing file: ' + e.message);
                   _this2.logError(err);
                   return Q.reject(err);
               });
@@ -2760,7 +2770,7 @@
            */
 
       }, {
-          key: "locate",
+          key: 'locate',
           value: function locate(value, options) {
               var _this3 = this;
 
@@ -2775,7 +2785,7 @@
               }).then(function (response) {
                   return response;
               }).catch(function (e) {
-                  var err = new Error("UtilsService.locate() - Error resolving location: " + e.message);
+                  var err = new Error('UtilsService.locate() - Error resolving location: ' + e.message);
                   _this3.logError(err);
                   return Q.reject(err);
               });
@@ -2793,24 +2803,24 @@
            */
 
       }, {
-          key: "buildRequest",
+          key: 'buildRequest',
           value: function buildRequest(options) {
 
-              if (this.httpMethods.indexOf(options.method) < 0) throw new Error("Unsupported HTTP method " + options.method);
+              if (this.httpMethods.indexOf(options.method) < 0) throw new Error('Unsupported HTTP method ' + options.method);
 
-              if (!options.url) throw new Error("Must specify a URL for HTTP requests");
+              if (!options.url) throw new Error('Must specify a URL for HTTP requests');
 
               options.timeout = this.timeout || Config.timeout || 30000;
 
               return this.createRequestOpts(options);
           }
       }, {
-          key: "createRequestOpts",
+          key: 'createRequestOpts',
           value: function createRequestOpts(options) {
               return this.client.createRequestOpts(options);
           }
       }, {
-          key: "execute",
+          key: 'execute',
           value: function execute(opts) {
               return this.client.execute(opts).catch(function (e) {
                   if (e === null || typeof e === 'undefined') {
@@ -3283,16 +3293,6 @@
       return AgolService;
   }();
 
-  var Config$1 = {
-
-      ualUrl: 'https://ual.geoplatform.gov',
-      //appId: '...',
-
-      configure: function configure(options) {
-          Object.assign(this, options);
-      }
-  };
-
   var ServiceProxy = {
 
       /**
@@ -3346,7 +3346,7 @@
           }
 
           return new NodeHttpClient({
-              timeout: Config$1.timeout,
+              timeout: Config.timeout,
               token: needsAuth ? token : null
           });
       },
@@ -3359,7 +3359,7 @@
       getService: function getService(req, needsAuth, options) {
           var client = this.getClient(req, needsAuth, options);
           var svcClass = options.serviceClass || ItemService;
-          var service = new svcClass(Config$1.ualUrl, client);
+          var service = new svcClass(Config.ualUrl, client);
           if (options.logger) {
               service.setLogger(options.logger);
           }
@@ -5055,7 +5055,7 @@
   exports.GalleryServiceProxy = GalleryServiceProxy;
   exports.UtilsServiceProxy = UtilsServiceProxy;
   exports.AgolServiceProxy = AgolServiceProxy;
-  exports.Config = Config$1;
+  exports.Config = Config;
   exports.TrackingEvent = Event;
   exports.TrackingService = TrackingService;
   exports.TrackingCategories = Categories;

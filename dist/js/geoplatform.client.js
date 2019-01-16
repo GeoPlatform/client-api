@@ -220,7 +220,7 @@
                       try {
                           var json = JSON.parse(xhr.responseText);
                           if (json) {
-                              err = new Error(message);
+                              err = new Error(json.message);
                               err.error = json.error; //label
                               err.status = json.status; //code
                           }

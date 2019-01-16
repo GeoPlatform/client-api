@@ -13,7 +13,7 @@ class NGHttpClient {
             throw new Error("Angular not defined");
 
         options = options || {};
-        this.setTimeout(options.timeout||10000);
+        this.setTimeout(options.timeout||Config.timeout||30000);
         this.setAuthToken(options.token);
 
         if(options.$http)

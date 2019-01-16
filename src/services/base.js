@@ -29,7 +29,7 @@ class BaseService {
 
     constructor(url) {
         this.setUrl(url);
-        this.timeout = 10000;
+        this.timeout = Config.timeout || 30000;
     }
 
     setUrl(baseUrl) {

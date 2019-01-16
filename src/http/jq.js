@@ -9,7 +9,7 @@ class JQueryHttpClient {
      */
     constructor(options) {
         options = options || {};
-        this.setTimeout(options.timeout||10000);
+        this.setTimeout(options.timeout||Config.timeout||30000);
         this.setAuthToken(options.token);
     }
 

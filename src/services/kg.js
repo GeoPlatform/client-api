@@ -8,7 +8,7 @@ class KGService {
     constructor(url, httpClient) {
         this.setUrl(url);
         this.client = httpClient;
-        this.timeout = 10000;
+        this.timeout = Config.timeout || 30000;
         this.httpMethods = ["GET", "POST", "PUT", "DELETE", "PATCH"];
     }
 
@@ -107,7 +107,7 @@ class KGService {
         if(!options.url)
             throw new Error(`Must specify a URL for HTTP requests`);
 
-        options.timeout = this.timeout || 10000;
+        options.timeout = this.timeout || Config.timeout || 30000;
 
         return this.createRequestOpts(options);
     }

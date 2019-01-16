@@ -128,7 +128,7 @@
           classCallCheck(this, JQueryHttpClient);
 
           options = options || {};
-          this.setTimeout(options.timeout || 10000);
+          this.setTimeout(options.timeout || Config.timeout || 30000);
           this.setAuthToken(options.token);
       }
 
@@ -227,7 +227,7 @@
           if (typeof angular === 'undefined') throw new Error("Angular not defined");
 
           options = options || {};
-          this.setTimeout(options.timeout || 10000);
+          this.setTimeout(options.timeout || Config.timeout || 30000);
           this.setAuthToken(options.token);
 
           if (options.$http) this.$http = options.$http;
@@ -324,7 +324,7 @@
           classCallCheck(this, NodeHttpClient);
 
           options = options || {};
-          this.setTimeout(options.timeout || 10000);
+          this.setTimeout(options.timeout || Config.timeout || 30000);
           this.setAuthToken(options.token);
       }
 
@@ -592,7 +592,7 @@
 
           this.setUrl(url);
           this.client = httpClient;
-          this.timeout = 10000;
+          this.timeout = Config.timeout || 30000;
           this.httpMethods = ["GET", "POST", "PUT", "DELETE", "PATCH"];
       }
 
@@ -967,7 +967,7 @@
 
               if (!options.url) throw new Error("Must specify a URL for HTTP requests");
 
-              options.timeout = this.timeout || 10000;
+              options.timeout = this.timeout || Config.timeout || 30000;
 
               var opts = this.createRequestOpts(options);
 
@@ -2648,7 +2648,7 @@
 
           this.setUrl(url);
           this.client = httpClient;
-          this.timeout = 10000;
+          this.timeout = Config.timeout || 30000;
           this.httpMethods = ["GET", "POST", "PUT", "DELETE", "PATCH"];
       }
 
@@ -2800,7 +2800,7 @@
 
               if (!options.url) throw new Error("Must specify a URL for HTTP requests");
 
-              options.timeout = this.timeout || 10000;
+              options.timeout = this.timeout || Config.timeout || 30000;
 
               return this.createRequestOpts(options);
           }
@@ -3049,7 +3049,7 @@
 
           this.setUrl(url);
           this.client = httpClient;
-          this.timeout = 10000;
+          this.timeout = Config.timeout || 30000;
           this.httpMethods = ["GET", "POST", "PUT", "DELETE", "PATCH"];
       }
 
@@ -3260,7 +3260,7 @@
 
               if (!options.url) throw new Error('Must specify a URL for HTTP requests');
 
-              options.timeout = this.timeout || 10000;
+              options.timeout = this.timeout || Config.timeout || 30000;
 
               return this.createRequestOpts(options);
           }
@@ -3283,7 +3283,7 @@
       return AgolService;
   }();
 
-  var Config = {
+  var Config$1 = {
 
       ualUrl: 'https://ual.geoplatform.gov',
       //appId: '...',
@@ -3346,7 +3346,7 @@
           }
 
           return new NodeHttpClient({
-              timeout: Config.timeout,
+              timeout: Config$1.timeout,
               token: needsAuth ? token : null
           });
       },
@@ -3359,7 +3359,7 @@
       getService: function getService(req, needsAuth, options) {
           var client = this.getClient(req, needsAuth, options);
           var svcClass = options.serviceClass || ItemService;
-          var service = new svcClass(Config.ualUrl, client);
+          var service = new svcClass(Config$1.ualUrl, client);
           if (options.logger) {
               service.setLogger(options.logger);
           }
@@ -4552,7 +4552,7 @@
 
           this.setUrl(url);
           this.client = httpClient;
-          this.timeout = 10000;
+          this.timeout = Config.timeout || 30000;
           this.httpMethods = ["GET", "POST", "PUT", "DELETE", "PATCH"];
       }
 
@@ -4654,7 +4654,7 @@
 
               if (!options.url) throw new Error('Must specify a URL for HTTP requests');
 
-              options.timeout = this.timeout || 10000;
+              options.timeout = this.timeout || Config.timeout || 30000;
 
               return this.createRequestOpts(options);
           }
@@ -5055,7 +5055,7 @@
   exports.GalleryServiceProxy = GalleryServiceProxy;
   exports.UtilsServiceProxy = UtilsServiceProxy;
   exports.AgolServiceProxy = AgolServiceProxy;
-  exports.Config = Config;
+  exports.Config = Config$1;
   exports.TrackingEvent = Event;
   exports.TrackingService = TrackingService;
   exports.TrackingCategories = Categories;

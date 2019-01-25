@@ -31,8 +31,9 @@ class GalleryService extends ItemService {
             return this.execute(opts);
         })
         .catch(e => {
-            let err = new Error("GalleryService.addItem() - Error adding item: " + e.message);
-            this.logError(err);
+            let err = new Error("Error adding item: " + e.message);
+            Object.assign(err, e);
+            this.logError('GalleryService.addItem() - ' + err.message);
             return Q.reject(err);
         });
     }
@@ -47,8 +48,9 @@ class GalleryService extends ItemService {
         })
         .then(response=>true)
         .catch(e => {
-            let err = new Error("GalleryService.addItem() - Error adding item: " + e.message);
-            this.logError(err);
+            let err = new Error("Error adding item: " + e.message);
+            Object.assign(err, e);
+            this.logError('GalleryService.addItem() - '+ err.message);
             return Q.reject(err);
         });
     }

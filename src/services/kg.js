@@ -28,6 +28,7 @@ class KGService {
         return this._search(url, query, options)
         .catch(e => {
             let err = new Error(`KGService.suggest() - Error suggesting concepts: ${e.message}`);
+            Object.assign(err, e);
             return Q.reject(err);
         });
     }
@@ -43,6 +44,7 @@ class KGService {
         return this._search(url, query, options)
         .catch(e => {
             let err = new Error(`KGService.types() - Error searching types: ${e.message}`);
+            Object.assign(err, e);
             return Q.reject(err);
         });
     }
@@ -59,6 +61,7 @@ class KGService {
         return this._search(url, query, options)
         .catch(e => {
             let err = new Error(`KGService.sources() - Error searching sources: ${e.message}`);
+            Object.assign(err, e);
             return Q.reject(err);
         });
     }

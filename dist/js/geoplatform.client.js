@@ -698,8 +698,9 @@
                   });
                   return _this.execute(opts);
               }).catch(function (e) {
-                  var err = new Error('ItemService.get() - Error fetching item ' + id + ': ' + e.message);
-                  _this.logError(err);
+                  var err = new Error('Error fetching item ' + id + ': ' + e.message);
+                  Object.assign(err, e);
+                  _this.logError('ItemService.get() - ' + err.message);
                   return Q.reject(err);
               });
           }
@@ -738,8 +739,9 @@
                   var opts = _this2.buildRequest({ method: method, url: url, data: item, options: options });
                   return _this2.execute(opts);
               }).catch(function (e) {
-                  var err = new Error('ItemService.save() - Error saving item: ' + e.message);
-                  _this2.logError(err);
+                  var err = new Error('Error saving item: ' + e.message);
+                  Object.assign(err, e);
+                  _this2.logError('ItemService.save() - ' + err.message);
                   return Q.reject(err);
               });
           }
@@ -763,8 +765,9 @@
               }).then(function (response) {
                   return true;
               }).catch(function (e) {
-                  var err = new Error('ItemService.remove() - Error deleting item ' + id + ': ' + e.message);
-                  _this3.logError(err);
+                  var err = new Error('Error deleting item ' + id + ': ' + e.message);
+                  Object.assign(err, e);
+                  _this3.logError('ItemService.remove() - ' + err.message);
                   return Q.reject(err);
               });
           }
@@ -787,8 +790,9 @@
                   });
                   return _this4.execute(opts);
               }).catch(function (e) {
-                  var err = new Error('ItemService.patch() - Error patching item ' + id + ': ' + e.message);
-                  _this4.logError(err);
+                  var err = new Error('Error patching item ' + id + ': ' + e.message);
+                  Object.assign(err, e);
+                  _this4.logError('ItemService.patch() - ' + err.message);
                   return Q.reject(err);
               });
           }
@@ -816,8 +820,9 @@
                   });
                   return _this5.execute(opts);
               }).catch(function (e) {
-                  var err = new Error('ItemService.search() - Error searching items: ' + e.message);
-                  _this5.logError(err);
+                  var err = new Error('Error searching items: ' + e.message);
+                  Object.assign(err, e);
+                  _this5.logError('ItemService.search() - ' + err.message);
                   return Q.reject(err);
               });
           }
@@ -856,10 +861,11 @@
                   var opts = _this6.buildRequest(ro);
                   return _this6.execute(opts);
               }).catch(function (e) {
-                  var err = new Error('ItemService.import() - Error importing item: ' + e.message);
+                  var err = new Error('Error importing item: ' + e.message);
+                  Object.assign(err, e);
                   if (e.status === 409 || ~e.message.indexOf('Item already exists')) err.status = 409;
                   if (e.item) err.item = e.item;
-                  _this6.logError(err);
+                  _this6.logError('ItemService.import() - ' + err.message);
                   return Q.reject(err);
               });
           }
@@ -890,8 +896,9 @@
                   if (e.statusCode && e.statusCode === 406 || e.statusCode === '406') {
                       msg = 'Unsupported export format specified \'' + format + '\'';
                   }
-                  var err = new Error('ItemService.export() - Error exporting item: ' + msg);
-                  _this7.logError(err);
+                  var err = new Error('Error exporting item: ' + msg);
+                  Object.assign(err, e);
+                  _this7.logError('ItemService.export() - ' + err.message);
                   return Q.reject(err);
               });
           }
@@ -917,8 +924,9 @@
                   });
                   return _this8.execute(opts);
               }).catch(function (e) {
-                  var err = new Error('ItemService.getUri() - Error getting URI for item: ' + e.message);
-                  _this8.logError(err);
+                  var err = new Error('Error getting URI for item: ' + e.message);
+                  Object.assign(err, e);
+                  _this8.logError('ItemService.getUri() - ' + err.message);
                   return Q.reject(err);
               });
           }
@@ -942,8 +950,9 @@
                   var opts = _this9.buildRequest({ method: method, url: url, data: identifiers, options: options });
                   return _this9.execute(opts);
               }).catch(function (e) {
-                  var err = new Error('ItemService.getMultiple() - Error fetching items: ' + e.message);
-                  _this9.logError(err);
+                  var err = new Error('Error fetching items: ' + e.message);
+                  Object.assign(err, e);
+                  _this9.logError('ItemService.getMultiple() - ' + err.message);
                   return Q.reject(err);
               });
           }
@@ -965,8 +974,9 @@
                   var opts = _this10.buildRequest({ method: method, url: url, data: uris, options: options });
                   return _this10.execute(opts);
               }).catch(function (e) {
-                  var err = new Error('ItemService.exists() - Error resolving items: ' + e.message);
-                  _this10.logError(err);
+                  var err = new Error('Error resolving items: ' + e.message);
+                  Object.assign(err, e);
+                  _this10.logError('ItemService.exists() - ' + err.message);
                   return Q.reject(err);
               });
           }
@@ -1111,8 +1121,9 @@
                   });
                   return _this2.execute(opts);
               }).catch(function (e) {
-                  var err = new Error('LayerService.style() - Error fetching style: ' + e.message);
-                  _this2.logError(err);
+                  var err = new Error('Error fetching style: ' + e.message);
+                  Object.assign(err, e);
+                  _this2.logError('LayerService.style() - ' + err.message);
                   return Q.reject(err);
               });
           }
@@ -1161,8 +1172,9 @@
                   });
                   return _this3.execute(opts);
               }).catch(function (e) {
-                  var err = new Error('LayerService.describe() - Error describing layer feature: ' + e.message);
-                  _this3.logError(err);
+                  var err = new Error('Error describing layer feature: ' + e.message);
+                  Object.assign(err, e);
+                  _this3.logError('LayerService.describe() - ' + err.message);
                   return Q.reject(err);
               });
           }
@@ -1191,8 +1203,9 @@
                   });
                   return _this4.execute(opts);
               }).catch(function (e) {
-                  var err = new Error('LayerService.describe() - Error validating layer request: ' + e.message);
-                  _this4.logError(err);
+                  var err = new Error('Error validating layer request: ' + e.message);
+                  Object.assign(err, e);
+                  _this4.logError('LayerService.describe() - ' + err.message);
                   return Q.reject(err);
               });
           }
@@ -2472,8 +2485,9 @@
                   });
                   return _this2.execute(opts);
               }).catch(function (e) {
-                  var err = new Error('ServiceService.about() - Error describing service: ' + e.message);
-                  _this2.logError(err);
+                  var err = new Error('Error describing service: ' + e.message);
+                  Object.assign(err, e);
+                  _this2.logError('ServiceService.about() - ' + err.message);
                   return Q.reject(err);
               });
           }
@@ -2499,8 +2513,9 @@
               }).then(function (response) {
                   return response.results;
               }).catch(function (e) {
-                  var err = new Error('ServiceService.types() - Error fetching service types: ' + e.message);
-                  _this3.logError(err);
+                  var err = new Error('Error fetching service types: ' + e.message);
+                  Object.assign(err, e);
+                  _this3.logError('ServiceService.types() - ' + err.message);
                   return Q.reject(err);
               });
           }
@@ -2523,8 +2538,9 @@
                   });
                   return _this4.execute(opts);
               }).catch(function (e) {
-                  var err = new Error('ServiceService.import() - Error importing service: ' + e.message);
-                  _this4.logError(err);
+                  var err = new Error('Error importing service: ' + e.message);
+                  Object.assign(err, e);
+                  _this4.logError('ServiceService.import() - ' + err.message);
                   return Q.reject(err);
               });
           }
@@ -2547,8 +2563,9 @@
                   });
                   return _this5.execute(opts);
               }).catch(function (e) {
-                  var err = new Error('ServiceService.harvest() - Error harvesting layers from service: ' + e.message);
-                  _this5.logError(err);
+                  var err = new Error('Error harvesting layers from service: ' + e.message);
+                  Object.assign(err, e);
+                  _this5.logError('ServiceService.harvest() - ' + err.message);
                   return Q.reject(err);
               });
           }
@@ -2571,8 +2588,9 @@
                   });
                   return _this6.execute(opts);
               }).catch(function (e) {
-                  var err = new Error('ServiceService.liveTest() - Error testing service: ' + e.message);
-                  _this6.logError(err);
+                  var err = new Error('Error testing service: ' + e.message);
+                  Object.assign(err, e);
+                  _this6.logError('ServiceService.liveTest() - ' + err.message);
                   return Q.reject(err);
               });
           }
@@ -2595,8 +2613,9 @@
                   });
                   return _this7.execute(opts);
               }).catch(function (e) {
-                  var err = new Error('ServiceService.statistics() - Error getting service statistics: ' + e.message);
-                  _this7.logError(err);
+                  var err = new Error('Error getting service statistics: ' + e.message);
+                  Object.assign(err, e);
+                  _this7.logError('ServiceService.statistics() - ' + err.message);
                   return Q.reject(err);
               });
           }
@@ -2638,8 +2657,9 @@
                   });
                   return _this2.execute(opts);
               }).catch(function (e) {
-                  var err = new Error("GalleryService.addItem() - Error adding item: " + e.message);
-                  _this2.logError(err);
+                  var err = new Error("Error adding item: " + e.message);
+                  Object.assign(err, e);
+                  _this2.logError('GalleryService.addItem() - ' + err.message);
                   return Q.reject(err);
               });
           }
@@ -2656,8 +2676,9 @@
               }).then(function (response) {
                   return true;
               }).catch(function (e) {
-                  var err = new Error("GalleryService.addItem() - Error adding item: " + e.message);
-                  _this3.logError(err);
+                  var err = new Error("Error adding item: " + e.message);
+                  Object.assign(err, e);
+                  _this3.logError('GalleryService.addItem() - ' + err.message);
                   return Q.reject(err);
               });
           }
@@ -2736,8 +2757,9 @@
                   });
                   return _this.execute(opts);
               }).catch(function (e) {
-                  var err = new Error('UtilsService.capabilities() - Error getting capabilities: ' + e.message);
-                  _this.logError(err);
+                  var err = new Error('Error getting capabilities: ' + e.message);
+                  Object.assign(err, e);
+                  _this.logError('UtilsService.capabilities() - ' + err.message);
                   return Q.reject(err);
               });
           }
@@ -2769,8 +2791,9 @@
               }).then(function (response) {
                   return response;
               }).catch(function (e) {
-                  var err = new Error('UtilsService.parseFile() - Error parsing file: ' + e.message);
-                  _this2.logError(err);
+                  var err = new Error('Error parsing file: ' + e.message);
+                  Object.assign(err, e);
+                  _this2.logError('UtilsService.parseFile() - ' + err.message);
                   return Q.reject(err);
               });
           }
@@ -2798,8 +2821,9 @@
               }).then(function (response) {
                   return response;
               }).catch(function (e) {
-                  var err = new Error('UtilsService.locate() - Error resolving location: ' + e.message);
-                  _this3.logError(err);
+                  var err = new Error('Error resolving location: ' + e.message);
+                  Object.assign(err, e);
+                  _this3.logError('UtilsService.locate() - ' + err.message);
                   return Q.reject(err);
               });
           }
@@ -3104,6 +3128,7 @@
                   return _this.execute(opts);
               }).catch(function (e) {
                   var err = new Error('AgolService.getOrg() - Error fetching org ' + id + ': ' + e.message);
+                  Object.assign(err, e);
                   return Q.reject(err);
               });
           }
@@ -3132,6 +3157,7 @@
                   return _this2.execute(opts);
               }).catch(function (e) {
                   var err = new Error('AgolService.searchOrgs() - Error searching orgs: ' + e.message);
+                  Object.assign(err, e);
                   return Q.reject(err);
               });
           }
@@ -3158,6 +3184,7 @@
                   return _this3.execute(opts);
               }).catch(function (e) {
                   var err = new Error('AgolService.getGroup() - Error fetching group ' + id + ': ' + e.message);
+                  Object.assign(err, e);
                   return Q.reject(err);
               });
           }
@@ -3186,6 +3213,7 @@
                   return _this4.execute(opts);
               }).catch(function (e) {
                   var err = new Error('AgolService.searchGroups() - Error searching groups: ' + e.message);
+                  Object.assign(err, e);
                   return Q.reject(err);
               });
           }
@@ -3211,6 +3239,7 @@
                   return _this5.execute(opts);
               }).catch(function (e) {
                   var err = new Error('AgolService.getItem() - Error fetching item ' + id + ': ' + e.message);
+                  Object.assign(err, e);
                   return Q.reject(err);
               });
           }
@@ -3239,6 +3268,7 @@
                   return _this6.execute(opts);
               }).catch(function (e) {
                   var err = new Error('AgolService.searchItems() - Error searching items: ' + e.message);
+                  Object.assign(err, e);
                   return Q.reject(err);
               });
           }
@@ -4588,6 +4618,7 @@
               var url = this.baseUrl + '/suggest';
               return this._search(url, query, options).catch(function (e) {
                   var err = new Error('KGService.suggest() - Error suggesting concepts: ' + e.message);
+                  Object.assign(err, e);
                   return Q.reject(err);
               });
           }
@@ -4604,6 +4635,7 @@
               var url = this.baseUrl + '/types';
               return this._search(url, query, options).catch(function (e) {
                   var err = new Error('KGService.types() - Error searching types: ' + e.message);
+                  Object.assign(err, e);
                   return Q.reject(err);
               });
           }
@@ -4620,6 +4652,7 @@
               var url = this.baseUrl + '/sources';
               return this._search(url, query, options).catch(function (e) {
                   var err = new Error('KGService.sources() - Error searching sources: ' + e.message);
+                  Object.assign(err, e);
                   return Q.reject(err);
               });
           }

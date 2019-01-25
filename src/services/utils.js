@@ -61,8 +61,9 @@ class UtilsService {
             return this.execute(opts);
         })
         .catch(e => {
-            let err = new Error(`UtilsService.capabilities() - Error getting capabilities: ${e.message}`);
-            this.logError(err);
+            let err = new Error(`Error getting capabilities: ${e.message}`);
+            Object.assign(err, e);
+            this.logError('UtilsService.capabilities() - ' + err.message);
             return Q.reject(err);
         });
     }
@@ -91,8 +92,9 @@ class UtilsService {
         })
         .then( response => response )
         .catch(e => {
-            let err = new Error(`UtilsService.parseFile() - Error parsing file: ${e.message}`);
-            this.logError(err);
+            let err = new Error(`Error parsing file: ${e.message}`);
+            Object.assign(err, e);
+            this.logError('UtilsService.parseFile() - ' + err.message);
             return Q.reject(err);
         });
     }
@@ -118,8 +120,9 @@ class UtilsService {
         })
         .then(response => response)
         .catch(e => {
-            let err = new Error(`UtilsService.locate() - Error resolving location: ${e.message}`);
-            this.logError(err);
+            let err = new Error(`Error resolving location: ${e.message}`);
+            Object.assign(err, e);
+            this.logError('UtilsService.locate() - ' + err.message);
             return Q.reject(err);
         });
     }

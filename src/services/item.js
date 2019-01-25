@@ -98,8 +98,9 @@ class ItemService {
             return this.execute(opts);
         })
         .catch(e => {
-            let err = new Error(`ItemService.get() - Error fetching item ${id}: ${e.message}`);
-            this.logError(err);
+            let err = new Error(`Error fetching item ${id}: ${e.message}`);
+            Object.assign(err, e);
+            this.logError('ItemService.get() - ' + err.message);
             return Q.reject(err);
         });
     }
@@ -138,8 +139,9 @@ class ItemService {
 
         })
         .catch(e => {
-            let err = new Error(`ItemService.save() - Error saving item: ${e.message}`);
-            this.logError(err);
+            let err = new Error(`Error saving item: ${e.message}`);
+            Object.assign(err, e);
+            this.logError('ItemService.save() - ' + err.message);
             return Q.reject(err);
         });
     }
@@ -160,8 +162,9 @@ class ItemService {
         })
         .then(response => true)
         .catch(e => {
-            let err = new Error(`ItemService.remove() - Error deleting item ${id}: ${e.message}`);
-            this.logError(err);
+            let err = new Error(`Error deleting item ${id}: ${e.message}`);
+            Object.assign(err, e);
+            this.logError('ItemService.remove() - ' + err.message);
             return Q.reject(err);
         });
     }
@@ -182,8 +185,9 @@ class ItemService {
             return this.execute(opts);
         })
         .catch(e => {
-            let err = new Error(`ItemService.patch() - Error patching item ${id}: ${e.message}`);
-            this.logError(err);
+            let err = new Error(`Error patching item ${id}: ${e.message}`);
+            Object.assign(err, e);
+            this.logError('ItemService.patch() - ' + err.message);
             return Q.reject(err);
         });
     }
@@ -209,8 +213,9 @@ class ItemService {
             return this.execute(opts);
         })
         .catch(e => {
-            let err = new Error(`ItemService.search() - Error searching items: ${e.message}`);
-            this.logError(err);
+            let err = new Error(`Error searching items: ${e.message}`);
+            Object.assign(err, e);
+            this.logError('ItemService.search() - ' + err.message);
             return Q.reject(err);
         });
     }
@@ -248,10 +253,11 @@ class ItemService {
             return this.execute(opts);
         })
         .catch( e => {
-            let err = new Error(`ItemService.import() - Error importing item: ${e.message}`);
+            let err = new Error(`Error importing item: ${e.message}`);
+            Object.assign(err, e);
             if(e.status === 409 || ~e.message.indexOf('Item already exists')) err.status = 409;
             if(e.item) err.item = e.item;
-            this.logError(err);
+            this.logError('ItemService.import() - ' + err.message);
             return Q.reject(err);
         });
     }
@@ -282,8 +288,9 @@ class ItemService {
             if(e.statusCode && e.statusCode===406 || e.statusCode==='406') {
                 msg = `Unsupported export format specified '${format}'`;
             }
-            let err = new Error(`ItemService.export() - Error exporting item: ${msg}`);
-            this.logError(err);
+            let err = new Error(`Error exporting item: ${msg}`);
+            Object.assign(err, e);
+            this.logError('ItemService.export() - ' + err.message);
             return Q.reject(err);
         });
     }
@@ -309,8 +316,9 @@ class ItemService {
             return this.execute(opts);
         })
         .catch( e => {
-            let err = new Error(`ItemService.getUri() - Error getting URI for item: ${e.message}`);
-            this.logError(err);
+            let err = new Error(`Error getting URI for item: ${e.message}`);
+            Object.assign(err, e);
+            this.logError('ItemService.getUri() - ' + err.message);
             return Q.reject(err);
         });
 
@@ -335,8 +343,9 @@ class ItemService {
 
         })
         .catch(e => {
-            let err = new Error(`ItemService.getMultiple() - Error fetching items: ${e.message}`);
-            this.logError(err);
+            let err = new Error(`Error fetching items: ${e.message}`);
+            Object.assign(err, e);
+            this.logError('ItemService.getMultiple() - ' + err.message);
             return Q.reject(err);
         });
     }
@@ -355,8 +364,9 @@ class ItemService {
             return this.execute(opts);
         })
         .catch(e => {
-            let err = new Error(`ItemService.exists() - Error resolving items: ${e.message}`);
-            this.logError(err);
+            let err = new Error(`Error resolving items: ${e.message}`);
+            Object.assign(err, e);
+            this.logError('ItemService.exists() - ' + err.message);
             return Q.reject(err);
         });
     }

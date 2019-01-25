@@ -45,8 +45,9 @@ class ServiceService extends ItemService {
             return this.execute(opts);
         })
         .catch(e => {
-            let err = new Error(`ServiceService.about() - Error describing service: ${e.message}`);
-            this.logError(err);
+            let err = new Error(`Error describing service: ${e.message}`);
+            Object.assign(err, e);
+            this.logError('ServiceService.about() - ' + err.message);
             return Q.reject(err);
         });
     }
@@ -75,8 +76,9 @@ class ServiceService extends ItemService {
         })
         .then(response => response.results)
         .catch(e => {
-            let err = new Error(`ServiceService.types() - Error fetching service types: ${e.message}`);
-            this.logError(err);
+            let err = new Error(`Error fetching service types: ${e.message}`);
+            Object.assign(err, e);
+            this.logError('ServiceService.types() - ' + err.message);
             return Q.reject(err);
         });
     }
@@ -98,8 +100,9 @@ class ServiceService extends ItemService {
             return this.execute(opts);
         })
         .catch(e => {
-            let err = new Error(`ServiceService.import() - Error importing service: ${e.message}`);
-            this.logError(err);
+            let err = new Error(`Error importing service: ${e.message}`);
+            Object.assign(err, e);
+            this.logError('ServiceService.import() - ' + err.message);
             return Q.reject(err);
         });
     }
@@ -121,8 +124,9 @@ class ServiceService extends ItemService {
             return this.execute(opts);
         })
         .catch(e => {
-            let err = new Error(`ServiceService.harvest() - Error harvesting layers from service: ${e.message}`);
-            this.logError(err);
+            let err = new Error(`Error harvesting layers from service: ${e.message}`);
+            Object.assign(err, e);
+            this.logError('ServiceService.harvest() - ' + err.message);
             return Q.reject(err);
         });
 
@@ -144,8 +148,9 @@ class ServiceService extends ItemService {
             return this.execute(opts);
         })
         .catch(e => {
-            let err = new Error(`ServiceService.liveTest() - Error testing service: ${e.message}`);
-            this.logError(err);
+            let err = new Error(`Error testing service: ${e.message}`);
+            Object.assign(err, e);
+            this.logError('ServiceService.liveTest() - '  + err.message);
             return Q.reject(err);
         });
     }
@@ -165,8 +170,9 @@ class ServiceService extends ItemService {
             return this.execute(opts);
         })
         .catch(e => {
-            let err = new Error(`ServiceService.statistics() - Error getting service statistics: ${e.message}`);
-            this.logError(err);
+            let err = new Error(`Error getting service statistics: ${e.message}`);
+            Object.assign(err, e);
+            this.logError('ServiceService.statistics() - ' + err.message);
             return Q.reject(err);
         });
     }

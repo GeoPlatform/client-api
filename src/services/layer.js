@@ -38,8 +38,9 @@ class LayerService extends ItemService {
             return this.execute(opts);
         })
         .catch(e => {
-            let err = new Error(`LayerService.style() - Error fetching style: ${e.message}`);
-            this.logError(err);
+            let err = new Error(`Error fetching style: ${e.message}`);
+            Object.assign(err, e);
+            this.logError('LayerService.style() - ' + err.message);
             return Q.reject(err);
         });
     }
@@ -84,8 +85,9 @@ class LayerService extends ItemService {
             return this.execute(opts);
         })
         .catch(e => {
-            let err = new Error(`LayerService.describe() - Error describing layer feature: ${e.message}`);
-            this.logError(err);
+            let err = new Error(`Error describing layer feature: ${e.message}`);
+            Object.assign(err, e);
+            this.logError('LayerService.describe() - ' + err.message);
             return Q.reject(err);
         });
     }
@@ -112,8 +114,9 @@ class LayerService extends ItemService {
             return this.execute(opts);
         })
         .catch(e => {
-            let err = new Error(`LayerService.describe() - Error validating layer request: ${e.message}`);
-            this.logError(err);
+            let err = new Error(`Error validating layer request: ${e.message}`);
+            Object.assign(err, e);
+            this.logError('LayerService.describe() - ' + err.message);
             return Q.reject(err);
         });
     }

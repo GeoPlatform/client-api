@@ -181,6 +181,7 @@ class AgolService {
         })
         .catch(e => {
             let err = new Error(`AgolService.getOrg() - Error fetching org ${id}: ${e.message}`);
+            Object.assign(err, e);
             return Q.reject(err);
         });
     }
@@ -207,6 +208,7 @@ class AgolService {
         })
         .catch(e => {
             let err = new Error(`AgolService.searchOrgs() - Error searching orgs: ${e.message}`);
+            Object.assign(err, e);
             return Q.reject(err);
         });
     }
@@ -234,6 +236,7 @@ class AgolService {
         })
         .catch(e => {
             let err = new Error(`AgolService.getGroup() - Error fetching group ${id}: ${e.message}`);
+            Object.assign(err, e);
             return Q.reject(err);
         });
     }
@@ -261,6 +264,7 @@ class AgolService {
         })
         .catch(e => {
             let err = new Error(`AgolService.searchGroups() - Error searching groups: ${e.message}`);
+            Object.assign(err, e);
             return Q.reject(err);
         });
     }
@@ -287,6 +291,7 @@ class AgolService {
         })
         .catch(e => {
             let err = new Error(`AgolService.getItem() - Error fetching item ${id}: ${e.message}`);
+            Object.assign(err, e);
             return Q.reject(err);
         });
     }
@@ -314,6 +319,7 @@ class AgolService {
         })
         .catch(e => {
             let err = new Error(`AgolService.searchItems() - Error searching items: ${e.message}`);
+            Object.assign(err, e);
             return Q.reject(err);
         });
     }

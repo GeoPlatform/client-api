@@ -372,6 +372,37 @@ class ItemService {
     }
 
 
+    like(item, options) {
+        return Q.resolve(item.id)
+        .then( id => {
+            let method = 'PUT', url = this.apiBase + '/api/items/' + id + '/likes';
+            let opts = this.buildRequest({method:method, url:url, options:options});
+            return this.execute(opts);
+        })
+        .catch(e => {
+            let err = new Error(`Error liking item ${item.id}: ${e.message}`);
+            Object.assign(err, e);
+            this.logError('ItemService.like() - ' + err.message);
+            return Q.reject(err);
+        });
+    }
+
+    view(item, options) {
+        return Q.resolve(item.id)
+        .then( id => {
+            let method = 'PUT', url = this.apiBase + '/api/items/' + id + '/views';
+            let opts = this.buildRequest({method:method, url:url, options:options});
+            return this.execute(opts);
+        })
+        .catch(e => {
+            let err = new Error(`Error incrementing views for item ${item.id}: ${e.message}`);
+            Object.assign(err, e);
+            this.logError('ItemService.like() - ' + err.message);
+            return Q.reject(err);
+        });
+    }
+
+
 
 
     /* ----------------------------------------------------------- */

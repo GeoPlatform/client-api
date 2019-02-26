@@ -980,6 +980,40 @@
                   return Q.reject(err);
               });
           }
+      }, {
+          key: 'like',
+          value: function like(item, options) {
+              var _this11 = this;
+
+              return Q.resolve(item.id).then(function (id) {
+                  var method = 'PUT',
+                      url = _this11.apiBase + '/api/items/' + id + '/likes';
+                  var opts = _this11.buildRequest({ method: method, url: url, options: options });
+                  return _this11.execute(opts);
+              }).catch(function (e) {
+                  var err = new Error('Error liking item ' + item.id + ': ' + e.message);
+                  Object.assign(err, e);
+                  _this11.logError('ItemService.like() - ' + err.message);
+                  return Q.reject(err);
+              });
+          }
+      }, {
+          key: 'view',
+          value: function view(item, options) {
+              var _this12 = this;
+
+              return Q.resolve(item.id).then(function (id) {
+                  var method = 'PUT',
+                      url = _this12.apiBase + '/api/items/' + id + '/views';
+                  var opts = _this12.buildRequest({ method: method, url: url, options: options });
+                  return _this12.execute(opts);
+              }).catch(function (e) {
+                  var err = new Error('Error incrementing views for item ' + item.id + ': ' + e.message);
+                  Object.assign(err, e);
+                  _this12.logError('ItemService.like() - ' + err.message);
+                  return Q.reject(err);
+              });
+          }
 
           /* ----------------------------------------------------------- */
 

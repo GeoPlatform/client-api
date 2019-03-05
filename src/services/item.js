@@ -90,11 +90,14 @@ class ItemService {
      */
     get (id, options) {
 
-        return Q.resolve( id )
-        .then( id => {
-            let opts = this.buildRequest({
-                method:"GET", url:this.baseUrl + '/' + id, options:options
-            });
+        let url = this.baseUrl + '/' + id;
+        if(options && options.version) {
+            url += '/versions/' + options.version;
+            // this.logDebug("Client.get requesting version: " + options.version);
+        }
+        return Q.resolve( url )
+        .then( url => {
+            let opts = this.buildRequest({ method:"GET", url:url, options:options });
             return this.execute(opts);
         })
         .catch(e => {
@@ -402,6 +405,27 @@ class ItemService {
         });
     }
 
+
+    /**
+     * @param {string} id - identifier of item to fetch version info for
+     * @param {Object} options - optional set of request options to apply to xhr request
+     * @return {Promise} resolving array of available versions of the item
+     */
+    versions (id, options) {
+
+        return Q.resolve( id )
+        .then( id => {
+            let url = this.baseUrl + '/' + id + '/versions';
+            let opts = this.buildRequest({ method:"GET", url:url, options:options });
+            return this.execute(opts);
+        })
+        .catch(e => {
+            let err = new Error(`Error fetching versions for item ${id}: ${e.message}`);
+            Object.assign(err, e);
+            this.logError('ItemService.versions() - ' + err.message);
+            return Q.reject(err);
+        });
+    }
 
 
 

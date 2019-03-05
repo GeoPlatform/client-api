@@ -95,7 +95,24 @@ const Routes = [
             let input = req.body.url || req.files.file;
             return svc.import(input, req.query.format);
         }
+    },
+    {
+        key: 'versions',
+        method: 'get',
+        path: 'items/:id/versions',
+        auth: false,
+        execFn: function(svc, req) { return svc.versions(req.params.id); }
+    },
+    {
+        key: 'getVersion',
+        method: 'get',
+        path: 'items/:id/versions/:version',
+        auth: false,
+        execFn: function(svc, req) {
+            return svc.get(req.params.id, { version: req.params.version });
+        }
     }
+
     // TODO findMultiple
 ];
 
@@ -103,78 +120,10 @@ const Routes = [
  *
  */
 function bindRoutes(router, options) {
-
     //bind common endpoints
     options.pathBaseDefault = "items";
     options.serviceClass = ItemService;
     ServiceProxy.bindRoutes(router, Routes, options);
-
-
-    // let paths = options.paths || {};
-
-
-    //then bind those specific to this service
-
-    // if(paths.uri !== false) {
-    //     router.post('/' + ( paths.uri|| DEFAULT_PATHS.uri ), (req, res, next) => {
-    //         ServiceProxy.getService(req, false, options)
-    //         .getUri(req.body)
-    //         .then( response => res.json({uri: response}) )
-    //         .catch( (err) => {
-    //             if(options.onError)
-    //                 options.onError('uri', err);
-    //             next(err);
-    //         })
-    //         .finally( () => {
-    //             if(options.onFinish)
-    //                 options.onFinish('uri', req, res);
-    //         });
-    //     });
-    // }
-
-    // if(paths.exists !== false) {
-    //     router.post('/' + ( paths.exists || DEFAULT_PATHS.exists ), (req, res, next) => {
-    //         ServiceProxy.getService(req, false, options)
-    //         .getUri(req.body)
-    //         .then( uri => {
-    //             let fields = ['serviceType','services','scheme','themes','publishers','keywords'];
-    //             let query = new Query().uri(uri).fields(fields);
-    //             return svc.search(query);
-    //         })
-    //         .then( response => res.json(response) )
-    //         .catch( (err) => {
-    //             if(options.onError)
-    //                 options.onError('exists', err);
-    //             next(err);
-    //         })
-    //         .finally( () => {
-    //             if(options.onFinish)
-    //                 options.onFinish('exists', req, res);
-    //         });
-    //     });
-    // }
-
-    // if(paths.import !== false) {
-    //     router.post('/' + ( paths.import || DEFAULT_PATHS.import ), (req, res, next) => {
-    //         let input = req.body.url || req.files.file;
-    //         ServiceProxy.getService(req, false, options)
-    //         .import(input, req.body.format)
-    //         .then( item => { res.json(item) })
-    //         .catch( (err) => {
-    //             if(options.onError)
-    //                 options.onError('import', err);
-    //             next(err);
-    //         })
-    //         .finally( () => {
-    //             if(options.onFinish)
-    //                 options.onFinish('import', req, res);
-    //         });
-    //     });
-    // }
-
-    //TODO findMultiple
-
-
 }
 
 

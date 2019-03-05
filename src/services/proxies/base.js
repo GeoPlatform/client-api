@@ -27,7 +27,11 @@ const ServiceProxy = {
             // let path = '/' + ( paths[route.key] || route.pathFn(pathBase) );
             let path = '/' + ( paths[route.key] || route.path );
 
+            // console.log(`Binding Service Route [${route.method}] ${path}`)
             router[route.method]( path, (req, res, next) => {
+                // console.log(`Executing Service Route [${route.method}] ${path}`)
+                // console.log(JSON.stringify(req.params));
+                // console.log(" ");
                 let svc = this.getService(req, route.auth, options);
                 let promise = route.execFn(svc, req)
                 promise.then( result => {

@@ -861,6 +861,10 @@
                       ro.formData = false; //must be false for data to not be multi-part formdata
                       ro.data = { url: arg, format: format };
                   }
+                  if (options && options.overwrite) {
+                      ro.data.overwrite = !!options.overwrite;
+                      delete options.overwrite;
+                  }
                   var opts = _this6.buildRequest(ro);
                   return _this6.execute(opts);
               }).catch(function (e) {

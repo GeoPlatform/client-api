@@ -158,6 +158,7 @@ Fetch item with specified identifier
 | Parameter | required   | description |
 |:------    |:---------- |:----------- |
 | id   | true | identifier of GeoPlatform Item to fetch |
+| options | false | optional settings to use in fetching |
 
 ```javascript
 itemSvc.get(itemId)
@@ -166,6 +167,18 @@ itemSvc.get(itemId)
 });
 .catch(e=>{...});
 ```
+
+#### Get a Specific Version of an Item
+To request a specific version, specify the version using the `options.version` parameter.
+
+```javascript
+itemSvc.get( itemId, { version: 3 } )
+.then( item => {
+    console.log(JSON.stringify(item));
+});
+.catch(e=>{...});
+```
+
 
 ### Get Multiple By Id
 Fetch one or more items using an array of identifiers.
@@ -255,10 +268,11 @@ Similarly, the `UtilsService.parseFile()` method can only upload files when usin
 |:------    |:---------- |:----------- |
 | arg   | true | URL to metadata file or uploaded metadata File |
 | format | true | string id of incoming metadata format |
+| options.overwrite | false | if True, update existing object. Otherwise, reject on existing object |
 
 ```javascript
 let metadataUrl = "http://www.url.to/metadata/about/item";
-itemSvc.import(metadataUrl, 'iso19139')
+itemSvc.import(metadataUrl, 'iso19139', { overwrite: true } )
 .then( item => {
     console.log(item.id);
 });
@@ -308,6 +322,21 @@ let item = {
 itemSvc.getUri(item)
 .then( uri => {
     console.log(uri);
+});
+.catch(e=>{...});
+```
+
+### List Versions
+List available historical versions of an Item
+
+| Parameter | required   | description |
+|:------    |:---------- |:----------- |
+| id   | true | identifier of GeoPlatform Item to fetch versions for |
+
+```javascript
+itemSvc.getVersions(itemId)
+.then( versions => {
+    versions.forEach(version => { console.log(JSON.stringify(version)); });
 });
 .catch(e=>{...});
 ```

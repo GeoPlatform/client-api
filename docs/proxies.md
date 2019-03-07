@@ -43,6 +43,8 @@ Using defaults, these endpoints would be:
 |patch(id,changes)|PATCH|api/items/:id|
 |import(arg,format)|POST|api/items/import?url=:argformat=:format|
 |export(id,format)|GET|api/items:id/export?format=:format|
+|versions(id)|GET|api/items/:id/versions|
+|get(id, {version:_version_})|GET|api/items/:id/versions/:version|
 
 
 ## Available Service Proxies

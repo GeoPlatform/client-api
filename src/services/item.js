@@ -253,7 +253,7 @@ class ItemService {
                 ro.data = { url: arg, format: format };
             }
             if(options && options.overwrite) {
-                ro.data.overwrite = !!options.overwrite;
+                ro.data.overwrite = (!!options.overwrite)+'';
                 delete options.overwrite;
             }
             let opts = this.buildRequest(ro);

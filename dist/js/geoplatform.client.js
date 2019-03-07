@@ -862,7 +862,7 @@
                       ro.data = { url: arg, format: format };
                   }
                   if (options && options.overwrite) {
-                      ro.data.overwrite = !!options.overwrite;
+                      ro.data.overwrite = !!options.overwrite + '';
                       delete options.overwrite;
                   }
                   var opts = _this6.buildRequest(ro);

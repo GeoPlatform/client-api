@@ -411,6 +411,32 @@ class ItemService {
 
 
     /**
+     * @param {string} id - identifier of item to fetch associations for
+     * @param {Object} options - optional set of request options to apply to xhr request
+     * @return {Promise} resolving array of associated items of the item in question
+     */
+    associations (id, params, options) {
+
+        return Q.resolve( id )
+        .then( id => {
+            let url = this.baseUrl + '/' + id + '/associations';
+            let opts = this.buildRequest({
+                method:"GET",
+                url:url,
+                params: params || {},
+                options: options
+            });
+            return this.execute(opts);
+        })
+        .catch(e => {
+            let err = new Error(`Error fetching associations for item ${id}: ${e.message}`);
+            Object.assign(err, e);
+            this.logError('ItemService.associations() - ' + err.message);
+            return Q.reject(err);
+        });
+    }
+
+    /**
      * @param {string} id - identifier of item to fetch version info for
      * @param {Object} options - optional set of request options to apply to xhr request
      * @return {Promise} resolving array of available versions of the item

@@ -1023,6 +1023,34 @@
           }
 
           /**
+           * @param {string} id - identifier of item to fetch associations for
+           * @param {Object} options - optional set of request options to apply to xhr request
+           * @return {Promise} resolving array of associated items of the item in question
+           */
+
+      }, {
+          key: 'associations',
+          value: function associations(id, params, options) {
+              var _this13 = this;
+
+              return Q.resolve(id).then(function (id) {
+                  var url = _this13.baseUrl + '/' + id + '/associations';
+                  var opts = _this13.buildRequest({
+                      method: "GET",
+                      url: url,
+                      params: params || {},
+                      options: options
+                  });
+                  return _this13.execute(opts);
+              }).catch(function (e) {
+                  var err = new Error('Error fetching associations for item ' + id + ': ' + e.message);
+                  Object.assign(err, e);
+                  _this13.logError('ItemService.associations() - ' + err.message);
+                  return Q.reject(err);
+              });
+          }
+
+          /**
            * @param {string} id - identifier of item to fetch version info for
            * @param {Object} options - optional set of request options to apply to xhr request
            * @return {Promise} resolving array of available versions of the item
@@ -1031,16 +1059,16 @@
       }, {
           key: 'versions',
           value: function versions(id, options) {
-              var _this13 = this;
+              var _this14 = this;
 
               return Q.resolve(id).then(function (id) {
-                  var url = _this13.baseUrl + '/' + id + '/versions';
-                  var opts = _this13.buildRequest({ method: "GET", url: url, options: options });
-                  return _this13.execute(opts);
+                  var url = _this14.baseUrl + '/' + id + '/versions';
+                  var opts = _this14.buildRequest({ method: "GET", url: url, options: options });
+                  return _this14.execute(opts);
               }).catch(function (e) {
                   var err = new Error('Error fetching versions for item ' + id + ': ' + e.message);
                   Object.assign(err, e);
-                  _this13.logError('ItemService.versions() - ' + err.message);
+                  _this14.logError('ItemService.versions() - ' + err.message);
                   return Q.reject(err);
               });
           }
@@ -3575,6 +3603,14 @@
       execFn: function execFn(svc, req) {
           var input = req.body.url || req.files.file;
           return svc.import(input, req.query.format);
+      }
+  }, {
+      key: 'associations',
+      method: 'get',
+      path: 'items/:id/associations',
+      auth: false,
+      execFn: function execFn(svc, req) {
+          return svc.associations(req.params.id, req.query);
       }
   }, {
       key: 'versions',

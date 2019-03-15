@@ -97,6 +97,13 @@ const Routes = [
         }
     },
     {
+        key: 'associations',
+        method: 'get',
+        path: 'items/:id/associations',
+        auth: false,
+        execFn: function(svc, req) { return svc.associations(req.params.id, req.query); }
+    },
+    {
         key: 'versions',
         method: 'get',
         path: 'items/:id/versions',

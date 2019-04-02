@@ -584,7 +584,8 @@
       CONTACT: "vcard:VCard",
       CONCEPT: "skos:Concept",
       CONCEPT_SCHEME: "skos:ConceptScheme",
-      STANDARD: 'dct:Standard'
+      STANDARD: 'dct:Standard',
+      RIGHTS_STATEMENT: 'dct:RightsStatement'
   };
 
   /**
@@ -4836,6 +4837,10 @@
       ORGANIZATION: 'Organization',
       CONCEPT: 'Concept',
       CONCEPT_SCHEME: 'Concept Scheme',
+      APPLICATION: 'Application',
+      TOPIC: 'Topic',
+      WEBSITE: 'WebSite',
+      RIGHTS_STATEMENT: 'RightsStatement',
       KNOWLEDGE_GRAPH: 'Knowledge Graph',
       USER: 'User',
       COMMUNITY_POST: 'Community Post', //post within a community portal

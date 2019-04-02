@@ -14,5 +14,6 @@ export default {
     CONTACT         : "vcard:VCard",
     CONCEPT         : "skos:Concept",
     CONCEPT_SCHEME  : "skos:ConceptScheme",
-    STANDARD        : 'dct:Standard'
+    STANDARD        : 'dct:Standard',
+    RIGHTS_STATEMENT: 'dct:RightsStatement'
 };

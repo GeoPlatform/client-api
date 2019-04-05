@@ -4960,7 +4960,7 @@
           } else if (ItemTypes.LAYER === item.type) {
               result.push(new Event(Categories.LAYER, eventType, item));
               if (Events.DISPLAYED === eventType && item.services && item.services.length) {
-                  result.push(new Event(Categories.SERVICE, eventType, item.services[0]));
+                  result.push(new Event(Categories.SERVICE, Events.ACCESSED, item.services[0]));
               }
           } else {
               var category = getCategory(item.type);

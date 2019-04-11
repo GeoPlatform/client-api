@@ -217,7 +217,7 @@ class TrackingService {
      */
     logEvent( event ) {
         if(!this.provider || !this.provider.logEvent || !event) return;
-        setTimeout( () => { this._doLogEvent(event) });
+        setTimeout( () => { this._doLogEvent(event); });
     }
 
     _doLogEvent( event ) {

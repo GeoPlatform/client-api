@@ -4854,7 +4854,9 @@
       VIEWED: 'Viewed', //related item was viewed in general form (metadata)
       CREATED: 'Created',
       EDITED: 'Edited',
-      DELETED: 'Deleted'
+      DELETED: 'Deleted',
+      ADDED: 'Added', //item was added to another (ie, layer on map)
+      REMOVED: 'Removed' //item was removed from another (ie, item from gallery)
   };
 
   function getCategory(type) {
@@ -5077,10 +5079,18 @@
               var _this = this;
 
               if (!this.provider || !this.provider.logEvent || !event) return;
+              setTimeout(function () {
+                  _this._doLogEvent(event);
+              });
+          }
+      }, {
+          key: '_doLogEvent',
+          value: function _doLogEvent(event) {
+              var _this2 = this;
 
               if (typeof event.push !== 'undefined') {
                   event.forEach(function (evt) {
-                      return _this.logEvent(evt);
+                      return _this2._doLogEvent(evt);
                   });
               } else {
                   try {
@@ -5115,9 +5125,6 @@
           key: 'logPageView',
           value: function logPageView(view, data) {
               this.logEvent(new Event(Categories.APP_PAGE, Events.VIEWED, view));
-              // if(this.provider && this.provider.logPageView) {
-              //     this.provider.logPageView(view, data);
-              // }
           }
 
           /**
@@ -5128,7 +5135,15 @@
       }, {
           key: 'logSearch',
           value: function logSearch(params, resultCount) {
-              this.provider.logSearch(params, resultCount);
+              var _this3 = this;
+
+              setTimeout(function () {
+                  try {
+                      _this3.provider.logSearch(params, resultCount);
+                  } catch (e) {
+                      console.log("TrackingService.logSearch - error logging search event: " + e.message);
+                  }
+              });
           }
       }]);
       return TrackingService;

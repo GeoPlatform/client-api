@@ -32,7 +32,9 @@ const Events = {
     VIEWED:     'Viewed',    //related item was viewed in general form (metadata)
     CREATED:    'Created',
     EDITED:     'Edited',
-    DELETED:    'Deleted'
+    DELETED:    'Deleted',
+    ADDED:      'Added',    //item was added to another (ie, layer on map)
+    REMOVED:    'Removed'   //item was removed from another (ie, item from gallery)
 };
 
 
@@ -215,9 +217,12 @@ class TrackingService {
      */
     logEvent( event ) {
         if(!this.provider || !this.provider.logEvent || !event) return;
+        setTimeout( () => { this._doLogEvent(event) });
+    }
 
+    _doLogEvent( event ) {
         if(typeof(event.push) !== 'undefined') {
-            event.forEach( evt => this.logEvent(evt) );
+            event.forEach( evt => this._doLogEvent(evt) );
 
         } else {
             try {
@@ -256,9 +261,6 @@ class TrackingService {
      */
     logPageView( view, data ) {
         this.logEvent( new Event(Categories.APP_PAGE, Events.VIEWED, view) );
-        // if(this.provider && this.provider.logPageView) {
-        //     this.provider.logPageView(view, data);
-        // }
     }
 
     /**
@@ -266,7 +268,13 @@ class TrackingService {
      * @param {integer} resultCount
      */
     logSearch (params, resultCount) {
-        this.provider.logSearch(params, resultCount);
+        setTimeout( () => {
+            try {
+                this.provider.logSearch(params, resultCount);
+            } catch(e) {
+                console.log("TrackingService.logSearch - error logging search event: " + e.message);
+            }
+        });
     }
 
 }

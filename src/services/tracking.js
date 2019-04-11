@@ -141,9 +141,9 @@ class DefaultTrackingServiceProvider {
     logEvent( category, event, item, related ) {
         console.log( "EVENT (" + category + ") - " + event + " : " + item);
     }
-    // logPageView( view, data ) {
-    //     console.log("PAGEVIEW " + view + (data ? " : " + JSON.stringify(data) : '') );
-    // }
+    logPageView( view, data ) {
+        console.log("PAGEVIEW " + view + (data ? " : " + JSON.stringify(data) : '') );
+    }
     logSearch(params, resultCount) {
         console.log( "Query : " + JSON.stringify(params) + " found " + resultCount+ " matches");
     }
@@ -260,7 +260,13 @@ class TrackingService {
      * @deprecated use svc.logEvent( new Event(EventCategories.APP_PAGE, EventTypes.VIEWED, pageId) )
      */
     logPageView( view, data ) {
-        this.logEvent( new Event(Categories.APP_PAGE, Events.VIEWED, view) );
+        setTimeout( () => {
+            try {
+                this.provider.logPageView(view);
+            } catch(e) {
+                console.log("TrackingService.logPageView - error logging event: " + e.message);
+            }
+        });
     }
 
     /**

@@ -4991,10 +4991,11 @@
           value: function logEvent(category, event, item, related) {
               console.log("EVENT (" + category + ") - " + event + " : " + item);
           }
-          // logPageView( view, data ) {
-          //     console.log("PAGEVIEW " + view + (data ? " : " + JSON.stringify(data) : '') );
-          // }
-
+      }, {
+          key: 'logPageView',
+          value: function logPageView(view, data) {
+              console.log("PAGEVIEW " + view + (data ? " : " + JSON.stringify(data) : ''));
+          }
       }, {
           key: 'logSearch',
           value: function logSearch(params, resultCount) {
@@ -5124,7 +5125,15 @@
       }, {
           key: 'logPageView',
           value: function logPageView(view, data) {
-              this.logEvent(new Event(Categories.APP_PAGE, Events.VIEWED, view));
+              var _this3 = this;
+
+              setTimeout(function () {
+                  try {
+                      _this3.provider.logPageView(view);
+                  } catch (e) {
+                      console.log("TrackingService.logPageView - error logging event: " + e.message);
+                  }
+              });
           }
 
           /**
@@ -5135,11 +5144,11 @@
       }, {
           key: 'logSearch',
           value: function logSearch(params, resultCount) {
-              var _this3 = this;
+              var _this4 = this;
 
               setTimeout(function () {
                   try {
-                      _this3.provider.logSearch(params, resultCount);
+                      _this4.provider.logSearch(params, resultCount);
                   } catch (e) {
                       console.log("TrackingService.logSearch - error logging search event: " + e.message);
                   }

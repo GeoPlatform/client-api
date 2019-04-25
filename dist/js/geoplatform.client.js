@@ -1342,6 +1342,9 @@
       THEMES_ID: 'theme.id',
       THEMES_LABEL: 'theme.label',
       THEMES_URI: 'theme.uri',
+      TOPICS_ID: 'topic.id',
+      TOPICS_LABEL: 'topic.label',
+      TOPICS_URI: 'topic.uri',
       TYPES: 'type', //TODO change to 'types'
       URI: 'uri',
       USED_BY_ID: 'usedBy.id',
@@ -1426,6 +1429,7 @@
       TEMPORAL: 'temporal',
       THEMES: 'themes',
       THUMBNAIL: 'thumbnail',
+      TOPICS: 'topics',
       USED_BY: 'usedBy',
       VISIBILITY: 'visibility',
       LANDING_PAGE: 'landingPage'
@@ -1452,6 +1456,7 @@
       SPEED: 'speed',
       STATUS: 'status',
       THEMES: 'themes',
+      TOPICS: 'topics',
       TYPES: 'type', //TODO change to 'types'
       USED_BY: 'usedBy',
       VIEWS: 'views',
@@ -1469,6 +1474,7 @@
   var FacetToParam = {};
   FacetToParam[Facets.TYPES] = QueryParameters.TYPES;
   FacetToParam[Facets.THEMES] = QueryParameters.THEMES_ID;
+  FacetToParam[Facets.TOPICS] = QueryParameters.TOPICS_ID;
   FacetToParam[Facets.PUBLISHERS] = QueryParameters.PUBLISHERS_ID;
   FacetToParam[Facets.CONTACTS] = QueryParameters.CONTACTS_ID;
   FacetToParam[Facets.CONCEPT_SCHEMES] = QueryParameters.SCHEMES_ID;
@@ -1817,6 +1823,54 @@
           key: 'getThemes',
           value: function getThemes() {
               return this.getParameter(QueryParameters.THEMES_ID) || this.getParameter(QueryParameters.THEMES_LABEL) || this.getParameter(QueryParameters.THEMES_URI);
+          }
+
+          // -----------------------------------------------------------
+
+
+          /**
+           * Specify a Topic or set of Topics to constrain results. By
+           * default, values are assumed to be theme identifiers. If using
+           * theme labels or theme uris, specify the optional second parameter
+           * to be either Parameters.TOPIC_LABEL or Parameters.TOPIC_URI
+           * respectively.
+           * @param {array[string]} topics - string or array of strings containing theme constraint
+           * @param {string} parameter - optional, to indicate the parameter to use
+           * @return {Query}
+           */
+
+      }, {
+          key: 'topics',
+          value: function topics(_topics, parameter) {
+              this.setTopics(_topics, parameter);
+              return this;
+          }
+
+          /**
+           * Specify a Topic or set of Topics to constrain results. By
+           * default, values are assumed to be theme identifiers. If using
+           * theme labels or theme uris, specify the optional second parameter
+           * to be either Parameters.TOPIC_LABEL or Parameters.TOPIC_URI
+           * respectively.
+           * @param {array[string]} topics - theme or topics to constrain by
+           */
+
+      }, {
+          key: 'setTopics',
+          value: function setTopics(topics, parameter) {
+
+              //clear existing
+              this.setParameter(QueryParameters.TOPIC_ID, null);
+              this.setParameter(QueryParameters.TOPIC_LABEL, null);
+              this.setParameter(QueryParameters.TOPIC_URI, null);
+
+              var param = parameter || QueryParameters.TOPIC_ID;
+              this.setParameter(param, toArray$1(topics));
+          }
+      }, {
+          key: 'getTopics',
+          value: function getTopics() {
+              return this.getParameter(QueryParameters.TOPIC_ID) || this.getParameter(QueryParameters.TOPIC_LABEL) || this.getParameter(QueryParameters.TOPIC_URI);
           }
 
           // -----------------------------------------------------------

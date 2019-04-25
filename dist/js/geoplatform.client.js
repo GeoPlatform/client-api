@@ -1860,17 +1860,17 @@
           value: function setTopics(topics, parameter) {
 
               //clear existing
-              this.setParameter(QueryParameters.TOPIC_ID, null);
-              this.setParameter(QueryParameters.TOPIC_LABEL, null);
-              this.setParameter(QueryParameters.TOPIC_URI, null);
+              this.setParameter(QueryParameters.TOPICS_ID, null);
+              this.setParameter(QueryParameters.TOPICS_LABEL, null);
+              this.setParameter(QueryParameters.TOPICS_URI, null);
 
-              var param = parameter || QueryParameters.TOPIC_ID;
+              var param = parameter || QueryParameters.TOPICS_ID;
               this.setParameter(param, toArray$1(topics));
           }
       }, {
           key: 'getTopics',
           value: function getTopics() {
-              return this.getParameter(QueryParameters.TOPIC_ID) || this.getParameter(QueryParameters.TOPIC_LABEL) || this.getParameter(QueryParameters.TOPIC_URI);
+              return this.getParameter(QueryParameters.TOPICS_ID) || this.getParameter(QueryParameters.TOPICS_LABEL) || this.getParameter(QueryParameters.TOPICS_URI);
           }
 
           // -----------------------------------------------------------

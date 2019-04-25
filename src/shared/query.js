@@ -427,18 +427,18 @@ class Query {
     setTopics (topics, parameter) {
 
         //clear existing
-        this.setParameter(Parameters.TOPIC_ID, null);
-        this.setParameter(Parameters.TOPIC_LABEL, null);
-        this.setParameter(Parameters.TOPIC_URI, null);
+        this.setParameter(Parameters.TOPICS_ID, null);
+        this.setParameter(Parameters.TOPICS_LABEL, null);
+        this.setParameter(Parameters.TOPICS_URI, null);
 
-        let param = parameter || Parameters.TOPIC_ID;
+        let param = parameter || Parameters.TOPICS_ID;
         this.setParameter(param, toArray(topics));
     }
 
     getTopics () {
-        return this.getParameter(Parameters.TOPIC_ID) ||
-            this.getParameter(Parameters.TOPIC_LABEL) ||
-            this.getParameter(Parameters.TOPIC_URI);
+        return this.getParameter(Parameters.TOPICS_ID) ||
+            this.getParameter(Parameters.TOPICS_LABEL) ||
+            this.getParameter(Parameters.TOPICS_URI);
     }
 
 

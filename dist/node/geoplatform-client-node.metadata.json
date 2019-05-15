@@ -1,0 +1,1 @@
+{"__symbolic":"module","version":4,"metadata":{},"origins":{"NodeHttpClient":"./index","ItemServiceProxy":"./index","ServiceServiceProxy":"./index","LayerServiceProxy":"./index","DatasetServiceProxy":"./index","MapServiceProxy":"./index","GalleryServiceProxy":"./index","UtilsServiceProxy":"./index","AgolServiceProxy":"./index"},"importAs":"@geoplatform/client/node"}

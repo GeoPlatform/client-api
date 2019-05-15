@@ -1,0 +1,15 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+      "paths": {
+          "@geoplatform/client": "../dist",
+          "@geoplatform/angular": "../dist/angular"
+      }
+  },
+  "include": [
+    "src/**/*",
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}

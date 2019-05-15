@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html ng-app="ngTest">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <base href="/">
+    <title>AngularJS Example</title>
+</head>
+<body>
+
+    <search-results></search-results>
+
+    <script src="node_modules/q/q.js"></script>
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.5/angular.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+    <script src="../../dist/bundles/geoplatform-client.umd.js"></script>
+    <script src="../../dist/bundles/geoplatform-client-angularjs.umd.js"></script>
+
+    <script>
+
+    const APIClient = geoplatform.client;
+    const ItemService = APIClient.ItemService;
+    const NGHttpClient = APIClient.angularjs.NGHttpClient;
+
+    angular.module('ngTest', [])
+    .config(function myAppConfig ($httpProvider) {
+        $httpProvider.defaults.withCredentials = true;
+    })
+    .component('searchResults', {
+        template: `
+            <ul>
+                <li ng-repeat="result in $ctrl.results track by $index">
+                    [{{result.type}}] {{result.label}}
+                </li>
+            </ul>
+        `,
+        controller: function($http, $timeout) {
+            this.$onInit = function() {
+                new ItemService("https://ual.geoplatform.gov",
+                    new NGHttpClient({$http: $http})
+                ).search().then( response => {
+                    $timeout( () => {
+                        this.results = response.results;
+                    });
+                });
+            };
+        }
+    });
+
+    </script>
+
+</body>
+</html>

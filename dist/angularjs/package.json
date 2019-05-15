@@ -1,0 +1,23 @@
+{
+  "module": "../fesm5/geoplatform-client-angularjs.js",
+  "typings": "geoplatform-client-angularjs.d.ts",
+  "peerDependencies": {
+    "angular": "^1.6.0"
+  },
+  "devDependencies": {
+    "angular": "^1.6.0",
+    "q": "1.5.1",
+    "ts-node": "~4.1.0",
+    "tslint": "~5.9.1",
+    "typescript": "^2.9.2"
+  },
+  "main": "../bundles/geoplatform-client-angularjs.umd.js",
+  "es2015": "../fesm2015/geoplatform-client-angularjs.js",
+  "esm5": "../esm5/angularjs/geoplatform-client-angularjs.js",
+  "esm2015": "../esm2015/angularjs/geoplatform-client-angularjs.js",
+  "fesm5": "../fesm5/geoplatform-client-angularjs.js",
+  "fesm2015": "../fesm2015/geoplatform-client-angularjs.js",
+  "metadata": "geoplatform-client-angularjs.metadata.json",
+  "sideEffects": false,
+  "name": "@geoplatform/client/angularjs"
+}

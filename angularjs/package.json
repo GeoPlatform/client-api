@@ -1,0 +1,32 @@
+{
+    "module": "dist/esm2015/angularjs/index.js",
+    "typings": "dist/angularjs/index.d.ts",
+    "ngPackage": {
+        "lib": {
+            "entryFile": "src/index.ts",
+            "externals": [
+                "q",
+                "angular"
+            ],
+            "umdModuleIds": {
+                "q" : "Q",
+                "angular": "angular"
+            },
+            "globals": {
+                "q" : "Q",
+                "angular": "angular"
+            }
+        },
+        "dest": "../dist/angularjs"
+    },
+    "peerDependencies": {
+        "angular": "^1.6.0"
+    },
+    "devDependencies": {
+        "angular": "^1.6.0",
+        "q": "1.5.1",
+        "ts-node": "~4.1.0",
+        "tslint": "~5.9.1",
+        "typescript": "^2.9.2"
+    }
+}

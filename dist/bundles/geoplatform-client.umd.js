@@ -1,0 +1,5543 @@
+/*
+This software has been approved for release by the U.S. Department of the Interior. Although the software has been subjected to rigorous review, the DOI reserves the right to update the software as needed pursuant to further analysis and review. No warranty, expressed or implied, is made by the DOI or the U.S. Government as to the functionality of the software and related material nor shall the fact of release constitute any such warranty. Furthermore, the software is released on condition that neither the DOI nor the U.S. Government shall be held liable for any damages resulting from its authorized or unauthorized use.
+*/
+(function (global, factory) {
+    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('axios'), require('q')) :
+    typeof define === 'function' && define.amd ? define('@geoplatform/client', ['exports', 'axios', 'q'], factory) :
+    (factory((global.geoplatform = global.geoplatform || {}, global.geoplatform.client = {}),global.axios,global.Q));
+}(this, (function (exports,axios,Q) { 'use strict';
+
+    axios = axios && axios.hasOwnProperty('default') ? axios['default'] : axios;
+
+    /**
+     * @fileoverview added by tsickle
+     * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
+     */
+    /**
+     * @return {?}
+     */
+    function apply() {
+        if (typeof Object.assign != 'function') {
+            // Must be writable: true, enumerable: false, configurable: true
+            Object.defineProperty(Object, "assign", {
+                value: function assign(target, varArgs) {
+                    // .length of function is 2
+                    if (target == null) { // TypeError if undefined or null
+                        // TypeError if undefined or null
+                        throw new TypeError('Cannot convert undefined or null to object');
+                    }
+                    /** @type {?} */
+                    var to = Object(target);
+                    for (var index = 1; index < arguments.length; index++) {
+                        /** @type {?} */
+                        var nextSource = arguments[index];
+                        if (nextSource != null) { // Skip over if undefined or null
+                            // Skip over if undefined or null
+                            for (var nextKey in nextSource) {
+                                // Avoid bugs when hasOwnProperty is shadowed
+                                if (Object.prototype.hasOwnProperty.call(nextSource, nextKey)) {
+                                    to[nextKey] = nextSource[nextKey];
+                                }
+                            }
+                        }
+                    }
+                    return to;
+                },
+                writable: true,
+                configurable: true
+            });
+        }
+    }
+    /**
+     * @return {?}
+     */
+    function Polyfills () {
+        apply();
+    }
+
+    /*! *****************************************************************************
+    Copyright (c) Microsoft Corporation. All rights reserved.
+    Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+    this file except in compliance with the License. You may obtain a copy of the
+    License at http://www.apache.org/licenses/LICENSE-2.0
+
+    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+    KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION ANY IMPLIED
+    WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A PARTICULAR PURPOSE,
+    MERCHANTABLITY OR NON-INFRINGEMENT.
+
+    See the Apache Version 2.0 License for specific language governing permissions
+    and limitations under the License.
+    ***************************************************************************** */
+    /* global Reflect, Promise */
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b)
+                if (b.hasOwnProperty(p))
+                    d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    function __extends(d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    }
+
+    /**
+     * @fileoverview added by tsickle
+     * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
+     */
+    var GPError = /** @class */ (function (_super) {
+        __extends(GPError, _super);
+        function GPError(message) {
+            var _this = _super.call(this, message) || this;
+            _this.status = 500;
+            _this.statusCode = 500;
+            _this.error = null;
+            return _this;
+        }
+        /**
+         * @param {?} value
+         * @return {?}
+         */
+        GPError.prototype.setError = /**
+         * @param {?} value
+         * @return {?}
+         */
+            function (value) { this.error = value; };
+        /**
+         * @param {?} value
+         * @return {?}
+         */
+        GPError.prototype.setStatus = /**
+         * @param {?} value
+         * @return {?}
+         */
+            function (value) { this.status = this.statusCode = value; };
+        return GPError;
+    }(Error));
+
+    /**
+     * @fileoverview added by tsickle
+     * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
+     */
+    var ItemTypes = {
+        DATASET: "dcat:Dataset",
+        SERVICE: "regp:Service",
+        LAYER: "Layer",
+        MAP: "Map",
+        GALLERY: "Gallery",
+        COMMUNITY: 'Community',
+        APPLICATION: 'Application',
+        TOPIC: 'Topic',
+        WEBSITE: 'WebSite',
+        ORGANIZATION: "org:Organization",
+        CONTACT: "vcard:VCard",
+        CONCEPT: "skos:Concept",
+        CONCEPT_SCHEME: "skos:ConceptScheme",
+        STANDARD: 'dct:Standard',
+        RIGHTS_STATEMENT: 'dct:RightsStatement'
+    };
+
+    /**
+     * @fileoverview added by tsickle
+     * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
+     */
+    var Parameters = {
+        ALTERNATE_TITLE: 'alternateTitles',
+        BEGINS: 'startDate.min',
+        CREATED: 'created',
+        CREATED_BEFORE: 'created.max',
+        CREATED_AFTER: 'created.min',
+        CREATED_BY: 'createdBy',
+        CREATOR: 'creator.id',
+        CONTRIBUTED_BY: 'contributedBy',
+        ENDS: 'endDate.max',
+        EXTENT: 'extent',
+        IDENTIFIERS: 'identifiers',
+        KEYWORDS: 'keywords',
+        LAST_MODIFIED_BY: 'lastModifiedBy',
+        MODIFIED: 'modified',
+        MODIFIED_BEFORE: 'modified.max',
+        MODIFIED_AFTER: 'modified.min',
+        PUBLISHERS_ID: 'publisher.id',
+        PUBLISHERS_LABEL: 'publisher.label',
+        PUBLISHERS_URI: 'publisher.uri',
+        CONTACTS_ID: 'contacts.id',
+        CONTACTS_LABEL: 'contacts.label',
+        CONTACTS_URI: 'contacts.uri',
+        QUERY: 'q',
+        SCHEMES_ID: 'scheme.id',
+        SCHEMES_LABEL: 'scheme.label',
+        SCHEMES_URI: 'scheme.uri',
+        SIMILAR_TO: 'similarTo',
+        STATUS: 'status',
+        SERVICE_TYPES: 'serviceType.id',
+        THEMES_ID: 'theme.id',
+        THEMES_LABEL: 'theme.label',
+        THEMES_URI: 'theme.uri',
+        TYPES: 'type',
+        URI: 'uri',
+        USED_BY_ID: 'usedBy.id',
+        USED_BY_LABEL: 'usedBy.label',
+        USED_BY_URI: 'usedBy.uri',
+        VISIBILITY: 'visibility',
+        RESOURCE_TYPE: 'resourceType',
+        DATASET: 'dataset',
+        LANDING_PAGE: 'landingPage',
+        PURPOSE: 'purpose',
+        //statistics parameters
+        RELIABILITY: 'reliability',
+        RELIABILITY_MIN: 'reliability.min',
+        RELIABILITY_MAX: 'reliability.max',
+        ONLINE: 'online',
+        COMPLIANT: 'compliant',
+        SPEED: 'speed',
+        SPEED_MIN: 'speed.min',
+        SPEED_MAX: 'speed.max',
+        LIKES: 'likes',
+        LIKES_MIN: 'likes.min',
+        LIKES_MAX: 'likes.max',
+        VIEWS: 'views',
+        VIEWS_MIN: 'views.min',
+        VIEWS_MAX: 'views.max',
+        //type-specific parameters
+        HREF: 'href',
+        LAYER_TYPE: 'layerType',
+        LAYER_NAME: 'layerName',
+        PARENT_LAYER: 'parentLayer',
+        SUB_LAYER: 'subLayer',
+        SERVICE: 'service',
+        MAP_LAYER: 'mapLayer',
+        GALLERY_ITEM: 'galleryItem',
+        //meta-parameters
+        FACETS: 'includeFacets',
+        FIELDS: 'fields',
+        SORT: 'sort',
+        PAGE: 'page',
+        PAGE_SIZE: 'size',
+        //recommender service-specific
+        FOR_TYPES: 'for'
+    };
+
+    /**
+     * @fileoverview added by tsickle
+     * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
+     */
+    /** @type {?} */
+    var SORT_OPTIONS_DEFAULT = [
+        { value: "label,asc", label: "Name (A-Z)" },
+        { value: "label,desc", label: "Name (Z-A)" },
+        { value: "type,asc", label: "Type (A-Z)" },
+        { value: "type,desc", label: "Type (Z-A)" },
+        { value: "modified,desc", label: "Most recently modified" },
+        { value: "modified,asc", label: "Least recently modified" },
+        { value: "_score,desc", label: "Relevance" }
+    ];
+    var KGQuery = /** @class */ (function () {
+        function KGQuery() {
+            this.defaultQuery = {
+                page: 0,
+                size: 10,
+                sort: "modified,desc"
+            };
+            this.query = {
+                page: 0,
+                size: 10,
+                sort: "modified,desc"
+            };
+        }
+        /**
+         * @return {?}
+         */
+        KGQuery.prototype.getQuery = /**
+         * @return {?}
+         */
+            function () {
+                /** @type {?} */
+                var result = {};
+                for (var prop in this.query) {
+                    /** @type {?} */
+                    var value = this.query[prop];
+                    if (value !== null && typeof (value.push) !== 'undefined') {
+                        value = value.join(',');
+                    }
+                    result[prop] = value;
+                }
+                return result;
+            };
+        // -----------------------------------------------------------
+        /**
+         * @param {?} name
+         * @param {?} value
+         * @return {?}
+         */
+        KGQuery.prototype.parameter = /**
+         * @param {?} name
+         * @param {?} value
+         * @return {?}
+         */
+            function (name, value) {
+                this.setParameter(name, value);
+                return this;
+            };
+        /**
+         * @param {?} name
+         * @param {?} value
+         * @return {?}
+         */
+        KGQuery.prototype.setParameter = /**
+         * @param {?} name
+         * @param {?} value
+         * @return {?}
+         */
+            function (name, value) {
+                if (value === null || value === undefined)
+                    delete this.query[name];
+                else
+                    this.query[name] = value;
+            };
+        /**
+         * @param {?} key
+         * @return {?}
+         */
+        KGQuery.prototype.getParameter = /**
+         * @param {?} key
+         * @return {?}
+         */
+            function (key) {
+                return this.query[key];
+            };
+        /**
+         * @param {?} obj
+         * @return {?}
+         */
+        KGQuery.prototype.applyParameters = /**
+         * @param {?} obj
+         * @return {?}
+         */
+            function (obj) {
+                for (var p in obj) {
+                    if (obj.hasOwnProperty(p)) {
+                        this.setParameter(p, obj[p]);
+                    }
+                }
+            };
+        // -----------------------------------------------------------
+        /**
+         * @param {?} text
+         * @return {?}
+         */
+        KGQuery.prototype.q = /**
+         * @param {?} text
+         * @return {?}
+         */
+            function (text) {
+                this.setQ(text);
+                return this;
+            };
+        /**
+         * @param text - free text query
+         */
+        /**
+         * @param {?} text - free text query
+         * @return {?}
+         */
+        KGQuery.prototype.setQ = /**
+         * @param {?} text - free text query
+         * @return {?}
+         */
+            function (text) {
+                this.setParameter(Parameters.QUERY, text);
+            };
+        /**
+         * @return {?}
+         */
+        KGQuery.prototype.getQ = /**
+         * @return {?}
+         */
+            function () {
+                return this.getParameter(Parameters.QUERY);
+            };
+        // -----------------------------------------------------------
+        /**
+         * @param types - KG classifiers for which concepts should be returned
+         */
+        /**
+         * @param {?} types - KG classifiers for which concepts should be returned
+         * @return {?}
+         */
+        KGQuery.prototype.classifiers = /**
+         * @param {?} types - KG classifiers for which concepts should be returned
+         * @return {?}
+         */
+            function (types) {
+                this.setClassifiers(types);
+                return this;
+            };
+        /**
+         * @param types - KG classifiers for which concepts should be returned
+         */
+        /**
+         * @param {?} types - KG classifiers for which concepts should be returned
+         * @return {?}
+         */
+        KGQuery.prototype.setClassifiers = /**
+         * @param {?} types - KG classifiers for which concepts should be returned
+         * @return {?}
+         */
+            function (types) {
+                if (!types)
+                    return;
+                if (typeof (types) === 'string')
+                    types = types = [types];
+                this.setParameter(Parameters.TYPES, types);
+            };
+        /**
+         * @return KG classifiers for which concepts should be returned
+         */
+        /**
+         * @return {?} KG classifiers for which concepts should be returned
+         */
+        KGQuery.prototype.getClassifiers = /**
+         * @return {?} KG classifiers for which concepts should be returned
+         */
+            function () {
+                return this.getParameter(Parameters.TYPES);
+            };
+        // -----------------------------------------------------------
+        /**
+         * Specify the Item object model type name(s) for which
+         * recommended concepts should be returned. Note: this
+         * query parameter is not the same as the GeoPlatform.Query.types()
+         * query parameter (they map to different HTTP request parameters).
+         * @param objTypes - Item object type names
+         */
+        /**
+         * Specify the Item object model type name(s) for which
+         * recommended concepts should be returned. Note: this
+         * query parameter is not the same as the GeoPlatform.Query.types()
+         * query parameter (they map to different HTTP request parameters).
+         * @param {?} objTypes - Item object type names
+         * @return {?}
+         */
+        KGQuery.prototype.types = /**
+         * Specify the Item object model type name(s) for which
+         * recommended concepts should be returned. Note: this
+         * query parameter is not the same as the GeoPlatform.Query.types()
+         * query parameter (they map to different HTTP request parameters).
+         * @param {?} objTypes - Item object type names
+         * @return {?}
+         */
+            function (objTypes) {
+                this.setTypes(objTypes);
+                return this;
+            };
+        /**
+         * Specify the Item object model type name(s) for which
+         * recommended concepts should be returned. Note: this
+         * query parameter is not the same as the GeoPlatform.Query.setTypes()
+         * query parameter (they map to different HTTP request parameters).
+         * @param objTypes - Item object type names
+         */
+        /**
+         * Specify the Item object model type name(s) for which
+         * recommended concepts should be returned. Note: this
+         * query parameter is not the same as the GeoPlatform.Query.setTypes()
+         * query parameter (they map to different HTTP request parameters).
+         * @param {?} objTypes - Item object type names
+         * @return {?}
+         */
+        KGQuery.prototype.setTypes = /**
+         * Specify the Item object model type name(s) for which
+         * recommended concepts should be returned. Note: this
+         * query parameter is not the same as the GeoPlatform.Query.setTypes()
+         * query parameter (they map to different HTTP request parameters).
+         * @param {?} objTypes - Item object type names
+         * @return {?}
+         */
+            function (objTypes) {
+                if (!objTypes)
+                    return;
+                if (typeof (objTypes) === 'string')
+                    objTypes = [objTypes];
+                this.setParameter(Parameters.FOR_TYPES, objTypes);
+            };
+        /**
+         * Get the Item object model type name(s) for which
+         * recommended concepts should be returned. Note: this
+         * query parameter is not the same as the GeoPlatform.Query.getTypes()
+         * query parameter (they map to different HTTP request parameters).
+         * @return Item object type names
+         */
+        /**
+         * Get the Item object model type name(s) for which
+         * recommended concepts should be returned. Note: this
+         * query parameter is not the same as the GeoPlatform.Query.getTypes()
+         * query parameter (they map to different HTTP request parameters).
+         * @return {?} Item object type names
+         */
+        KGQuery.prototype.getTypes = /**
+         * Get the Item object model type name(s) for which
+         * recommended concepts should be returned. Note: this
+         * query parameter is not the same as the GeoPlatform.Query.getTypes()
+         * query parameter (they map to different HTTP request parameters).
+         * @return {?} Item object type names
+         */
+            function () {
+                return this.getParameter(Parameters.FOR_TYPES);
+            };
+        // -----------------------------------------------------------
+        /**
+         * @param page - page of results to fetch
+         */
+        /**
+         * @param {?} page - page of results to fetch
+         * @return {?}
+         */
+        KGQuery.prototype.page = /**
+         * @param {?} page - page of results to fetch
+         * @return {?}
+         */
+            function (page) {
+                this.setPage(page);
+                return this;
+            };
+        /**
+         * @param {?} page
+         * @return {?}
+         */
+        KGQuery.prototype.setPage = /**
+         * @param {?} page
+         * @return {?}
+         */
+            function (page) {
+                if (isNaN(page) || page * 1 < 0)
+                    return;
+                this.query["page"] = page * 1;
+            };
+        /**
+         * @return {?}
+         */
+        KGQuery.prototype.getPage = /**
+         * @return {?}
+         */
+            function () {
+                return this.query["page"];
+            };
+        /**
+         * @return {?}
+         */
+        KGQuery.prototype.nextPage = /**
+         * @return {?}
+         */
+            function () {
+                this.setPage(this.query["page"] + 1);
+            };
+        /**
+         * @return {?}
+         */
+        KGQuery.prototype.previousPage = /**
+         * @return {?}
+         */
+            function () {
+                this.setPage(this.query["page"] - 1);
+            };
+        // -----------------------------------------------------------
+        /**
+         * @param size - page size to request
+         */
+        /**
+         * @param {?} size - page size to request
+         * @return {?}
+         */
+        KGQuery.prototype.pageSize = /**
+         * @param {?} size - page size to request
+         * @return {?}
+         */
+            function (size) {
+                this.setPageSize(size);
+                return this;
+            };
+        /**
+         * @param {?} size
+         * @return {?}
+         */
+        KGQuery.prototype.setPageSize = /**
+         * @param {?} size
+         * @return {?}
+         */
+            function (size) {
+                if (isNaN(size) || size * 1 < 0)
+                    return;
+                this.query["size"] = size * 1;
+            };
+        /**
+         * @return {?}
+         */
+        KGQuery.prototype.getPageSize = /**
+         * @return {?}
+         */
+            function () {
+                return this.query["size"];
+            };
+        // -----------------------------------------------------------
+        /**
+         * @param sort - form of <field>,<dir> or just field name
+         * @param order - optional, either 'asc' or 'desc'
+         */
+        /**
+         * @param {?} sort - form of <field>,<dir> or just field name
+         * @param {?=} order - optional, either 'asc' or 'desc'
+         * @return {?}
+         */
+        KGQuery.prototype.sort = /**
+         * @param {?} sort - form of <field>,<dir> or just field name
+         * @param {?=} order - optional, either 'asc' or 'desc'
+         * @return {?}
+         */
+            function (sort, order) {
+                this.setSort(sort, order);
+                return this;
+            };
+        /**
+         * @param sort - form of <field>,<dir> or just field name
+         * @param order - optional, either 'asc' or 'desc'
+         */
+        /**
+         * @param {?} sort - form of <field>,<dir> or just field name
+         * @param {?=} order - optional, either 'asc' or 'desc'
+         * @return {?}
+         */
+        KGQuery.prototype.setSort = /**
+         * @param {?} sort - form of <field>,<dir> or just field name
+         * @param {?=} order - optional, either 'asc' or 'desc'
+         * @return {?}
+         */
+            function (sort, order) {
+                order = order || 'desc';
+                if (sort && sort.indexOf(',') < 0)
+                    sort = sort + ',' + order;
+                this.query["sort"] = sort;
+            };
+        /**
+         * @return {?}
+         */
+        KGQuery.prototype.getSort = /**
+         * @return {?}
+         */
+            function () {
+                return this.query["sort"];
+            };
+        /**
+         * @return {?}
+         */
+        KGQuery.prototype.getSortField = /**
+         * @return {?}
+         */
+            function () {
+                return this.query["sort"].split(',')[0];
+            };
+        /**
+         * @return {?}
+         */
+        KGQuery.prototype.getSortOrder = /**
+         * @return {?}
+         */
+            function () {
+                return this.query["sort"].split(',')[1] === 'asc';
+            };
+        /**
+         * @return list of key-value pairs of sort options
+         */
+        /**
+         * @return {?} list of key-value pairs of sort options
+         */
+        KGQuery.prototype.getSortOptions = /**
+         * @return {?} list of key-value pairs of sort options
+         */
+            function () {
+                return SORT_OPTIONS_DEFAULT.slice(0);
+            };
+        // -----------------------------------------------------------
+        /**
+         *
+         */
+        /**
+         *
+         * @return {?}
+         */
+        KGQuery.prototype.clear = /**
+         *
+         * @return {?}
+         */
+            function () {
+                this.query = this.defaultQuery;
+            };
+        return KGQuery;
+    }());
+
+    /**
+     * @fileoverview added by tsickle
+     * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
+     */
+    var classifiers = {
+        PURPOSE: 'purpose',
+        FUNCTION: 'function',
+        TOPIC_PRIMARY: 'primaryTopic',
+        TOPIC_SECONDARY: 'secondaryTopic',
+        SUBJECT_PRIMARY: 'primarySubject',
+        SUBJECT_SECONDARY: 'secondarySubject',
+        COMMUNITY: 'community',
+        AUDIENCE: 'audience',
+        PLACE: 'place',
+        CATEGORY: 'category'
+    };
+
+    /**
+     * @fileoverview added by tsickle
+     * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
+     */
+    /** @type {?} */
+    var Fields = {
+        ACCESS_RIGHTS: 'rights',
+        ALTERNATE_TITLES: 'alternateTitles',
+        ANNOTATIONS: 'annotations',
+        CLASSIFIERS: 'classifiers',
+        CONCEPT_SCHEME: 'scheme',
+        CONTACTS: 'contacts',
+        CREATED: 'created',
+        CREATED_BY: 'createdBy',
+        DATASETS: 'datasets',
+        DESCRIPTION: 'description',
+        DISTRIBUTIONS: 'distributions',
+        EXTENT: 'extent',
+        GALLERY_ITEMS: 'items',
+        HREF: 'href',
+        IDENTIFIERS: 'identifiers',
+        KEYWORDS: 'keywords',
+        LABEL: 'label',
+        LAST_MODIFIED_BY: 'lastModifiedBy',
+        LAYERS: 'layers',
+        LAYER_TYPE: 'layerType',
+        LAYER_NAME: 'layerName',
+        LEGEND: 'legend',
+        MODIFIED: 'modified',
+        PARENT_LAYER: 'parentLayer',
+        PUBLISHERS: 'publishers',
+        RESOURCE_TYPES: 'resourceTypes',
+        SERVICE_TYPE: 'serviceType',
+        SERVICES: 'services',
+        SPATIAL: 'spatial',
+        STATISTICS: 'statistics',
+        STATUS: 'status',
+        SUB_LAYERS: 'subLayers',
+        TEMPORAL: 'temporal',
+        THEMES: 'themes',
+        THUMBNAIL: 'thumbnail',
+        USED_BY: 'usedBy',
+        VISIBILITY: 'visibility',
+        LANDING_PAGE: 'landingPage'
+    };
+    /** @type {?} */
+    var FIELDS_DEFAULT = [
+        Fields["CREATED"],
+        Fields["MODIFIED"],
+        Fields["CREATED_BY"],
+        Fields["PUBLISHERS"],
+        Fields["THEMES"],
+        Fields["DESCRIPTION"]
+    ];
+    /** @type {?} */
+    var Facets = {
+        ALTERNATE_TITLES: 'alternateTitles',
+        CONCEPT_SCHEMES: 'schemes',
+        CREATED_BY: 'createdBy',
+        HREF: 'href',
+        IDENTIFIERS: "identifiers",
+        LAYER_TYPE: 'layerType',
+        LAYER_NAME: 'layerName',
+        LIKES: 'likes',
+        ONLINE: 'online',
+        PUBLISHERS: 'publishers',
+        CONTACTS: 'contacts',
+        RELIABILITY: 'reliability',
+        SERVICE_TYPES: 'serviceTypes',
+        SPEED: 'speed',
+        STATUS: 'status',
+        THEMES: 'themes',
+        TYPES: 'type',
+        //TODO change to 'types'
+        USED_BY: 'usedBy',
+        VIEWS: 'views',
+        VISIBILITY: 'visibility'
+    };
+    /** @type {?} */
+    var FACETS_DEFAULT = [
+        Facets["TYPES"],
+        Facets["PUBLISHERS"],
+        Facets["SERVICE_TYPES"],
+        Facets["CONCEPT_SCHEMES"],
+        Facets["VISIBILITY"],
+        Facets["CREATED_BY"]
+    ];
+    /** @type {?} */
+    var FacetToParam = {};
+    FacetToParam[Facets["TYPES"]] = Parameters.TYPES;
+    FacetToParam[Facets["THEMES"]] = Parameters.THEMES_ID;
+    FacetToParam[Facets["PUBLISHERS"]] = Parameters.PUBLISHERS_ID;
+    FacetToParam[Facets["CONTACTS"]] = Parameters.CONTACTS_ID;
+    FacetToParam[Facets["CONCEPT_SCHEMES"]] = Parameters.SCHEMES_ID;
+    FacetToParam[Facets["USED_BY"]] = Parameters.USED_BY_ID;
+    /** @type {?} */
+    var SORT_OPTIONS_DEFAULT$1 = [
+        { value: "label,asc", label: "Name (A-Z)" },
+        { value: "label,desc", label: "Name (Z-A)" },
+        { value: "type,asc", label: "Type (A-Z)" },
+        { value: "type,desc", label: "Type (Z-A)" },
+        { value: "modified,desc", label: "Most recently modified" },
+        { value: "modified,asc", label: "Least recently modified" },
+        { value: "_score,desc", label: "Relevance" }
+    ];
+    /** @type {?} */
+    var BBOX_REGEX = /^\-?\d+(\.\d*)?,\-?\d+(\.\d*)?,\-?\d+(\.\d*)?,\-?\d+(\.\d*)?$/;
+    /**
+     * @param {?} value
+     * @return {?}
+     */
+    function toArray(value) {
+        /** @type {?} */
+        var result = value;
+        //if given a non-array value, wrap in array
+        if (result !== null && typeof (result.push) === 'undefined')
+            result = [result];
+        //if array value is empty, nullify the result
+        if (result !== null && !result.length)
+            result = null;
+        return result;
+    }
+    /**
+     * Query
+     *
+     * Specify the "default" query constraints to use by passing in 'options.defaults = {...}';
+     *
+     */
+    var /**
+     * Query
+     *
+     * Specify the "default" query constraints to use by passing in 'options.defaults = {...}';
+     *
+     */ Query = /** @class */ (function () {
+        /**
+         * @param options - set of initial constraints
+         */
+        function Query(options) {
+            this.defaultQuery = {};
+            this.defaultQuery[Parameters.PAGE.toString()] = 0;
+            this.defaultQuery[Parameters.PAGE_SIZE.toString()] = 10;
+            this.defaultQuery[Parameters.SORT.toString()] = "modified,desc";
+            this.defaultQuery[Parameters.FIELDS.toString()] = FIELDS_DEFAULT.slice(0);
+            this.defaultQuery[Parameters.FACETS.toString()] = FACETS_DEFAULT.slice(0);
+            if (options && options["defaults"]) {
+                Object.assign(this.defaultQuery, options["defaults"]);
+                delete options["defaults"];
+            }
+            this.query = JSON.parse(JSON.stringify(this.defaultQuery));
+            if (options) {
+                this.applyParameters(options);
+            }
+        }
+        /**
+         * @return containing request-ready parameters/values
+         */
+        /**
+         * @return {?} containing request-ready parameters/values
+         */
+        Query.prototype.getQuery = /**
+         * @return {?} containing request-ready parameters/values
+         */
+            function () {
+                /** @type {?} */
+                var result = {};
+                for (var prop in this.query) {
+                    /** @type {?} */
+                    var value = this.query[prop];
+                    if (value !== null && typeof (value.push) !== 'undefined') {
+                        value = value.join(',');
+                    }
+                    result[prop] = value;
+                }
+                return result;
+            };
+        /**
+         * @return Query
+         */
+        /**
+         * @return {?} Query
+         */
+        Query.prototype.clone = /**
+         * @return {?} Query
+         */
+            function () {
+                /** @type {?} */
+                var result = new Query();
+                /** @type {?} */
+                var json = JSON.parse(JSON.stringify(this.query));
+                result.applyParameters(json);
+                return result;
+            };
+        // -----------------------------------------------------------
+        /**
+         * @param name
+         * @param value
+         * @return Query this
+         */
+        /**
+         * @param {?} name
+         * @param {?} value
+         * @return {?} Query this
+         */
+        Query.prototype.parameter = /**
+         * @param {?} name
+         * @param {?} value
+         * @return {?} Query this
+         */
+            function (name, value) {
+                this.setParameter(name, value);
+                return this;
+            };
+        /**
+         * @param name
+         * @param value
+         */
+        /**
+         * @param {?} name
+         * @param {?} value
+         * @return {?}
+         */
+        Query.prototype.setParameter = /**
+         * @param {?} name
+         * @param {?} value
+         * @return {?}
+         */
+            function (name, value) {
+                if (value === null || value === undefined || //if no value was provide
+                    //if no value was provide
+                    (typeof (value.push) !== 'undefined' && !value.length)) //or empty array
+                    //or empty array
+                    delete this.query[name];
+                else
+                    this.query[name] = value;
+            };
+        /**
+         * @param key - name of parameter
+         * @return value of parameter
+         */
+        /**
+         * @param {?} key - name of parameter
+         * @return {?} value of parameter
+         */
+        Query.prototype.getParameter = /**
+         * @param {?} key - name of parameter
+         * @return {?} value of parameter
+         */
+            function (key) {
+                return this.query[key];
+            };
+        /**
+         * @param obj - set of parameter/values to apply to this query
+         */
+        /**
+         * @param {?} obj - set of parameter/values to apply to this query
+         * @return {?}
+         */
+        Query.prototype.applyParameters = /**
+         * @param {?} obj - set of parameter/values to apply to this query
+         * @return {?}
+         */
+            function (obj) {
+                for (var p in obj) {
+                    if (obj.hasOwnProperty(p)) {
+                        this.setParameter(/** @type {?} */ (p), /** @type {?} */ (obj[p]));
+                    }
+                }
+            };
+        /**
+         * @param facet - name of facet to set the value for as a parameter
+         * @param value - value of the facet to use as the parameter's value
+         */
+        //TODO remove this function
+        /**
+         * @param {?} facet - name of facet to set the value for as a parameter
+         * @param {?} value - value of the facet to use as the parameter's value
+         * @return {?}
+         */
+        Query.prototype.setFacetParameter = /**
+         * @param {?} facet - name of facet to set the value for as a parameter
+         * @param {?} value - value of the facet to use as the parameter's value
+         * @return {?}
+         */
+            function (facet, value) {
+                /** @type {?} */
+                var param = FacetToParam[facet];
+                if (!param) {
+                    console.log("WARN : Query.applyFacetParameter() - " +
+                        "unable to map facet to known parameter '" + facet + "', using " +
+                        "as direct parameter which may not operate as intended");
+                }
+                this.setParameter(param || facet, value);
+            };
+        // -----------------------------------------------------------
+        /**
+         * @param text
+         * @return Query this
+         */
+        /**
+         * @param {?} text
+         * @return {?} Query this
+         */
+        Query.prototype.q = /**
+         * @param {?} text
+         * @return {?} Query this
+         */
+            function (text) { this.setQ(text); return this; };
+        /** @param text - free text query */
+        /**
+         * @param {?} text - free text query
+         * @return {?}
+         */
+        Query.prototype.setQ = /**
+         * @param {?} text - free text query
+         * @return {?}
+         */
+            function (text) { this.setParameter(Parameters.QUERY, text); };
+        /** @return */
+        /**
+         * @return {?}
+         */
+        Query.prototype.getQ = /**
+         * @return {?}
+         */
+            function () { return /** @type {?} */ (this.getParameter(Parameters.QUERY)); };
+        // -----------------------------------------------------------
+        /**
+         * @param {?} text
+         * @return {?}
+         */
+        Query.prototype.keywords = /**
+         * @param {?} text
+         * @return {?}
+         */
+            function (text) {
+                this.setKeywords(text);
+                return this;
+            };
+        /**
+         * @param text - free text query
+         */
+        /**
+         * @param {?} text - free text query
+         * @return {?}
+         */
+        Query.prototype.setKeywords = /**
+         * @param {?} text - free text query
+         * @return {?}
+         */
+            function (text) {
+                this.setParameter(Parameters.KEYWORDS, toArray(text));
+            };
+        /**
+         * @return {?}
+         */
+        Query.prototype.getKeywords = /**
+         * @return {?}
+         */
+            function () {
+                return this.getParameter(Parameters.KEYWORDS);
+            };
+        // -----------------------------------------------------------
+        /**
+         * @param {?} uri
+         * @return {?}
+         */
+        Query.prototype.uri = /**
+         * @param {?} uri
+         * @return {?}
+         */
+            function (uri) {
+                this.setUri(uri);
+                return this;
+            };
+        /**
+         * @param {?} uri
+         * @return {?}
+         */
+        Query.prototype.setUri = /**
+         * @param {?} uri
+         * @return {?}
+         */
+            function (uri) {
+                this.setParameter(Parameters.URI, uri);
+            };
+        /**
+         * @return {?}
+         */
+        Query.prototype.getUri = /**
+         * @return {?}
+         */
+            function () {
+                return this.getParameter(Parameters.URI);
+            };
+        // -----------------------------------------------------------
+        /**
+         * @param {?} types
+         * @return {?}
+         */
+        Query.prototype.types = /**
+         * @param {?} types
+         * @return {?}
+         */
+            function (types) {
+                this.setTypes(types);
+                return this;
+            };
+        /**
+         * @param types - name of class(es) to request
+         */
+        /**
+         * @param {?} types - name of class(es) to request
+         * @return {?}
+         */
+        Query.prototype.setTypes = /**
+         * @param {?} types - name of class(es) to request
+         * @return {?}
+         */
+            function (types) {
+                this.setParameter(Parameters.TYPES, toArray(types));
+            };
+        /**
+         * @return {?}
+         */
+        Query.prototype.getTypes = /**
+         * @return {?}
+         */
+            function () {
+                return this.getParameter(Parameters.TYPES);
+            };
+        // -----------------------------------------------------------
+        /**
+         * @param {?} user
+         * @return {?}
+         */
+        Query.prototype.createdBy = /**
+         * @param {?} user
+         * @return {?}
+         */
+            function (user) {
+                this.setCreatedBy(user);
+                return this;
+            };
+        /** @param user - username */
+        /**
+         * @param {?} user - username
+         * @return {?}
+         */
+        Query.prototype.setCreatedBy = /**
+         * @param {?} user - username
+         * @return {?}
+         */
+            function (user) {
+                this.setParameter(Parameters.CREATED_BY, user);
+            };
+        /** @return username */
+        /**
+         * @return {?} username
+         */
+        Query.prototype.getCreatedBy = /**
+         * @return {?} username
+         */
+            function () {
+                return this.getParameter(Parameters.CREATED_BY);
+            };
+        // -----------------------------------------------------------
+        /**
+         * @param {?} user
+         * @return {?}
+         */
+        Query.prototype.lastModifiedBy = /**
+         * @param {?} user
+         * @return {?}
+         */
+            function (user) {
+                this.setLastModifiedBy(user);
+                return this;
+            };
+        /** @param user - username */
+        /**
+         * @param {?} user - username
+         * @return {?}
+         */
+        Query.prototype.setLastModifiedBy = /**
+         * @param {?} user - username
+         * @return {?}
+         */
+            function (user) {
+                this.setParameter(Parameters.LAST_MODIFIED_BY, user);
+            };
+        /** @return username */
+        /**
+         * @return {?} username
+         */
+        Query.prototype.getLastModifiedBy = /**
+         * @return {?} username
+         */
+            function () {
+                return this.getParameter(Parameters.LAST_MODIFIED_BY);
+            };
+        // -----------------------------------------------------------
+        /**
+         * Specify a Theme or set of Themes to constrain results. By
+         * default, values are assumed to be theme identifiers. If using
+         * theme labels or theme uris, specify the optional second parameter
+         * to be either Parameters.THEMES_LABEL or Parameters.THEMES_URI
+         * respectively.
+         * @param themes - string or array of strings containing theme constraint
+         * @param parameter - optional, to indicate the parameter to use
+         * @return Query
+         */
+        /**
+         * Specify a Theme or set of Themes to constrain results. By
+         * default, values are assumed to be theme identifiers. If using
+         * theme labels or theme uris, specify the optional second parameter
+         * to be either Parameters.THEMES_LABEL or Parameters.THEMES_URI
+         * respectively.
+         * @param {?} themes - string or array of strings containing theme constraint
+         * @param {?=} parameter - optional, to indicate the parameter to use
+         * @return {?} Query
+         */
+        Query.prototype.themes = /**
+         * Specify a Theme or set of Themes to constrain results. By
+         * default, values are assumed to be theme identifiers. If using
+         * theme labels or theme uris, specify the optional second parameter
+         * to be either Parameters.THEMES_LABEL or Parameters.THEMES_URI
+         * respectively.
+         * @param {?} themes - string or array of strings containing theme constraint
+         * @param {?=} parameter - optional, to indicate the parameter to use
+         * @return {?} Query
+         */
+            function (themes, parameter) {
+                this.setThemes(themes, parameter);
+                return this;
+            };
+        /**
+         * Specify a Theme or set of Themes to constrain results. By
+         * default, values are assumed to be theme identifiers. If using
+         * theme labels or theme uris, specify the optional second parameter
+         * to be either Parameters.THEMES_LABEL or Parameters.THEMES_URI
+         * respectively.
+         * @param themes - theme or themes to constrain by
+         */
+        /**
+         * Specify a Theme or set of Themes to constrain results. By
+         * default, values are assumed to be theme identifiers. If using
+         * theme labels or theme uris, specify the optional second parameter
+         * to be either Parameters.THEMES_LABEL or Parameters.THEMES_URI
+         * respectively.
+         * @param {?} themes - theme or themes to constrain by
+         * @param {?=} parameter
+         * @return {?}
+         */
+        Query.prototype.setThemes = /**
+         * Specify a Theme or set of Themes to constrain results. By
+         * default, values are assumed to be theme identifiers. If using
+         * theme labels or theme uris, specify the optional second parameter
+         * to be either Parameters.THEMES_LABEL or Parameters.THEMES_URI
+         * respectively.
+         * @param {?} themes - theme or themes to constrain by
+         * @param {?=} parameter
+         * @return {?}
+         */
+            function (themes, parameter) {
+                //clear existing
+                this.setParameter(Parameters.THEMES_ID, null);
+                this.setParameter(Parameters.THEMES_LABEL, null);
+                this.setParameter(Parameters.THEMES_URI, null);
+                /** @type {?} */
+                var param = parameter || Parameters.THEMES_ID;
+                this.setParameter(param, toArray(themes));
+            };
+        /**
+         * @return {?}
+         */
+        Query.prototype.getThemes = /**
+         * @return {?}
+         */
+            function () {
+                return this.getParameter(Parameters.THEMES_ID) ||
+                    this.getParameter(Parameters.THEMES_LABEL) ||
+                    this.getParameter(Parameters.THEMES_URI);
+            };
+        // -----------------------------------------------------------
+        /**
+         * Specify a Publisher or set of Publishers to constrain results. By
+         * default, values are assumed to be identifiers. If using labels or uris,
+         * specify the optional second parameter to be either
+         * Parameters.PUBLISHERS_LABEL or Parameters.PUBLISHERS_URI respectively.
+         * @param parameter - optional, to indicate the parameter to use
+         * @return Query
+         */
+        /**
+         * Specify a Publisher or set of Publishers to constrain results. By
+         * default, values are assumed to be identifiers. If using labels or uris,
+         * specify the optional second parameter to be either
+         * Parameters.PUBLISHERS_LABEL or Parameters.PUBLISHERS_URI respectively.
+         * @param {?} publishers
+         * @param {?=} parameter - optional, to indicate the parameter to use
+         * @return {?} Query
+         */
+        Query.prototype.publishers = /**
+         * Specify a Publisher or set of Publishers to constrain results. By
+         * default, values are assumed to be identifiers. If using labels or uris,
+         * specify the optional second parameter to be either
+         * Parameters.PUBLISHERS_LABEL or Parameters.PUBLISHERS_URI respectively.
+         * @param {?} publishers
+         * @param {?=} parameter - optional, to indicate the parameter to use
+         * @return {?} Query
+         */
+            function (publishers, parameter) {
+                this.setPublishers(publishers, parameter);
+                return this;
+            };
+        /**
+         * Specify a Publisher or set of Publishers to constrain results. By
+         * default, values are assumed to be identifiers. If using labels or uris,
+         * specify the optional second parameter to be either
+         * Parameters.PUBLISHERS_LABEL or Parameters.PUBLISHERS_URI respectively.
+         * @param publishers - publishing orgs to constrain by
+         */
+        /**
+         * Specify a Publisher or set of Publishers to constrain results. By
+         * default, values are assumed to be identifiers. If using labels or uris,
+         * specify the optional second parameter to be either
+         * Parameters.PUBLISHERS_LABEL or Parameters.PUBLISHERS_URI respectively.
+         * @param {?} publishers - publishing orgs to constrain by
+         * @param {?=} parameter
+         * @return {?}
+         */
+        Query.prototype.setPublishers = /**
+         * Specify a Publisher or set of Publishers to constrain results. By
+         * default, values are assumed to be identifiers. If using labels or uris,
+         * specify the optional second parameter to be either
+         * Parameters.PUBLISHERS_LABEL or Parameters.PUBLISHERS_URI respectively.
+         * @param {?} publishers - publishing orgs to constrain by
+         * @param {?=} parameter
+         * @return {?}
+         */
+            function (publishers, parameter) {
+                //clear existing
+                this.setParameter(Parameters.PUBLISHERS_ID, null);
+                this.setParameter(Parameters.PUBLISHERS_LABEL, null);
+                this.setParameter(Parameters.PUBLISHERS_URI, null);
+                /** @type {?} */
+                var param = parameter || Parameters.PUBLISHERS_ID;
+                this.setParameter(param, toArray(publishers));
+            };
+        /**
+         * @return {?}
+         */
+        Query.prototype.getPublishers = /**
+         * @return {?}
+         */
+            function () {
+                return this.getParameter(Parameters.PUBLISHERS_ID) ||
+                    this.getParameter(Parameters.PUBLISHERS_LABEL) ||
+                    this.getParameter(Parameters.PUBLISHERS_URI);
+            };
+        // -----------------------------------------------------------
+        /**
+         * Specify a Point of Contact or set of Contacts to constrain results. By
+         * default, values are assumed to be identifiers. If using
+         * labels or uris, specify the optional second parameter to be either
+         * Parameters.CONTACTS_LABEL or Parameters.CONTACTS_URI respectively.
+         * @param parameter - optional, to indicate the parameter to use
+         * @return Query
+         */
+        /**
+         * Specify a Point of Contact or set of Contacts to constrain results. By
+         * default, values are assumed to be identifiers. If using
+         * labels or uris, specify the optional second parameter to be either
+         * Parameters.CONTACTS_LABEL or Parameters.CONTACTS_URI respectively.
+         * @param {?} contacts
+         * @param {?=} parameter - optional, to indicate the parameter to use
+         * @return {?} Query
+         */
+        Query.prototype.contacts = /**
+         * Specify a Point of Contact or set of Contacts to constrain results. By
+         * default, values are assumed to be identifiers. If using
+         * labels or uris, specify the optional second parameter to be either
+         * Parameters.CONTACTS_LABEL or Parameters.CONTACTS_URI respectively.
+         * @param {?} contacts
+         * @param {?=} parameter - optional, to indicate the parameter to use
+         * @return {?} Query
+         */
+            function (contacts, parameter) {
+                this.setContacts(contacts, parameter);
+                return this;
+            };
+        /**
+         * Specify a Contact or set of Contacts to constrain results. By
+         * default, values are assumed to be identifiers. If using
+         * labels or uris, specify the optional second parameter to be either
+         * Parameters.CONTACTS_LABEL or Parameters.CONTACTS_URI respectively.
+         * @param contacts - publishing orgs to constrain by
+         */
+        /**
+         * Specify a Contact or set of Contacts to constrain results. By
+         * default, values are assumed to be identifiers. If using
+         * labels or uris, specify the optional second parameter to be either
+         * Parameters.CONTACTS_LABEL or Parameters.CONTACTS_URI respectively.
+         * @param {?} contacts - publishing orgs to constrain by
+         * @param {?=} parameter
+         * @return {?}
+         */
+        Query.prototype.setContacts = /**
+         * Specify a Contact or set of Contacts to constrain results. By
+         * default, values are assumed to be identifiers. If using
+         * labels or uris, specify the optional second parameter to be either
+         * Parameters.CONTACTS_LABEL or Parameters.CONTACTS_URI respectively.
+         * @param {?} contacts - publishing orgs to constrain by
+         * @param {?=} parameter
+         * @return {?}
+         */
+            function (contacts, parameter) {
+                //clear existing
+                this.setParameter(Parameters.CONTACTS_ID, null);
+                this.setParameter(Parameters.CONTACTS_LABEL, null);
+                this.setParameter(Parameters.CONTACTS_URI, null);
+                /** @type {?} */
+                var param = parameter || Parameters.CONTACTS_ID;
+                this.setParameter(param, toArray(contacts));
+            };
+        /**
+         * @return {?}
+         */
+        Query.prototype.getContacts = /**
+         * @return {?}
+         */
+            function () {
+                return this.getParameter(Parameters.CONTACTS_ID) ||
+                    this.getParameter(Parameters.CONTACTS_LABEL) ||
+                    this.getParameter(Parameters.CONTACTS_URI);
+            };
+        // -----------------------------------------------------------
+        /**
+         * Specify the identifier of an Agent (Community, Group, etc) that
+         * uses items you wish to find in search results. By
+         * default, values are assumed to be identifiers. If using
+         * labels or uris, specify the optional second parameter
+         * to be either Parameters.USED_BY_LABEL or Parameters.USED_BY_URI
+         * respectively.
+         * @param parameter - optional, to indicate the parameter to use
+         * @return Query
+         */
+        /**
+         * Specify the identifier of an Agent (Community, Group, etc) that
+         * uses items you wish to find in search results. By
+         * default, values are assumed to be identifiers. If using
+         * labels or uris, specify the optional second parameter
+         * to be either Parameters.USED_BY_LABEL or Parameters.USED_BY_URI
+         * respectively.
+         * @param {?} ids
+         * @param {?=} parameter - optional, to indicate the parameter to use
+         * @return {?} Query
+         */
+        Query.prototype.usedBy = /**
+         * Specify the identifier of an Agent (Community, Group, etc) that
+         * uses items you wish to find in search results. By
+         * default, values are assumed to be identifiers. If using
+         * labels or uris, specify the optional second parameter
+         * to be either Parameters.USED_BY_LABEL or Parameters.USED_BY_URI
+         * respectively.
+         * @param {?} ids
+         * @param {?=} parameter - optional, to indicate the parameter to use
+         * @return {?} Query
+         */
+            function (ids, parameter) {
+                this.setUsedBy(ids, parameter);
+                return this;
+            };
+        /**
+         * Specify the identifier of an Agent (Community, Group, etc) that
+         * uses items you wish to find in search results. By
+         * default, values are assumed to be identifiers. If using
+         * labels or uris, specify the optional second parameter
+         * to be either Parameters.USED_BY_LABEL or Parameters.USED_BY_URI
+         * respectively.
+         * @param ids - publishing orgs to constrain by
+         */
+        /**
+         * Specify the identifier of an Agent (Community, Group, etc) that
+         * uses items you wish to find in search results. By
+         * default, values are assumed to be identifiers. If using
+         * labels or uris, specify the optional second parameter
+         * to be either Parameters.USED_BY_LABEL or Parameters.USED_BY_URI
+         * respectively.
+         * @param {?} ids - publishing orgs to constrain by
+         * @param {?=} parameter
+         * @return {?}
+         */
+        Query.prototype.setUsedBy = /**
+         * Specify the identifier of an Agent (Community, Group, etc) that
+         * uses items you wish to find in search results. By
+         * default, values are assumed to be identifiers. If using
+         * labels or uris, specify the optional second parameter
+         * to be either Parameters.USED_BY_LABEL or Parameters.USED_BY_URI
+         * respectively.
+         * @param {?} ids - publishing orgs to constrain by
+         * @param {?=} parameter
+         * @return {?}
+         */
+            function (ids, parameter) {
+                //clear existing
+                this.setParameter(Parameters.USED_BY_ID, null);
+                this.setParameter(Parameters.USED_BY_LABEL, null);
+                this.setParameter(Parameters.USED_BY_URI, null);
+                /** @type {?} */
+                var param = parameter || Parameters.USED_BY_ID;
+                this.setParameter(param, toArray(ids));
+            };
+        /**
+         * @return {?}
+         */
+        Query.prototype.getUsedBy = /**
+         * @return {?}
+         */
+            function () {
+                return this.getParameter(Parameters.USED_BY_ID) ||
+                    this.getParameter(Parameters.USED_BY_LABEL) ||
+                    this.getParameter(Parameters.USED_BY_URI);
+            };
+        // -----------------------------------------------------------
+        /**
+         * Specify a Concept Scheme or set of Concept Schemes to constrain results. By
+         * default, values are assumed to be identifiers. If using
+         * labels or uris, specify the optional second parameter
+         * to be either Parameters.SCHEMES_LABEL or Parameters.SCHEMES_URI
+         * respectively.
+         * @param schemes - schemes to constrain by
+         * @param parameter - optional, to indicate the parameter to use
+         * @return Query
+         */
+        /**
+         * Specify a Concept Scheme or set of Concept Schemes to constrain results. By
+         * default, values are assumed to be identifiers. If using
+         * labels or uris, specify the optional second parameter
+         * to be either Parameters.SCHEMES_LABEL or Parameters.SCHEMES_URI
+         * respectively.
+         * @param {?} schemes - schemes to constrain by
+         * @param {?=} parameter - optional, to indicate the parameter to use
+         * @return {?} Query
+         */
+        Query.prototype.schemes = /**
+         * Specify a Concept Scheme or set of Concept Schemes to constrain results. By
+         * default, values are assumed to be identifiers. If using
+         * labels or uris, specify the optional second parameter
+         * to be either Parameters.SCHEMES_LABEL or Parameters.SCHEMES_URI
+         * respectively.
+         * @param {?} schemes - schemes to constrain by
+         * @param {?=} parameter - optional, to indicate the parameter to use
+         * @return {?} Query
+         */
+            function (schemes, parameter) {
+                this.setSchemes(schemes, parameter);
+                return this;
+            };
+        /**
+         * Specify a Concept Scheme or set of Concept Schemes to constrain results. By
+         * default, values are assumed to be theme identifiers. If using
+         * theme labels or theme uris, specify the optional second parameter
+         * to be either Parameters.SCHEMES_LABEL or Parameters.SCHEMES_URI
+         * respectively.
+         * @param schemes - schemes to constrain by
+         * @param parameter - optional, to indicate the parameter to use
+         */
+        /**
+         * Specify a Concept Scheme or set of Concept Schemes to constrain results. By
+         * default, values are assumed to be theme identifiers. If using
+         * theme labels or theme uris, specify the optional second parameter
+         * to be either Parameters.SCHEMES_LABEL or Parameters.SCHEMES_URI
+         * respectively.
+         * @param {?} schemes - schemes to constrain by
+         * @param {?=} parameter - optional, to indicate the parameter to use
+         * @return {?}
+         */
+        Query.prototype.setSchemes = /**
+         * Specify a Concept Scheme or set of Concept Schemes to constrain results. By
+         * default, values are assumed to be theme identifiers. If using
+         * theme labels or theme uris, specify the optional second parameter
+         * to be either Parameters.SCHEMES_LABEL or Parameters.SCHEMES_URI
+         * respectively.
+         * @param {?} schemes - schemes to constrain by
+         * @param {?=} parameter - optional, to indicate the parameter to use
+         * @return {?}
+         */
+            function (schemes, parameter) {
+                //clear existing
+                this.setParameter(Parameters.SCHEMES_ID, null);
+                this.setParameter(Parameters.SCHEMES_LABEL, null);
+                this.setParameter(Parameters.SCHEMES_URI, null);
+                /** @type {?} */
+                var param = parameter || Parameters.SCHEMES_ID;
+                this.setParameter(param, toArray(schemes));
+            };
+        /**
+         * @return {?}
+         */
+        Query.prototype.getSchemes = /**
+         * @return {?}
+         */
+            function () {
+                return this.getParameter(Parameters.SCHEMES_ID) ||
+                    this.getParameter(Parameters.SCHEMES_LABEL) ||
+                    this.getParameter(Parameters.SCHEMES_URI);
+            };
+        // -----------------------------------------------------------
+        /**
+         *
+         */
+        /**
+         *
+         * @param {?} types
+         * @return {?}
+         */
+        Query.prototype.serviceTypes = /**
+         *
+         * @param {?} types
+         * @return {?}
+         */
+            function (types) {
+                this.setServiceTypes(types);
+                return this;
+            };
+        /**
+         * @param types - ids
+         */
+        /**
+         * @param {?} types - ids
+         * @return {?}
+         */
+        Query.prototype.setServiceTypes = /**
+         * @param {?} types - ids
+         * @return {?}
+         */
+            function (types) {
+                this.setParameter(Parameters.SERVICE_TYPES, toArray(types));
+            };
+        /**
+         * @return {?}
+         */
+        Query.prototype.getServiceTypes = /**
+         * @return {?}
+         */
+            function () {
+                return this.getParameter(Parameters.SERVICE_TYPES);
+            };
+        // -----------------------------------------------------------
+        /**
+         * @param {?} vis
+         * @return {?}
+         */
+        Query.prototype.visibility = /**
+         * @param {?} vis
+         * @return {?}
+         */
+            function (vis) {
+                this.setVisibility(vis);
+                return this;
+            };
+        /**
+         * @param visibility - one of 'public' or 'private'
+         */
+        /**
+         * @param {?} visibility - one of 'public' or 'private'
+         * @return {?}
+         */
+        Query.prototype.setVisibility = /**
+         * @param {?} visibility - one of 'public' or 'private'
+         * @return {?}
+         */
+            function (visibility) {
+                this.setParameter(Parameters.VISIBILITY, visibility);
+            };
+        /**
+         * @return {?}
+         */
+        Query.prototype.getVisibility = /**
+         * @return {?}
+         */
+            function () {
+                return this.getParameter(Parameters.VISIBILITY);
+            };
+        // -----------------------------------------------------------
+        /**
+         * @param {?} value
+         * @return {?}
+         */
+        Query.prototype.status = /**
+         * @param {?} value
+         * @return {?}
+         */
+            function (value) {
+                this.setStatus(value);
+                return this;
+            };
+        /**
+         * @param status - current status of Item
+         */
+        /**
+         * @param {?} value
+         * @return {?}
+         */
+        Query.prototype.setStatus = /**
+         * @param {?} value
+         * @return {?}
+         */
+            function (value) {
+                this.setParameter(Parameters.STATUS, value);
+            };
+        /**
+         * @return {?}
+         */
+        Query.prototype.getStatus = /**
+         * @return {?}
+         */
+            function () {
+                return this.getParameter(Parameters.STATUS);
+            };
+        // -----------------------------------------------------------
+        /**
+         * @param {?} bbox
+         * @return {?}
+         */
+        Query.prototype.extent = /**
+         * @param {?} bbox
+         * @return {?}
+         */
+            function (bbox) {
+                this.setExtent(bbox);
+                return this;
+            };
+        /**
+         * @param bbox - string form of "minx,miny,maxx,maxy", or L.LatLngBounds, or Array
+         */
+        /**
+         * @param {?} bbox - string form of "minx,miny,maxx,maxy", or L.LatLngBounds, or Array
+         * @return {?}
+         */
+        Query.prototype.setExtent = /**
+         * @param {?} bbox - string form of "minx,miny,maxx,maxy", or L.LatLngBounds, or Array
+         * @return {?}
+         */
+            function (bbox) {
+                if (bbox) {
+                    if (typeof (bbox.toBboxString) !== 'undefined') {
+                        //Leaflet Bounds instance
+                        bbox = bbox.toBboxString();
+                    }
+                    else if (typeof (bbox.push) !== 'undefined' && bbox.length &&
+                        //Nested array (alternate Leaflet representation):
+                        // [ [minLat,minLong], [maxLat,maxLong] ]
+                        typeof (bbox[0].push) !== 'undefined') {
+                        bbox = bbox[0][1] + ',' + bbox[0][0] + ',' + bbox[1][1] + ',' + bbox[1][0];
+                    }
+                    else if (typeof (bbox) === 'string') {
+                        if (!BBOX_REGEX.test(bbox)) {
+                            throw new Error("Invalid argument: bbox string must be " +
+                                "in form of 'minx,miny,maxx,maxy'");
+                        }
+                    }
+                    else {
+                        throw new Error("Invalid argument: bbox must be one of " +
+                            "Leaflet.Bounds, nested array, or bbox string");
+                    }
+                }
+                this.setParameter(Parameters.EXTENT, bbox);
+            };
+        /**
+         * @return bbox string or null if not set
+         */
+        /**
+         * @return {?} bbox string or null if not set
+         */
+        Query.prototype.getExtent = /**
+         * @return {?} bbox string or null if not set
+         */
+            function () {
+                return this.getParameter(Parameters.EXTENT);
+            };
+        // -----------------------------------------------------------
+        /**
+         * @param {?} date
+         * @param {?} beforeOrAfter
+         * @return {?}
+         */
+        Query.prototype.modified = /**
+         * @param {?} date
+         * @param {?} beforeOrAfter
+         * @return {?}
+         */
+            function (date, beforeOrAfter) {
+                this.setModified(date, beforeOrAfter);
+                return this;
+            };
+        /**
+         * @param date - date to compare against
+         * @param beforeOrAfter - flag specifying which boundary condition (true = before, false = after) flag specifying whether to trigger update automatically
+         */
+        /**
+         * @param {?} date - date to compare against
+         * @param {?} beforeOrAfter - flag specifying which boundary condition (true = before, false = after) flag specifying whether to trigger update automatically
+         * @return {?}
+         */
+        Query.prototype.setModified = /**
+         * @param {?} date - date to compare against
+         * @param {?} beforeOrAfter - flag specifying which boundary condition (true = before, false = after) flag specifying whether to trigger update automatically
+         * @return {?}
+         */
+            function (date, beforeOrAfter) {
+                //if no date was supplied, consider it "unset" for both properties
+                if (!date) {
+                    this.setParameter(Parameters.MODIFIED_BEFORE, null);
+                    this.setParameter(Parameters.MODIFIED_AFTER, null);
+                    return;
+                }
+                if (!(date instanceof Date))
+                    date = new Date(/** @type {?} */ (date));
+                /** @type {?} */
+                var dir = beforeOrAfter && (beforeOrAfter === true || beforeOrAfter === "true");
+                /** @type {?} */
+                var prop = dir ? Parameters.MODIFIED_BEFORE : Parameters.MODIFIED_AFTER;
+                /** @type {?} */
+                var oppProp = dir ? Parameters.MODIFIED_AFTER : Parameters.MODIFIED_BEFORE;
+                /** @type {?} */
+                var arg = (date && date.getTime) ? date.getTime() : date;
+                this.setParameter(oppProp, null);
+                this.setParameter(prop, arg);
+            };
+        /**
+         * @return {?}
+         */
+        Query.prototype.getModified = /**
+         * @return {?}
+         */
+            function () {
+                /** @type {?} */
+                var value = this.getParameter(Parameters.MODIFIED_BEFORE) ||
+                    this.getParameter(Parameters.MODIFIED_AFTER);
+                if (value && typeof (value) === 'number') {
+                    value = new Date(value);
+                }
+                return value;
+            };
+        // -----------------------------------------------------------
+        /**
+         * @param {?} date
+         * @param {?} beforeOrAfter
+         * @return {?}
+         */
+        Query.prototype.created = /**
+         * @param {?} date
+         * @param {?} beforeOrAfter
+         * @return {?}
+         */
+            function (date, beforeOrAfter) {
+                this.setCreated(date, beforeOrAfter);
+                return this;
+            };
+        /**
+         * @param date - date to compare against
+         * @param beforeOrAfter - flag specifying which boundary condition (true = before, false = after) flag specifying whether to trigger update automatically
+         */
+        /**
+         * @param {?} date - date to compare against
+         * @param {?} beforeOrAfter - flag specifying which boundary condition (true = before, false = after) flag specifying whether to trigger update automatically
+         * @return {?}
+         */
+        Query.prototype.setCreated = /**
+         * @param {?} date - date to compare against
+         * @param {?} beforeOrAfter - flag specifying which boundary condition (true = before, false = after) flag specifying whether to trigger update automatically
+         * @return {?}
+         */
+            function (date, beforeOrAfter) {
+                //if no date was supplied, consider it "unset" for both properties
+                if (!date) {
+                    this.setParameter(Parameters.CREATED_BEFORE, null);
+                    this.setParameter(Parameters.CREATED_AFTER, null);
+                    return;
+                }
+                if (!(date instanceof Date))
+                    date = new Date(/** @type {?} */ (date));
+                /** @type {?} */
+                var dir = beforeOrAfter && (beforeOrAfter === true || beforeOrAfter === "true");
+                /** @type {?} */
+                var prop = dir ? Parameters.CREATED_BEFORE : Parameters.CREATED_AFTER;
+                /** @type {?} */
+                var oppProp = dir ? Parameters.CREATED_AFTER : Parameters.CREATED_BEFORE;
+                /** @type {?} */
+                var arg = (date && date.getTime) ? date.getTime() : date;
+                this.setParameter(oppProp, null);
+                this.setParameter(prop, arg);
+            };
+        /**
+         * @return {?}
+         */
+        Query.prototype.getCreated = /**
+         * @return {?}
+         */
+            function () {
+                /** @type {?} */
+                var value = this.getParameter(Parameters.CREATED_BEFORE) ||
+                    this.getParameter(Parameters.CREATED_AFTER);
+                if (value && typeof (value) === 'number') {
+                    value = new Date(value);
+                }
+                return value;
+            };
+        // -----------------------------------------------------------
+        /**
+         * @param {?} date
+         * @return {?}
+         */
+        Query.prototype.begins = /**
+         * @param {?} date
+         * @return {?}
+         */
+            function (date) {
+                this.setBeginDate(date);
+                return this;
+            };
+        /**
+         * @param {?} date
+         * @return {?}
+         */
+        Query.prototype.setBeginDate = /**
+         * @param {?} date
+         * @return {?}
+         */
+            function (date) {
+                if (date && date instanceof Date)
+                    date = date.getTime();
+                this.setParameter(Parameters.BEGINS, date);
+            };
+        /**
+         * @return {?}
+         */
+        Query.prototype.getBeginDate = /**
+         * @return {?}
+         */
+            function () {
+                /** @type {?} */
+                var date = this.getParameter(Parameters.BEGINS);
+                if (date)
+                    date = new Date(date);
+                return date;
+            };
+        // -----------------------------------------------------------
+        /**
+         * @param {?} date
+         * @return {?}
+         */
+        Query.prototype.ends = /**
+         * @param {?} date
+         * @return {?}
+         */
+            function (date) {
+                this.setEndDate(date);
+                return this;
+            };
+        /**
+         * @param {?} date
+         * @return {?}
+         */
+        Query.prototype.setEndDate = /**
+         * @param {?} date
+         * @return {?}
+         */
+            function (date) {
+                if (date && date instanceof Date)
+                    date = date.getTime();
+                this.setParameter(Parameters.ENDS, date);
+            };
+        /**
+         * @return {?}
+         */
+        Query.prototype.getEndDate = /**
+         * @return {?}
+         */
+            function () {
+                /** @type {?} */
+                var date = this.getParameter(Parameters.ENDS);
+                if (date)
+                    date = new Date(date);
+                return date;
+            };
+        // -----------------------------------------------------------
+        /**
+         * @param {?} begin
+         * @param {?} end
+         * @return {?}
+         */
+        Query.prototype.between = /**
+         * @param {?} begin
+         * @param {?} end
+         * @return {?}
+         */
+            function (begin, end) {
+                this.setBetween(begin, end);
+                return this;
+            };
+        /**
+         * @param {?} begin
+         * @param {?} end
+         * @return {?}
+         */
+        Query.prototype.setBetween = /**
+         * @param {?} begin
+         * @param {?} end
+         * @return {?}
+         */
+            function (begin, end) {
+                this.begins(begin);
+                this.ends(end);
+            };
+        // -----------------------------------------------------------
+        /**
+         * @param {?} types
+         * @return {?}
+         */
+        Query.prototype.resourceTypes = /**
+         * @param {?} types
+         * @return {?}
+         */
+            function (types) {
+                this.setResourceTypes(types);
+                return this;
+            };
+        /**
+         * @param {?} types
+         * @return {?}
+         */
+        Query.prototype.setResourceTypes = /**
+         * @param {?} types
+         * @return {?}
+         */
+            function (types) {
+                this.setParameter(Parameters.RESOURCE_TYPE, toArray(types));
+            };
+        /**
+         * @return {?}
+         */
+        Query.prototype.getResourceTypes = /**
+         * @return {?}
+         */
+            function () {
+                return this.getParameter(Parameters.RESOURCE_TYPE);
+            };
+        // -----------------------------------------------------------
+        /**
+         * @param {?} names
+         * @return {?}
+         */
+        Query.prototype.facets = /**
+         * @param {?} names
+         * @return {?}
+         */
+            function (names) {
+                this.setFacets(names);
+                return this;
+            };
+        /*
+         * @param names - names of facets
+         */
+        /**
+         * @param {?} names
+         * @return {?}
+         */
+        Query.prototype.setFacets = /**
+         * @param {?} names
+         * @return {?}
+         */
+            function (names) {
+                this.setParameter(Parameters.FACETS, toArray(names));
+            };
+        /**
+         * @return {?}
+         */
+        Query.prototype.getFacets = /**
+         * @return {?}
+         */
+            function () {
+                return this.getParameter(Parameters.FACETS);
+            };
+        /**
+         * @param name - name of facet to add
+         */
+        /**
+         * @param {?} name - name of facet to add
+         * @return {?}
+         */
+        Query.prototype.addFacet = /**
+         * @param {?} name - name of facet to add
+         * @return {?}
+         */
+            function (name) {
+                /** @type {?} */
+                var facets = this.getFacets() || [];
+                facets.push(name);
+                this.setFacets(facets);
+            };
+        /**
+         * @param name - name of facet to remove
+         */
+        /**
+         * @param {?} name - name of facet to remove
+         * @return {?}
+         */
+        Query.prototype.removeFacet = /**
+         * @param {?} name - name of facet to remove
+         * @return {?}
+         */
+            function (name) {
+                /** @type {?} */
+                var facets = this.getFacets() || [];
+                /** @type {?} */
+                var idx = facets.indexOf(name);
+                if (idx >= 0) {
+                    facets.splice(idx, 1);
+                    this.setFacets(facets);
+                }
+            };
+        // -----------------------------------------------------------
+        /**
+         * @param {?} fields
+         * @return {?}
+         */
+        Query.prototype.fields = /**
+         * @param {?} fields
+         * @return {?}
+         */
+            function (fields) {
+                this.setFields(fields);
+                return this;
+            };
+        /**
+         * @param fields - list of field names to request for each search result
+         */
+        /**
+         * @param {?} fields - list of field names to request for each search result
+         * @return {?}
+         */
+        Query.prototype.setFields = /**
+         * @param {?} fields - list of field names to request for each search result
+         * @return {?}
+         */
+            function (fields) {
+                this.setParameter(Parameters.FIELDS, toArray(fields));
+            };
+        /**
+         * @return {?}
+         */
+        Query.prototype.getFields = /**
+         * @return {?}
+         */
+            function () {
+                return this.getParameter(Parameters.FIELDS);
+            };
+        /**
+         * @param field - name of field to remove
+         */
+        /**
+         * @param {?} field - name of field to remove
+         * @return {?}
+         */
+        Query.prototype.addField = /**
+         * @param {?} field - name of field to remove
+         * @return {?}
+         */
+            function (field) {
+                /** @type {?} */
+                var fields = this.getFields() || [];
+                fields.push(field);
+                this.setFields(fields);
+            };
+        /**
+         * @param field - name of field to remove
+         */
+        /**
+         * @param {?} field - name of field to remove
+         * @return {?}
+         */
+        Query.prototype.removeField = /**
+         * @param {?} field - name of field to remove
+         * @return {?}
+         */
+            function (field) {
+                /** @type {?} */
+                var fields = this.getFields() || [];
+                /** @type {?} */
+                var idx = fields.indexOf(field);
+                if (idx >= 0) {
+                    fields.splice(idx, 1);
+                    this.setFields(fields);
+                }
+            };
+        // -----------------------------------------------------------
+        /**
+         * @param page - page of results to fetch
+         */
+        /**
+         * @param {?} page - page of results to fetch
+         * @return {?}
+         */
+        Query.prototype.page = /**
+         * @param {?} page - page of results to fetch
+         * @return {?}
+         */
+            function (page) {
+                this.setPage(page);
+                return this;
+            };
+        /**
+         * @param {?} page
+         * @return {?}
+         */
+        Query.prototype.setPage = /**
+         * @param {?} page
+         * @return {?}
+         */
+            function (page) {
+                if (isNaN(page) || page * 1 < 0)
+                    return;
+                this.setParameter(Parameters.PAGE, page * 1);
+            };
+        /**
+         * @return {?}
+         */
+        Query.prototype.getPage = /**
+         * @return {?}
+         */
+            function () {
+                return this.getParameter(Parameters.PAGE);
+            };
+        /**
+         * @return {?}
+         */
+        Query.prototype.nextPage = /**
+         * @return {?}
+         */
+            function () {
+                this.setPage(this.getPage() + 1);
+            };
+        /**
+         * @return {?}
+         */
+        Query.prototype.previousPage = /**
+         * @return {?}
+         */
+            function () {
+                this.setPage(this.getPage() - 1);
+            };
+        // -----------------------------------------------------------
+        /**
+         * @param size - page size to request
+         */
+        /**
+         * @param {?} size - page size to request
+         * @return {?}
+         */
+        Query.prototype.pageSize = /**
+         * @param {?} size - page size to request
+         * @return {?}
+         */
+            function (size) {
+                this.setPageSize(size);
+                return this;
+            };
+        /**
+         * @param {?} size
+         * @return {?}
+         */
+        Query.prototype.setPageSize = /**
+         * @param {?} size
+         * @return {?}
+         */
+            function (size) {
+                if (isNaN(size) || size * 1 < 0)
+                    return;
+                this.setParameter(Parameters.PAGE_SIZE, size * 1);
+            };
+        /**
+         * @return {?}
+         */
+        Query.prototype.getPageSize = /**
+         * @return {?}
+         */
+            function () {
+                return this.getParameter(Parameters.PAGE_SIZE);
+            };
+        // -----------------------------------------------------------
+        /**
+         * @param sort - form of <field>,<dir> or just field name
+         * @param order - optional, either 'asc' or 'desc'
+         */
+        /**
+         * @param {?} sort - form of <field>,<dir> or just field name
+         * @param {?=} order - optional, either 'asc' or 'desc'
+         * @return {?}
+         */
+        Query.prototype.sort = /**
+         * @param {?} sort - form of <field>,<dir> or just field name
+         * @param {?=} order - optional, either 'asc' or 'desc'
+         * @return {?}
+         */
+            function (sort, order) {
+                this.setSort(sort, order);
+                return this;
+            };
+        /**
+         * @param sort - form of <field>,<dir> or just field name
+         * @param order - optional, either 'asc' or 'desc'
+         */
+        /**
+         * @param {?} sort - form of <field>,<dir> or just field name
+         * @param {?=} order - optional, either 'asc' or 'desc'
+         * @return {?}
+         */
+        Query.prototype.setSort = /**
+         * @param {?} sort - form of <field>,<dir> or just field name
+         * @param {?=} order - optional, either 'asc' or 'desc'
+         * @return {?}
+         */
+            function (sort, order) {
+                order = order || 'desc';
+                if (sort && sort.indexOf(',') < 0)
+                    sort = sort + ',' + order;
+                this.setParameter(Parameters.SORT, sort);
+            };
+        /**
+         * @return {?}
+         */
+        Query.prototype.getSort = /**
+         * @return {?}
+         */
+            function () {
+                return this.getParameter(Parameters.SORT);
+            };
+        /**
+         * @return {?}
+         */
+        Query.prototype.getSortField = /**
+         * @return {?}
+         */
+            function () {
+                /** @type {?} */
+                var value = this.getSort();
+                return value && value.length ? value.split(',')[0] : null;
+            };
+        /**
+         * @return {?}
+         */
+        Query.prototype.getSortOrder = /**
+         * @return {?}
+         */
+            function () {
+                /** @type {?} */
+                var value = this.getSort();
+                return value && value.length ? value.split(',')[1] : null;
+            };
+        /**
+         * @return list of key-value pairs of sort options
+         */
+        /**
+         * @return {?} list of key-value pairs of sort options
+         */
+        Query.prototype.getSortOptions = /**
+         * @return {?} list of key-value pairs of sort options
+         */
+            function () {
+                return SORT_OPTIONS_DEFAULT$1.slice(0);
+            };
+        // -----------------------------------------------------------
+        /**
+         *
+         */
+        /**
+         *
+         * @return {?}
+         */
+        Query.prototype.clear = /**
+         *
+         * @return {?}
+         */
+            function () {
+                this.query = JSON.parse(JSON.stringify(this.defaultQuery));
+            };
+        return Query;
+    }());
+
+    /**
+     * @fileoverview added by tsickle
+     * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
+     */
+    /**
+     * @return {?}
+     */
+    function queryFactory () {
+        return new Query();
+    }
+
+    /**
+     * @fileoverview added by tsickle
+     * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
+     */
+    var ɵ0 = function (options) {
+        Object.assign(this, options);
+    };
+    /** @type {?} */
+    var Config = {
+        ualUrl: 'https://ual.geoplatform.gov',
+        //appId: '...',
+        configure: ɵ0
+    };
+
+    /**
+     * @fileoverview added by tsickle
+     * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
+     */
+    var GPHttpClient = /** @class */ (function () {
+        /**
+         * @param options.timeout
+         * @param options.token - the bearer token or a function to retrieve it
+         */
+        function GPHttpClient(options) {
+            this.timeout = 5000;
+            options = options || {};
+            this.setTimeout(options["timeout"] || 30000);
+            this.setAuthToken(options["token"]);
+        }
+        /**
+         * @param {?} timeout
+         * @return {?}
+         */
+        GPHttpClient.prototype.setTimeout = /**
+         * @param {?} timeout
+         * @return {?}
+         */
+            function (timeout) {
+                this.timeout = timeout;
+            };
+        /**
+         * @param arg - specify the bearer token or a function to retrieve it
+         */
+        /**
+         * @param {?} arg - specify the bearer token or a function to retrieve it
+         * @return {?}
+         */
+        GPHttpClient.prototype.setAuthToken = /**
+         * @param {?} arg - specify the bearer token or a function to retrieve it
+         * @return {?}
+         */
+            function (arg) {
+                if (arg && typeof (arg) === 'string')
+                    this.token = function () { return arg; };
+                else if (arg && typeof (arg) === 'function')
+                    this.token = arg;
+                //else do nothing
+            };
+        /**
+         * @param {?} options
+         * @return {?}
+         */
+        GPHttpClient.prototype.createRequestOpts = /**
+         * @param {?} options
+         * @return {?}
+         */
+            function (
+            // @ts-ignore
+            // @ts-ignore
+            options) {
+                throw new Error("Must implement 'createRequestOpts' in a sub-class");
+            };
+        /**
+         * @param {?} opts
+         * @return {?}
+         */
+        GPHttpClient.prototype.execute = /**
+         * @param {?} opts
+         * @return {?}
+         */
+            function (
+            // @ts-ignore
+            // @ts-ignore
+            opts) {
+                return Q.reject(new Error("Must overrdie 'execute' in a sub-class"));
+            };
+        return GPHttpClient;
+    }());
+
+    /**
+     * @fileoverview added by tsickle
+     * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
+     */
+    var XHRHttpClient = /** @class */ (function (_super) {
+        __extends(XHRHttpClient, _super);
+        /**
+         * @param options.timeout
+         * @param options.token - the bearer token or a function to retrieve it
+         */
+        function XHRHttpClient(options) {
+            return _super.call(this, options) || this;
+        }
+        /**
+         * @param {?} options
+         * @return {?}
+         */
+        XHRHttpClient.prototype.createRequestOpts = /**
+         * @param {?} options
+         * @return {?}
+         */
+            function (options) {
+                /** @type {?} */
+                var opts = {
+                    method: options["method"],
+                    url: options["url"],
+                    timeout: options["timeout"] || this.timeout
+                };
+                if (options["json"] === true)
+                    opts["responseType"] = 'json';
+                if (options["params"]) {
+                    opts["data"] = options["params"];
+                }
+                if (options["data"]) {
+                    opts["data"] = options["data"];
+                    opts["contentType"] = 'application/json';
+                }
+                //set authorization header if one was provided
+                if (this.token) {
+                    /** @type {?} */
+                    var token = this.token();
+                    if (token) {
+                        opts["headers"] = opts["headers"] || {};
+                        opts["headers"].Authorization = 'Bearer ' + token;
+                        opts["withCredentials"] = true;
+                    }
+                }
+                //copy over user-supplied options
+                if (options["options"]) {
+                    for (var o in options["options"]) {
+                        if (options["options"].hasOwnProperty(o)) {
+                            opts[o] = options["options"][o];
+                        }
+                    }
+                }
+                return opts;
+            };
+        /**
+         * @param {?} opts
+         * @return {?}
+         */
+        XHRHttpClient.prototype.execute = /**
+         * @param {?} opts
+         * @return {?}
+         */
+            function (opts) {
+                /** @type {?} */
+                var promise = axios(opts)
+                    .then(function (response) { return response.data; })
+                    .catch(function (error) {
+                    /** @type {?} */
+                    var err = new GPError(error.message);
+                    if (error.response) {
+                        err = new GPError(error.response.data);
+                    }
+                    return Q.reject(err);
+                });
+                return Q.resolve(promise);
+            };
+        return XHRHttpClient;
+    }(GPHttpClient));
+
+    /**
+     * @fileoverview added by tsickle
+     * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
+     */
+    /**
+     * ItemService
+     * service for working with the GeoPlatform API to
+     * retrieve and manipulate items.
+     *
+     * Ex Searching Items
+     *      let params = { q: 'test' };
+     *      itemService.search(params).then(response=>{
+     *          console.log(response.results.length + " of " + response.totalResults);
+     *      }).catch(e=>{...});
+     *
+     * Ex Fetch Item:
+     *      itemService.get(itemId).then(item=>{...}).catch(e=>{...});
+     *
+     * Ex Saving Item:
+     *      itemService.save(item).then(item=>{...}).catch(e=>{...});
+     *
+     * Ex Deleting Item:
+     *      itemService.remove(itemId).then(()=>{...}).catch(e=>{...});
+     *
+     * Ex Patching Item:
+     *      itemService.patch(itemId,patch).then(item=>{...}).catch(e=>{...});
+     *
+     */
+    var /**
+     * ItemService
+     * service for working with the GeoPlatform API to
+     * retrieve and manipulate items.
+     *
+     * Ex Searching Items
+     *      let params = { q: 'test' };
+     *      itemService.search(params).then(response=>{
+     *          console.log(response.results.length + " of " + response.totalResults);
+     *      }).catch(e=>{...});
+     *
+     * Ex Fetch Item:
+     *      itemService.get(itemId).then(item=>{...}).catch(e=>{...});
+     *
+     * Ex Saving Item:
+     *      itemService.save(item).then(item=>{...}).catch(e=>{...});
+     *
+     * Ex Deleting Item:
+     *      itemService.remove(itemId).then(()=>{...}).catch(e=>{...});
+     *
+     * Ex Patching Item:
+     *      itemService.patch(itemId,patch).then(item=>{...}).catch(e=>{...});
+     *
+     */ ItemService = /** @class */ (function () {
+        function ItemService(url, httpClient) {
+            this._timeout = 30000;
+            this.httpMethods = ["GET", "POST", "PUT", "DELETE", "PATCH"];
+            this.setUrl(url);
+            this.client = httpClient;
+        }
+        /**
+         * @param {?} baseUrl
+         * @return {?}
+         */
+        ItemService.prototype.setUrl = /**
+         * @param {?} baseUrl
+         * @return {?}
+         */
+            function (baseUrl) {
+                this.apiBase = baseUrl;
+                this.baseUrl = baseUrl + '/api/items';
+            };
+        /**
+         * @param milliseconds - override environment variable timeout
+         */
+        /**
+         * @param {?} milliseconds - override environment variable timeout
+         * @return {?}
+         */
+        ItemService.prototype.setTimeout = /**
+         * @param {?} milliseconds - override environment variable timeout
+         * @return {?}
+         */
+            function (milliseconds) {
+                this._timeout = milliseconds;
+            };
+        /**
+         * @param milliseconds - override environment variable timeout
+         */
+        /**
+         * @param {?} milliseconds - override environment variable timeout
+         * @return {?}
+         */
+        ItemService.prototype.timeout = /**
+         * @param {?} milliseconds - override environment variable timeout
+         * @return {?}
+         */
+            function (milliseconds) {
+                this.setTimeout(milliseconds);
+                return this;
+            };
+        /**
+         * @param logger - log service
+         */
+        /**
+         * @param {?} logger - log service
+         * @return {?}
+         */
+        ItemService.prototype.setLogger = /**
+         * @param {?} logger - log service
+         * @return {?}
+         */
+            function (logger) {
+                this.logger = logger;
+            };
+        /**
+         * @param e - error to log (if logger specified)
+         */
+        /**
+         * @param {?} e - error to log (if logger specified)
+         * @return {?}
+         */
+        ItemService.prototype.logError = /**
+         * @param {?} e - error to log (if logger specified)
+         * @return {?}
+         */
+            function (e) {
+                if (this.logger && this.logger.error) {
+                    this.logger.error(e);
+                }
+            };
+        /**
+         * @param msg - message to log as debug
+         */
+        /**
+         * @param {?} msg - message to log as debug
+         * @return {?}
+         */
+        ItemService.prototype.logDebug = /**
+         * @param {?} msg - message to log as debug
+         * @return {?}
+         */
+            function (msg) {
+                if (this.logger && this.logger.debug) {
+                    this.logger.debug(msg);
+                }
+            };
+        /**
+         * @param id - identifier of item to fetch
+         * @param options - optional set of request options to apply to xhr request
+         * @return Promise resolving Item object or an error
+         */
+        /**
+         * @param {?} id - identifier of item to fetch
+         * @param {?=} options - optional set of request options to apply to xhr request
+         * @return {?} Promise resolving Item object or an error
+         */
+        ItemService.prototype.get = /**
+         * @param {?} id - identifier of item to fetch
+         * @param {?=} options - optional set of request options to apply to xhr request
+         * @return {?} Promise resolving Item object or an error
+         */
+            function (id, options) {
+                var _this = this;
+                /** @type {?} */
+                var url = this.baseUrl + '/' + id;
+                if (options && options.version) {
+                    url += '/versions/' + options.version;
+                    // this.logDebug("Client.get requesting version: " + options.version);
+                }
+                return Q.resolve(url)
+                    .then(function (url) {
+                    /** @type {?} */
+                    var opts = _this.buildRequest({ method: "GET", url: url, options: options });
+                    return _this.execute(opts);
+                })
+                    .catch(function (e) {
+                    /** @type {?} */
+                    var err = new Error("Error fetching item " + id + ": " + e.message);
+                    Object.assign(err, e);
+                    _this.logError('ItemService.get() - ' + err.message);
+                    return Q.reject(err);
+                });
+            };
+        /**
+         * @param itemObj - item to create or update
+         * @param options - optional set of request options to apply to xhr request
+         * @return Promise resolving Item object or an error
+         */
+        /**
+         * @param {?} itemObj - item to create or update
+         * @param {?=} options - optional set of request options to apply to xhr request
+         * @return {?} Promise resolving Item object or an error
+         */
+        ItemService.prototype.save = /**
+         * @param {?} itemObj - item to create or update
+         * @param {?=} options - optional set of request options to apply to xhr request
+         * @return {?} Promise resolving Item object or an error
+         */
+            function (itemObj, options) {
+                var _this = this;
+                return Q.resolve(itemObj)
+                    .then(function (item) {
+                    /** @type {?} */
+                    var method = 'POST';
+                    /** @type {?} */
+                    var url = _this.baseUrl;
+                    if (item.id) {
+                        method = "PUT";
+                        url += '/' + item.id;
+                    }
+                    else {
+                        //if item is being created and has no URI already defined
+                        // attempt to create one using the API's method for doing so
+                        // and then attempt the actual item creation
+                        if (!item.uri) {
+                            return _this.getUri(item, options)
+                                .then(function (uri) {
+                                item.uri = uri;
+                                /** @type {?} */
+                                var opts = _this.buildRequest({ method: method, url: url, data: item, options: options });
+                                return _this.execute(opts);
+                            });
+                        }
+                    }
+                    /** @type {?} */
+                    var opts = _this.buildRequest({ method: method, url: url, data: item, options: options });
+                    return _this.execute(opts);
+                })
+                    .catch(function (e) {
+                    /** @type {?} */
+                    var err = new Error("Error saving item: " + e.message);
+                    Object.assign(err, e);
+                    _this.logError('ItemService.save() - ' + err.message);
+                    return Q.reject(err);
+                });
+            };
+        /**
+         * @param id - identifier of item to delete
+         * @param options - optional set of request options to apply to xhr request
+         * @return Promise resolving true if successful or an error
+         */
+        /**
+         * @param {?} id - identifier of item to delete
+         * @param {?=} options - optional set of request options to apply to xhr request
+         * @return {?} Promise resolving true if successful or an error
+         */
+        ItemService.prototype.remove = /**
+         * @param {?} id - identifier of item to delete
+         * @param {?=} options - optional set of request options to apply to xhr request
+         * @return {?} Promise resolving true if successful or an error
+         */
+            function (id, options) {
+                var _this = this;
+                return Q.resolve(this.baseUrl + '/' + id)
+                    .then(function (url) {
+                    /** @type {?} */
+                    var opts = _this.buildRequest({
+                        method: "DELETE", url: url, options: options
+                    });
+                    return _this.execute(opts);
+                })
+                    .then(function () { return true; })
+                    .catch(function (e) {
+                    /** @type {?} */
+                    var err = new Error("Error deleting item " + id + ": " + e.message);
+                    Object.assign(err, e);
+                    _this.logError('ItemService.remove() - ' + err.message);
+                    return Q.reject(err);
+                });
+            };
+        /**
+         * @param id - identifier of item to patch
+         * @param patch - HTTP-PATCH compliant set of properties to patch
+         * @param options - optional set of request options to apply to xhr request
+         * @return Promise resolving Item object or an error
+         */
+        /**
+         * @param {?} id - identifier of item to patch
+         * @param {?} patch - HTTP-PATCH compliant set of properties to patch
+         * @param {?=} options - optional set of request options to apply to xhr request
+         * @return {?} Promise resolving Item object or an error
+         */
+        ItemService.prototype.patch = /**
+         * @param {?} id - identifier of item to patch
+         * @param {?} patch - HTTP-PATCH compliant set of properties to patch
+         * @param {?=} options - optional set of request options to apply to xhr request
+         * @return {?} Promise resolving Item object or an error
+         */
+            function (id, patch, options) {
+                var _this = this;
+                return Q.resolve(this.baseUrl + '/' + id)
+                    .then(function (url) {
+                    /** @type {?} */
+                    var opts = _this.buildRequest({
+                        method: "PATCH", url: url, data: patch, options: options
+                    });
+                    return _this.execute(opts);
+                })
+                    .catch(function (e) {
+                    /** @type {?} */
+                    var err = new Error("Error patching item " + id + ": " + e.message);
+                    Object.assign(err, e);
+                    _this.logError('ItemService.patch() - ' + err.message);
+                    return Q.reject(err);
+                });
+            };
+        /**
+         * @param arg - either JS object of query parameters or GeoPlatform.Query instance
+         * @param options - optional set of request options to apply to xhr request
+         * @return Promise resolving search results
+         */
+        /**
+         * @param {?=} arg - either JS object of query parameters or GeoPlatform.Query instance
+         * @param {?=} options - optional set of request options to apply to xhr request
+         * @return {?} Promise resolving search results
+         */
+        ItemService.prototype.search = /**
+         * @param {?=} arg - either JS object of query parameters or GeoPlatform.Query instance
+         * @param {?=} options - optional set of request options to apply to xhr request
+         * @return {?} Promise resolving search results
+         */
+            function (arg, options) {
+                var _this = this;
+                return Q.resolve(arg)
+                    .then(function (params) {
+                    /** @type {?} */
+                    var ps = params ? params.getQuery() : {};
+                    /** @type {?} */
+                    var opts = _this.buildRequest({
+                        method: "GET", url: _this.baseUrl, params: ps, options: options
+                    });
+                    return _this.execute(opts);
+                })
+                    .catch(function (e) {
+                    /** @type {?} */
+                    var err = new Error("Error searching items: " + e.message);
+                    Object.assign(err, e);
+                    _this.logError('ItemService.search() - ' + err.message);
+                    return Q.reject(err);
+                });
+            };
+        /**
+         *
+         * @param arg - URL to metadata document or File to upload
+         * @param format - metadata format of specified document
+         * @return Promise resolving GeoPlatform Item
+         */
+        /**
+         *
+         * @param {?} arg - URL to metadata document or File to upload
+         * @param {?} format - metadata format of specified document
+         * @param {?=} options
+         * @return {?} Promise resolving GeoPlatform Item
+         */
+        ItemService.prototype.import = /**
+         *
+         * @param {?} arg - URL to metadata document or File to upload
+         * @param {?} format - metadata format of specified document
+         * @param {?=} options
+         * @return {?} Promise resolving GeoPlatform Item
+         */
+            function (arg, format, options) {
+                var _this = this;
+                return Q.resolve(true)
+                    .then(function () {
+                    if (arg === null || arg === undefined) {
+                        throw new Error("Must provide a valid URL or File");
+                    }
+                    /** @type {?} */
+                    var isFile = typeof (arg) !== 'string';
+                    /** @type {?} */
+                    var ro = {
+                        method: "POST",
+                        url: _this.apiBase + '/api/import',
+                        processData: true,
+                        //for jQuery
+                        formData: true,
+                        //for Node (RequestJS)
+                        options: options
+                    };
+                    if (isFile) {
+                        ro["file"] = arg;
+                        ro["data"] = { format: format };
+                    }
+                    else {
+                        ro["formData"] = false; //must be false for data to not be multi-part formdata
+                        ro["data"] = { url: arg, format: format };
+                    }
+                    if (options && options.overwrite) {
+                        ro["data"].overwrite = (!!options.overwrite) + '';
+                        delete options.overwrite;
+                    }
+                    /** @type {?} */
+                    var opts = _this.buildRequest(ro);
+                    return _this.execute(opts);
+                })
+                    .catch(function (e) {
+                    /** @type {?} */
+                    var err = new Error("Error importing item: " + e.message);
+                    Object.assign(err, e);
+                    if (e.status === 409 || ~e.message.indexOf('Item already exists'))
+                        Object.assign(err, { status: 409 });
+                    if (e.item)
+                        Object.assign(err, { item: e.item });
+                    _this.logError('ItemService.import() - ' + err.message);
+                    return Q.reject(err);
+                });
+            };
+        /**
+         * @param id - identifier of the item to export
+         * @param format - string mime type to export
+         * @return Promise resolving HTTP response object for enabling attachment downloading
+         */
+        /**
+         * @param {?} id - identifier of the item to export
+         * @param {?} format - string mime type to export
+         * @param {?=} options
+         * @return {?} Promise resolving HTTP response object for enabling attachment downloading
+         */
+        ItemService.prototype.export = /**
+         * @param {?} id - identifier of the item to export
+         * @param {?} format - string mime type to export
+         * @param {?=} options
+         * @return {?} Promise resolving HTTP response object for enabling attachment downloading
+         */
+            function (id, format, options) {
+                var _this = this;
+                return Q.resolve(true)
+                    .then(function () {
+                    /** @type {?} */
+                    var url = _this.baseUrl + '/' + id + '/export';
+                    /** @type {?} */
+                    var opts = _this.buildRequest({
+                        method: "GET", url: url,
+                        params: { format: format },
+                        json: false,
+                        options: options
+                    });
+                    return _this.execute(opts);
+                })
+                    .catch(function (e) {
+                    /** @type {?} */
+                    var msg = e.message;
+                    //https://github.com/GeoPlatform/client-api/issues/1
+                    if (e.statusCode && e.statusCode === 406 || e.statusCode === '406') {
+                        msg = "Unsupported export format specified '" + format + "'";
+                    }
+                    /** @type {?} */
+                    var err = new Error("Error exporting item: " + msg);
+                    Object.assign(err, e);
+                    _this.logError('ItemService.export() - ' + err.message);
+                    return Q.reject(err);
+                });
+            };
+        /**
+         * @param object - GP object definition to generate a URI for
+         * @param options - optional request options
+         * @return Promise resolving string URI
+         */
+        /**
+         * @param {?} object - GP object definition to generate a URI for
+         * @param {?=} options - optional request options
+         * @return {?} Promise resolving string URI
+         */
+        ItemService.prototype.getUri = /**
+         * @param {?} object - GP object definition to generate a URI for
+         * @param {?=} options - optional request options
+         * @return {?} Promise resolving string URI
+         */
+            function (object, options) {
+                var _this = this;
+                return Q.resolve(object)
+                    .then(function (obj) {
+                    if (!obj || !obj.type)
+                        throw new Error("Must provide an object with a type property");
+                    /** @type {?} */
+                    var url = _this.apiBase + '/api/utils/uri';
+                    options = options || {};
+                    options.responseType = 'text';
+                    /** @type {?} */
+                    var opts = _this.buildRequest({
+                        method: "POST", url: url, data: obj, options: options
+                    });
+                    return _this.execute(opts);
+                })
+                    .catch(function (e) {
+                    /** @type {?} */
+                    var err = new Error("Error getting URI for item: " + e.message);
+                    Object.assign(err, e);
+                    _this.logError('ItemService.getUri() - ' + err.message);
+                    return Q.reject(err);
+                });
+            };
+        /**
+         * @param ids - list of identifiers to fetch objects for
+         * @param options - optional set of request options to apply to xhr request
+         * @return Promise resolving list of matching items or an error
+         */
+        /**
+         * @param {?} ids - list of identifiers to fetch objects for
+         * @param {?=} options - optional set of request options to apply to xhr request
+         * @return {?} Promise resolving list of matching items or an error
+         */
+        ItemService.prototype.getMultiple = /**
+         * @param {?} ids - list of identifiers to fetch objects for
+         * @param {?=} options - optional set of request options to apply to xhr request
+         * @return {?} Promise resolving list of matching items or an error
+         */
+            function (ids, options) {
+                var _this = this;
+                return Q.resolve(ids)
+                    .then(function (identifiers) {
+                    /** @type {?} */
+                    var method = 'POST';
+                    /** @type {?} */
+                    var url = _this.apiBase + '/api/fetch';
+                    /** @type {?} */
+                    var opts = _this.buildRequest({ method: method, url: url, data: identifiers, options: options });
+                    return _this.execute(opts);
+                })
+                    .catch(function (e) {
+                    /** @type {?} */
+                    var err = new Error("Error fetching items: " + e.message);
+                    Object.assign(err, e);
+                    _this.logError('ItemService.getMultiple() - ' + err.message);
+                    return Q.reject(err);
+                });
+            };
+        /**
+         * @param uris - list of URIs to retrieve objects for
+         * @param options - optional set of request options to apply to xhr request
+         * @return Promise resolving list containing uri-item association where exists
+         */
+        /**
+         * @param {?} uris - list of URIs to retrieve objects for
+         * @param {?=} options - optional set of request options to apply to xhr request
+         * @return {?} Promise resolving list containing uri-item association where exists
+         */
+        ItemService.prototype.exists = /**
+         * @param {?} uris - list of URIs to retrieve objects for
+         * @param {?=} options - optional set of request options to apply to xhr request
+         * @return {?} Promise resolving list containing uri-item association where exists
+         */
+            function (uris, options) {
+                var _this = this;
+                return Q.resolve(uris)
+                    .then(function (uris) {
+                    /** @type {?} */
+                    var method = 'POST';
+                    /** @type {?} */
+                    var url = _this.apiBase + '/api/utils/exists';
+                    /** @type {?} */
+                    var opts = _this.buildRequest({ method: method, url: url, data: uris, options: options });
+                    return _this.execute(opts);
+                })
+                    .catch(function (e) {
+                    /** @type {?} */
+                    var err = new Error("Error resolving items: " + e.message);
+                    Object.assign(err, e);
+                    _this.logError('ItemService.exists() - ' + err.message);
+                    return Q.reject(err);
+                });
+            };
+        /**
+         * @param {?} item
+         * @param {?=} options
+         * @return {?}
+         */
+        ItemService.prototype.like = /**
+         * @param {?} item
+         * @param {?=} options
+         * @return {?}
+         */
+            function (item, options) {
+                var _this = this;
+                return Q.resolve(item.id)
+                    .then(function (id) {
+                    /** @type {?} */
+                    var method = 'PUT';
+                    /** @type {?} */
+                    var url = _this.apiBase + '/api/items/' + id + '/likes';
+                    /** @type {?} */
+                    var opts = _this.buildRequest({ method: method, url: url, options: options });
+                    return _this.execute(opts);
+                })
+                    .catch(function (e) {
+                    /** @type {?} */
+                    var err = new Error("Error liking item " + item.id + ": " + e.message);
+                    Object.assign(err, e);
+                    _this.logError('ItemService.like() - ' + err.message);
+                    return Q.reject(err);
+                });
+            };
+        /**
+         * @param {?} item
+         * @param {?=} options
+         * @return {?}
+         */
+        ItemService.prototype.view = /**
+         * @param {?} item
+         * @param {?=} options
+         * @return {?}
+         */
+            function (item, options) {
+                var _this = this;
+                return Q.resolve(item.id)
+                    .then(function (id) {
+                    /** @type {?} */
+                    var method = 'PUT';
+                    /** @type {?} */
+                    var url = _this.apiBase + '/api/items/' + id + '/views';
+                    /** @type {?} */
+                    var opts = _this.buildRequest({ method: method, url: url, options: options });
+                    return _this.execute(opts);
+                })
+                    .catch(function (e) {
+                    /** @type {?} */
+                    var err = new Error("Error incrementing views for item " + item.id + ": " + e.message);
+                    Object.assign(err, e);
+                    _this.logError('ItemService.like() - ' + err.message);
+                    return Q.reject(err);
+                });
+            };
+        /**
+         * @param id - identifier of item to fetch associations for
+         * @param options - optional set of request options to apply to xhr request
+         * @return Promise resolving array of associated items of the item in question
+         */
+        /**
+         * @param {?} id - identifier of item to fetch associations for
+         * @param {?} params
+         * @param {?=} options - optional set of request options to apply to xhr request
+         * @return {?} Promise resolving array of associated items of the item in question
+         */
+        ItemService.prototype.associations = /**
+         * @param {?} id - identifier of item to fetch associations for
+         * @param {?} params
+         * @param {?=} options - optional set of request options to apply to xhr request
+         * @return {?} Promise resolving array of associated items of the item in question
+         */
+            function (id, params, options) {
+                var _this = this;
+                return Q.resolve(id)
+                    .then(function (id) {
+                    /** @type {?} */
+                    var url = _this.baseUrl + '/' + id + '/associations';
+                    /** @type {?} */
+                    var opts = _this.buildRequest({
+                        method: "GET",
+                        url: url,
+                        params: params || {},
+                        options: options
+                    });
+                    return _this.execute(opts);
+                })
+                    .catch(function (e) {
+                    /** @type {?} */
+                    var err = new Error("Error fetching associations for item " + id + ": " + e.message);
+                    Object.assign(err, e);
+                    _this.logError('ItemService.associations() - ' + err.message);
+                    return Q.reject(err);
+                });
+            };
+        /**
+         * @param id - identifier of item to fetch version info for
+         * @param options - optional set of request options to apply to xhr request
+         * @return Promise resolving array of available versions of the item
+         */
+        /**
+         * @param {?} id - identifier of item to fetch version info for
+         * @param {?=} options - optional set of request options to apply to xhr request
+         * @return {?} Promise resolving array of available versions of the item
+         */
+        ItemService.prototype.versions = /**
+         * @param {?} id - identifier of item to fetch version info for
+         * @param {?=} options - optional set of request options to apply to xhr request
+         * @return {?} Promise resolving array of available versions of the item
+         */
+            function (id, options) {
+                var _this = this;
+                return Q.resolve(id)
+                    .then(function (id) {
+                    /** @type {?} */
+                    var url = _this.baseUrl + '/' + id + '/versions';
+                    /** @type {?} */
+                    var opts = _this.buildRequest({ method: "GET", url: url, options: options });
+                    return _this.execute(opts);
+                })
+                    .catch(function (e) {
+                    /** @type {?} */
+                    var err = new Error("Error fetching versions for item " + id + ": " + e.message);
+                    Object.assign(err, e);
+                    _this.logError('ItemService.versions() - ' + err.message);
+                    return Q.reject(err);
+                });
+            };
+        /* ----------------------------------------------------------- */
+        /**
+         * @param method - one of "GET", "POST", "PUT", "DELETE", "PATCH"
+         * @param url - destination of xhr request
+         * @param params - object to be sent with request as query parameters
+         * @param data - object to be sent with request as body
+         * @param options - optional object defining request options
+         * @return request options for xhr
+         */
+        /**
+         * @param {?} options - optional object defining request options
+         * @return {?} request options for xhr
+         */
+        ItemService.prototype.buildRequest = /**
+         * @param {?} options - optional object defining request options
+         * @return {?} request options for xhr
+         */
+            function (options) {
+                if (this.httpMethods.indexOf(options["method"]) < 0)
+                    throw new Error("Unsupported HTTP method " + options["method"]);
+                if (!options["url"])
+                    throw new Error("Must specify a URL for HTTP requests");
+                options["timeout"] = this._timeout || 30000;
+                /** @type {?} */
+                var opts = this.createRequestOpts(options);
+                return opts;
+            };
+        /**
+         * @param {?} options
+         * @return {?}
+         */
+        ItemService.prototype.createRequestOpts = /**
+         * @param {?} options
+         * @return {?}
+         */
+            function (options) {
+                /** @type {?} */
+                var request = this.client.createRequestOpts(options);
+                this.logDebug("ItemService.createRequestOpts() - " + JSON.stringify(request));
+                return request;
+            };
+        /**
+         * @param {?} opts
+         * @return {?}
+         */
+        ItemService.prototype.execute = /**
+         * @param {?} opts
+         * @return {?}
+         */
+            function (opts) {
+                return this.client.execute(opts)
+                    .catch(function (e) {
+                    if (e === null || typeof (e) === 'undefined') {
+                        e = new Error("ItemService.execute() - Request failed but didn't return an " +
+                            "error. This is most likely because the request timed out");
+                    }
+                    return Q.reject(e);
+                });
+            };
+        return ItemService;
+    }());
+
+    /**
+     * @fileoverview added by tsickle
+     * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
+     */
+    /**
+     * GeoPlatform Map service
+     * service for working with the GeoPlatform API to
+     * retrieve and manipulate map objects.
+     *
+     * @see GeoPlatform.ItemService
+     */
+    var /**
+     * GeoPlatform Map service
+     * service for working with the GeoPlatform API to
+     * retrieve and manipulate map objects.
+     *
+     * @see GeoPlatform.ItemService
+     */ DatasetService = /** @class */ (function (_super) {
+        __extends(DatasetService, _super);
+        function DatasetService(url, httpClient) {
+            return _super.call(this, url, httpClient) || this;
+        }
+        /**
+         * @param {?} baseUrl
+         * @return {?}
+         */
+        DatasetService.prototype.setUrl = /**
+         * @param {?} baseUrl
+         * @return {?}
+         */
+            function (baseUrl) {
+                _super.prototype.setUrl.call(this, baseUrl);
+                this.baseUrl = baseUrl + '/api/datasets';
+            };
+        return DatasetService;
+    }(ItemService));
+
+    /**
+     * @fileoverview added by tsickle
+     * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
+     */
+    /**
+     * GeoPlatform Map service
+     * service for working with the GeoPlatform API to
+     * retrieve and manipulate map objects.
+     *
+     * @see GeoPlatform.ItemService
+     */
+    var /**
+     * GeoPlatform Map service
+     * service for working with the GeoPlatform API to
+     * retrieve and manipulate map objects.
+     *
+     * @see GeoPlatform.ItemService
+     */ MapService = /** @class */ (function (_super) {
+        __extends(MapService, _super);
+        function MapService(url, httpClient) {
+            return _super.call(this, url, httpClient) || this;
+        }
+        /**
+         * @param {?} baseUrl
+         * @return {?}
+         */
+        MapService.prototype.setUrl = /**
+         * @param {?} baseUrl
+         * @return {?}
+         */
+            function (baseUrl) {
+                _super.prototype.setUrl.call(this, baseUrl);
+                this.baseUrl = baseUrl + '/api/maps';
+            };
+        return MapService;
+    }(ItemService));
+
+    /**
+     * @fileoverview added by tsickle
+     * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
+     */
+    /**
+     * GeoPlatform Map service
+     * service for working with the GeoPlatform API to
+     * retrieve and manipulate map objects.
+     *
+     * @see GeoPlatform.ItemService
+     */
+    var /**
+     * GeoPlatform Map service
+     * service for working with the GeoPlatform API to
+     * retrieve and manipulate map objects.
+     *
+     * @see GeoPlatform.ItemService
+     */ LayerService = /** @class */ (function (_super) {
+        __extends(LayerService, _super);
+        function LayerService(url, httpClient) {
+            return _super.call(this, url, httpClient) || this;
+        }
+        /**
+         * @param {?} baseUrl
+         * @return {?}
+         */
+        LayerService.prototype.setUrl = /**
+         * @param {?} baseUrl
+         * @return {?}
+         */
+            function (baseUrl) {
+                _super.prototype.setUrl.call(this, baseUrl);
+                this.baseUrl = baseUrl + '/api/layers';
+            };
+        /**
+         * @param id - GeoPlatform Layer identifier
+         * @param options - optional set of request options to apply to xhr request
+         * @return Promise resolving style JSON object
+         */
+        /**
+         * @param {?} id - GeoPlatform Layer identifier
+         * @param {?=} options - optional set of request options to apply to xhr request
+         * @return {?} Promise resolving style JSON object
+         */
+        LayerService.prototype.style = /**
+         * @param {?} id - GeoPlatform Layer identifier
+         * @param {?=} options - optional set of request options to apply to xhr request
+         * @return {?} Promise resolving style JSON object
+         */
+            function (id, options) {
+                var _this = this;
+                return Q.resolve(id)
+                    .then(function (id) {
+                    /** @type {?} */
+                    var url = _this.baseUrl + '/' + id + '/style';
+                    /** @type {?} */
+                    var opts = _this.buildRequest({
+                        method: "GET", url: url, options: options
+                    });
+                    return _this.execute(opts);
+                })
+                    .catch(function (e) {
+                    /** @type {?} */
+                    var err = new Error("Error fetching style: " + e.message);
+                    Object.assign(err, e);
+                    _this.logError('LayerService.style() - ' + err.message);
+                    return Q.reject(err);
+                });
+            };
+        /**
+         * @param id - GeoPlatform Layer identifier
+         * @param req identifying extent, x, y
+         * @param options - optional set of request options to apply to xhr request
+         * @return Promise resolving feature JSON object
+         */
+        /**
+         * @param {?} id - GeoPlatform Layer identifier
+         * @param {?} req identifying extent, x, y
+         * @param {?=} options - optional set of request options to apply to xhr request
+         * @return {?} Promise resolving feature JSON object
+         */
+        LayerService.prototype.describe = /**
+         * @param {?} id - GeoPlatform Layer identifier
+         * @param {?} req identifying extent, x, y
+         * @param {?=} options - optional set of request options to apply to xhr request
+         * @return {?} Promise resolving feature JSON object
+         */
+            function (id, req, options) {
+                var _this = this;
+                return Q.resolve(req)
+                    .then(function (req) {
+                    if (!req) {
+                        throw new Error("Must provide describe parameters to use");
+                    }
+                    /** @type {?} */
+                    var keys = ['bbox', 'height', 'width', 'x', 'y'];
+                    /** @type {?} */
+                    var missing = keys.find(function (key) { return !req[key]; });
+                    if (missing) {
+                        throw new Error("Must specify " + missing + " in describe req");
+                    }
+                    /** @type {?} */
+                    var params = {
+                        srs: 'EPSG:4326',
+                        bbox: req.bbox,
+                        height: req.height,
+                        width: req.width,
+                        info_format: 'text/xml',
+                        x: req.x,
+                        y: req.y,
+                        i: req.x,
+                        //WMS 1.3.0
+                        j: req.y //WMS 1.3.0
+                    };
+                    /** @type {?} */
+                    var url = _this.baseUrl + '/' + id + '/describe';
+                    /** @type {?} */
+                    var opts = _this.buildRequest({
+                        method: "GET", url: url, params: params, options: options
+                    });
+                    return _this.execute(opts);
+                })
+                    .catch(function (e) {
+                    /** @type {?} */
+                    var err = new Error("Error describing layer feature: " + e.message);
+                    Object.assign(err, e);
+                    _this.logError('LayerService.describe() - ' + err.message);
+                    return Q.reject(err);
+                });
+            };
+        /**
+         * @param id - GeoPlatform Layer identifier
+         * @param params describing layer request to validate
+         * @param options - optional set of request options to apply to xhr request
+         * @return Promise resolving empty if successful or a message if failed
+         */
+        /**
+         * @param {?} id - GeoPlatform Layer identifier
+         * @param {?} params describing layer request to validate
+         * @param {?=} options - optional set of request options to apply to xhr request
+         * @return {?} Promise resolving empty if successful or a message if failed
+         */
+        LayerService.prototype.validate = /**
+         * @param {?} id - GeoPlatform Layer identifier
+         * @param {?} params describing layer request to validate
+         * @param {?=} options - optional set of request options to apply to xhr request
+         * @return {?} Promise resolving empty if successful or a message if failed
+         */
+            function (id, params, options) {
+                var _this = this;
+                return Q.resolve(params)
+                    .then(function (params) {
+                    if (!params) {
+                        throw new Error("Must provide parameters to use in layer validation");
+                    }
+                    /** @type {?} */
+                    var url = _this.baseUrl + '/' + id + '/validate';
+                    /** @type {?} */
+                    var opts = _this.buildRequest({
+                        method: "GET", url: url, params: params, options: options
+                    });
+                    return _this.execute(opts);
+                })
+                    .catch(function (e) {
+                    /** @type {?} */
+                    var err = new Error("Error validating layer request: " + e.message);
+                    Object.assign(err, e);
+                    _this.logError('LayerService.describe() - ' + err.message);
+                    return Q.reject(err);
+                });
+            };
+        return LayerService;
+    }(ItemService));
+
+    /**
+     * @fileoverview added by tsickle
+     * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
+     */
+    /**
+     * GeoPlatform Service service
+     * service for working with the GeoPlatform API to
+     * retrieve and manipulate service objects.
+     *
+     * @see ItemService
+     */
+    var /**
+     * GeoPlatform Service service
+     * service for working with the GeoPlatform API to
+     * retrieve and manipulate service objects.
+     *
+     * @see ItemService
+     */ ServiceService = /** @class */ (function (_super) {
+        __extends(ServiceService, _super);
+        function ServiceService(url, httpClient) {
+            return _super.call(this, url, httpClient) || this;
+        }
+        /**
+         * @param {?} baseUrl
+         * @return {?}
+         */
+        ServiceService.prototype.setUrl = /**
+         * @param {?} baseUrl
+         * @return {?}
+         */
+            function (baseUrl) {
+                _super.prototype.setUrl.call(this, baseUrl);
+                this.baseUrl = baseUrl + '/api/services';
+            };
+        /**
+         * Fetch metadata from the specified GeoPlatform Service's
+         * web-accessible implementation using either GetCapabilities
+         * or ESRI documentInfo.
+         * @param service - GeoPlatform Service object
+         * @param options - optional set of request options to apply to xhr request
+         * @return Promise resolving service metadata
+         */
+        /**
+         * Fetch metadata from the specified GeoPlatform Service's
+         * web-accessible implementation using either GetCapabilities
+         * or ESRI documentInfo.
+         * @param {?} service - GeoPlatform Service object
+         * @param {?=} options - optional set of request options to apply to xhr request
+         * @return {?} Promise resolving service metadata
+         */
+        ServiceService.prototype.about = /**
+         * Fetch metadata from the specified GeoPlatform Service's
+         * web-accessible implementation using either GetCapabilities
+         * or ESRI documentInfo.
+         * @param {?} service - GeoPlatform Service object
+         * @param {?=} options - optional set of request options to apply to xhr request
+         * @return {?} Promise resolving service metadata
+         */
+            function (service, options) {
+                var _this = this;
+                return Q.resolve(service)
+                    .then(function (svc) {
+                    if (!svc)
+                        throw new Error("Must provide service to get metadata about");
+                    /** @type {?} */
+                    var opts = _this.buildRequest({
+                        method: 'POST', url: _this.baseUrl + '/about', data: svc, options: options
+                    });
+                    return _this.execute(opts);
+                })
+                    .catch(function (e) {
+                    /** @type {?} */
+                    var err = new Error("Error describing service: " + e.message);
+                    Object.assign(err, e);
+                    _this.logError('ServiceService.about() - ' + err.message);
+                    return Q.reject(err);
+                });
+            };
+        /**
+         * @param options - optional set of request options to apply to request
+         * @return Promise resolving service types
+         */
+        /**
+         * @param {?=} options - optional set of request options to apply to request
+         * @return {?} Promise resolving service types
+         */
+        ServiceService.prototype.types = /**
+         * @param {?=} options - optional set of request options to apply to request
+         * @return {?} Promise resolving service types
+         */
+            function (options) {
+                var _this = this;
+                /** @type {?} */
+                var query = new Query()
+                    .types(ItemTypes.STANDARD)
+                    .resourceTypes('ServiceType')
+                    .pageSize(50)
+                    .getQuery();
+                return Q.resolve(query)
+                    .then(function (params) {
+                    /** @type {?} */
+                    var url = _this.apiBase + '/api/items';
+                    /** @type {?} */
+                    var opts = _this.buildRequest({
+                        method: 'GET', url: url, params: params, options: options
+                    });
+                    return _this.execute(opts);
+                })
+                    .then(function (response) { return response.results; })
+                    .catch(function (e) {
+                    /** @type {?} */
+                    var err = new Error("Error fetching service types: " + e.message);
+                    Object.assign(err, e);
+                    _this.logError('ServiceService.types() - ' + err.message);
+                    return Q.reject(err);
+                });
+            };
+        /**
+         * @param service - GP Service definition
+         * @param options - optional set of request options to apply to request
+         * @return Promise resolving imported service
+         */
+        /**
+         * @param {?} service - GP Service definition
+         * @param {?=} options - optional set of request options to apply to request
+         * @return {?} Promise resolving imported service
+         */
+        ServiceService.prototype.import = /**
+         * @param {?} service - GP Service definition
+         * @param {?=} options - optional set of request options to apply to request
+         * @return {?} Promise resolving imported service
+         */
+            function (service, options) {
+                var _this = this;
+                return Q.resolve(service)
+                    .then(function (svc) {
+                    /** @type {?} */
+                    var url = _this.baseUrl + '/import';
+                    /** @type {?} */
+                    var opts = _this.buildRequest({
+                        method: 'POST', url: url, data: svc, options: options
+                    });
+                    return _this.execute(opts);
+                })
+                    .catch(function (e) {
+                    /** @type {?} */
+                    var err = new Error("Error importing service: " + e.message);
+                    Object.assign(err, e);
+                    _this.logError('ServiceService.import() - ' + err.message);
+                    return Q.reject(err);
+                });
+            };
+        /**
+         * @param id - identifier of GP service to harvest layers for
+         * @param options - optional set of request options to apply to request
+         * @return Promise resolving service layers
+         */
+        /**
+         * @param {?} id - identifier of GP service to harvest layers for
+         * @param {?=} options - optional set of request options to apply to request
+         * @return {?} Promise resolving service layers
+         */
+        ServiceService.prototype.harvest = /**
+         * @param {?} id - identifier of GP service to harvest layers for
+         * @param {?=} options - optional set of request options to apply to request
+         * @return {?} Promise resolving service layers
+         */
+            function (id, options) {
+                var _this = this;
+                return Q.resolve(id)
+                    .then(function (id) {
+                    /** @type {?} */
+                    var url = _this.baseUrl + '/' + id + '/harvest';
+                    /** @type {?} */
+                    var opts = _this.buildRequest({
+                        method: 'GET', url: url, options: options
+                    });
+                    return _this.execute(opts);
+                })
+                    .catch(function (e) {
+                    /** @type {?} */
+                    var err = new Error("Error harvesting layers from service: " + e.message);
+                    Object.assign(err, e);
+                    _this.logError('ServiceService.harvest() - ' + err.message);
+                    return Q.reject(err);
+                });
+            };
+        /**
+         * @param id - identifier of GP service to live test
+         * @param options - optional set of request options to apply to request
+         * @return Promise resolving service statistics
+         */
+        /**
+         * @param {?} id - identifier of GP service to live test
+         * @param {?=} options - optional set of request options to apply to request
+         * @return {?} Promise resolving service statistics
+         */
+        ServiceService.prototype.liveTest = /**
+         * @param {?} id - identifier of GP service to live test
+         * @param {?=} options - optional set of request options to apply to request
+         * @return {?} Promise resolving service statistics
+         */
+            function (id, options) {
+                var _this = this;
+                return Q.resolve(id)
+                    .then(function (id) {
+                    /** @type {?} */
+                    var url = _this.baseUrl + '/' + id + '/test';
+                    /** @type {?} */
+                    var opts = _this.buildRequest({
+                        method: 'GET', url: url, options: options
+                    });
+                    return _this.execute(opts);
+                })
+                    .catch(function (e) {
+                    /** @type {?} */
+                    var err = new Error("Error testing service: " + e.message);
+                    Object.assign(err, e);
+                    _this.logError('ServiceService.liveTest() - ' + err.message);
+                    return Q.reject(err);
+                });
+            };
+        /**
+         * @param id - identifier of GP service to fetch statistics about
+         * @param options - optional set of request options to apply to request
+         * @return Promise resolving service statistics
+         */
+        /**
+         * @param {?} id - identifier of GP service to fetch statistics about
+         * @param {?=} options - optional set of request options to apply to request
+         * @return {?} Promise resolving service statistics
+         */
+        ServiceService.prototype.statistics = /**
+         * @param {?} id - identifier of GP service to fetch statistics about
+         * @param {?=} options - optional set of request options to apply to request
+         * @return {?} Promise resolving service statistics
+         */
+            function (id, options) {
+                var _this = this;
+                return Q.resolve(id)
+                    .then(function (id) {
+                    /** @type {?} */
+                    var url = _this.baseUrl + '/' + id + '/statistics';
+                    /** @type {?} */
+                    var opts = _this.buildRequest({
+                        method: 'GET', url: url, options: options
+                    });
+                    return _this.execute(opts);
+                })
+                    .catch(function (e) {
+                    /** @type {?} */
+                    var err = new Error("Error getting service statistics: " + e.message);
+                    Object.assign(err, e);
+                    _this.logError('ServiceService.statistics() - ' + err.message);
+                    return Q.reject(err);
+                });
+            };
+        return ServiceService;
+    }(ItemService));
+
+    /**
+     * @fileoverview added by tsickle
+     * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
+     */
+    /**
+     * GeoPlatform Map service
+     * service for working with the GeoPlatform API to
+     * retrieve and manipulate map objects.
+     *
+     * @see GeoPlatform.ItemService
+     */
+    var /**
+     * GeoPlatform Map service
+     * service for working with the GeoPlatform API to
+     * retrieve and manipulate map objects.
+     *
+     * @see GeoPlatform.ItemService
+     */ GalleryService = /** @class */ (function (_super) {
+        __extends(GalleryService, _super);
+        function GalleryService(url, httpClient) {
+            return _super.call(this, url, httpClient) || this;
+        }
+        /**
+         * @param {?} baseUrl
+         * @return {?}
+         */
+        GalleryService.prototype.setUrl = /**
+         * @param {?} baseUrl
+         * @return {?}
+         */
+            function (baseUrl) {
+                _super.prototype.setUrl.call(this, baseUrl);
+                this.baseUrl = baseUrl + '/api/galleries';
+            };
+        /**
+         * @param {?} galleryId
+         * @param {?} itemObj
+         * @param {?=} options
+         * @return {?}
+         */
+        GalleryService.prototype.addItem = /**
+         * @param {?} galleryId
+         * @param {?} itemObj
+         * @param {?=} options
+         * @return {?}
+         */
+            function (galleryId, itemObj, options) {
+                var _this = this;
+                return Q.resolve(true)
+                    .then(function () {
+                    /** @type {?} */
+                    var url = _this.baseUrl + '/' + galleryId + '/items';
+                    /** @type {?} */
+                    var opts = _this.buildRequest({
+                        method: 'POST', url: url, data: itemObj, options: options
+                    });
+                    return _this.execute(opts);
+                })
+                    .catch(function (e) {
+                    /** @type {?} */
+                    var err = new Error("Error adding item: " + e.message);
+                    Object.assign(err, e);
+                    _this.logError('GalleryService.addItem() - ' + err.message);
+                    return Q.reject(err);
+                });
+            };
+        /**
+         * @param {?} galleryId
+         * @param {?} itemId
+         * @param {?=} options
+         * @return {?}
+         */
+        GalleryService.prototype.removeItem = /**
+         * @param {?} galleryId
+         * @param {?} itemId
+         * @param {?=} options
+         * @return {?}
+         */
+            function (galleryId, itemId, options) {
+                var _this = this;
+                return Q.resolve(this.baseUrl + '/' + galleryId + '/items/' + itemId)
+                    .then(function (url) {
+                    /** @type {?} */
+                    var opts = _this.buildRequest({
+                        method: 'DELETE', url: url, options: options
+                    });
+                    return _this.execute(opts);
+                })
+                    .then(function () { return true; })
+                    .catch(function (e) {
+                    /** @type {?} */
+                    var err = new Error("Error adding item: " + e.message);
+                    Object.assign(err, e);
+                    _this.logError('GalleryService.addItem() - ' + err.message);
+                    return Q.reject(err);
+                });
+            };
+        return GalleryService;
+    }(ItemService));
+
+    /**
+     * @fileoverview added by tsickle
+     * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
+     */
+    var UtilsService = /** @class */ (function () {
+        function UtilsService(url, httpClient) {
+            this.timeout = 30000;
+            this.httpMethods = ["GET", "POST", "PUT", "DELETE", "PATCH"];
+            this.client = httpClient;
+            this.baseUrl = url;
+            this.timeout = Config["timeout"] || 30000;
+        }
+        /**
+         * @param {?} baseUrl
+         * @return {?}
+         */
+        UtilsService.prototype.setUrl = /**
+         * @param {?} baseUrl
+         * @return {?}
+         */
+            function (baseUrl) {
+                this.baseUrl = baseUrl;
+            };
+        /**
+         * @param logger - log service
+         */
+        /**
+         * @param {?} logger - log service
+         * @return {?}
+         */
+        UtilsService.prototype.setLogger = /**
+         * @param {?} logger - log service
+         * @return {?}
+         */
+            function (logger) {
+                this.logger = logger;
+            };
+        /**
+         * @param e - error to log (if logger specified)
+         */
+        /**
+         * @param {?} e - error to log (if logger specified)
+         * @return {?}
+         */
+        UtilsService.prototype.logError = /**
+         * @param {?} e - error to log (if logger specified)
+         * @return {?}
+         */
+            function (e) {
+                if (this.logger && this.logger.error) {
+                    this.logger.error(e);
+                }
+            };
+        /**
+         * @param msg - message to log as debug
+         */
+        /**
+         * @param {?} msg - message to log as debug
+         * @return {?}
+         */
+        UtilsService.prototype.logDebug = /**
+         * @param {?} msg - message to log as debug
+         * @return {?}
+         */
+            function (msg) {
+                if (this.logger && this.logger.debug) {
+                    this.logger.debug(msg);
+                }
+            };
+        /**
+         * @param property - optional capa property to specifically request
+         * @param query - optional query parameters to include with request
+         * @param options - optional config to send with http request
+         * @return Promise resolving capabilities object
+         */
+        /**
+         * @param {?} property - optional capa property to specifically request
+         * @param {?} query - optional query parameters to include with request
+         * @param {?=} options - optional config to send with http request
+         * @return {?} Promise resolving capabilities object
+         */
+        UtilsService.prototype.capabilities = /**
+         * @param {?} property - optional capa property to specifically request
+         * @param {?} query - optional query parameters to include with request
+         * @param {?=} options - optional config to send with http request
+         * @return {?} Promise resolving capabilities object
+         */
+            function (property, query, options) {
+                var _this = this;
+                /** @type {?} */
+                var url = this.baseUrl + '/api/capabilities';
+                if (property)
+                    url += '/' + property;
+                return Q.resolve(url)
+                    .then(function (url) {
+                    /** @type {?} */
+                    var opts = _this.buildRequest({
+                        method: "GET", url: url, params: query || {}, options: options
+                    });
+                    return _this.execute(opts);
+                })
+                    .catch(function (e) {
+                    /** @type {?} */
+                    var err = new Error("Error getting capabilities: " + e.message);
+                    Object.assign(err, e);
+                    _this.logError('UtilsService.capabilities() - ' + err.message);
+                    return Q.reject(err);
+                });
+            };
+        /**
+         * @param file
+         * @param format
+         * @param options
+         * @return Promise
+         */
+        /**
+         * @param {?} file
+         * @param {?} format
+         * @param {?=} options
+         * @return {?} Promise
+         */
+        UtilsService.prototype.parseFile = /**
+         * @param {?} file
+         * @param {?} format
+         * @param {?=} options
+         * @return {?} Promise
+         */
+            function (file, format, options) {
+                var _this = this;
+                /** @type {?} */
+                var url = this.baseUrl + '/api/utils/parse';
+                return Q.resolve(url)
+                    .then(function (url) {
+                    /** @type {?} */
+                    var opts = _this.buildRequest({
+                        method: "POST", url: url,
+                        data: { format: format },
+                        file: file,
+                        formData: true,
+                        //NodeJS (RequestJS)
+                        options: options
+                    });
+                    return _this.execute(opts);
+                })
+                    .then(function (response) { return response; })
+                    .catch(function (e) {
+                    /** @type {?} */
+                    var err = new Error("Error parsing file: " + e.message);
+                    Object.assign(err, e);
+                    _this.logError('UtilsService.parseFile() - ' + err.message);
+                    return Q.reject(err);
+                });
+            };
+        /**
+         * Geolocate the specified argument to a set of candidate locations.
+         * @param value - text string to geolocate (name or lat,lng)
+         * @param options - optional config to send with http request
+         * @return Promise resolving an array of geocoded results
+         */
+        /**
+         * Geolocate the specified argument to a set of candidate locations.
+         * @param {?} value - text string to geolocate (name or lat,lng)
+         * @param {?=} options - optional config to send with http request
+         * @return {?} Promise resolving an array of geocoded results
+         */
+        UtilsService.prototype.locate = /**
+         * Geolocate the specified argument to a set of candidate locations.
+         * @param {?} value - text string to geolocate (name or lat,lng)
+         * @param {?=} options - optional config to send with http request
+         * @return {?} Promise resolving an array of geocoded results
+         */
+            function (value, options) {
+                var _this = this;
+                /** @type {?} */
+                var url = this.baseUrl + '/api/utils/gazetteer';
+                return Q.resolve(url)
+                    .then(function (url) {
+                    /** @type {?} */
+                    var opts = _this.buildRequest({
+                        method: 'GET',
+                        url: url,
+                        params: { location: value },
+                        options: options
+                    });
+                    return _this.execute(opts);
+                })
+                    .then(function (response) { return response; })
+                    .catch(function (e) {
+                    /** @type {?} */
+                    var err = new Error("Error resolving location: " + e.message);
+                    Object.assign(err, e);
+                    _this.logError('UtilsService.locate() - ' + err.message);
+                    return Q.reject(err);
+                });
+            };
+        /* ----------------------------------------------------------- */
+        /**
+         * @param method - one of "GET", "POST", "PUT", "DELETE", "PATCH"
+         * @param url - destination of xhr request
+         * @param params - object to be sent with request as query parameters
+         * @param data - object to be sent with request as body
+         * @param options - optional object defining request options
+         * @return request options for xhr
+         */
+        /**
+         * @param {?} options - optional object defining request options
+         * @return {?} request options for xhr
+         */
+        UtilsService.prototype.buildRequest = /**
+         * @param {?} options - optional object defining request options
+         * @return {?} request options for xhr
+         */
+            function (options) {
+                if (this.httpMethods.indexOf(options["method"]) < 0)
+                    throw new Error("Unsupported HTTP method " + options["method"]);
+                if (!options["url"])
+                    throw new Error("Must specify a URL for HTTP requests");
+                options["timeout"] = this.timeout || Config["timeout"] || 30000;
+                return this.createRequestOpts(options);
+            };
+        /**
+         * @param {?} options
+         * @return {?}
+         */
+        UtilsService.prototype.createRequestOpts = /**
+         * @param {?} options
+         * @return {?}
+         */
+            function (options) {
+                return this.client.createRequestOpts(options);
+            };
+        /**
+         * @param {?} opts
+         * @return {?}
+         */
+        UtilsService.prototype.execute = /**
+         * @param {?} opts
+         * @return {?}
+         */
+            function (opts) {
+                return this.client.execute(opts)
+                    .catch(function (e) {
+                    if (e === null || typeof (e) === 'undefined') {
+                        e = new Error("UtilsService.execute() - Request failed but didn't return an " +
+                            "error. This is most likely because the request timed out");
+                    }
+                    return Q.reject(e);
+                });
+            };
+        return UtilsService;
+    }());
+
+    /**
+     * @fileoverview added by tsickle
+     * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
+     */
+    var AgolQuery = /** @class */ (function () {
+        function AgolQuery() {
+            this._query = {
+                page: 0,
+                size: 10
+            };
+        }
+        /**
+         * @return {?}
+         */
+        AgolQuery.prototype.getQuery = /**
+         * @return {?}
+         */
+            function () {
+                /** @type {?} */
+                var result = {};
+                for (var prop in this._query) {
+                    /** @type {?} */
+                    var value = this._query[prop];
+                    if (value !== null && typeof (value.push) !== 'undefined') {
+                        value = value.join(',');
+                    }
+                    result[prop] = value;
+                }
+                return result;
+            };
+        // ---------------------------------------
+        /**
+         * @param {?} value
+         * @return {?}
+         */
+        AgolQuery.prototype.q = /**
+         * @param {?} value
+         * @return {?}
+         */
+            function (value) { this.setQ(value); return this; };
+        /**
+         * @param {?} value
+         * @return {?}
+         */
+        AgolQuery.prototype.setQ = /**
+         * @param {?} value
+         * @return {?}
+         */
+            function (value) { this._query["q"] = value; };
+        /**
+         * @return {?}
+         */
+        AgolQuery.prototype.getQ = /**
+         * @return {?}
+         */
+            function () { return this._query["q"]; };
+        // ---------------------------------------
+        /**
+         * @param {?} value
+         * @return {?}
+         */
+        AgolQuery.prototype.types = /**
+         * @param {?} value
+         * @return {?}
+         */
+            function (value) {
+                this.setTypes(value);
+                return this;
+            };
+        /**
+         * @param {?} value
+         * @return {?}
+         */
+        AgolQuery.prototype.setTypes = /**
+         * @param {?} value
+         * @return {?}
+         */
+            function (value) {
+                /** @type {?} */
+                var val;
+                if (value && Array.isArray(value))
+                    val = ( /** @type {?} */(value)).join(',');
+                else
+                    val = /** @type {?} */ (value);
+                this._query["types"] = val;
+            };
+        /**
+         * @return {?}
+         */
+        AgolQuery.prototype.getTypes = /**
+         * @return {?}
+         */
+            function () { return this._query["types"]; };
+        // ---------------------------------------
+        /**
+         * @param {?} value
+         * @return {?}
+         */
+        AgolQuery.prototype.groups = /**
+         * @param {?} value
+         * @return {?}
+         */
+            function (value) {
+                this.setGroups(value);
+                return this;
+            };
+        /**
+         * @param {?} value
+         * @return {?}
+         */
+        AgolQuery.prototype.setGroups = /**
+         * @param {?} value
+         * @return {?}
+         */
+            function (value) {
+                /** @type {?} */
+                var val;
+                if (value && Array.isArray(value))
+                    val = ( /** @type {?} */(value)).join(',');
+                else
+                    val = /** @type {?} */ (value);
+                this._query["groups"] = val;
+            };
+        /**
+         * @return {?}
+         */
+        AgolQuery.prototype.getGroups = /**
+         * @return {?}
+         */
+            function () { return this._query["groups"]; };
+        // ---------------------------------------
+        /**
+         * @param {?} value
+         * @return {?}
+         */
+        AgolQuery.prototype.orgs = /**
+         * @param {?} value
+         * @return {?}
+         */
+            function (value) {
+                this.setOrgs(value);
+                return this;
+            };
+        /**
+         * @param {?} value
+         * @return {?}
+         */
+        AgolQuery.prototype.setOrgs = /**
+         * @param {?} value
+         * @return {?}
+         */
+            function (value) {
+                /** @type {?} */
+                var val;
+                if (value && Array.isArray(value))
+                    val = ( /** @type {?} */(value)).join(',');
+                else
+                    val = /** @type {?} */ (value);
+                this._query["orgs"] = val;
+            };
+        /**
+         * @return {?}
+         */
+        AgolQuery.prototype.getOrgs = /**
+         * @return {?}
+         */
+            function () { return this._query["orgs"]; };
+        // ---------------------------------------
+        /**
+         * @param {?} value
+         * @return {?}
+         */
+        AgolQuery.prototype.extent = /**
+         * @param {?} value
+         * @return {?}
+         */
+            function (value) { this.setExtent(value); return this; };
+        /**
+         * @param {?} value
+         * @return {?}
+         */
+        AgolQuery.prototype.setExtent = /**
+         * @param {?} value
+         * @return {?}
+         */
+            function (value) { this._query["bbox"] = value; };
+        /**
+         * @return {?}
+         */
+        AgolQuery.prototype.getExtent = /**
+         * @return {?}
+         */
+            function () { return this._query["bbox"]; };
+        // ---------------------------------------
+        /**
+         * @param sort - form of <field>,<dir> or just field name
+         * @param order - optional, either 'asc' or 'desc'
+         */
+        /**
+         * @param {?} sort - form of <field>,<dir> or just field name
+         * @param {?} order - optional, either 'asc' or 'desc'
+         * @return {?}
+         */
+        AgolQuery.prototype.sort = /**
+         * @param {?} sort - form of <field>,<dir> or just field name
+         * @param {?} order - optional, either 'asc' or 'desc'
+         * @return {?}
+         */
+            function (sort, order) {
+                this.setSort(sort, order);
+                return this;
+            };
+        /**
+         * @param sort - form of <field>,<dir> or just field name
+         * @param order - optional, either 'asc' or 'desc'
+         */
+        /**
+         * @param {?} sort - form of <field>,<dir> or just field name
+         * @param {?} order - optional, either 'asc' or 'desc'
+         * @return {?}
+         */
+        AgolQuery.prototype.setSort = /**
+         * @param {?} sort - form of <field>,<dir> or just field name
+         * @param {?} order - optional, either 'asc' or 'desc'
+         * @return {?}
+         */
+            function (sort, order) {
+                order = order || 'desc';
+                if (sort && sort.indexOf(',') < 0)
+                    sort = sort + ',' + order;
+                this._query["sort"] = sort;
+            };
+        /**
+         * @return {?}
+         */
+        AgolQuery.prototype.getSort = /**
+         * @return {?}
+         */
+            function () { return this._query["sort"]; };
+        /**
+         * @return {?}
+         */
+        AgolQuery.prototype.getSortField = /**
+         * @return {?}
+         */
+            function () { return this._query["sort"].split(',')[0]; };
+        /**
+         * @return {?}
+         */
+        AgolQuery.prototype.getSortOrder = /**
+         * @return {?}
+         */
+            function () { return this._query["sort"].split(',')[1] === 'asc'; };
+        // -----------------------------------------------------------
+        /**
+         * @param page - page of results to fetch
+         */
+        /**
+         * @param {?} page - page of results to fetch
+         * @return {?}
+         */
+        AgolQuery.prototype.page = /**
+         * @param {?} page - page of results to fetch
+         * @return {?}
+         */
+            function (page) {
+                this.setPage(page);
+                return this;
+            };
+        /**
+         * @param {?} page
+         * @return {?}
+         */
+        AgolQuery.prototype.setPage = /**
+         * @param {?} page
+         * @return {?}
+         */
+            function (page) {
+                if (isNaN(page) || page * 1 < 0)
+                    return;
+                this._query["page"] = page * 1;
+            };
+        /**
+         * @return {?}
+         */
+        AgolQuery.prototype.getPage = /**
+         * @return {?}
+         */
+            function () {
+                return this._query["page"];
+            };
+        /**
+         * @return {?}
+         */
+        AgolQuery.prototype.nextPage = /**
+         * @return {?}
+         */
+            function () {
+                this.setPage(this._query["page"] + 1);
+            };
+        /**
+         * @return {?}
+         */
+        AgolQuery.prototype.previousPage = /**
+         * @return {?}
+         */
+            function () {
+                this.setPage(this._query["page"] - 1);
+            };
+        // -----------------------------------------------------------
+        /**
+         * @param size - page size to request
+         */
+        /**
+         * @param {?} size - page size to request
+         * @return {?}
+         */
+        AgolQuery.prototype.pageSize = /**
+         * @param {?} size - page size to request
+         * @return {?}
+         */
+            function (size) {
+                this.setPageSize(size);
+                return this;
+            };
+        /**
+         * @param {?} size
+         * @return {?}
+         */
+        AgolQuery.prototype.setPageSize = /**
+         * @param {?} size
+         * @return {?}
+         */
+            function (size) {
+                if (isNaN(size) || size * 1 < 0)
+                    return;
+                this._query["size"] = size * 1;
+            };
+        /**
+         * @return {?}
+         */
+        AgolQuery.prototype.getPageSize = /**
+         * @return {?}
+         */
+            function () {
+                return this._query["size"];
+            };
+        return AgolQuery;
+    }());
+    var AgolService = /** @class */ (function () {
+        function AgolService(url, httpClient) {
+            this.timeout = 30000;
+            this.httpMethods = ["GET", "POST", "PUT", "DELETE", "PATCH"];
+            this.setUrl(url);
+            this.client = httpClient;
+            this.timeout = 30000;
+        }
+        /**
+         * @param {?} baseUrl
+         * @return {?}
+         */
+        AgolService.prototype.setUrl = /**
+         * @param {?} baseUrl
+         * @return {?}
+         */
+            function (baseUrl) {
+                this.baseUrl = baseUrl + '/api/agol';
+            };
+        // -----------------------------------------------------------------------
+        // AGOL ORGS METHODS
+        /**
+         * @param id - identifier of AGOL organization to fetch
+         * @param options - optional set of request options to apply to xhr request
+         * @return Promise resolving Item object or an error
+         */
+        /**
+         * @param {?} id - identifier of AGOL organization to fetch
+         * @param {?=} options - optional set of request options to apply to xhr request
+         * @return {?} Promise resolving Item object or an error
+         */
+        AgolService.prototype.getOrg = /**
+         * @param {?} id - identifier of AGOL organization to fetch
+         * @param {?=} options - optional set of request options to apply to xhr request
+         * @return {?} Promise resolving Item object or an error
+         */
+            function (id, options) {
+                var _this = this;
+                return Q.resolve(id)
+                    .then(function (id) {
+                    /** @type {?} */
+                    var opts = _this.buildRequest({
+                        method: "GET", url: _this.baseUrl + '/orgs/' + id, options: options
+                    });
+                    return _this.execute(opts);
+                })
+                    .catch(function (e) {
+                    /** @type {?} */
+                    var err = new Error("AgolService.getOrg() - Error fetching org " + id + ": " + e.message);
+                    Object.assign(err, e);
+                    return Q.reject(err);
+                });
+            };
+        /**
+         * @param arg - either JS object of query parameters or Query instance
+         * @param options - optional set of request options to apply to xhr request
+         * @return Promise resolving search results
+         */
+        /**
+         * @param {?} arg - either JS object of query parameters or Query instance
+         * @param {?=} options - optional set of request options to apply to xhr request
+         * @return {?} Promise resolving search results
+         */
+        AgolService.prototype.searchOrgs = /**
+         * @param {?} arg - either JS object of query parameters or Query instance
+         * @param {?=} options - optional set of request options to apply to xhr request
+         * @return {?} Promise resolving search results
+         */
+            function (arg, options) {
+                var _this = this;
+                return Q.resolve(arg)
+                    .then(function (params) {
+                    /** @type {?} */
+                    var ps = params.getQuery();
+                    /** @type {?} */
+                    var opts = _this.buildRequest({
+                        method: "GET",
+                        url: _this.baseUrl + '/orgs',
+                        params: ps,
+                        options: options
+                    });
+                    return _this.execute(opts);
+                })
+                    .catch(function (e) {
+                    /** @type {?} */
+                    var err = new Error("AgolService.searchOrgs() - Error searching orgs: " + e.message);
+                    Object.assign(err, e);
+                    return Q.reject(err);
+                });
+            };
+        // -----------------------------------------------------------------------
+        // AGOL GROUPS METHODS
+        /**
+         * @param id - identifier of AGOL group to fetch
+         * @param options - optional set of request options to apply to xhr request
+         * @return Promise resolving Item object or an error
+         */
+        /**
+         * @param {?} id - identifier of AGOL group to fetch
+         * @param {?=} options - optional set of request options to apply to xhr request
+         * @return {?} Promise resolving Item object or an error
+         */
+        AgolService.prototype.getGroup = /**
+         * @param {?} id - identifier of AGOL group to fetch
+         * @param {?=} options - optional set of request options to apply to xhr request
+         * @return {?} Promise resolving Item object or an error
+         */
+            function (id, options) {
+                var _this = this;
+                return Q.resolve(id)
+                    .then(function (id) {
+                    /** @type {?} */
+                    var opts = _this.buildRequest({
+                        method: "GET", url: _this.baseUrl + '/groups/' + id, options: options
+                    });
+                    return _this.execute(opts);
+                })
+                    .catch(function (e) {
+                    /** @type {?} */
+                    var err = new Error("AgolService.getGroup() - Error fetching group " + id + ": " + e.message);
+                    Object.assign(err, e);
+                    return Q.reject(err);
+                });
+            };
+        /**
+         * @param arg - either JS object of query parameters or AgolQuery instance
+         * @param options - optional set of request options to apply to xhr request
+         * @return Promise resolving search results
+         */
+        /**
+         * @param {?} arg - either JS object of query parameters or AgolQuery instance
+         * @param {?=} options - optional set of request options to apply to xhr request
+         * @return {?} Promise resolving search results
+         */
+        AgolService.prototype.searchGroups = /**
+         * @param {?} arg - either JS object of query parameters or AgolQuery instance
+         * @param {?=} options - optional set of request options to apply to xhr request
+         * @return {?} Promise resolving search results
+         */
+            function (arg, options) {
+                var _this = this;
+                return Q.resolve(arg)
+                    .then(function (params) {
+                    /** @type {?} */
+                    var ps = params.getQuery();
+                    /** @type {?} */
+                    var opts = _this.buildRequest({
+                        method: "GET",
+                        url: _this.baseUrl + '/groups',
+                        params: ps,
+                        options: options
+                    });
+                    return _this.execute(opts);
+                })
+                    .catch(function (e) {
+                    /** @type {?} */
+                    var err = new Error("AgolService.searchGroups() - Error searching groups: " + e.message);
+                    Object.assign(err, e);
+                    return Q.reject(err);
+                });
+            };
+        // -----------------------------------------------------------------------
+        // AGOL ITEMS METHODS
+        /**
+         * @param id - identifier of AGOL item to fetch
+         * @param options - optional set of request options to apply to xhr request
+         * @return Promise resolving Item object or an error
+         */
+        /**
+         * @param {?} id - identifier of AGOL item to fetch
+         * @param {?=} options - optional set of request options to apply to xhr request
+         * @return {?} Promise resolving Item object or an error
+         */
+        AgolService.prototype.getItem = /**
+         * @param {?} id - identifier of AGOL item to fetch
+         * @param {?=} options - optional set of request options to apply to xhr request
+         * @return {?} Promise resolving Item object or an error
+         */
+            function (id, options) {
+                var _this = this;
+                return Q.resolve(id)
+                    .then(function (id) {
+                    /** @type {?} */
+                    var opts = _this.buildRequest({
+                        method: "GET",
+                        url: _this.baseUrl + '/items/' + id,
+                        options: options
+                    });
+                    return _this.execute(opts);
+                })
+                    .catch(function (e) {
+                    /** @type {?} */
+                    var err = new Error("AgolService.getItem() - Error fetching item " + id + ": " + e.message);
+                    Object.assign(err, e);
+                    return Q.reject(err);
+                });
+            };
+        /**
+         * @param arg - either JS object of query parameters or AgolQuery instance
+         * @param options - optional set of request options to apply to xhr request
+         * @return Promise resolving search results
+         */
+        /**
+         * @param {?} arg - either JS object of query parameters or AgolQuery instance
+         * @param {?=} options - optional set of request options to apply to xhr request
+         * @return {?} Promise resolving search results
+         */
+        AgolService.prototype.searchItems = /**
+         * @param {?} arg - either JS object of query parameters or AgolQuery instance
+         * @param {?=} options - optional set of request options to apply to xhr request
+         * @return {?} Promise resolving search results
+         */
+            function (arg, options) {
+                var _this = this;
+                return Q.resolve(arg)
+                    .then(function (params) {
+                    /** @type {?} */
+                    var ps = params.getQuery();
+                    /** @type {?} */
+                    var opts = _this.buildRequest({
+                        method: "GET",
+                        url: _this.baseUrl + '/items',
+                        params: ps,
+                        options: options
+                    });
+                    return _this.execute(opts);
+                })
+                    .catch(function (e) {
+                    /** @type {?} */
+                    var err = new Error("AgolService.searchItems() - Error searching items: " + e.message);
+                    Object.assign(err, e);
+                    return Q.reject(err);
+                });
+            };
+        /* --------------------------- */
+        /**
+         * @param {?} obj
+         * @return {?}
+         */
+        AgolService.prototype.getAgolId = /**
+         * @param {?} obj
+         * @return {?}
+         */
+            function (obj) {
+                if (!obj)
+                    return null;
+                if (!obj.type)
+                    return null;
+                if (ItemTypes.ORGANIZATION === obj.type || 'Group' === obj.type) {
+                    return obj.id;
+                }
+                if (!obj.identifiers || !obj.identifiers.length)
+                    return null;
+                /** @type {?} */
+                var ids = obj.identifiers.filter(function (id) { return ~id.indexOf('agol:'); });
+                if (!ids.length)
+                    return null;
+                return ids[0].replace('agol:', '');
+            };
+        /* ----------------------------------------------------------- */
+        /**
+         * @param method - one of "GET", "POST", "PUT", "DELETE", "PATCH"
+         * @param url - destination of xhr request
+         * @param params - object to be sent with request as query parameters
+         * @param data - object to be sent with request as body
+         * @param options - optional object defining request options
+         * @return request options for xhr
+         */
+        /**
+         * @param {?} options - optional object defining request options
+         * @return {?} request options for xhr
+         */
+        AgolService.prototype.buildRequest = /**
+         * @param {?} options - optional object defining request options
+         * @return {?} request options for xhr
+         */
+            function (options) {
+                if (this.httpMethods.indexOf(options["method"]) < 0)
+                    throw new Error("Unsupported HTTP method " + options["method"]);
+                if (!options["url"])
+                    throw new Error("Must specify a URL for HTTP requests");
+                options["timeout"] = this.timeout || Config["timeout"] || 30000;
+                return this.createRequestOpts(options);
+            };
+        /**
+         * @param {?} options
+         * @return {?}
+         */
+        AgolService.prototype.createRequestOpts = /**
+         * @param {?} options
+         * @return {?}
+         */
+            function (options) {
+                return this.client.createRequestOpts(options);
+            };
+        /**
+         * @param {?} opts
+         * @return {?}
+         */
+        AgolService.prototype.execute = /**
+         * @param {?} opts
+         * @return {?}
+         */
+            function (opts) {
+                return this.client.execute(opts)
+                    .catch(function (e) {
+                    if (e === null || typeof (e) === 'undefined') {
+                        e = new Error("AGOLService.execute() - Request failed but didn't return an " +
+                            "error. This is most likely because the request timed out");
+                    }
+                    return Q.reject(e);
+                });
+            };
+        return AgolService;
+    }());
+
+    /**
+     * @fileoverview added by tsickle
+     * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
+     */
+    /** @type {?} */
+    var Categories = {
+        UNKNOWN: 'Unknown Category',
+        DATASET: 'Dataset',
+        SERVICE: 'Service',
+        LAYER: 'Layer',
+        MAP: 'Map',
+        GALLERY: 'Gallery',
+        COMMUNITY: 'Community',
+        CONTACT: 'Contact',
+        ORGANIZATION: 'Organization',
+        CONCEPT: 'Concept',
+        CONCEPT_SCHEME: 'Concept Scheme',
+        APPLICATION: 'Application',
+        TOPIC: 'Topic',
+        WEBSITE: 'WebSite',
+        RIGHTS_STATEMENT: 'RightsStatement',
+        KNOWLEDGE_GRAPH: 'Knowledge Graph',
+        USER: 'User',
+        COMMUNITY_POST: 'Community Post',
+        //post within a community portal
+        COMMUNITY_PAGE: 'Community Page',
+        //page within a community portal
+        APP_PAGE: 'Application Page',
+    };
+    /** @type {?} */
+    var Events = {
+        ACCESSED: 'Accessed',
+        //related item was accessed using API
+        DISPLAYED: 'Displayed',
+        //related item was displayed in a native form (map)
+        VIEWED: 'Viewed',
+        //related item was viewed in general form (metadata)
+        CREATED: 'Created',
+        EDITED: 'Edited',
+        DELETED: 'Deleted'
+    };
+    /**
+     * @param {?} type
+     * @return {?}
+     */
+    function getCategory(type) {
+        /** @type {?} */
+        var result = Categories["UNKNOWN"];
+        if (type) {
+            /** @type {?} */
+            var cats = Object.keys(Categories).map(function (k) { return Categories[k]; });
+            //if existing category was specified
+            if (~cats.indexOf(type))
+                return type;
+            //if an ItemType with prefix was specified (strip off prefix)
+            else if (~type.indexOf(':')) {
+                /** @type {?} */
+                var cat = type.split(':')[1];
+                if (~cats.indexOf(cat))
+                    return cat;
+            }
+        }
+        return result;
+    }
+    /**
+     *
+     */
+    var /**
+     *
+     */ Event = /** @class */ (function () {
+        function Event(category, type, item, related) {
+            this.item = null;
+            this.related = null;
+            if (!category || !type) {
+                throw new Error("TrackingService Event - Must specific an event " +
+                    "category and event type when constructing events");
+            }
+            this.category = category;
+            this.type = type;
+            this.setItem(item);
+            this.setRelated(related);
+        }
+        /**
+         * @return {?}
+         */
+        Event.prototype.getCategory = /**
+         * @return {?}
+         */
+            function () { return this.category; };
+        /**
+         * @return {?}
+         */
+        Event.prototype.getType = /**
+         * @return {?}
+         */
+            function () { return this.type; };
+        /**
+         * @return {?}
+         */
+        Event.prototype.getItem = /**
+         * @return {?}
+         */
+            function () { return this.item; };
+        /**
+         * @param {?} item
+         * @return {?}
+         */
+        Event.prototype.setItem = /**
+         * @param {?} item
+         * @return {?}
+         */
+            function (item) { this.item = item ? (item.id || item) : null; };
+        /**
+         * @return {?}
+         */
+        Event.prototype.getRelated = /**
+         * @return {?}
+         */
+            function () { return this.related; };
+        /**
+         * @param {?} related
+         * @return {?}
+         */
+        Event.prototype.setRelated = /**
+         * @param {?} related
+         * @return {?}
+         */
+            function (related) {
+                this.related = related ? (related.id || related) : null;
+            };
+        return Event;
+    }());
+    /**
+     * @param {?} eventType - type of event being created
+     * @param {?} item - GeoPlatform Item instance
+     * @return {?} list of event objects
+     */
+    function TrackingEventFactory(eventType, item) {
+        /** @type {?} */
+        var result = /** @type {?} */ ([]);
+        if (eventType && item && item.type) {
+            if (ItemTypes.MAP === item.type) {
+                result.push(new Event(Categories["MAP"], eventType, item));
+                if (Events["DISPLAYED"] === eventType) {
+                    item.layers.forEach(function (layerState) {
+                        if (layerState.layer) {
+                            /** @type {?} */
+                            var layerEvents = TrackingEventFactory(eventType, layerState.layer)
+                                .filter(function (e) { return e !== null; });
+                            if (layerEvents && layerEvents.length) {
+                                result = result.concat(layerEvents);
+                            }
+                        }
+                    });
+                    if (item.baseLayer) {
+                        /** @type {?} */
+                        var baseEvents = TrackingEventFactory(eventType, item.baseLayer)
+                            .filter(function (e) { return e !== null; });
+                        if (baseEvents && baseEvents.length)
+                            result = result.concat(baseEvents);
+                    }
+                }
+            }
+            else if (ItemTypes.LAYER === item.type) {
+                result.push(new Event(Categories["LAYER"], eventType, item));
+                if (Events["DISPLAYED"] === eventType && item.services && item.services.length) {
+                    result.push(new Event(Categories["SERVICE"], eventType, item.services[0]));
+                }
+            }
+            else {
+                /** @type {?} */
+                var category = getCategory(item.type);
+                result.push(new Event(category, eventType, item));
+            }
+        }
+        // else {
+        //     if(!event) console.log("Missing event");
+        //     if(!item) console.log("Missing item");
+        //     if(!item.type) console.log("Missing item type");
+        // }
+        return result;
+    }
+    /**
+     *
+     */
+    var /**
+     *
+     */ DefaultTrackingServiceProvider = /** @class */ (function () {
+        function DefaultTrackingServiceProvider() {
+        }
+        /**
+         * @param {?} category
+         * @param {?} event
+         * @param {?=} item
+         * @param {?=} related
+         * @return {?}
+         */
+        DefaultTrackingServiceProvider.prototype.logEvent = /**
+         * @param {?} category
+         * @param {?} event
+         * @param {?=} item
+         * @param {?=} related
+         * @return {?}
+         */
+            function (category, event, item, 
+            // @ts-ignore
+            // @ts-ignore
+            related) {
+                console.log("EVENT (" + category + ") - " + event + " : " + item);
+            };
+        // logPageView( view, data ) {
+        //     console.log("PAGEVIEW " + view + (data ? " : " + JSON.stringify(data) : '') );
+        // }
+        /**
+         * @param {?} params
+         * @param {?} resultCount
+         * @return {?}
+         */
+        DefaultTrackingServiceProvider.prototype.logSearch = /**
+         * @param {?} params
+         * @param {?} resultCount
+         * @return {?}
+         */
+            function (params, resultCount) {
+                console.log("Query : " + JSON.stringify(params) + " found " + resultCount + " matches");
+            };
+        return DefaultTrackingServiceProvider;
+    }());
+    /**
+     * TrackingService
+     *
+     * Service for logging events related to usage of the GeoPlatform and its data
+     *
+     * Example:
+     *
+     *   import { TrackingService, EventCategories, EventTypes } from 'geoplatform.client';
+     *
+     *   let tracker = new TrackingService();
+     *   tracker.setProvider( ... );
+     *   tracker.event( Event.of(EventCategories.MAP, EventTypes.VIEWED, map) );
+     *
+     * Multi-event example:
+     *
+     *   import {
+     *      TrackingService, TrackingEventCategories, TrackingEventTypes, TrackingEventFactory
+     *   } from 'geoplatform.client';
+     *
+     *   let tracker = new TrackingService();
+     *   tracker.setProvider( ... );
+     *
+     *   let events = [
+     *       TrackingEvent.of( TrackingCategories.MAP, TrackingEventTypes.VIEWED, this.map )
+     *       TrackingEvent.of( TrackingCategories.LAYER, TrackingEventTypes.VIEWED, this.map.baseLayer )
+     *   ];
+     *   tracker.event(events);
+     *
+     *   //OR use the event factory:
+     *   tracker.event( TrackingEventFactory(EventTypes.VIEWED, this.map) );
+     */
+    var /**
+     * TrackingService
+     *
+     * Service for logging events related to usage of the GeoPlatform and its data
+     *
+     * Example:
+     *
+     *   import { TrackingService, EventCategories, EventTypes } from 'geoplatform.client';
+     *
+     *   let tracker = new TrackingService();
+     *   tracker.setProvider( ... );
+     *   tracker.event( Event.of(EventCategories.MAP, EventTypes.VIEWED, map) );
+     *
+     * Multi-event example:
+     *
+     *   import {
+     *      TrackingService, TrackingEventCategories, TrackingEventTypes, TrackingEventFactory
+     *   } from 'geoplatform.client';
+     *
+     *   let tracker = new TrackingService();
+     *   tracker.setProvider( ... );
+     *
+     *   let events = [
+     *       TrackingEvent.of( TrackingCategories.MAP, TrackingEventTypes.VIEWED, this.map )
+     *       TrackingEvent.of( TrackingCategories.LAYER, TrackingEventTypes.VIEWED, this.map.baseLayer )
+     *   ];
+     *   tracker.event(events);
+     *
+     *   //OR use the event factory:
+     *   tracker.event( TrackingEventFactory(EventTypes.VIEWED, this.map) );
+     */ TrackingService = /** @class */ (function () {
+        function TrackingService(options) {
+            this.provider = null;
+            if (options && typeof (options) === 'object')
+                Object.assign(this, options);
+            if (!this.provider)
+                this.setProvider(new DefaultTrackingServiceProvider());
+        }
+        /**
+         * @param provider -
+         */
+        /**
+         * @param {?} provider -
+         * @return {?}
+         */
+        TrackingService.prototype.setProvider = /**
+         * @param {?} provider -
+         * @return {?}
+         */
+            function (provider) {
+                if (provider)
+                    this.provider = provider;
+            };
+        /**
+         * @param event - event to log
+         * @return TrackingService
+         */
+        /**
+         * @param {?} event - event to log
+         * @return {?} TrackingService
+         */
+        TrackingService.prototype.event = /**
+         * @param {?} event - event to log
+         * @return {?} TrackingService
+         */
+            function (event) {
+                this.logEvent(event);
+                return this;
+            };
+        /**
+         * @param event - event to log
+         */
+        /**
+         * @param {?} event - event to log
+         * @return {?}
+         */
+        TrackingService.prototype.logEvent = /**
+         * @param {?} event - event to log
+         * @return {?}
+         */
+            function (event) {
+                var _this = this;
+                if (!this.provider || !this.provider.logEvent || !event)
+                    return;
+                if (Array.isArray(event)) {
+                    /** @type {?} */
+                    var events = /** @type {?} */ (event);
+                    events.forEach(function (evt) { return _this.logEvent(evt); });
+                }
+                else {
+                    /** @type {?} */
+                    var evt = /** @type {?} */ (event);
+                    try {
+                        this.provider.logEvent(evt.getCategory(), evt.getType(), evt.getItem(), evt.getRelated());
+                    }
+                    catch (e) {
+                        console.log("TrackingService.logEvent() - Error logging event (" +
+                            evt.getCategory() + ", " + evt.getType() + ", " +
+                            evt.getItem() + ") - " + e.message);
+                    }
+                }
+            };
+        /**
+         * @param view - name of the view being activated
+         * @param data - additional context to supply for the event
+         * @return TrackingService
+         * @deprecated use svc.event( new Event(EventCategories.APP_PAGE, EventTypes.VIEWED, pageId) )
+         */
+        /**
+         * @deprecated use svc.event( new Event(EventCategories.APP_PAGE, EventTypes.VIEWED, pageId) )
+         * @param {?} view - name of the view being activated
+         * @param {?} data - additional context to supply for the event
+         * @return {?} TrackingService
+         */
+        TrackingService.prototype.pageView = /**
+         * @deprecated use svc.event( new Event(EventCategories.APP_PAGE, EventTypes.VIEWED, pageId) )
+         * @param {?} view - name of the view being activated
+         * @param {?} data - additional context to supply for the event
+         * @return {?} TrackingService
+         */
+            function (view, data) {
+                this.logPageView(view, data);
+                return this;
+            };
+        /**
+         * @param view - name of the view being activated
+         * @param data - additional context to supply for the event
+         * @deprecated use svc.logEvent( new Event(EventCategories.APP_PAGE, EventTypes.VIEWED, pageId) )
+         */
+        /**
+         * @deprecated use svc.logEvent( new Event(EventCategories.APP_PAGE, EventTypes.VIEWED, pageId) )
+         * @param {?} view - name of the view being activated
+         * @param {?=} data - additional context to supply for the event
+         * @return {?}
+         */
+        TrackingService.prototype.logPageView = /**
+         * @deprecated use svc.logEvent( new Event(EventCategories.APP_PAGE, EventTypes.VIEWED, pageId) )
+         * @param {?} view - name of the view being activated
+         * @param {?=} data - additional context to supply for the event
+         * @return {?}
+         */
+            function (view, 
+            // @ts-ignore
+            // @ts-ignore
+            data) {
+                this.logEvent(new Event(Categories["APP_PAGE"], Events["VIEWED"], view));
+                // if(this.provider && this.provider.logPageView) {
+                //     this.provider.logPageView(view, data);
+                // }
+            };
+        /**
+         * @param params
+         * @param resultCount
+         */
+        /**
+         * @param {?} params
+         * @param {?} resultCount
+         * @return {?}
+         */
+        TrackingService.prototype.logSearch = /**
+         * @param {?} params
+         * @param {?} resultCount
+         * @return {?}
+         */
+            function (params, resultCount) {
+                this.provider.logSearch(params, resultCount);
+            };
+        return TrackingService;
+    }());
+
+    /**
+     * @fileoverview added by tsickle
+     * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
+     */
+    var KGService = /** @class */ (function () {
+        function KGService(url, httpClient) {
+            this.timeout = 30000;
+            this.httpMethods = ["GET", "POST", "PUT", "DELETE", "PATCH"];
+            this.setUrl(url);
+            this.client = httpClient;
+        }
+        /**
+         * @param {?} baseUrl
+         * @return {?}
+         */
+        KGService.prototype.setUrl = /**
+         * @param {?} baseUrl
+         * @return {?}
+         */
+            function (baseUrl) {
+                this.apiBase = baseUrl;
+                this.baseUrl = baseUrl + '/api/recommender';
+            };
+        /**
+         * @param query - optional query parameters to include with request
+         * @param options - optional config to send with http request
+         * @return Promise resolving recommended concepts as search results
+         */
+        /**
+         * @param {?} query - optional query parameters to include with request
+         * @param {?=} options - optional config to send with http request
+         * @return {?} Promise resolving recommended concepts as search results
+         */
+        KGService.prototype.suggest = /**
+         * @param {?} query - optional query parameters to include with request
+         * @param {?=} options - optional config to send with http request
+         * @return {?} Promise resolving recommended concepts as search results
+         */
+            function (query, options) {
+                /** @type {?} */
+                var url = this.baseUrl + '/suggest';
+                return this._search(url, query, options)
+                    .catch(function (e) {
+                    /** @type {?} */
+                    var err = new Error("KGService.suggest() - Error suggesting concepts: " + e.message);
+                    Object.assign(err, e);
+                    return Q.reject(err);
+                });
+            };
+        /**
+         * @param query - optional query parameters to include with request
+         * @param options - optional config to send with http request
+         * @return Promise resolving concept types as search results
+         */
+        /**
+         * @param {?} query - optional query parameters to include with request
+         * @param {?=} options - optional config to send with http request
+         * @return {?} Promise resolving concept types as search results
+         */
+        KGService.prototype.types = /**
+         * @param {?} query - optional query parameters to include with request
+         * @param {?=} options - optional config to send with http request
+         * @return {?} Promise resolving concept types as search results
+         */
+            function (query, options) {
+                /** @type {?} */
+                var url = this.baseUrl + '/types';
+                return this._search(url, query, options)
+                    .catch(function (e) {
+                    /** @type {?} */
+                    var err = new Error("KGService.types() - Error searching types: " + e.message);
+                    Object.assign(err, e);
+                    return Q.reject(err);
+                });
+            };
+        /**
+         * @param query - optional query parameters to include with request
+         * @param options - optional config to send with http request
+         * @return Promise resolving concept sources as search results
+         */
+        /**
+         * @param {?} query - optional query parameters to include with request
+         * @param {?=} options - optional config to send with http request
+         * @return {?} Promise resolving concept sources as search results
+         */
+        KGService.prototype.sources = /**
+         * @param {?} query - optional query parameters to include with request
+         * @param {?=} options - optional config to send with http request
+         * @return {?} Promise resolving concept sources as search results
+         */
+            function (query, options) {
+                /** @type {?} */
+                var url = this.baseUrl + '/sources';
+                return this._search(url, query, options)
+                    .catch(function (e) {
+                    /** @type {?} */
+                    var err = new Error("KGService.sources() - Error searching sources: " + e.message);
+                    Object.assign(err, e);
+                    return Q.reject(err);
+                });
+            };
+        /* ----------------------------------------------------------- */
+        /**
+         * internal method used by exposed methods
+         */
+        /**
+         * internal method used by exposed methods
+         * @param {?} url
+         * @param {?} query
+         * @param {?=} options
+         * @return {?}
+         */
+        KGService.prototype._search = /**
+         * internal method used by exposed methods
+         * @param {?} url
+         * @param {?} query
+         * @param {?=} options
+         * @return {?}
+         */
+            function (url, query, options) {
+                var _this = this;
+                return Q.resolve(true)
+                    .then(function () {
+                    /** @type {?} */
+                    var q = query.getQuery();
+                    /** @type {?} */
+                    var opts = _this.buildRequest({
+                        method: "GET", url: url, params: q, options: options
+                    });
+                    return _this.execute(opts);
+                });
+            };
+        /**
+         * @param method - one of "GET", "POST", "PUT", "DELETE", "PATCH"
+         * @param url - destination of xhr request
+         * @param params - object to be sent with request as query parameters
+         * @param data - object to be sent with request as body
+         * @param options - optional object defining request options
+         * @return request options for xhr
+         */
+        /**
+         * @param {?} options - optional object defining request options
+         * @return {?} request options for xhr
+         */
+        KGService.prototype.buildRequest = /**
+         * @param {?} options - optional object defining request options
+         * @return {?} request options for xhr
+         */
+            function (options) {
+                if (this.httpMethods.indexOf(options["method"]) < 0)
+                    throw new Error("Unsupported HTTP method " + options["method"]);
+                if (!options["url"])
+                    throw new Error("Must specify a URL for HTTP requests");
+                options["timeout"] = this.timeout || Config["timeout"] || 30000;
+                return this.createRequestOpts(options);
+            };
+        /**
+         * @param {?} options
+         * @return {?}
+         */
+        KGService.prototype.createRequestOpts = /**
+         * @param {?} options
+         * @return {?}
+         */
+            function (options) {
+                return this.client.createRequestOpts(options);
+            };
+        /**
+         * @param {?} opts
+         * @return {?}
+         */
+        KGService.prototype.execute = /**
+         * @param {?} opts
+         * @return {?}
+         */
+            function (opts) {
+                return this.client.execute(opts)
+                    .catch(function (e) {
+                    if (e === null || typeof (e) === 'undefined') {
+                        e = new Error("KGService.execute() - Request failed but didn't return an " +
+                            "error. This is most likely because the request timed out");
+                    }
+                    return Q.reject(e);
+                });
+            };
+        return KGService;
+    }());
+
+    /**
+     * @fileoverview added by tsickle
+     * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
+     */
+    /** *
+     * \@param arg - string type or object with type property
+     * \@param baseUrl - base endpoint of GeoPlatform API
+     * \@return ItemService
+      @type {?} */
+    var ServiceFactory = function (arg, baseUrl, httpClient) {
+        /** @type {?} */
+        var type = (typeof (arg) === 'string') ?
+            arg : (arg && arg.type ? arg.type : null);
+        if (!type)
+            throw new Error("Must provide a type or object with a type specified");
+        if (!baseUrl)
+            throw new Error("Must provide a base url");
+        if (!httpClient)
+            throw new Error("Must provide an http client to use to make requests");
+        switch (type) {
+            case ItemTypes.LAYER: return new LayerService(baseUrl, httpClient);
+            case ItemTypes.SERVICE: return new ServiceService(baseUrl, httpClient);
+            case ItemTypes.MAP: return new MapService(baseUrl, httpClient);
+            case ItemTypes.GALLERY: return new GalleryService(baseUrl, httpClient);
+            case ItemTypes.DATASET: return new DatasetService(baseUrl, httpClient);
+            default: return new ItemService(baseUrl, httpClient);
+        }
+    };
+
+    /**
+     * @fileoverview added by tsickle
+     * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
+     */
+    Polyfills();
+
+    /**
+     * @fileoverview added by tsickle
+     * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
+     */
+
+    exports.GPError = GPError;
+    exports.ItemTypes = ItemTypes;
+    exports.QueryParameters = Parameters;
+    exports.QueryFacets = Facets;
+    exports.Query = Query;
+    exports.QueryFactory = queryFactory;
+    exports.QueryFields = Fields;
+    exports.KGQuery = KGQuery;
+    exports.KGClassifiers = classifiers;
+    exports.AgolQuery = AgolQuery;
+    exports.Config = Config;
+    exports.GPHttpClient = GPHttpClient;
+    exports.XHRHttpClient = XHRHttpClient;
+    exports.ItemService = ItemService;
+    exports.DatasetService = DatasetService;
+    exports.MapService = MapService;
+    exports.LayerService = LayerService;
+    exports.ServiceService = ServiceService;
+    exports.GalleryService = GalleryService;
+    exports.UtilsService = UtilsService;
+    exports.KGService = KGService;
+    exports.ServiceFactory = ServiceFactory;
+    exports.AgolService = AgolService;
+    exports.TrackingEvent = Event;
+    exports.TrackingService = TrackingService;
+    exports.TrackingCategories = Categories;
+    exports.TrackingTypes = Events;
+    exports.TrackingEventFactory = TrackingEventFactory;
+
+    Object.defineProperty(exports, '__esModule', { value: true });
+
+})));
+
+//# sourceMappingURL=geoplatform-client.umd.js.map

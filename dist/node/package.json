@@ -1,0 +1,44 @@
+{
+  "module": "../fesm5/geoplatform-client-node.js",
+  "typings": "geoplatform-client-node.d.ts",
+  "whitelistedNonPeerDependencies": [
+    "."
+  ],
+  "private": true,
+  "peerDependencies": {
+    "request": "^2.76.0"
+  },
+  "devDependencies": {
+    "@types/jasmine": "~2.8.3",
+    "@types/jasminewd2": "~2.0.2",
+    "@types/node": "~6.0.60",
+    "@types/q": "^1.5.1",
+    "axios": "^0.18.0",
+    "codelyzer": "^4.0.1",
+    "core-js": "^2.4.1",
+    "jasmine-core": "~2.8.0",
+    "jasmine-spec-reporter": "~4.2.1",
+    "karma": "~2.0.0",
+    "karma-chrome-launcher": "~2.2.0",
+    "karma-coverage-istanbul-reporter": "^1.2.1",
+    "karma-jasmine": "~1.1.0",
+    "karma-jasmine-html-reporter": "^0.2.2",
+    "ng-packagr": "^4.7.0",
+    "protractor": "~5.1.2",
+    "request": "^2.76.0",
+    "ts-node": "~4.1.0",
+    "tslint": "~5.9.1",
+    "typescript": "^2.9.2",
+    "zone.js": "^0.8.19",
+    "mock-require": "^3.0.3"
+  },
+  "main": "../bundles/geoplatform-client-node.umd.js",
+  "es2015": "../fesm2015/geoplatform-client-node.js",
+  "esm5": "../esm5/node/geoplatform-client-node.js",
+  "esm2015": "../esm2015/node/geoplatform-client-node.js",
+  "fesm5": "../fesm5/geoplatform-client-node.js",
+  "fesm2015": "../fesm2015/geoplatform-client-node.js",
+  "metadata": "geoplatform-client-node.metadata.json",
+  "sideEffects": false,
+  "name": "@geoplatform/client/node"
+}

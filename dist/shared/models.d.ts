@@ -20,6 +20,8 @@ export interface Asset extends Item {
     contacts?: Contact[];
     assets?: Asset[];
     classifiers?: any;
+    href?: string;
+    landingPage?: string;
     thumbnail?: {
         url?: string;
         contentData?: string;
@@ -59,6 +61,16 @@ export interface Gallery extends Asset {
         assetId: string;
         assetType: string;
     }[];
+}
+export interface Community extends Asset {
+    members?: any[];
+}
+export interface Topic extends Asset {
+    subTopicOf?: Topic;
+}
+export interface Application extends Asset {
+}
+export interface WebSite extends Asset {
 }
 export interface Organization extends Item {
     orgName: string;

@@ -39,6 +39,7 @@ const Fields : KVP<string> = {
     TEMPORAL            : 'temporal',
     THEMES              : 'themes',
     THUMBNAIL           : 'thumbnail',
+    TOPICS              : 'topics',
     USED_BY             : 'usedBy',
     VISIBILITY          : 'visibility',
     LANDING_PAGE        : 'landingPage'
@@ -68,6 +69,7 @@ const Facets : KVP<string> = {
     SPEED               : 'speed',
     STATUS              : 'status',
     THEMES              : 'themes',
+    TOPICS              : 'topics',
     TYPES               : 'type',   //TODO change to 'types'
     USED_BY             : 'usedBy',
     VIEWS               : 'views',
@@ -93,6 +95,7 @@ const FACETS_DEFAULT : string[] = [
 const FacetToParam : KVP<string> = {};
 FacetToParam[Facets.TYPES]           = Parameters.TYPES;
 FacetToParam[Facets.THEMES]          = Parameters.THEMES_ID;
+FacetToParam[Facets.TOPICS]          = Parameters.TOPICS_ID;
 FacetToParam[Facets.PUBLISHERS]      = Parameters.PUBLISHERS_ID;
 FacetToParam[Facets.CONTACTS]        = Parameters.CONTACTS_ID;
 FacetToParam[Facets.CONCEPT_SCHEMES] = Parameters.SCHEMES_ID;
@@ -396,6 +399,50 @@ class Query {
         return this.getParameter(Parameters.THEMES_ID) ||
             this.getParameter(Parameters.THEMES_LABEL) ||
             this.getParameter(Parameters.THEMES_URI);
+    }
+
+    // -----------------------------------------------------------
+
+
+    /**
+     * Specify a Topic or set of Topics to constrain results. By
+     * default, values are assumed to be theme identifiers. If using
+     * theme labels or theme uris, specify the optional second parameter
+     * to be either Parameters.TOPIC_LABEL or Parameters.TOPIC_URI
+     * respectively.
+     * @param  topics - string or array of strings containing theme constraint
+     * @param  parameter - optional, to indicate the parameter to use
+     * @return Query instance
+     */
+    topics(topics:string|string[], parameter ?: string) : Query {
+        this.setTopics(topics, parameter);
+        return this;
+    }
+
+
+    /**
+     * Specify a Topic or set of Topics to constrain results. By
+     * default, values are assumed to be theme identifiers. If using
+     * theme labels or theme uris, specify the optional second parameter
+     * to be either Parameters.TOPIC_LABEL or Parameters.TOPIC_URI
+     * respectively.
+     * @param topics - theme or topics to constrain by
+     */
+    setTopics (topics:string|string[], parameter ?: string) {
+
+        //clear existing
+        this.setParameter(Parameters.TOPICS_ID, null);
+        this.setParameter(Parameters.TOPICS_LABEL, null);
+        this.setParameter(Parameters.TOPICS_URI, null);
+
+        let param = parameter || Parameters.TOPICS_ID;
+        this.setParameter(param, toArray(topics));
+    }
+
+    getTopics () : string[] {
+        return this.getParameter(Parameters.TOPICS_ID) ||
+            this.getParameter(Parameters.TOPICS_LABEL) ||
+            this.getParameter(Parameters.TOPICS_URI);
     }
 
 

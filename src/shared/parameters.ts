@@ -33,6 +33,9 @@ export default {
     THEMES_ID        : 'theme.id',
     THEMES_LABEL     : 'theme.label',
     THEMES_URI       : 'theme.uri',
+    TOPICS_ID        : 'topic.id',
+    TOPICS_LABEL     : 'topic.label',
+    TOPICS_URI       : 'topic.uri',
     TYPES            : 'type',      //TODO change to 'types'
     URI              : 'uri',
     USED_BY_ID       : 'usedBy.id',

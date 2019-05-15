@@ -105,6 +105,27 @@ declare class Query {
     setThemes(themes: string | string[], parameter?: string): void;
     getThemes(): string[];
     /**
+     * Specify a Topic or set of Topics to constrain results. By
+     * default, values are assumed to be theme identifiers. If using
+     * theme labels or theme uris, specify the optional second parameter
+     * to be either Parameters.TOPIC_LABEL or Parameters.TOPIC_URI
+     * respectively.
+     * @param  topics - string or array of strings containing theme constraint
+     * @param  parameter - optional, to indicate the parameter to use
+     * @return Query instance
+     */
+    topics(topics: string | string[], parameter?: string): Query;
+    /**
+     * Specify a Topic or set of Topics to constrain results. By
+     * default, values are assumed to be theme identifiers. If using
+     * theme labels or theme uris, specify the optional second parameter
+     * to be either Parameters.TOPIC_LABEL or Parameters.TOPIC_URI
+     * respectively.
+     * @param topics - theme or topics to constrain by
+     */
+    setTopics(topics: string | string[], parameter?: string): void;
+    getTopics(): string[];
+    /**
      * Specify a Publisher or set of Publishers to constrain results. By
      * default, values are assumed to be identifiers. If using labels or uris,
      * specify the optional second parameter to be either

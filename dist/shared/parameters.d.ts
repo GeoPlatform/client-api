@@ -31,6 +31,9 @@ declare const _default: {
     THEMES_ID: string;
     THEMES_LABEL: string;
     THEMES_URI: string;
+    TOPICS_ID: string;
+    TOPICS_LABEL: string;
+    TOPICS_URI: string;
     TYPES: string;
     URI: string;
     USED_BY_ID: string;

@@ -1,6 +1,7 @@
 {
   "$schema": "./node_modules/ng-packagr/package.schema.json",
   "name": "@geoplatform/client",
+  "main": "bundles/geoplatform-client.umd.js",
   "module": "fesm5/geoplatform-client.js",
   "typings": "geoplatform-client.d.ts",
   "version": "0.3.0",
@@ -48,7 +49,6 @@
     "typescript": "^2.9.2",
     "zone.js": "^0.8.19"
   },
-  "main": "bundles/geoplatform-client.umd.js",
   "es2015": "fesm2015/geoplatform-client.js",
   "esm5": "esm5/geoplatform-client.js",
   "esm2015": "esm2015/geoplatform-client.js",

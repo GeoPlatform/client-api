@@ -1,4 +1,5 @@
 {
+    "main": "../dist/angular",
     "module": "dist/esm2015/angular/index.js",
     "typings": "dist/angular/index.d.ts",
     "ngPackage": {

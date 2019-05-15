@@ -1,4 +1,5 @@
 {
+    "main": "../dist/bundles/geoplatform-client-angularjs.umd.js",
     "module": "dist/esm2015/angularjs/index.js",
     "typings": "dist/angularjs/index.d.ts",
     "ngPackage": {

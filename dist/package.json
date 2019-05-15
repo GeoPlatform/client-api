@@ -8,6 +8,9 @@
   "whitelistedNonPeerDependencies": [
     "."
   ],
+  "pre-commit": [
+    "build"
+  ],
   "private": true,
   "peerDependencies": {
     "axios": "^0.18.0",
@@ -30,7 +33,6 @@
     "core-js": "^2.4.1",
     "gulp": "^3.9.1",
     "gulp-append-prepend": "^1.0.8",
-    "gulp-tap": "^1.0.1",
     "jasmine-core": "~2.8.0",
     "jasmine-spec-reporter": "~4.2.1",
     "karma": "~2.0.0",

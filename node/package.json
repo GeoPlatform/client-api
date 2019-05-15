@@ -1,4 +1,5 @@
 {
+    "main": "../dist/bundles/geoplatform-client-node.umd.js",
     "module": "dist/esm2015/node/index.js",
     "typings": "dist/node/index.d.ts",
     "ngPackage": {

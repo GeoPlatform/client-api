@@ -2517,7 +2517,7 @@ This software has been approved for release by the U.S. Department of the Interi
                 if (options["json"] === true)
                     opts["responseType"] = 'json';
                 if (options["params"]) {
-                    opts["data"] = options["params"];
+                    opts["params"] = options["params"];
                 }
                 if (options["data"]) {
                     opts["data"] = options["data"];
@@ -2552,6 +2552,11 @@ This software has been approved for release by the U.S. Department of the Interi
          * @return {?}
          */
             function (opts) {
+                if (typeof (axios) === 'undefined') {
+                    throw new Error("Axios not found, check that you have included " +
+                        "it as a dependency of the application or use a different " +
+                        "HttpClient implementation");
+                }
                 /** @type {?} */
                 var promise = axios(opts)
                     .then(function (response) { return response.data; })

@@ -211,3 +211,11 @@ import { NG2HttpClient } from "@geoplatform/client/angular");
 *Note:* When using version 0.3 inside client-side SPAs that do not support ES6 imports,
 the global constant ("GeoPlatformClient") has been replaced with "geoplatform.client"
 (case sensitive). Sub-package constants extend this constant (e.g., "geoplatform.client.angularjs" for angularJS-specific classes).
+
+
+
+## Important Notes
+
+### When using inside Angular CLI / WebPack applications
+Use `"target" : "es6"` as using older compilation targets may generate errors
+regarding things such as superclass constructor calls.

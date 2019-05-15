@@ -28,7 +28,7 @@ class XHRHttpClient extends GPHttpClient {
             opts.responseType = 'json';
 
         if(options.params) {
-            opts.data = options.params;
+            opts.params = options.params;
         }
 
         if(options.data) {
@@ -60,6 +60,13 @@ class XHRHttpClient extends GPHttpClient {
 
 
     execute(opts : any) : Q.Promise<any> {
+
+        if(typeof(axios) === 'undefined') {
+            throw new Error("Axios not found, check that you have included " +
+                "it as a dependency of the application or use a different " +
+                "HttpClient implementation")
+        }
+
         let promise = axios(opts)
         .then( response => { return response.data; })
         .catch( error => {

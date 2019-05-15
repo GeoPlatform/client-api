@@ -1,4 +1,5 @@
 {
+  "main": "../bundles/geoplatform-client-node.umd.js",
   "module": "../fesm5/geoplatform-client-node.js",
   "typings": "geoplatform-client-node.d.ts",
   "whitelistedNonPeerDependencies": [
@@ -32,7 +33,6 @@
     "zone.js": "^0.8.19",
     "mock-require": "^3.0.3"
   },
-  "main": "../bundles/geoplatform-client-node.umd.js",
   "es2015": "../fesm2015/geoplatform-client-node.js",
   "esm5": "../esm5/node/geoplatform-client-node.js",
   "esm2015": "../esm2015/node/geoplatform-client-node.js",

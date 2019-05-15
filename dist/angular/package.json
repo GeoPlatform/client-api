@@ -1,4 +1,5 @@
 {
+  "main": "../bundles/geoplatform-client-angular.umd.js",
   "module": "../fesm5/geoplatform-client-angular.js",
   "typings": "geoplatform-client-angular.d.ts",
   "whitelistedNonPeerDependencies": [
@@ -38,7 +39,6 @@
     "typescript": "^2.9.2",
     "zone.js": "^0.8.19"
   },
-  "main": "../bundles/geoplatform-client-angular.umd.js",
   "es2015": "../fesm2015/geoplatform-client-angular.js",
   "esm5": "../esm5/angular/geoplatform-client-angular.js",
   "esm2015": "../esm2015/angular/geoplatform-client-angular.js",

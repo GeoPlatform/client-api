@@ -16,6 +16,7 @@ import Config from './shared/config';
 
 import {
     Item, Asset, Dataset, Service, Layer, Map, Gallery,
+    Application, Topic, WebSite,
     Organization, Contact, ConceptScheme, SearchResults
 } from "./shared/models";
 
@@ -49,6 +50,7 @@ import ServiceFactory  from './services/factory';
 
 export {
 
+    //shared classes
     GPError,
     ItemTypes,
     QueryParameters,
@@ -60,13 +62,14 @@ export {
     KGClassifiers,
     AgolQuery,
 
+    //model interfaces
     Item, Asset, Dataset, Service, Layer, Map, Gallery,
+    Application, Topic, WebSite,
     Organization, Contact, ConceptScheme, SearchResults,
 
     Config,
 
     GPHttpClient,
-    // JQueryHttpClient,
     XHRHttpClient,
 
 

@@ -40,7 +40,8 @@ export interface Dataset extends Asset {
     distributions ?: any[];
 }
 export interface Service extends Asset {
-    serviceType : any;
+    serviceType : ServiceTypeStandard;
+    serviceTypeVersions ?: string[];
     href : string;
 }
 export interface Layer extends Asset {
@@ -110,4 +111,12 @@ export interface SearchResults {
     totalResults : number;
     results : Item[];
     facets ?: any[];
+}
+
+
+export interface ServiceTypeStandard {
+    uri : string;
+    label : string;
+    resourceType : any;
+    supportedVersions ?: string[];
 }

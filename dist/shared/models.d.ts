@@ -101,5 +101,5 @@ export interface ServiceTypeStandard {
     uri: string;
     label: string;
     resourceType: any;
-    supportedVersions?: string[];
+    availableVersions?: string[];
 }

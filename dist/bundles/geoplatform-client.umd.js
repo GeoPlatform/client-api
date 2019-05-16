@@ -2968,6 +2968,42 @@ This software has been approved for release by the U.S. Department of the Interi
                 });
             };
         /**
+         * @param id - identifier of item to clone
+         * @param overrides - KVP of property-value overrides to apply to cloned instance
+         * @param options - optional set of request options to apply to xhr request
+         * @return Promise resolving clone of Item or an error
+         */
+        /**
+         * @param {?} id - identifier of item to clone
+         * @param {?} overrides - KVP of property-value overrides to apply to cloned instance
+         * @param {?=} options - optional set of request options to apply to xhr request
+         * @return {?} Promise resolving clone of Item or an error
+         */
+        ItemService.prototype.clone = /**
+         * @param {?} id - identifier of item to clone
+         * @param {?} overrides - KVP of property-value overrides to apply to cloned instance
+         * @param {?=} options - optional set of request options to apply to xhr request
+         * @return {?} Promise resolving clone of Item or an error
+         */
+            function (id, overrides, options) {
+                var _this = this;
+                return Q.resolve(this.baseUrl + '/' + id + '/clone')
+                    .then(function (url) {
+                    /** @type {?} */
+                    var opts = _this.buildRequest({
+                        method: "POST", url: url, data: overrides, options: options
+                    });
+                    return _this.execute(opts);
+                })
+                    .catch(function (e) {
+                    /** @type {?} */
+                    var err = new Error("Error cloning item " + id + ": " + e.message);
+                    Object.assign(err, e);
+                    _this.logError('ItemService.clone() - ' + err.message);
+                    return Q.reject(err);
+                });
+            };
+        /**
          * @param arg - either JS object of query parameters or GeoPlatform.Query instance
          * @param options - optional set of request options to apply to xhr request
          * @return Promise resolving search results

@@ -81,6 +81,13 @@ declare class ItemService {
      */
     patch(id: string, patch: any, options?: any): Q.Promise<Item>;
     /**
+     * @param id - identifier of item to clone
+     * @param overrides - KVP of property-value overrides to apply to cloned instance
+     * @param options - optional set of request options to apply to xhr request
+     * @return Promise resolving clone of Item or an error
+     */
+    clone(id: string, overrides: any, options?: any): Q.Promise<Item>;
+    /**
      * @param arg - either JS object of query parameters or GeoPlatform.Query instance
      * @param options - optional set of request options to apply to xhr request
      * @return Promise resolving search results

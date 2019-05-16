@@ -1,8 +1,8 @@
 
 const Q = require('q');
 const axios = require('axios');
-// const chai = require('chai');
-// const expect = chai.expect;
+const chai = require('chai');
+const expect = chai.expect;
 
 const API           = require('../../dist/bundles/geoplatform-client.umd');
 const HttpClient    = API.XHRHttpClient;
@@ -10,11 +10,11 @@ const Types         = API.ItemTypes;
 
 const URL = 'https://ual.geoplatform.gov/api/items';
 
-// chai.config.includeStack = true;
+chai.config.includeStack = true;
 
-// describe('# XHRHttpService', function() {
-//
-//     it("should communicate with API host", function(done) {
+describe('# XHRHttpService', function() {
+
+    it("should communicate with API host", function(done) {
 
         let client = new HttpClient();
 
@@ -28,31 +28,26 @@ const URL = 'https://ual.geoplatform.gov/api/items';
 
         //convert generic request object into client-specific request objects
         let opts = client.createRequestOpts(args);
-        if(!opts) throw new Error("Bad options");
-        if(opts.url !== args.url) throw new Error("Bad url");
-        if(!opts.params || opts.params.type !== args.params.type) throw new Error("Bad params");
-        // expect(opts).to.be.ok;
-        // expect(opts.url).to.equal(args.url);
-        // expect(opts.params).to.be.ok;
-        // expect(opts.params.type).to.equal(args.params.type);
+        expect(opts).to.be.ok;
+        expect(opts.url).to.equal(args.url);
+        expect(opts.params).to.be.ok;
+        expect(opts.params.type).to.equal(args.params.type);
 
         //issue request to API and handle response
         client.execute(opts)
         .then( response => {
-            if(!response) throw new Error("Bad response");
-            if(!response.results) throw new Error("No Results");
+            expect(response).to.be.ok;
+            expect(response.results).to.be.ok;
 
             let badTypes = response.results.filter(it => Types.DATASET !== it.type);
-            if(badTypes && badTypes.length > 0) throw new Error("Returned wrong types");
+            expect(badTypes.length).to.equal(0, "Returned wrong types");
 
-            console.log("SUCCESS");
-            // done();
+            done();
         })
         .catch( e => {
-            console.log("ERROR : " + e.message);
-            // done(e)
+            done(e)
         });
 
-    // }).timeout(20000);
+    }).timeout(20000);
 
-// });
+});

@@ -3,11 +3,20 @@ const Q = require('q');
 const chai = require('chai');
 const expect = chai.expect;
 
-const API           = require('../../dist/js/geoplatform.client');
+const mock = require('mock-require');
+
+const API           = require('../../dist/bundles/geoplatform-client.umd');
 const Query         = API.Query;
 const ItemTypes     = API.ItemTypes;
 const ItemService   = API.ItemService;
-const NodeHttpClient = API.NodeHttpClient;
+
+//needed to use the base client lib in this test server
+// as the client-node UMD file will attempt to require('@geoplatform/client')
+mock('@geoplatform/client', API);
+
+const HttpClient    = require('../../dist/bundles/geoplatform-client-node.umd').NodeHttpClient;
+
+
 
 const URL = 'https://ual.geoplatform.gov';
 const URI = "http://www.geoplatform.gov/items/test";
@@ -47,6 +56,11 @@ describe('# ItemService', function() {
             } else if(opts.method === 'POST') {
                 if(~opts.url.indexOf('api/utils/uri')) {
                     return Q.resolve(URI);
+                } else if(~opts.url.indexOf('clone')) {
+                    let result = Object.assign({}, this.item, opts.data, {
+                        id: 'test2', uri: this.item.uri + "/2"
+                    });
+                    return Q.resolve(result);
                 } else {
                     opts.data.id = 'test';
                     opts.data._created = opts.data.modified = new Date().getTime();
@@ -258,6 +272,30 @@ describe('# ItemService', function() {
     });
 
 
+    /*
+     * TEST CLONE
+     */
+    it('should clone items', function(done) {
+
+        let obj = {
+            id: 'test',
+            uri: URI,
+            type: ItemTypes.DATASET,
+            label: "Test DataSet",
+            createdBy: "test_user"
+        };
+        service.clone(obj, { createdBy: "new_user" })
+        .then( item => {
+            expect(item).to.exist;
+            expect(item.id).not.to.be.equal(obj.id);
+            expect(item.uri).not.to.be.equal(obj.uri);
+            expect(item.createdBy).to.be.equal("new_user");
+            done();
+        })
+        .catch(e => done(e));
+
+    });
+
 
 
     /*
@@ -265,9 +303,10 @@ describe('# ItemService', function() {
      */
     it('should handle export errors', function(done) {
 
-        let svc = new ItemService(URL, new NodeHttpClient());
+        let svc = new ItemService(URL, new HttpClient());
 
-        svc.search({type:'regp:Service'})
+        let query = new Query({type:'regp:Service'});
+        svc.search(query)
         .then( response => {
 
             let id = response.results[0].id;

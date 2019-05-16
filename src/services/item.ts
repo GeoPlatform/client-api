@@ -202,6 +202,30 @@ class ItemService {
         });
     }
 
+
+    /**
+     * @param id - identifier of item to clone
+     * @param overrides - KVP of property-value overrides to apply to cloned instance
+     * @param options - optional set of request options to apply to xhr request
+     * @return Promise resolving clone of Item or an error
+     */
+    clone (id : string, overrides : any, options ?: any) : Q.Promise<Item> {
+
+        return Q.resolve( this.baseUrl + '/' + id + '/clone' )
+        .then( url => {
+            let opts = this.buildRequest({
+                method: "POST", url: url, data: overrides, options: options
+            });
+            return this.execute(opts);
+        })
+        .catch(e => {
+            let err = new Error(`Error cloning item ${id}: ${e.message}`);
+            Object.assign(err, e);
+            this.logError('ItemService.clone() - ' + err.message);
+            return Q.reject(err);
+        });
+    }
+
     /**
      * @param arg - either JS object of query parameters or GeoPlatform.Query instance
      * @param options - optional set of request options to apply to xhr request

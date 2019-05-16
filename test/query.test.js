@@ -3,7 +3,7 @@ const Q = require('q');
 const chai = require('chai');
 const expect = chai.expect;
 
-const API        = require('../dist/js/geoplatform.client');
+const API        = require('../dist/bundles/geoplatform-client.umd');
 const Query      = API.Query;
 const Fields     = API.QueryFields;
 const Parameters = API.QueryParameters;

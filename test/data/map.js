@@ -1,4 +1,4 @@
-const API = require('../../dist/js/geoplatform.client');
+const API = require('../../dist/bundles/geoplatform-client.umd.js');
 const Types = API.ItemTypes;
 
 module.exports = {

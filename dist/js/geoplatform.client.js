@@ -3498,24 +3498,38 @@
 
           options = options || {};
           var paths = options.paths || {};
+          var auths = options.auth || {};
 
           routes.forEach(function (route) {
 
               if (paths[route.key] === false) return; //disabled endpoint
               if (!paths[route.key] && !route.path) return; //something is wrong with route
 
-              // let path = '/' + ( paths[route.key] || route.pathFn(pathBase) );
-              var path = '/' + (paths[route.key] || route.path);
+              //newer route override...
+              // {
+              //   'create': {
+              //     'path': 'custom/path',
+              //     'auth': true,
+              //     'respFn': function(result, res, next) { }
+              //   }
+              // }
+              var overrides = options[route.key] || {};
+
+              //look for overriden paths in either new override structure or older key:path format
+              var path = '/' + (overrides.path || paths[route.key] || route.path);
+              //look for authentication override in either new structure or older format
+              var needsAuth = overrides.auth || auths[route.key] || route.auth;
 
               // console.log(`Binding Service Route [${route.method}] ${path}`)
               router[route.method](path, function (req, res, next) {
                   // console.log(`Executing Service Route [${route.method}] ${path}`)
                   // console.log(JSON.stringify(req.params));
                   // console.log(" ");
-                  var svc = _this.getService(req, route.auth, options);
+                  var svc = _this.getService(req, needsAuth, options);
                   var promise = route.execFn(svc, req);
                   promise.then(function (result) {
-                      if (route.respFn) route.respFn(result, res, next);else res.json(result);
+                      var respFn = overrides.respFn || route.respFn;
+                      if (respFn) respFn(result, res, next);else res.json(result);
                   }).catch(function (err) {
                       if (options.onError) options.onError(route.key, err);
                       next(err);

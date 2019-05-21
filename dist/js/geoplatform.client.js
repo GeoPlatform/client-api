@@ -4956,6 +4956,7 @@
       CREATED: 'Created',
       EDITED: 'Edited',
       DELETED: 'Deleted',
+      CLONED: 'Cloned',
       ADDED: 'Added', //item was added to another (ie, layer on map)
       REMOVED: 'Removed', //item was removed from another (ie, item from gallery)
       EXPORTED: 'Exported',

@@ -196,6 +196,29 @@ class ItemService {
     }
 
     /**
+     * @param {string} id - identifier of item to patch
+     * @param {Object} overrides - object specifying changes to apply to the clone
+     * @param {Object} options - optional set of request options to apply to xhr request
+     * @return {Promise} resolving Item object or an error
+     */
+    clone (id, overrides, options) {
+
+        return Q.resolve( this.baseUrl + '/' + id + '/clone' )
+        .then( url => {
+            let opts = this.buildRequest({
+                method: "POST", url: url, data: overrides, options: options
+            });
+            return this.execute(opts);
+        })
+        .catch(e => {
+            let err = new Error(`Error cloning item ${id}: ${e.message}`);
+            Object.assign(err, e);
+            this.logError('ItemService.clone() - ' + err.message);
+            return Q.reject(err);
+        });
+    }
+
+    /**
      * @param {Object} arg - either JS object of query parameters or GeoPlatform.Query instance
      * @param {Object} options - optional set of request options to apply to xhr request
      * @return {Promise} resolving search results

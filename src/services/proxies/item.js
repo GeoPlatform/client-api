@@ -51,6 +51,13 @@ const Routes = [
         execFn: function(svc, req) { return svc.patch(req.params.id, req.body); }
     },
     {
+        key: 'clone',
+        method: 'clone',
+        path: 'items/:id/clone',
+        auth: true,
+        execFn: function(svc, req) { return svc.clone(req.params.id, req.body); }
+    },
+    {
         key: 'export',
         method: 'get',
         path: 'items/:id/export',

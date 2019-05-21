@@ -805,6 +805,31 @@
           }
 
           /**
+           * @param {string} id - identifier of item to patch
+           * @param {Object} overrides - object specifying changes to apply to the clone
+           * @param {Object} options - optional set of request options to apply to xhr request
+           * @return {Promise} resolving Item object or an error
+           */
+
+      }, {
+          key: 'clone',
+          value: function clone(id, overrides, options) {
+              var _this5 = this;
+
+              return Q.resolve(this.baseUrl + '/' + id + '/clone').then(function (url) {
+                  var opts = _this5.buildRequest({
+                      method: "POST", url: url, data: overrides, options: options
+                  });
+                  return _this5.execute(opts);
+              }).catch(function (e) {
+                  var err = new Error('Error cloning item ' + id + ': ' + e.message);
+                  Object.assign(err, e);
+                  _this5.logError('ItemService.clone() - ' + err.message);
+                  return Q.reject(err);
+              });
+          }
+
+          /**
            * @param {Object} arg - either JS object of query parameters or GeoPlatform.Query instance
            * @param {Object} options - optional set of request options to apply to xhr request
            * @return {Promise} resolving search results
@@ -813,7 +838,7 @@
       }, {
           key: 'search',
           value: function search(arg, options) {
-              var _this5 = this;
+              var _this6 = this;
 
               return Q.resolve(arg).then(function (params) {
 
@@ -822,14 +847,14 @@
                       // convert to parameters object
                       params = params.getQuery();
                   }
-                  var opts = _this5.buildRequest({
-                      method: "GET", url: _this5.baseUrl, params: params, options: options
+                  var opts = _this6.buildRequest({
+                      method: "GET", url: _this6.baseUrl, params: params, options: options
                   });
-                  return _this5.execute(opts);
+                  return _this6.execute(opts);
               }).catch(function (e) {
                   var err = new Error('Error searching items: ' + e.message);
                   Object.assign(err, e);
-                  _this5.logError('ItemService.search() - ' + err.message);
+                  _this6.logError('ItemService.search() - ' + err.message);
                   return Q.reject(err);
               });
           }
@@ -844,7 +869,7 @@
       }, {
           key: 'import',
           value: function _import(arg, format, options) {
-              var _this6 = this;
+              var _this7 = this;
 
               return Q.resolve(true).then(function () {
                   if (arg === null || arg === undefined) {
@@ -853,7 +878,7 @@
                   var isFile = typeof arg !== 'string';
                   var ro = {
                       method: "POST",
-                      url: _this6.apiBase + '/api/import',
+                      url: _this7.apiBase + '/api/import',
                       processData: true, //for jQuery
                       formData: true, //for Node (RequestJS)
                       options: options
@@ -869,14 +894,14 @@
                       ro.data.overwrite = !!options.overwrite + '';
                       delete options.overwrite;
                   }
-                  var opts = _this6.buildRequest(ro);
-                  return _this6.execute(opts);
+                  var opts = _this7.buildRequest(ro);
+                  return _this7.execute(opts);
               }).catch(function (e) {
                   var err = new Error('Error importing item: ' + e.message);
                   Object.assign(err, e);
                   if (e.status === 409 || ~e.message.indexOf('Item already exists')) err.status = 409;
                   if (e.item) err.item = e.item;
-                  _this6.logError('ItemService.import() - ' + err.message);
+                  _this7.logError('ItemService.import() - ' + err.message);
                   return Q.reject(err);
               });
           }
@@ -890,17 +915,17 @@
       }, {
           key: 'export',
           value: function _export(id, format, options) {
-              var _this7 = this;
+              var _this8 = this;
 
               return Q.resolve(true).then(function () {
-                  var url = _this7.baseUrl + '/' + id + '/export';
-                  var opts = _this7.buildRequest({
+                  var url = _this8.baseUrl + '/' + id + '/export';
+                  var opts = _this8.buildRequest({
                       method: "GET", url: url,
                       params: { format: format },
                       json: false,
                       options: options
                   });
-                  return _this7.execute(opts);
+                  return _this8.execute(opts);
               }).catch(function (e) {
                   var msg = e.message;
                   //https://github.com/GeoPlatform/client-api/issues/1
@@ -909,7 +934,7 @@
                   }
                   var err = new Error('Error exporting item: ' + msg);
                   Object.assign(err, e);
-                  _this7.logError('ItemService.export() - ' + err.message);
+                  _this8.logError('ItemService.export() - ' + err.message);
                   return Q.reject(err);
               });
           }
@@ -923,21 +948,21 @@
       }, {
           key: 'getUri',
           value: function getUri(object, options) {
-              var _this8 = this;
+              var _this9 = this;
 
               return Q.resolve(object).then(function (obj) {
                   if (!obj || !obj.type) throw new Error("Must provide an object with a type property");
-                  var url = _this8.apiBase + '/api/utils/uri';
+                  var url = _this9.apiBase + '/api/utils/uri';
                   options = options || {};
                   options.responseType = 'text'; //to ensure plaintext is expected
-                  var opts = _this8.buildRequest({
+                  var opts = _this9.buildRequest({
                       method: "POST", url: url, data: obj, options: options
                   });
-                  return _this8.execute(opts);
+                  return _this9.execute(opts);
               }).catch(function (e) {
                   var err = new Error('Error getting URI for item: ' + e.message);
                   Object.assign(err, e);
-                  _this8.logError('ItemService.getUri() - ' + err.message);
+                  _this9.logError('ItemService.getUri() - ' + err.message);
                   return Q.reject(err);
               });
           }
@@ -951,19 +976,19 @@
       }, {
           key: 'getMultiple',
           value: function getMultiple(ids, options) {
-              var _this9 = this;
+              var _this10 = this;
 
               return Q.resolve(ids).then(function (identifiers) {
 
                   var method = 'POST',
-                      url = _this9.apiBase + '/api/fetch';
+                      url = _this10.apiBase + '/api/fetch';
 
-                  var opts = _this9.buildRequest({ method: method, url: url, data: identifiers, options: options });
-                  return _this9.execute(opts);
+                  var opts = _this10.buildRequest({ method: method, url: url, data: identifiers, options: options });
+                  return _this10.execute(opts);
               }).catch(function (e) {
                   var err = new Error('Error fetching items: ' + e.message);
                   Object.assign(err, e);
-                  _this9.logError('ItemService.getMultiple() - ' + err.message);
+                  _this10.logError('ItemService.getMultiple() - ' + err.message);
                   return Q.reject(err);
               });
           }
@@ -977,51 +1002,51 @@
       }, {
           key: 'exists',
           value: function exists(uris, options) {
-              var _this10 = this;
+              var _this11 = this;
 
               return Q.resolve(uris).then(function (uris) {
                   var method = 'POST',
-                      url = _this10.apiBase + '/api/utils/exists';
-                  var opts = _this10.buildRequest({ method: method, url: url, data: uris, options: options });
-                  return _this10.execute(opts);
+                      url = _this11.apiBase + '/api/utils/exists';
+                  var opts = _this11.buildRequest({ method: method, url: url, data: uris, options: options });
+                  return _this11.execute(opts);
               }).catch(function (e) {
                   var err = new Error('Error resolving items: ' + e.message);
                   Object.assign(err, e);
-                  _this10.logError('ItemService.exists() - ' + err.message);
+                  _this11.logError('ItemService.exists() - ' + err.message);
                   return Q.reject(err);
               });
           }
       }, {
           key: 'like',
           value: function like(item, options) {
-              var _this11 = this;
+              var _this12 = this;
 
               return Q.resolve(item.id).then(function (id) {
                   var method = 'PUT',
-                      url = _this11.apiBase + '/api/items/' + id + '/likes';
-                  var opts = _this11.buildRequest({ method: method, url: url, options: options });
-                  return _this11.execute(opts);
+                      url = _this12.apiBase + '/api/items/' + id + '/likes';
+                  var opts = _this12.buildRequest({ method: method, url: url, options: options });
+                  return _this12.execute(opts);
               }).catch(function (e) {
                   var err = new Error('Error liking item ' + item.id + ': ' + e.message);
                   Object.assign(err, e);
-                  _this11.logError('ItemService.like() - ' + err.message);
+                  _this12.logError('ItemService.like() - ' + err.message);
                   return Q.reject(err);
               });
           }
       }, {
           key: 'view',
           value: function view(item, options) {
-              var _this12 = this;
+              var _this13 = this;
 
               return Q.resolve(item.id).then(function (id) {
                   var method = 'PUT',
-                      url = _this12.apiBase + '/api/items/' + id + '/views';
-                  var opts = _this12.buildRequest({ method: method, url: url, options: options });
-                  return _this12.execute(opts);
+                      url = _this13.apiBase + '/api/items/' + id + '/views';
+                  var opts = _this13.buildRequest({ method: method, url: url, options: options });
+                  return _this13.execute(opts);
               }).catch(function (e) {
                   var err = new Error('Error incrementing views for item ' + item.id + ': ' + e.message);
                   Object.assign(err, e);
-                  _this12.logError('ItemService.like() - ' + err.message);
+                  _this13.logError('ItemService.like() - ' + err.message);
                   return Q.reject(err);
               });
           }
@@ -1035,21 +1060,21 @@
       }, {
           key: 'associations',
           value: function associations(id, params, options) {
-              var _this13 = this;
+              var _this14 = this;
 
               return Q.resolve(id).then(function (id) {
-                  var url = _this13.baseUrl + '/' + id + '/associations';
-                  var opts = _this13.buildRequest({
+                  var url = _this14.baseUrl + '/' + id + '/associations';
+                  var opts = _this14.buildRequest({
                       method: "GET",
                       url: url,
                       params: params || {},
                       options: options
                   });
-                  return _this13.execute(opts);
+                  return _this14.execute(opts);
               }).catch(function (e) {
                   var err = new Error('Error fetching associations for item ' + id + ': ' + e.message);
                   Object.assign(err, e);
-                  _this13.logError('ItemService.associations() - ' + err.message);
+                  _this14.logError('ItemService.associations() - ' + err.message);
                   return Q.reject(err);
               });
           }
@@ -1063,16 +1088,16 @@
       }, {
           key: 'versions',
           value: function versions(id, options) {
-              var _this14 = this;
+              var _this15 = this;
 
               return Q.resolve(id).then(function (id) {
-                  var url = _this14.baseUrl + '/' + id + '/versions';
-                  var opts = _this14.buildRequest({ method: "GET", url: url, options: options });
-                  return _this14.execute(opts);
+                  var url = _this15.baseUrl + '/' + id + '/versions';
+                  var opts = _this15.buildRequest({ method: "GET", url: url, options: options });
+                  return _this15.execute(opts);
               }).catch(function (e) {
                   var err = new Error('Error fetching versions for item ' + id + ': ' + e.message);
                   Object.assign(err, e);
-                  _this14.logError('ItemService.versions() - ' + err.message);
+                  _this15.logError('ItemService.versions() - ' + err.message);
                   return Q.reject(err);
               });
           }
@@ -3628,6 +3653,14 @@
       auth: true,
       execFn: function execFn(svc, req) {
           return svc.patch(req.params.id, req.body);
+      }
+  }, {
+      key: 'clone',
+      method: 'clone',
+      path: 'items/:id/clone',
+      auth: true,
+      execFn: function execFn(svc, req) {
+          return svc.clone(req.params.id, req.body);
       }
   }, {
       key: 'export',

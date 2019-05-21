@@ -3656,7 +3656,7 @@
       }
   }, {
       key: 'clone',
-      method: 'clone',
+      method: 'post',
       path: 'items/:id/clone',
       auth: true,
       execFn: function execFn(svc, req) {

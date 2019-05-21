@@ -52,7 +52,7 @@ const Routes = [
     },
     {
         key: 'clone',
-        method: 'clone',
+        method: 'post',
         path: 'items/:id/clone',
         auth: true,
         execFn: function(svc, req) { return svc.clone(req.params.id, req.body); }

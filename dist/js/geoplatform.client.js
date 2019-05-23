@@ -1337,6 +1337,7 @@
   var QueryParameters = {
       ALTERNATE_TITLE: 'alternateTitles',
       BEGINS: 'startDate.min',
+      CLASSIFIERS: 'classifiers',
       CREATED: 'created',
       CREATED_BEFORE: 'created.max',
       CREATED_AFTER: 'created.min',
@@ -1416,6 +1417,19 @@
 
       //recommender service-specific
       FOR_TYPES: 'for'
+  };
+
+  var Classifiers = {
+      PURPOSE: 'purpose',
+      FUNCTION: 'function',
+      TOPIC_PRIMARY: 'primaryTopic',
+      TOPIC_SECONDARY: 'secondaryTopic',
+      SUBJECT_PRIMARY: 'primarySubject',
+      SUBJECT_SECONDARY: 'secondarySubject',
+      COMMUNITY: 'community',
+      AUDIENCE: 'audience',
+      PLACE: 'place',
+      CATEGORY: 'category'
   };
 
   var Fields = {
@@ -1607,9 +1621,23 @@
       }, {
           key: 'setParameter',
           value: function setParameter(name, value) {
-              if (value === null || value === undefined || //if no value was provide
-              typeof value.push !== 'undefined' && !value.length) //or empty array
-                  delete this.query[name];else this.query[name] = value;
+              if (
+              //if no value was provide
+              value === null || value === undefined ||
+              //or empty array
+              typeof value.push !== 'undefined' && !value.length) {
+                  this.clearParameter(name);
+              } else this.query[name] = value;
+          }
+
+          /**
+           * @param {string} name - name of parameter to remove existing value for
+           */
+
+      }, {
+          key: 'clearParameter',
+          value: function clearParameter(name) {
+              delete this.query[name];
           }
 
           /**
@@ -2209,6 +2237,114 @@
           key: 'getExtent',
           value: function getExtent() {
               return this.getParameter(QueryParameters.EXTENT);
+          }
+
+          // -----------------------------------------------------------
+
+
+          /**
+           * Ex.
+           *  const { KGClassifiers, Query } from 'geoplatform.client';
+           *  let purposeId = '...';
+           *  let query = new Query();
+           *  query.classifier( KGClassifiers.PURPOSE, purposeId );
+           *
+           * @param {string} classifier - string name of classifier to use
+           * @param {string} value - id or array of ids of concepts to use
+           * @return Query
+           */
+
+      }, {
+          key: 'classifier',
+          value: function classifier(_classifier, value) {
+              this.setClassifier(_classifier, value);
+              return this;
+          }
+
+          /**
+           * Ex.
+           *  const { KGClassifiers, Query } from 'geoplatform.client';
+           *  let purposeId = '...';
+           *  let query = new Query();
+           *  query.setClassifier( KGClassifiers.PURPOSE, purposeId );
+           *
+           * @param {string} classifier - string name of classifier to use
+           * @param {string} value - id or array of ids of concepts to use
+           */
+
+      }, {
+          key: 'setClassifier',
+          value: function setClassifier(classifier, value) {
+              var classifiers = this.getParameter(QueryParameters.CLASSIFIERS) || {};
+              classifiers[classifier] = toArray$1(value);
+              this.setParameter(QueryParameters.CLASSIFIERS, classifiers);
+          }
+
+          /**
+           * @param {string} classifier - name of classifier constraint in use
+           * @return {array} of concept ids
+           */
+
+      }, {
+          key: 'getClassifier',
+          value: function getClassifier(classifier) {
+              var classifiers = this.getParameter(QueryParameters.CLASSIFIERS) || {};
+              return classifiers[classifier] || [];
+          }
+
+          /**
+           * Ex.
+           *  const { KGClassifiers, Query } from 'geoplatform.client';
+           *  let purposeId = '...',
+           *      functionIds = ['...','...'];
+           *  let query = new Query();
+           *  query.classifiers({
+           *       KGClassifiers.PURPOSE: purposeId,
+           *       KGClassifiers.FUNCTION: functionIds
+           *  });
+           *
+           * @param {string} value - object defining classifiers
+           * @return Query instance
+           */
+
+      }, {
+          key: 'classifiers',
+          value: function classifiers(value) {
+              this.setClassifiers(value);
+              return this;
+          }
+
+          /**
+           * @param {string} value - object defining classifiers
+           */
+
+      }, {
+          key: 'setClassifiers',
+          value: function setClassifiers(value) {
+              if (!value || (typeof value === 'undefined' ? 'undefined' : _typeof(value)) !== 'object' || Array.isArray(value)) {
+                  this.setParameter(QueryParameters.CLASSIFIERS, null);
+                  return;
+              }
+              var classes = Object.keys(Classifiers).map(function (k) {
+                  return Classifiers[k];
+              });
+              var classifiers = this.getParameter(QueryParameters.CLASSIFIERS) || {};
+              Object.keys(value).forEach(function (classifier) {
+                  if (~classes.indexOf(classifier)) {
+                      classifiers[classifier] = toArray$1(value[classifier]);
+                  }
+              });
+              this.setParameter(QueryParameters.CLASSIFIERS, classifiers);
+          }
+
+          /**
+           * @return classifiers used in the query
+           */
+
+      }, {
+          key: 'getClassifiers',
+          value: function getClassifiers() {
+              return this.getParameter(QueryParameters.CLASSIFIERS) || null;
           }
 
           // -----------------------------------------------------------
@@ -4883,19 +5019,6 @@
       return KGService;
   }();
 
-  var classifiers = {
-      PURPOSE: 'purpose',
-      FUNCTION: 'function',
-      TOPIC_PRIMARY: 'primaryTopic',
-      TOPIC_SECONDARY: 'secondaryTopic',
-      SUBJECT_PRIMARY: 'primarySubject',
-      SUBJECT_SECONDARY: 'secondarySubject',
-      COMMUNITY: 'community',
-      AUDIENCE: 'audience',
-      PLACE: 'place',
-      CATEGORY: 'category'
-  };
-
   function queryFactory () {
       return new Query$1();
   }
@@ -5269,7 +5392,7 @@
   exports.QueryFactory = queryFactory;
   exports.QueryFields = Fields;
   exports.KGQuery = KGQuery;
-  exports.KGClassifiers = classifiers;
+  exports.KGClassifiers = Classifiers;
   exports.JQueryHttpClient = JQueryHttpClient;
   exports.NGHttpClient = NGHttpClient;
   exports.NodeHttpClient = NodeHttpClient;

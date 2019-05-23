@@ -3,6 +3,7 @@
 export default {
     ALTERNATE_TITLE  : 'alternateTitles',
     BEGINS           : 'startDate.min',
+    CLASSIFIERS      : 'classifiers',
     CREATED          : 'created',
     CREATED_BEFORE   : 'created.max',
     CREATED_AFTER    : 'created.min',

@@ -1,5 +1,6 @@
 
 import Parameters from './parameters';
+import Classifiers from './classifiers';
 
 const Fields = {
     ACCESS_RIGHTS       : 'rights',
@@ -202,11 +203,22 @@ class Query {
      * @param {any} value
      */
     setParameter (name, value) {
-        if(value === null || value === undefined || //if no value was provide
-            (typeof(value.push) !== 'undefined' && !value.length)) //or empty array
-            delete this.query[name];
-        else
-            this.query[name] = value;
+        if(
+            //if no value was provide
+            value === null || value === undefined ||
+            //or empty array
+            (typeof(value.push) !== 'undefined' && !value.length)
+        ) {
+            this.clearParameter(name);
+        }
+        else this.query[name] = value;
+    }
+
+    /**
+     * @param {string} name - name of parameter to remove existing value for
+     */
+    clearParameter(name) {
+        delete this.query[name];
     }
 
     /**
@@ -717,6 +729,95 @@ class Query {
      */
     getExtent () {
         return this.getParameter(Parameters.EXTENT);
+    }
+
+
+    // -----------------------------------------------------------
+
+
+    /**
+     * Ex.
+     *  const { KGClassifiers, Query } from 'geoplatform.client';
+     *  let purposeId = '...';
+     *  let query = new Query();
+     *  query.classifier( KGClassifiers.PURPOSE, purposeId );
+     *
+     * @param {string} classifier - string name of classifier to use
+     * @param {string} value - id or array of ids of concepts to use
+     * @return Query
+     */
+    classifier(classifier, value) {
+        this.setClassifier(classifier, value);
+        return this;
+    }
+
+    /**
+     * Ex.
+     *  const { KGClassifiers, Query } from 'geoplatform.client';
+     *  let purposeId = '...';
+     *  let query = new Query();
+     *  query.setClassifier( KGClassifiers.PURPOSE, purposeId );
+     *
+     * @param {string} classifier - string name of classifier to use
+     * @param {string} value - id or array of ids of concepts to use
+     */
+    setClassifier(classifier, value) {
+        let classifiers = this.getParameter(Parameters.CLASSIFIERS) || {};
+        classifiers[classifier] = toArray(value);
+        this.setParameter(Parameters.CLASSIFIERS, classifiers);
+    }
+
+    /**
+     * @param {string} classifier - name of classifier constraint in use
+     * @return {array} of concept ids
+     */
+    getClassifier(classifier) {
+        let classifiers = this.getParameter(Parameters.CLASSIFIERS) || {};
+        return classifiers[classifier] || [];
+    }
+
+    /**
+     * Ex.
+     *  const { KGClassifiers, Query } from 'geoplatform.client';
+     *  let purposeId = '...',
+     *      functionIds = ['...','...'];
+     *  let query = new Query();
+     *  query.classifiers({
+     *       KGClassifiers.PURPOSE: purposeId,
+     *       KGClassifiers.FUNCTION: functionIds
+     *  });
+     *
+     * @param {string} value - object defining classifiers
+     * @return Query instance
+     */
+    classifiers(value) {
+        this.setClassifiers(value);
+        return this;
+    }
+
+    /**
+     * @param {string} value - object defining classifiers
+     */
+    setClassifiers (value) {
+        if(!value || typeof(value) !== 'object' || Array.isArray(value)) {
+            this.setParameter(Parameters.CLASSIFIERS, null);
+            return;
+        }
+        const classes = Object.keys(Classifiers).map(k=>Classifiers[k]);
+        let classifiers = this.getParameter(Parameters.CLASSIFIERS) || {};
+        Object.keys(value).forEach( classifier => {
+            if(~classes.indexOf(classifier)) {
+                classifiers[classifier] = toArray(value[classifier]);
+            }
+        });
+        this.setParameter(Parameters.CLASSIFIERS, classifiers);
+    }
+
+    /**
+     * @return classifiers used in the query
+     */
+    getClassifiers () {
+        return this.getParameter(Parameters.CLASSIFIERS) || null;
     }
 
 

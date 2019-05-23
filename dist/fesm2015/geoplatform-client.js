@@ -102,6 +102,7 @@ var ItemTypes = {
 var Parameters = {
     ALTERNATE_TITLE: 'alternateTitles',
     BEGINS: 'startDate.min',
+    CLASSIFIERS: 'classifiers',
     CREATED: 'created',
     CREATED_BEFORE: 'created.max',
     CREATED_AFTER: 'created.min',
@@ -458,7 +459,7 @@ class KGQuery {
  * @fileoverview added by tsickle
  * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
  */
-var classifiers = {
+var Classifiers = {
     PURPOSE: 'purpose',
     FUNCTION: 'function',
     TOPIC_PRIMARY: 'primaryTopic',
@@ -1174,6 +1175,91 @@ class Query {
      */
     getExtent() {
         return this.getParameter(Parameters.EXTENT);
+    }
+    /**
+     * Ex.
+     *  const { KGClassifiers, Query } from 'geoplatform.client';
+     *  let purposeId = '...';
+     *  let query = new Query();
+     *  query.classifier( KGClassifiers.PURPOSE, purposeId );
+     *
+     * @param {?} classifier - string name of classifier to use
+     * @param {?} value - id or array of ids of concepts to use
+     * @return {?} Query
+     */
+    classifier(classifier, value) {
+        this.setClassifier(classifier, value);
+        return this;
+    }
+    /**
+     * Ex.
+     *  const { KGClassifiers, Query } from 'geoplatform.client';
+     *  let purposeId = '...';
+     *  let query = new Query();
+     *  query.setClassifier( KGClassifiers.PURPOSE, purposeId );
+     *
+     * @param {?} classifier - string name of classifier to use
+     * @param {?} value - id or array of ids of concepts to use
+     * @return {?}
+     */
+    setClassifier(classifier, value) {
+        /** @type {?} */
+        let classifiers = this.getParameter(Parameters.CLASSIFIERS) || {};
+        classifiers[classifier] = toArray(value);
+        this.setParameter(Parameters.CLASSIFIERS, classifiers);
+    }
+    /**
+     * @param {?} classifier - name of classifier constraint in use
+     * @return {?} array of concept ids
+     */
+    getClassifier(classifier) {
+        /** @type {?} */
+        let classifiers = this.getParameter(Parameters.CLASSIFIERS) || {};
+        return classifiers[classifier] || [];
+    }
+    /**
+     * Ex.
+     *  const { KGClassifiers, Query } from 'geoplatform.client';
+     *  let purposeId = '...',
+     *      functionIds = ['...','...'];
+     *  let query = new Query();
+     *  query.classifiers({
+     *       KGClassifiers.PURPOSE: purposeId,
+     *       KGClassifiers.FUNCTION: functionIds
+     *  });
+     *
+     * @param {?} value - object defining classifiers
+     * @return {?} Query instance
+     */
+    classifiers(value) {
+        this.setClassifiers(value);
+        return this;
+    }
+    /**
+     * @param {?} value - object defining classifiers
+     * @return {?}
+     */
+    setClassifiers(value) {
+        if (!value || typeof (value) !== 'object' || Array.isArray(value)) {
+            this.setParameter(Parameters.CLASSIFIERS, null);
+            return;
+        }
+        /** @type {?} */
+        const classes = Object.keys(Classifiers).map(k => Classifiers[k]);
+        /** @type {?} */
+        let classifiers = this.getParameter(Parameters.CLASSIFIERS) || {};
+        Object.keys(value).forEach(classifier => {
+            if (~classes.indexOf(classifier)) {
+                classifiers[classifier] = toArray(value[classifier]);
+            }
+        });
+        this.setParameter(Parameters.CLASSIFIERS, classifiers);
+    }
+    /**
+     * @return {?} classifiers used in the query
+     */
+    getClassifiers() {
+        return this.getParameter(Parameters.CLASSIFIERS) || null;
     }
     /**
      * @param {?} date
@@ -3363,7 +3449,14 @@ const Events = {
     //related item was viewed in general form (metadata)
     CREATED: 'Created',
     EDITED: 'Edited',
-    DELETED: 'Deleted'
+    DELETED: 'Deleted',
+    CLONED: 'Cloned',
+    ADDED: 'Added',
+    //item was added to another (ie, layer on map)
+    REMOVED: 'Removed',
+    //item was removed from another (ie, item from gallery)
+    EXPORTED: 'Exported',
+    IMPORTED: 'Imported'
 };
 /**
  * @param {?} type
@@ -3799,6 +3892,6 @@ Polyfills();
  * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
  */
 
-export { GPError, ItemTypes, Parameters as QueryParameters, Facets as QueryFacets, Query, queryFactory as QueryFactory, Fields as QueryFields, KGQuery, classifiers as KGClassifiers, AgolQuery, Config, GPHttpClient, XHRHttpClient, ItemService, DatasetService, MapService, LayerService, ServiceService, GalleryService, UtilsService, KGService, ServiceFactory, AgolService, Event as TrackingEvent, TrackingService, Categories as TrackingCategories, Events as TrackingTypes, TrackingEventFactory };
+export { GPError, ItemTypes, Parameters as QueryParameters, Facets as QueryFacets, Query, queryFactory as QueryFactory, Fields as QueryFields, KGQuery, Classifiers as KGClassifiers, AgolQuery, Config, GPHttpClient, XHRHttpClient, ItemService, DatasetService, MapService, LayerService, ServiceService, GalleryService, UtilsService, KGService, ServiceFactory, AgolService, Event as TrackingEvent, TrackingService, Categories as TrackingCategories, Events as TrackingTypes, TrackingEventFactory };
 
 //# sourceMappingURL=geoplatform-client.js.map

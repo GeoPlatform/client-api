@@ -147,6 +147,7 @@ This software has been approved for release by the U.S. Department of the Interi
     var Parameters = {
         ALTERNATE_TITLE: 'alternateTitles',
         BEGINS: 'startDate.min',
+        CLASSIFIERS: 'classifiers',
         CREATED: 'created',
         CREATED_BEFORE: 'created.max',
         CREATED_AFTER: 'created.min',
@@ -685,7 +686,7 @@ This software has been approved for release by the U.S. Department of the Interi
      * @fileoverview added by tsickle
      * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
      */
-    var classifiers = {
+    var Classifiers = {
         PURPOSE: 'purpose',
         FUNCTION: 'function',
         TOPIC_PRIMARY: 'primaryTopic',
@@ -1864,6 +1865,184 @@ This software has been approved for release by the U.S. Department of the Interi
          */
             function () {
                 return this.getParameter(Parameters.EXTENT);
+            };
+        // -----------------------------------------------------------
+        /**
+         * Ex.
+         *  const { KGClassifiers, Query } from 'geoplatform.client';
+         *  let purposeId = '...';
+         *  let query = new Query();
+         *  query.classifier( KGClassifiers.PURPOSE, purposeId );
+         *
+         * @param classifier - string name of classifier to use
+         * @param value - id or array of ids of concepts to use
+         * @return Query
+         */
+        /**
+         * Ex.
+         *  const { KGClassifiers, Query } from 'geoplatform.client';
+         *  let purposeId = '...';
+         *  let query = new Query();
+         *  query.classifier( KGClassifiers.PURPOSE, purposeId );
+         *
+         * @param {?} classifier - string name of classifier to use
+         * @param {?} value - id or array of ids of concepts to use
+         * @return {?} Query
+         */
+        Query.prototype.classifier = /**
+         * Ex.
+         *  const { KGClassifiers, Query } from 'geoplatform.client';
+         *  let purposeId = '...';
+         *  let query = new Query();
+         *  query.classifier( KGClassifiers.PURPOSE, purposeId );
+         *
+         * @param {?} classifier - string name of classifier to use
+         * @param {?} value - id or array of ids of concepts to use
+         * @return {?} Query
+         */
+            function (classifier, value) {
+                this.setClassifier(classifier, value);
+                return this;
+            };
+        /**
+         * Ex.
+         *  const { KGClassifiers, Query } from 'geoplatform.client';
+         *  let purposeId = '...';
+         *  let query = new Query();
+         *  query.setClassifier( KGClassifiers.PURPOSE, purposeId );
+         *
+         * @param classifier - string name of classifier to use
+         * @param value - id or array of ids of concepts to use
+         */
+        /**
+         * Ex.
+         *  const { KGClassifiers, Query } from 'geoplatform.client';
+         *  let purposeId = '...';
+         *  let query = new Query();
+         *  query.setClassifier( KGClassifiers.PURPOSE, purposeId );
+         *
+         * @param {?} classifier - string name of classifier to use
+         * @param {?} value - id or array of ids of concepts to use
+         * @return {?}
+         */
+        Query.prototype.setClassifier = /**
+         * Ex.
+         *  const { KGClassifiers, Query } from 'geoplatform.client';
+         *  let purposeId = '...';
+         *  let query = new Query();
+         *  query.setClassifier( KGClassifiers.PURPOSE, purposeId );
+         *
+         * @param {?} classifier - string name of classifier to use
+         * @param {?} value - id or array of ids of concepts to use
+         * @return {?}
+         */
+            function (classifier, value) {
+                /** @type {?} */
+                var classifiers = this.getParameter(Parameters.CLASSIFIERS) || {};
+                classifiers[classifier] = toArray(value);
+                this.setParameter(Parameters.CLASSIFIERS, classifiers);
+            };
+        /**
+         * @param classifier - name of classifier constraint in use
+         * @return array of concept ids
+         */
+        /**
+         * @param {?} classifier - name of classifier constraint in use
+         * @return {?} array of concept ids
+         */
+        Query.prototype.getClassifier = /**
+         * @param {?} classifier - name of classifier constraint in use
+         * @return {?} array of concept ids
+         */
+            function (classifier) {
+                /** @type {?} */
+                var classifiers = this.getParameter(Parameters.CLASSIFIERS) || {};
+                return classifiers[classifier] || [];
+            };
+        /**
+         * Ex.
+         *  const { KGClassifiers, Query } from 'geoplatform.client';
+         *  let purposeId = '...',
+         *      functionIds = ['...','...'];
+         *  let query = new Query();
+         *  query.classifiers({
+         *       KGClassifiers.PURPOSE: purposeId,
+         *       KGClassifiers.FUNCTION: functionIds
+         *  });
+         *
+         * @param value - object defining classifiers
+         * @return Query instance
+         */
+        /**
+         * Ex.
+         *  const { KGClassifiers, Query } from 'geoplatform.client';
+         *  let purposeId = '...',
+         *      functionIds = ['...','...'];
+         *  let query = new Query();
+         *  query.classifiers({
+         *       KGClassifiers.PURPOSE: purposeId,
+         *       KGClassifiers.FUNCTION: functionIds
+         *  });
+         *
+         * @param {?} value - object defining classifiers
+         * @return {?} Query instance
+         */
+        Query.prototype.classifiers = /**
+         * Ex.
+         *  const { KGClassifiers, Query } from 'geoplatform.client';
+         *  let purposeId = '...',
+         *      functionIds = ['...','...'];
+         *  let query = new Query();
+         *  query.classifiers({
+         *       KGClassifiers.PURPOSE: purposeId,
+         *       KGClassifiers.FUNCTION: functionIds
+         *  });
+         *
+         * @param {?} value - object defining classifiers
+         * @return {?} Query instance
+         */
+            function (value) {
+                this.setClassifiers(value);
+                return this;
+            };
+        /**
+         * @param value - object defining classifiers
+         */
+        /**
+         * @param {?} value - object defining classifiers
+         * @return {?}
+         */
+        Query.prototype.setClassifiers = /**
+         * @param {?} value - object defining classifiers
+         * @return {?}
+         */
+            function (value) {
+                if (!value || typeof (value) !== 'object' || Array.isArray(value)) {
+                    this.setParameter(Parameters.CLASSIFIERS, null);
+                    return;
+                }
+                /** @type {?} */
+                var classes = Object.keys(Classifiers).map(function (k) { return Classifiers[k]; });
+                /** @type {?} */
+                var classifiers = this.getParameter(Parameters.CLASSIFIERS) || {};
+                Object.keys(value).forEach(function (classifier) {
+                    if (~classes.indexOf(classifier)) {
+                        classifiers[classifier] = toArray(value[classifier]);
+                    }
+                });
+                this.setParameter(Parameters.CLASSIFIERS, classifiers);
+            };
+        /**
+         * @return classifiers used in the query
+         */
+        /**
+         * @return {?} classifiers used in the query
+         */
+        Query.prototype.getClassifiers = /**
+         * @return {?} classifiers used in the query
+         */
+            function () {
+                return this.getParameter(Parameters.CLASSIFIERS) || null;
             };
         // -----------------------------------------------------------
         /**
@@ -5019,7 +5198,14 @@ This software has been approved for release by the U.S. Department of the Interi
         //related item was viewed in general form (metadata)
         CREATED: 'Created',
         EDITED: 'Edited',
-        DELETED: 'Deleted'
+        DELETED: 'Deleted',
+        CLONED: 'Cloned',
+        ADDED: 'Added',
+        //item was added to another (ie, layer on map)
+        REMOVED: 'Removed',
+        //item was removed from another (ie, item from gallery)
+        EXPORTED: 'Exported',
+        IMPORTED: 'Imported'
     };
     /**
      * @param {?} type
@@ -5645,7 +5831,7 @@ This software has been approved for release by the U.S. Department of the Interi
     exports.QueryFactory = queryFactory;
     exports.QueryFields = Fields;
     exports.KGQuery = KGQuery;
-    exports.KGClassifiers = classifiers;
+    exports.KGClassifiers = Classifiers;
     exports.AgolQuery = AgolQuery;
     exports.Config = Config;
     exports.GPHttpClient = GPHttpClient;

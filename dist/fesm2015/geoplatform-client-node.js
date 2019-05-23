@@ -214,22 +214,30 @@ const ɵ0 = function (router, routes, options) {
     options = options || {};
     /** @type {?} */
     let paths = options.paths || {};
+    /** @type {?} */
+    let auths = options.auth || {};
     routes.forEach(route => {
         if (paths[route.key] === false)
             return; //disabled endpoint
         if (!paths[route.key] && !route.path)
             return;
         /** @type {?} */
-        let path = '/' + (paths[route.key] || route.path);
+        let overrides = options[route.key] || {};
+        /** @type {?} */
+        let path = '/' + (overrides.path || paths[route.key] || route.path);
+        /** @type {?} */
+        let needsAuth = overrides.auth || auths[route.key] || route.auth;
         // console.log(`Binding Service Route [${route.method}] ${path}`)
         router[route.method](path, (req, res, next) => {
             /** @type {?} */
-            let svc = this.getService(req, route.auth, options);
+            let svc = this.getService(req, needsAuth, options);
             /** @type {?} */
             let promise = route.execFn(svc, req);
             promise.then((result) => {
-                if (route.respFn)
-                    route.respFn(result, res, next);
+                /** @type {?} */
+                let respFn = overrides.respFn || route.respFn;
+                if (respFn)
+                    respFn(result, res, next);
                 else
                     res.json(result);
             })
@@ -315,9 +323,9 @@ result, res) {
     res.status(204).end();
 }, ɵ6 = function (svc, req) {
     return svc.patch(req.params.id, req.body);
-}, ɵ7 = function (svc, req) {
+}, ɵ7 = function (svc, req) { return svc.clone(req.params.id, req.body); }, ɵ8 = function (svc, req) {
     return svc.export(req.params.id, req.query.format);
-}, ɵ8 = function (result, res) {
+}, ɵ9 = function (result, res) {
     /** @type {?} */
     let mimeType = result.headers['content-type'];
     /** @type {?} */
@@ -325,11 +333,11 @@ result, res) {
     res.set("Content-Type", mimeType);
     res.setHeader('Content-disposition', disposition);
     res.send(result.body);
-}, ɵ9 = function (svc, req) {
+}, ɵ10 = function (svc, req) {
     return svc.getUri(req.body);
-}, ɵ10 = function (result, res) {
+}, ɵ11 = function (result, res) {
     res.json({ uri: result });
-}, ɵ11 = function (svc, req) {
+}, ɵ12 = function (svc, req) {
     return svc.getUri(req.body)
         .then(uri => {
         /** @type {?} */
@@ -338,15 +346,15 @@ result, res) {
         let query = new Query().uri(uri).fields(fields);
         return svc.search(query);
     });
-}, ɵ12 = function (svc, req) {
+}, ɵ13 = function (svc, req) {
     /** @type {?} */
     let input = req.body.url || req.files.file;
     return svc.import(input, req.query.format);
-}, ɵ13 = function (svc, req) {
-    return svc.associations(req.params.id, req.query);
 }, ɵ14 = function (svc, req) {
-    return svc.versions(req.params.id);
+    return svc.associations(req.params.id, req.query);
 }, ɵ15 = function (svc, req) {
+    return svc.versions(req.params.id);
+}, ɵ16 = function (svc, req) {
     return svc.get(req.params.id, { version: req.params.version });
 };
 /** @type {?} */
@@ -395,55 +403,62 @@ const Routes = [
         execFn: ɵ6
     },
     {
+        key: 'clone',
+        method: 'post',
+        path: 'items/:id/clone',
+        auth: true,
+        execFn: ɵ7
+    },
+    {
         key: 'export',
         method: 'get',
         path: 'items/:id/export',
         auth: false,
-        execFn: ɵ7,
-        respFn: ɵ8
+        execFn: ɵ8,
+        respFn: ɵ9
     },
     {
         key: 'uri',
         method: 'post',
         path: 'items/uri',
         auth: false,
-        execFn: ɵ9,
-        respFn: ɵ10
+        execFn: ɵ10,
+        respFn: ɵ11
     },
     {
         key: 'exists',
         method: 'post',
         path: 'items/exists',
         auth: false,
-        execFn: ɵ11
+        execFn: ɵ12
     },
     {
         key: 'import',
         method: 'post',
         path: 'items/import',
         auth: true,
-        execFn: ɵ12
+        execFn: ɵ13
     },
     {
         key: 'associations',
         method: 'get',
         path: 'items/:id/associations',
         auth: false,
-        execFn: ɵ13
+        execFn: ɵ14
     },
     {
         key: 'versions',
         method: 'get',
         path: 'items/:id/versions',
         auth: false,
-        execFn: ɵ14
+        execFn: ɵ15
     },
     {
         key: 'getVersion',
         method: 'get',
         path: 'items/:id/versions/:version',
         auth: false,
-        execFn: ɵ15
+        execFn: ɵ16
     }
 ];
 /**

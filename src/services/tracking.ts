@@ -32,7 +32,12 @@ const Events : {[key:string]:string} = {
     VIEWED:     'Viewed',    //related item was viewed in general form (metadata)
     CREATED:    'Created',
     EDITED:     'Edited',
-    DELETED:    'Deleted'
+    DELETED:    'Deleted',
+    CLONED:     'Cloned',
+    ADDED:      'Added',    //item was added to another (ie, layer on map)
+    REMOVED:    'Removed',  //item was removed from another (ie, item from gallery)
+    EXPORTED:   'Exported',
+    IMPORTED:   'Imported'
 };
 
 

@@ -64,6 +64,13 @@ const Routes = [
         }
     },
     {
+        key: 'clone',
+        method: 'post',
+        path: 'items/:id/clone',
+        auth: true,
+        execFn: function(svc, req) { return svc.clone(req.params.id, req.body); }
+    },
+    {
         key: 'export',
         method: 'get',
         path: 'items/:id/export',

@@ -1,5 +1,6 @@
 
 import Parameters from './parameters';
+import Classifiers from './classifiers';
 
 interface KVP<U> { [ key : string ] : U }
 
@@ -721,6 +722,95 @@ class Query {
      */
     getExtent () : any {
         return this.getParameter(Parameters.EXTENT);
+    }
+
+
+    // -----------------------------------------------------------
+
+
+    /**
+     * Ex.
+     *  const { KGClassifiers, Query } from 'geoplatform.client';
+     *  let purposeId = '...';
+     *  let query = new Query();
+     *  query.classifier( KGClassifiers.PURPOSE, purposeId );
+     *
+     * @param classifier - string name of classifier to use
+     * @param value - id or array of ids of concepts to use
+     * @return Query
+     */
+    classifier(classifier : string, value : string|string[]) : Query {
+        this.setClassifier(classifier, value);
+        return this;
+    }
+
+    /**
+     * Ex.
+     *  const { KGClassifiers, Query } from 'geoplatform.client';
+     *  let purposeId = '...';
+     *  let query = new Query();
+     *  query.setClassifier( KGClassifiers.PURPOSE, purposeId );
+     *
+     * @param classifier - string name of classifier to use
+     * @param value - id or array of ids of concepts to use
+     */
+    setClassifier(classifier : string, value : string|string[]) {
+        let classifiers = this.getParameter(Parameters.CLASSIFIERS) || {};
+        classifiers[classifier] = toArray(value);
+        this.setParameter(Parameters.CLASSIFIERS, classifiers);
+    }
+
+    /**
+     * @param classifier - name of classifier constraint in use
+     * @return array of concept ids
+     */
+    getClassifier(classifier : string) : string[] {
+        let classifiers = this.getParameter(Parameters.CLASSIFIERS) || {};
+        return classifiers[classifier] || [];
+    }
+
+    /**
+     * Ex.
+     *  const { KGClassifiers, Query } from 'geoplatform.client';
+     *  let purposeId = '...',
+     *      functionIds = ['...','...'];
+     *  let query = new Query();
+     *  query.classifiers({
+     *       KGClassifiers.PURPOSE: purposeId,
+     *       KGClassifiers.FUNCTION: functionIds
+     *  });
+     *
+     * @param value - object defining classifiers
+     * @return Query instance
+     */
+    classifiers(value : any) : Query {
+        this.setClassifiers(value);
+        return this;
+    }
+
+    /**
+     * @param value - object defining classifiers
+     */
+    setClassifiers (value : any) {
+        if(!value || typeof(value) !== 'object' || Array.isArray(value)) {
+            this.setParameter(Parameters.CLASSIFIERS, null);
+            return;
+        }
+        const classes = Object.keys(Classifiers).map(k=>Classifiers[k]);
+        let classifiers = this.getParameter(Parameters.CLASSIFIERS) || {};
+        Object.keys(value).forEach( classifier => {
+            if(~classes.indexOf(classifier)) {
+                classifiers[classifier] = toArray(value[classifier]);
+            }
+        });
+        this.setParameter(Parameters.CLASSIFIERS, classifiers);
+    }
+
+    /**
+     * @return classifiers used in the query
+     */
+    getClassifiers () : any {
+        return this.getParameter(Parameters.CLASSIFIERS) || null;
     }
 
 

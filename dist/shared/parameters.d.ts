@@ -1,6 +1,7 @@
 declare const _default: {
     ALTERNATE_TITLE: string;
     BEGINS: string;
+    CLASSIFIERS: string;
     CREATED: string;
     CREATED_BEFORE: string;
     CREATED_AFTER: string;

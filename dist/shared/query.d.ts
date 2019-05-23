@@ -235,6 +235,57 @@ declare class Query {
      * @return bbox string or null if not set
      */
     getExtent(): any;
+    /**
+     * Ex.
+     *  const { KGClassifiers, Query } from 'geoplatform.client';
+     *  let purposeId = '...';
+     *  let query = new Query();
+     *  query.classifier( KGClassifiers.PURPOSE, purposeId );
+     *
+     * @param classifier - string name of classifier to use
+     * @param value - id or array of ids of concepts to use
+     * @return Query
+     */
+    classifier(classifier: string, value: string | string[]): Query;
+    /**
+     * Ex.
+     *  const { KGClassifiers, Query } from 'geoplatform.client';
+     *  let purposeId = '...';
+     *  let query = new Query();
+     *  query.setClassifier( KGClassifiers.PURPOSE, purposeId );
+     *
+     * @param classifier - string name of classifier to use
+     * @param value - id or array of ids of concepts to use
+     */
+    setClassifier(classifier: string, value: string | string[]): void;
+    /**
+     * @param classifier - name of classifier constraint in use
+     * @return array of concept ids
+     */
+    getClassifier(classifier: string): string[];
+    /**
+     * Ex.
+     *  const { KGClassifiers, Query } from 'geoplatform.client';
+     *  let purposeId = '...',
+     *      functionIds = ['...','...'];
+     *  let query = new Query();
+     *  query.classifiers({
+     *       KGClassifiers.PURPOSE: purposeId,
+     *       KGClassifiers.FUNCTION: functionIds
+     *  });
+     *
+     * @param value - object defining classifiers
+     * @return Query instance
+     */
+    classifiers(value: any): Query;
+    /**
+     * @param value - object defining classifiers
+     */
+    setClassifiers(value: any): void;
+    /**
+     * @return classifiers used in the query
+     */
+    getClassifiers(): any;
     modified(date: number | Date, beforeOrAfter: boolean): Query;
     /**
      * @param date - date to compare against

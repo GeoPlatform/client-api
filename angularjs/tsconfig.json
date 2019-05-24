@@ -2,8 +2,8 @@
   "extends": "../tsconfig.json",
   "compilerOptions": {
     "paths": {
-        "@geoplatform/client": "../dist",
-        "@geoplatform/angularjs": "../dist/angularjs"
+        "@geoplatform/client": ["../dist"],
+        "@geoplatform/angularjs": ["../dist/angularjs"]
     }
   },
   "include": [

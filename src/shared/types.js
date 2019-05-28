@@ -19,24 +19,24 @@ const ItemTypes = {
     RIGHTS_STATEMENT: 'dct:RightsStatement'
 };
 
-const ItemTypeLabels = {
-    DATASET         : "Dataset",
-    SERVICE         : "Service",
-    LAYER           : "Layer",
-    MAP             : "Map",
-    GALLERY         : "Gallery",
-    COMMUNITY       : 'Community',
-    APPLICATION     : 'Application',
-    TOPIC           : 'Topic',
-    WEBSITE         : 'WebSite',
-    IMAGE_PRODUCT   : "Image Product",
-    ORGANIZATION    : "Organization",
-    CONTACT         : "Contact",
-    CONCEPT         : "Concept",
-    CONCEPT_SCHEME  : "Concept Scheme",
-    STANDARD        : 'Standard',
-    RIGHTS_STATEMENT: 'Rights Statement'
-};
+const ItemTypeLabels = {};
+ItemTypeLabels[ItemTypes.DATASET]          = "Dataset";
+ItemTypeLabels[ItemTypes.SERVICE]          = "Service";
+ItemTypeLabels[ItemTypes.LAYER]            = "Layer";
+ItemTypeLabels[ItemTypes.MAP]              = "Map";
+ItemTypeLabels[ItemTypes.GALLERY]          = "Gallery";
+ItemTypeLabels[ItemTypes.COMMUNITY]        = 'Community';
+ItemTypeLabels[ItemTypes.APPLICATION]      = 'Application';
+ItemTypeLabels[ItemTypes.TOPIC]            = 'Topic';
+ItemTypeLabels[ItemTypes.WEBSITE]          = 'WebSite';
+ItemTypeLabels[ItemTypes.IMAGE_PRODUCT]    = "Image Product";
+ItemTypeLabels[ItemTypes.ORGANIZATION]     = "Organization";
+ItemTypeLabels[ItemTypes.CONTACT]          = "Contact";
+ItemTypeLabels[ItemTypes.CONCEPT]          = "Concept";
+ItemTypeLabels[ItemTypes.CONCEPT_SCHEME]   = "Concept Scheme";
+ItemTypeLabels[ItemTypes.STANDARD]         = 'Standard';
+ItemTypeLabels[ItemTypes.RIGHTS_STATEMENT] = 'Rights Statement';
+
 
 
 export {

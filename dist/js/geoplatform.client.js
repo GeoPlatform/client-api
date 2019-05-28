@@ -580,6 +580,7 @@
       APPLICATION: 'Application',
       TOPIC: 'Topic',
       WEBSITE: 'WebSite',
+      IMAGE_PRODUCT: 'eo:Product',
       ORGANIZATION: "org:Organization",
       CONTACT: "vcard:VCard",
       CONCEPT: "skos:Concept",

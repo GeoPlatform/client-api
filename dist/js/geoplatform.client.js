@@ -589,6 +589,25 @@
       RIGHTS_STATEMENT: 'dct:RightsStatement'
   };
 
+  var ItemTypeLabels = {
+      DATASET: "Dataset",
+      SERVICE: "Service",
+      LAYER: "Layer",
+      MAP: "Map",
+      GALLERY: "Gallery",
+      COMMUNITY: 'Community',
+      APPLICATION: 'Application',
+      TOPIC: 'Topic',
+      WEBSITE: 'WebSite',
+      IMAGE_PRODUCT: "Image Product",
+      ORGANIZATION: "Organization",
+      CONTACT: "Contact",
+      CONCEPT: "Concept",
+      CONCEPT_SCHEME: "Concept Scheme",
+      STANDARD: 'Standard',
+      RIGHTS_STATEMENT: 'Rights Statement'
+  };
+
   /**
    * ItemService
    * service for working with the GeoPlatform API to
@@ -5387,6 +5406,7 @@
   }();
 
   exports.ItemTypes = ItemTypes;
+  exports.ItemTypeLabels = ItemTypeLabels;
   exports.QueryParameters = QueryParameters;
   exports.QueryFacets = Facets;
   exports.Query = Query$1;

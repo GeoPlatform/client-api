@@ -24,14 +24,11 @@ describe('# AgolService', function() {
         .then( response => {
             expect(response.results).to.exist;
             expect(response.results.length).to.be.greaterThan(0);
-            id = service.getAgolId(response.results[0]);
-            return id;
+            return response.results[0].id;
         })
         .then( id => service.getItem(id))
         .then( item => {
             expect(item).to.exist;
-            let id2 = service.getAgolId(item);
-            expect(id2).to.equal(id);
             done();
         })
         .catch(e => done(e));

@@ -42,7 +42,9 @@ describe('# Tracking Service', function() {
         expect(event.getItem()).to.equal(item.id);
 
         service.event(event);
-        provider.validate(1);
+        setTimeout( () => {
+            provider.validate(1);
+        }, 1000);
 
         done();
 
@@ -56,30 +58,40 @@ describe('# Tracking Service', function() {
             id: "testing",
             layers: [
                 {
-                    type: "Layer",
-                    id: "layer1",
-                    services: [{
-                        id: 'service1',
-                        type: "regp:Service"
-                    }]
+                    visibility: true,
+                    layer: {
+                        type: "Layer",
+                        id: "layer1",
+                        services: [{
+                            id: 'service1',
+                            type: "regp:Service"
+                        }]
+                    }
                 }
             ]
         };
+
         let events = TrackingEventFactory(TrackingTypes.DISPLAYED, item);
         expect(events.length).to.equal(3);
+
         expect(events[0].getCategory()).to.equal(TrackingCategories.MAP);
         expect(events[0].getType()).to.equal(TrackingTypes.DISPLAYED);
         expect(events[0].getItem()).to.equal(item.id);
+
         expect(events[1].getCategory()).to.equal(TrackingCategories.LAYER);
         expect(events[1].getType()).to.equal(TrackingTypes.DISPLAYED);
-        expect(events[1].getItem()).to.equal(item.layers[0].id);
+        expect(events[1].getItem()).to.equal(item.layers[0].layer.id);
+
         expect(events[2].getCategory()).to.equal(TrackingCategories.SERVICE);
-        expect(events[2].getType()).to.equal(TrackingTypes.DISPLAYED);
-        expect(events[2].getItem()).to.equal(item.layers[0].services[0].id);
+        expect(events[2].getType()).to.equal(TrackingTypes.ACCESSED);
+        expect(events[2].getItem()).to.equal(item.layers[0].layer.services[0].id);
 
         provider.reset();
         service.event(events);
-        provider.validate(3);
+
+        setTimeout( () => {
+            provider.validate(3);
+        }, 1000);
 
         done();
 

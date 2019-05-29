@@ -115,7 +115,7 @@ const Routes = [
         method: 'get',
         path: 'items/:id/versions',
         auth: false,
-        execFn: function(svc, req) { return svc.versions(req.params.id); }
+        execFn: function(svc, req) { return svc.versions(req.params.id, req.query); }
     },
     {
         key: 'getVersion',

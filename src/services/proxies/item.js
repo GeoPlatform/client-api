@@ -77,7 +77,7 @@ const Routes = [
         path: 'items/uri',
         auth: false,
         execFn: function(svc, req) { return svc.getUri(req.body); },
-        respFn: function(result, req, res) { res.json({ uri: result }); }
+        respFn: function(result, res, next) { res.json({ uri: result }); }
     },
     {
         key: 'exists',

@@ -3846,7 +3846,7 @@
       execFn: function execFn(svc, req) {
           return svc.getUri(req.body);
       },
-      respFn: function respFn(result, req, res) {
+      respFn: function respFn(result, res, next) {
           res.json({ uri: result });
       }
   }, {

@@ -4,8 +4,6 @@ import * as angular from "angular";
 import { GPHttpClient } from "@geoplatform/client";
 
 
-// const angular = (window as any).angular || null;
-
 
 class NGHttpClient extends GPHttpClient {
 

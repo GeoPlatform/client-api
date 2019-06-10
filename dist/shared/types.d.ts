@@ -1,4 +1,4 @@
-declare const _default: {
+declare const ItemTypes: {
     DATASET: string;
     SERVICE: string;
     LAYER: string;
@@ -8,11 +8,14 @@ declare const _default: {
     APPLICATION: string;
     TOPIC: string;
     WEBSITE: string;
+    IMAGE_PRODUCT: string;
     ORGANIZATION: string;
     CONTACT: string;
+    PERSON: string;
     CONCEPT: string;
     CONCEPT_SCHEME: string;
     STANDARD: string;
     RIGHTS_STATEMENT: string;
 };
-export default _default;
+declare const ItemTypeLabels: {};
+export { ItemTypes as default, ItemTypes, ItemTypeLabels };

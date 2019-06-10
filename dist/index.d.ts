@@ -1,5 +1,6 @@
 import GPError from './shared/error';
-import ItemTypes from './shared/types';
+import { ItemTypes, ItemTypeLabels } from './shared/types';
+import URIFactory from './shared/uri-factory';
 import KGQuery from './shared/kg-query';
 import KGClassifiers from './shared/classifiers';
 import QueryParameters from './shared/parameters';
@@ -20,4 +21,4 @@ import { AgolService, AgolQuery } from './services/agol';
 import { TrackingEvent, TrackingService, TrackingCategories, TrackingTypes, TrackingEventFactory } from './services/tracking';
 import KGService from './services/kg';
 import ServiceFactory from './services/factory';
-export { GPError, ItemTypes, QueryParameters, QueryFacets, Query, QueryFactory, QueryFields, KGQuery, KGClassifiers, AgolQuery, Item, Asset, Dataset, Service, Layer, Map, Gallery, Application, Topic, WebSite, Organization, Contact, ConceptScheme, SearchResults, ServiceTypeStandard, Config, GPHttpClient, XHRHttpClient, ItemService, DatasetService, MapService, LayerService, ServiceService, GalleryService, UtilsService, KGService, ServiceFactory, AgolService, TrackingEvent, TrackingService, TrackingCategories, TrackingTypes, TrackingEventFactory };
+export { GPError, ItemTypes, ItemTypeLabels, QueryParameters, QueryFacets, Query, QueryFactory, QueryFields, KGQuery, KGClassifiers, AgolQuery, URIFactory, Item, Asset, Dataset, Service, Layer, Map, Gallery, Application, Topic, WebSite, Organization, Contact, ConceptScheme, SearchResults, ServiceTypeStandard, Config, GPHttpClient, XHRHttpClient, ItemService, DatasetService, MapService, LayerService, ServiceService, GalleryService, UtilsService, KGService, ServiceFactory, AgolService, TrackingEvent, TrackingService, TrackingCategories, TrackingTypes, TrackingEventFactory };

@@ -18,7 +18,8 @@ const Categories : {[key:string]:string} = {
     APPLICATION:     'Application',
     TOPIC:           'Topic',
     WEBSITE:         'WebSite',
-    RIGHTS_STATEMENT: 'RightsStatement',
+    IMAGE_PRODUCT:   'Image Product',
+    RIGHTS_STATEMENT:'RightsStatement',
     KNOWLEDGE_GRAPH: 'Knowledge Graph',
     USER:            'User',
     COMMUNITY_POST:  'Community Post',   //post within a community portal

@@ -77,7 +77,8 @@ class GPError extends Error {
  * @fileoverview added by tsickle
  * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
  */
-var ItemTypes = {
+/** @type {?} */
+const ItemTypes = {
     DATASET: "dcat:Dataset",
     SERVICE: "regp:Service",
     LAYER: "Layer",
@@ -87,13 +88,306 @@ var ItemTypes = {
     APPLICATION: 'Application',
     TOPIC: 'Topic',
     WEBSITE: 'WebSite',
+    IMAGE_PRODUCT: 'eo:Product',
     ORGANIZATION: "org:Organization",
     CONTACT: "vcard:VCard",
+    PERSON: "foaf:Person",
     CONCEPT: "skos:Concept",
     CONCEPT_SCHEME: "skos:ConceptScheme",
     STANDARD: 'dct:Standard',
     RIGHTS_STATEMENT: 'dct:RightsStatement'
 };
+/** @type {?} */
+const ItemTypeLabels = {};
+ItemTypeLabels[ItemTypes.DATASET] = "Dataset";
+ItemTypeLabels[ItemTypes.SERVICE] = "Service";
+ItemTypeLabels[ItemTypes.LAYER] = "Layer";
+ItemTypeLabels[ItemTypes.MAP] = "Map";
+ItemTypeLabels[ItemTypes.GALLERY] = "Gallery";
+ItemTypeLabels[ItemTypes.COMMUNITY] = 'Community';
+ItemTypeLabels[ItemTypes.APPLICATION] = 'Application';
+ItemTypeLabels[ItemTypes.TOPIC] = 'Topic';
+ItemTypeLabels[ItemTypes.WEBSITE] = 'WebSite';
+ItemTypeLabels[ItemTypes.IMAGE_PRODUCT] = "Image Product";
+ItemTypeLabels[ItemTypes.ORGANIZATION] = "Organization";
+ItemTypeLabels[ItemTypes.CONTACT] = "Contact";
+ItemTypeLabels[ItemTypes.PERSON] = "Person";
+ItemTypeLabels[ItemTypes.CONCEPT] = "Concept";
+ItemTypeLabels[ItemTypes.CONCEPT_SCHEME] = "Concept Scheme";
+ItemTypeLabels[ItemTypes.STANDARD] = 'Standard';
+ItemTypeLabels[ItemTypes.RIGHTS_STATEMENT] = 'Rights Statement';
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
+ */
+/** @type {?} */
+const URI_BASE = 'http://www.geoplatform.gov';
+/** @type {?} */
+const ESRI_TYPES = [
+    "http://www.geoplatform.gov/spec/esri-feature-rest",
+    "http://www.geoplatform.gov/spec/esri-image-rest",
+    "http://www.geoplatform.gov/spec/esri-map-rest",
+    "http://www.geoplatform.gov/spec/esri-tile-rest"
+];
+/**
+ * @param {?} ref
+ * @return {?}
+ */
+function formatReference(ref) {
+    if (ref === null)
+        return '';
+    if (typeof (ref) === 'string')
+        return ref.toLowerCase().replace(/\s/g, '');
+    else if (typeof (ref) === 'object') {
+        /** @type {?} */
+        var result = '';
+        for (var prop in ref) {
+            if (ref.hasOwnProperty(prop)) {
+                /** @type {?} */
+                var value = ref[prop];
+                if (value !== null && typeof (value) !== 'undefined') {
+                    //TODO catch non-string-able values
+                    result += (value + '').toLowerCase().replace(/\s/g, '');
+                }
+            }
+        }
+        return result;
+    }
+    return '';
+}
+/**
+ * Adjusts service access url to ignore certain patterns that can affect
+ * how URI uniqueness is.
+ * @param {?} service - GP Service instance
+ * @return {?} access url adjusted for URI generation needs
+ */
+function fixServiceHref(service) {
+    stripLayerFromServiceHref(service);
+    /** @type {?} */
+    let url = service.accessURL || service.href;
+    if (!url || !url.length)
+        return null;
+    //ensure case sensitivity is not an issue
+    // and that any surrounding whitespace is ignored
+    url = (url + '').trim().toLowerCase();
+    url = url.replace(/http(s)?:\/\//, ''); //ignore protocol for URI purposes
+    url = url.replace(/&?request=[A-Za-z]+/i, '')
+        .replace(/&?service=(WMS|WFS|WCS|CSW)/i, '')
+        .replace(/&?version=[0-9\.]*/i, '')
+        .replace(/&?layers=[A-Za-z0-9\-\:_,]*/i, '')
+        .replace(/&?srs=[A-Za-z0-9\:]*/i, '')
+        .replace(/&?crs=[A-Za-z0-9\:]*/i, '')
+        .replace(/&?format=[A-Za-z\/]*/i, '')
+        .replace(/&?bbox=[0-9,\.]*/i, '');
+    /** @type {?} */
+    let lastChar = url[url.length - 1];
+    if ('/' === lastChar || '?' === lastChar) { //ignore empty querystring or trailing slashes
+        //ignore empty querystring or trailing slashes
+        url = url.substring(0, url.length - 1);
+    }
+    return url;
+}
+/**
+ * ESRI services sometimes have layer information baked into their URL
+ * which needs to be removed before the service can be used.
+ * @param {?} service - GP Service object
+ * @return {?}
+ */
+function stripLayerFromServiceHref(service) {
+    if (!service)
+        return;
+    /** @type {?} */
+    let type = service.serviceType || service.conformsTo;
+    if (!type)
+        return;
+    //if ESRI service, make sure it doesn't have a layer id on the href
+    if (ESRI_TYPES.indexOf(type.uri) >= 0) {
+        /** @type {?} */
+        let href = service.href || service.accessURL;
+        /** @type {?} */
+        let matches = href.match(/(Map|Feature|Image)(Server\/\d+)/i);
+        if (matches && matches.length > 2) {
+            // 0 < full string match (ie, 'MapServer/1')
+            // 1 < server type match (ie, 'Map' or 'Feature')
+            // 2 < bit we care about (ie, 'Server/1')
+            href = href.replace(matches[2], 'Server/');
+            if (service.href)
+                service.href = href;
+            if (service.accessURL)
+                service.accessURL = href;
+        }
+    }
+}
+const ɵ0 = function (type, factory) {
+    this.factories[type] = factory;
+}, ɵ1 = function (object, md5Fn) {
+    if (!object || !object.type)
+        return null;
+    if (typeof (md5Fn) !== 'function') {
+        throw new Error("Must specify a MD5 function when using URIFactory");
+    }
+    /** @type {?} */
+    let factory = this.factories[object.type];
+    if (!factory)
+        return null;
+    return factory(object, md5Fn);
+};
+/** *
+ * @see https://geoplatform.atlassian.net/wiki/display/DT/Common+Object+Identifier+Scheme
+  @type {?} */
+const URIFactory = {
+    factories: {},
+    register: ɵ0,
+    create: ɵ1
+};
+URIFactory.register(ItemTypes.DATASET, function (dataset, md5) {
+    /** @type {?} */
+    let pubName = (dataset.publisher || dataset.publishers || [])
+        .map(pub => { return pub.label || ""; }).join('');
+    /** @type {?} */
+    let ref = formatReference({
+        title: dataset.title,
+        pub: pubName
+    });
+    return URI_BASE + '/id/dataset/' + md5(ref);
+});
+URIFactory.register(ItemTypes.SERVICE, function (service, md5) {
+    /** @type {?} */
+    let url = fixServiceHref(service);
+    /** @type {?} */
+    let ref = formatReference(url);
+    return URI_BASE + '/id/service/' + md5(ref);
+});
+URIFactory.register(ItemTypes.LAYER, function (layer, md5) {
+    /** @type {?} */
+    let svcUrl = '';
+    /** @type {?} */
+    let services = layer.servicedBy || layer.services;
+    if (services && services.length)
+        svcUrl = services[0].accessURL || services[0].href || '';
+    /** @type {?} */
+    let lyrUrl = layer.accessURL || layer.href || '';
+    /** @type {?} */
+    let lyrName = layer.layerName || '';
+    /** @type {?} */
+    let args = svcUrl + lyrName + lyrUrl;
+    if (!args.length)
+        return null;
+    /** @type {?} */
+    let ref = formatReference(args);
+    return URI_BASE + '/id/layer/' + md5(ref);
+});
+/**
+ * Uses the map title, createdBy, and all third-party identifiers associated with the map
+ * @param {object} map - GP Map object
+ * @return {string} uri unique to this object
+ */
+URIFactory.register(ItemTypes.MAP, function (map, md5) {
+    /** @type {?} */
+    let author = map.createdBy || map._createdBy || "";
+    /** @type {?} */
+    let identifiers = (map.identifiers || map.identifier || []).join('');
+    /** @type {?} */
+    let ref = formatReference({ title: map.title, author: author, identifiers: identifiers });
+    return URI_BASE + '/id/map/' + md5(ref);
+});
+URIFactory.register(ItemTypes.GALLERY, function (gallery, md5) {
+    /** @type {?} */
+    let author = gallery.createdBy || gallery._createdBy || "";
+    /** @type {?} */
+    let ref = formatReference({ title: gallery.title, author: author });
+    return URI_BASE + '/id/gallery/' + md5(ref);
+});
+URIFactory.register(ItemTypes.COMMUNITY, function (community, md5) {
+    /** @type {?} */
+    let ref = formatReference({ title: community.title });
+    return URI_BASE + '/id/community/' + md5(ref);
+});
+URIFactory.register(ItemTypes.ORGANIZATION, function (org, md5) {
+    /** @type {?} */
+    let ref = formatReference(org.label || org.name);
+    return URI_BASE + '/id/organization/' + md5(ref);
+});
+URIFactory.register(ItemTypes.PERSON, function (person, md5) {
+    /** @type {?} */
+    let ref = formatReference(person.name);
+    return URI_BASE + '/id/person/' + md5(ref);
+});
+URIFactory.register(ItemTypes.CONTACT, function (vcard, md5) {
+    /** @type {?} */
+    let ref = {};
+    if (vcard.email || vcard.hasEmail)
+        ref.email = vcard.email || vcard.hasEmail; //email
+    if (vcard.tel)
+        ref.tel = vcard.tel; //tel
+    if (vcard.orgName || vcard['organization-name'])
+        ref.orgName = vcard.orgName || vcard['organization-name']; //orgName
+    if (vcard.positionTitle)
+        ref.positionTitle = vcard.positionTitle; //positionTitle
+    ref = formatReference(ref);
+    return URI_BASE + '/id/contact/' + md5(ref);
+});
+URIFactory.register(ItemTypes.CONCEPT, function (object, md5) {
+    /** @type {?} */
+    let scheme = object.inScheme || object.scheme;
+    /** @type {?} */
+    let schemeLabel = scheme ? (scheme.label || scheme.prefLabel) : '';
+    /** @type {?} */
+    let schemeRef = formatReference(schemeLabel);
+    /** @type {?} */
+    let ref = formatReference(object.label || object.prefLabel);
+    return URI_BASE + '/id/metadata-codelists/' + md5(schemeRef) + '/' + md5(ref);
+});
+URIFactory.register(ItemTypes.CONCEPT_SCHEME, function (object, md5) {
+    /** @type {?} */
+    let ref = formatReference(object.label || object.prefLabel);
+    return URI_BASE + '/id/metadata-codelists/' + md5(ref);
+});
+URIFactory.register(ItemTypes.APPLICATION, function (object, md5) {
+    if (!object || !object.title)
+        return null;
+    /** @type {?} */
+    let author = object.createdBy || object._createdBy || "";
+    /** @type {?} */
+    let ref = formatReference({ title: object.title, author: author });
+    return URI_BASE + '/id/application/' + md5(ref);
+});
+URIFactory.register(ItemTypes.TOPIC, function (object, md5) {
+    if (!object || !object.title)
+        return null;
+    /** @type {?} */
+    let author = object.createdBy || object._createdBy || "";
+    /** @type {?} */
+    let ref = formatReference({ title: object.title, author: author });
+    return URI_BASE + '/id/topic/' + md5(ref);
+});
+URIFactory.register(ItemTypes.WEBSITE, function (item, md5) {
+    if (!item || !item.landingPage)
+        return null;
+    /** @type {?} */
+    let ref = formatReference(item.landingPage);
+    return URI_BASE + '/id/website/' + md5(ref);
+});
+URIFactory.register(ItemTypes.IMAGE_PRODUCT, function (item, md5) {
+    if (!item.productId)
+        return null;
+    /** @type {?} */
+    let ref = formatReference(item.productId);
+    return URI_BASE + '/id/product/' + md5(ref);
+});
+/**
+ * @param {?} md5Fn
+ * @return {?}
+ */
+function factoryFn(md5Fn) {
+    if (typeof (md5Fn) !== 'function') {
+        throw new Error("Must specify a MD5 function when using URIFactory");
+    }
+    return function (object) {
+        return URIFactory.create(object, md5Fn);
+    };
+}
 
 /**
  * @fileoverview added by tsickle
@@ -1666,14 +1960,14 @@ function queryFactory () {
  * @fileoverview added by tsickle
  * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
  */
-const ɵ0 = function (options) {
+const ɵ0$1 = function (options) {
     Object.assign(this, options);
 };
 /** @type {?} */
 var Config = {
     ualUrl: 'https://ual.geoplatform.gov',
     //appId: '...',
-    configure: ɵ0
+    configure: ɵ0$1
 };
 
 /**
@@ -2295,16 +2589,19 @@ class ItemService {
     }
     /**
      * @param {?} id - identifier of item to fetch version info for
+     * @param {?=} params - optional set of query parameters to constrain list of versions
      * @param {?=} options - optional set of request options to apply to xhr request
      * @return {?} Promise resolving array of available versions of the item
      */
-    versions(id, options) {
+    versions(id, params, options) {
         return resolve(id)
             .then(id => {
             /** @type {?} */
             let url = this.baseUrl + '/' + id + '/versions';
             /** @type {?} */
-            let opts = this.buildRequest({ method: "GET", url: url, options: options });
+            let opts = this.buildRequest({
+                method: "GET", url: url, params: params, options: options
+            });
             return this.execute(opts);
         })
             .catch(e => {
@@ -3430,6 +3727,7 @@ const Categories = {
     APPLICATION: 'Application',
     TOPIC: 'Topic',
     WEBSITE: 'WebSite',
+    IMAGE_PRODUCT: 'Image Product',
     RIGHTS_STATEMENT: 'RightsStatement',
     KNOWLEDGE_GRAPH: 'Knowledge Graph',
     USER: 'User',
@@ -3892,6 +4190,6 @@ Polyfills();
  * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
  */
 
-export { GPError, ItemTypes, Parameters as QueryParameters, Facets as QueryFacets, Query, queryFactory as QueryFactory, Fields as QueryFields, KGQuery, Classifiers as KGClassifiers, AgolQuery, Config, GPHttpClient, XHRHttpClient, ItemService, DatasetService, MapService, LayerService, ServiceService, GalleryService, UtilsService, KGService, ServiceFactory, AgolService, Event as TrackingEvent, TrackingService, Categories as TrackingCategories, Events as TrackingTypes, TrackingEventFactory };
+export { GPError, ItemTypes, ItemTypeLabels, Parameters as QueryParameters, Facets as QueryFacets, Query, queryFactory as QueryFactory, Fields as QueryFields, KGQuery, Classifiers as KGClassifiers, AgolQuery, factoryFn as URIFactory, Config, GPHttpClient, XHRHttpClient, ItemService, DatasetService, MapService, LayerService, ServiceService, GalleryService, UtilsService, KGService, ServiceFactory, AgolService, Event as TrackingEvent, TrackingService, Categories as TrackingCategories, Events as TrackingTypes, TrackingEventFactory };
 
 //# sourceMappingURL=geoplatform-client.js.map

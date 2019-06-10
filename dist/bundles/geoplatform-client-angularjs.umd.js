@@ -129,6 +129,84 @@ This software has been approved for release by the U.S. Department of the Interi
      * @fileoverview added by tsickle
      * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
      */
+    if (angular && typeof (angular.module) !== 'undefined') {
+        /** @type {?} */
+        var serviceFactory_1 = function (gpNgHttpClient, svcClass, url) {
+            return new svcClass(url, gpNgHttpClient);
+        };
+        /*
+             * Define AngularJS module that can be included in downstream applications
+             *
+             * Example:
+             *
+             *  angular.module('myApp', [ 'ui-router', 'gpClient' ])
+             *  .component('myComponent', {
+             *    bindings: { },
+             *    template: "<div></div>",
+             *    controller: function(gpQueryFactory, gpItemService) {
+             *       this.$onInit = function() {
+             *          gpItemService.search( gpQueryFactory() ).then( response => { ... });
+             *       };
+             *    }
+             *  ]);
+             */
+        angular.module('gpClient', [])
+            .provider('gpConfig', function () {
+            return {
+                $get: function () {
+                    return client.Config;
+                }
+            };
+        })
+            .factory('gpQueryFactory', function () { return client.QueryFactory; })
+            .factory('gpNgHttpClient', ['$http',
+            function ($http) {
+                return new NGHttpClient({ $http: $http });
+            }
+        ])
+            .factory('gpTrackingServiceFactory', function () {
+            return function (options) {
+                return new client.TrackingService(options);
+            };
+        });
+        /** @type {?} */
+        var serviceClasses_1 = {
+            'gpItemService': client.ItemService,
+            'gpUtilsService': client.UtilsService,
+            'gpDatasetService': client.DatasetService,
+            'gpServiceService': client.ServiceService,
+            'gpLayerService': client.LayerService,
+            'gpMapService': client.MapService,
+            'gpGalleryService': client.GalleryService
+        };
+        Object.keys(serviceClasses_1).forEach(function (name) {
+            /** @type {?} */
+            var svcClass = serviceClasses_1[name];
+            angular.module('gpClient')
+                /*
+                    Service for each client service class that uses the
+                    currently configured settings when created.  Note the
+                    settings may change after the service singleton is
+                    created, in which case the factory option should be used.
+                 */
+                .service(name, ['gpNgHttpClient', 'gpConfig',
+                function (gpNgHttpClient, gpConfig) {
+                    return serviceFactory_1(gpNgHttpClient, svcClass, gpConfig.ualUrl);
+                }
+            ])
+                /*
+                    Factory for creating services for each client service class
+                    which uses a customizable endpoint to request data from. Use
+                    this if services need to be able to change API endpoints
+                    during application runtime.
+                 */
+                .factory(name + 'Factory', ['gpNgHttpClient', function (gpNgHttpClient) {
+                    return function (url) {
+                        return serviceFactory_1(gpNgHttpClient, svcClass, url);
+                    };
+                }]);
+        });
+    }
 
     /**
      * @fileoverview added by tsickle

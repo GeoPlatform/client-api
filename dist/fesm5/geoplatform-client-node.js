@@ -380,7 +380,7 @@ result, res) {
 }, ɵ14 = function (svc, req) {
     return svc.associations(req.params.id, req.query);
 }, ɵ15 = function (svc, req) {
-    return svc.versions(req.params.id);
+    return svc.versions(req.params.id, req.query);
 }, ɵ16 = function (svc, req) {
     return svc.get(req.params.id, { version: req.params.version });
 };

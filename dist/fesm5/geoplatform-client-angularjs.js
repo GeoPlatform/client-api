@@ -1,8 +1,8 @@
 import { __extends } from 'tslib';
 import { resolve, reject } from 'q';
 import * as angular from 'angular';
-import { injector } from 'angular';
-import { GPHttpClient } from '@geoplatform/client';
+import { module as module$1, injector } from 'angular';
+import { GPHttpClient, Config, QueryFactory, ItemService, UtilsService, TrackingService, DatasetService, ServiceService, LayerService, MapService, GalleryService } from '@geoplatform/client';
 
 /**
  * @fileoverview added by tsickle
@@ -97,6 +97,84 @@ var NGHttpClient = /** @class */ (function (_super) {
  * @fileoverview added by tsickle
  * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
  */
+if (angular && typeof (module$1) !== 'undefined') {
+    /** @type {?} */
+    var serviceFactory_1 = function (gpNgHttpClient, svcClass, url) {
+        return new svcClass(url, gpNgHttpClient);
+    };
+    /*
+         * Define AngularJS module that can be included in downstream applications
+         *
+         * Example:
+         *
+         *  angular.module('myApp', [ 'ui-router', 'gpClient' ])
+         *  .component('myComponent', {
+         *    bindings: { },
+         *    template: "<div></div>",
+         *    controller: function(gpQueryFactory, gpItemService) {
+         *       this.$onInit = function() {
+         *          gpItemService.search( gpQueryFactory() ).then( response => { ... });
+         *       };
+         *    }
+         *  ]);
+         */
+    module$1('gpClient', [])
+        .provider('gpConfig', function () {
+        return {
+            $get: function () {
+                return Config;
+            }
+        };
+    })
+        .factory('gpQueryFactory', function () { return QueryFactory; })
+        .factory('gpNgHttpClient', ['$http',
+        function ($http) {
+            return new NGHttpClient({ $http: $http });
+        }
+    ])
+        .factory('gpTrackingServiceFactory', function () {
+        return function (options) {
+            return new TrackingService(options);
+        };
+    });
+    /** @type {?} */
+    var serviceClasses_1 = {
+        'gpItemService': ItemService,
+        'gpUtilsService': UtilsService,
+        'gpDatasetService': DatasetService,
+        'gpServiceService': ServiceService,
+        'gpLayerService': LayerService,
+        'gpMapService': MapService,
+        'gpGalleryService': GalleryService
+    };
+    Object.keys(serviceClasses_1).forEach(function (name) {
+        /** @type {?} */
+        var svcClass = serviceClasses_1[name];
+        module$1('gpClient')
+            /*
+                Service for each client service class that uses the
+                currently configured settings when created.  Note the
+                settings may change after the service singleton is
+                created, in which case the factory option should be used.
+             */
+            .service(name, ['gpNgHttpClient', 'gpConfig',
+            function (gpNgHttpClient, gpConfig) {
+                return serviceFactory_1(gpNgHttpClient, svcClass, gpConfig.ualUrl);
+            }
+        ])
+            /*
+                Factory for creating services for each client service class
+                which uses a customizable endpoint to request data from. Use
+                this if services need to be able to change API endpoints
+                during application runtime.
+             */
+            .factory(name + 'Factory', ['gpNgHttpClient', function (gpNgHttpClient) {
+                return function (url) {
+                    return serviceFactory_1(gpNgHttpClient, svcClass, url);
+                };
+            }]);
+    });
+}
 
 /**
  * @fileoverview added by tsickle

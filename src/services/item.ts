@@ -466,15 +466,18 @@ class ItemService {
 
     /**
      * @param id - identifier of item to fetch version info for
+     * @param params - optional set of query parameters to constrain list of versions
      * @param options - optional set of request options to apply to xhr request
      * @return Promise resolving array of available versions of the item
      */
-    versions (id : string, options ?: any) : Q.Promise<any> {
+    versions (id : string, params ?: any, options ?: any) : Q.Promise<any> {
 
         return Q.resolve( id )
         .then( id => {
             let url = this.baseUrl + '/' + id + '/versions';
-            let opts = this.buildRequest({ method:"GET", url:url, options:options });
+            let opts = this.buildRequest({
+                method:"GET", url:url, params: params, options:options 
+            });
             return this.execute(opts);
         })
         .catch(e => {

@@ -2,7 +2,8 @@ import Polyfills from "./shared/polyfills";
 Polyfills();
 
 import GPError from './shared/error';
-import ItemTypes from './shared/types';
+import { ItemTypes, ItemTypeLabels } from './shared/types';
+import URIFactory from './shared/uri-factory';
 import KGQuery from './shared/kg-query';
 import KGClassifiers from './shared/classifiers';
 import QueryParameters from './shared/parameters';
@@ -53,6 +54,7 @@ export {
     //shared classes
     GPError,
     ItemTypes,
+    ItemTypeLabels,
     QueryParameters,
     QueryFacets,
     Query,
@@ -61,6 +63,7 @@ export {
     KGQuery,
     KGClassifiers,
     AgolQuery,
+    URIFactory,
 
     //model interfaces
     Item, Asset, Dataset, Service, Layer, Map, Gallery,

@@ -21,14 +21,16 @@
 
     <script>
 
-    const APIClient = geoplatform.client;
-    const ItemService = APIClient.ItemService;
-    const NGHttpClient = APIClient.angularjs.NGHttpClient;
+    angular.module('ngTest', ['gpClient'])
+    .config(['$httpProvider','gpConfigProvider',
+        function myAppConfig ($httpProvider, gpConfigProvider) {
+            $httpProvider.defaults.withCredentials = true;
 
-    angular.module('ngTest', [])
-    .config(function myAppConfig ($httpProvider) {
-        $httpProvider.defaults.withCredentials = true;
-    })
+            gpConfigProvider.$get().configure({
+                ualUrl: "https://ual.geoplatform.gov"
+            });
+        }
+    ])
     .component('searchResults', {
         template: `
             <ul>
@@ -37,11 +39,10 @@
                 </li>
             </ul>
         `,
-        controller: function($http, $timeout) {
+        controller: function($http, $timeout, gpItemService, gpQueryFactory) {
             this.$onInit = function() {
-                new ItemService("https://ual.geoplatform.gov",
-                    new NGHttpClient({$http: $http})
-                ).search().then( response => {
+                gpItemService.search(gpQueryFactory())
+                .then( response => {
                     $timeout( () => {
                         this.results = response.results;
                     });

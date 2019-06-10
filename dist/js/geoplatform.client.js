@@ -603,6 +603,7 @@
   ItemTypeLabels[ItemTypes.IMAGE_PRODUCT] = "Image Product";
   ItemTypeLabels[ItemTypes.ORGANIZATION] = "Organization";
   ItemTypeLabels[ItemTypes.CONTACT] = "Contact";
+  ItemTypeLabels[ItemTypes.PERSON] = "Person";
   ItemTypeLabels[ItemTypes.CONCEPT] = "Concept";
   ItemTypeLabels[ItemTypes.CONCEPT_SCHEME] = "Concept Scheme";
   ItemTypeLabels[ItemTypes.STANDARD] = 'Standard';

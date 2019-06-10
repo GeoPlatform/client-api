@@ -5,6 +5,8 @@ import JQueryHttpClient from './http/jq';
 import NGHttpClient from './http/ng';
 import NodeHttpClient from './http/node';
 import { ItemTypes, ItemTypeLabels } from './shared/types';
+import * as URIFactory from './shared/uri-factory';
+
 import ItemService from './services/item';
 import DatasetService from './services/dataset';
 import MapService from './services/map';
@@ -59,6 +61,7 @@ export {
     QueryFields,
     KGQuery,
     KGClassifiers,
+    URIFactory,
 
     JQueryHttpClient,
     NGHttpClient,

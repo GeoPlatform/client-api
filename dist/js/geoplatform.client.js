@@ -583,6 +583,7 @@
       IMAGE_PRODUCT: 'eo:Product',
       ORGANIZATION: "org:Organization",
       CONTACT: "vcard:VCard",
+      PERSON: "foaf:Person",
       CONCEPT: "skos:Concept",
       CONCEPT_SCHEME: "skos:ConceptScheme",
       STANDARD: 'dct:Standard',

@@ -196,7 +196,7 @@ URIFactory.register(ItemTypes.PERSON, function(person, md5) {
     return URI_BASE + '/id/person/' + md5(ref);
 });
 
-URIFactory.register(ItemTypes.VCARD, function(vcard, md5) {
+URIFactory.register(ItemTypes.CONTACT, function(vcard, md5) {
     let ref = {};
     if(vcard.email || vcard.hasEmail)
         ref.email = vcard.email || vcard.hasEmail; //email

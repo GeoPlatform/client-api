@@ -776,7 +776,7 @@
       return URI_BASE + '/id/person/' + md5(ref);
   });
 
-  URIFactory.register(ItemTypes.VCARD, function (vcard, md5) {
+  URIFactory.register(ItemTypes.CONTACT, function (vcard, md5) {
       var ref = {};
       if (vcard.email || vcard.hasEmail) ref.email = vcard.email || vcard.hasEmail; //email
       if (vcard.tel) ref.tel = vcard.tel; //tel

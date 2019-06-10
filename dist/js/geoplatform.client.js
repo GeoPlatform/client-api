@@ -672,7 +672,7 @@
       }
   };
 
-  URIFactory.register(Types.DATASET, function (dataset, md5) {
+  URIFactory.register(ItemTypes.DATASET, function (dataset, md5) {
       var pubName = (dataset.publisher || dataset.publishers || []).map(function (pub) {
           return pub.label || "";
       }).join('');
@@ -683,13 +683,13 @@
       return URI_BASE + '/id/dataset/' + md5(ref);
   });
 
-  URIFactory.register(Types.SERVICE, function (service, md5) {
+  URIFactory.register(ItemTypes.SERVICE, function (service, md5) {
       var url = fixServiceHref(service);
       var ref = formatReference(url);
       return URI_BASE + '/id/service/' + md5(ref);
   });
 
-  URIFactory.register(Types.LAYER, function (layer, md5) {
+  URIFactory.register(ItemTypes.LAYER, function (layer, md5) {
 
       var svcUrl = '';
       var services = layer.servicedBy || layer.services;
@@ -714,35 +714,35 @@
    * @param {object} map - GP Map object
    * @return {string} uri unique to this object
    */
-  URIFactory.register(Types.MAP, function (map, md5) {
+  URIFactory.register(ItemTypes.MAP, function (map, md5) {
       var author = map.createdBy || map._createdBy || "";
       var identifiers = (map.identifiers || map.identifier || []).join('');
       var ref = formatReference({ title: map.title, author: author, identifiers: identifiers });
       return URI_BASE + '/id/map/' + md5(ref);
   });
 
-  URIFactory.register(Types.GALLERY, function (gallery, md5) {
+  URIFactory.register(ItemTypes.GALLERY, function (gallery, md5) {
       var author = gallery.createdBy || gallery._createdBy || "";
       var ref = formatReference({ title: gallery.title, author: author });
       return URI_BASE + '/id/gallery/' + md5(ref);
   });
 
-  URIFactory.register(Types.COMMUNITY, function (community, md5) {
+  URIFactory.register(ItemTypes.COMMUNITY, function (community, md5) {
       var ref = formatReference({ title: community.title });
       return URI_BASE + '/id/community/' + md5(ref);
   });
 
-  URIFactory.register(Types.ORGANIZATION, function (org, md5) {
+  URIFactory.register(ItemTypes.ORGANIZATION, function (org, md5) {
       var ref = formatReference(org.label || org.name);
       return URI_BASE + '/id/organization/' + md5(ref);
   });
 
-  URIFactory.register(Types.PERSON, function (person, md5) {
+  URIFactory.register(ItemTypes.PERSON, function (person, md5) {
       var ref = formatReference(person.name);
       return URI_BASE + '/id/person/' + md5(ref);
   });
 
-  URIFactory.register(Types.VCARD, function (vcard, md5) {
+  URIFactory.register(ItemTypes.VCARD, function (vcard, md5) {
       var ref = {};
       if (vcard.email || vcard.hasEmail) ref.email = vcard.email || vcard.hasEmail; //email
       if (vcard.tel) ref.tel = vcard.tel; //tel
@@ -752,7 +752,7 @@
       return URI_BASE + '/id/contact/' + md5(ref);
   });
 
-  URIFactory.register(Types.CONCEPT, function (object, md5) {
+  URIFactory.register(ItemTypes.CONCEPT, function (object, md5) {
       var scheme = object.inScheme || object.scheme;
       var schemeLabel = scheme ? scheme.label || scheme.prefLabel : '';
       var schemeRef = formatReference(schemeLabel);
@@ -760,38 +760,38 @@
       return URI_BASE + '/id/metadata-codelists/' + md5(schemeRef) + '/' + md5(ref);
   });
 
-  URIFactory.register(Types.CONCEPT_SCHEME, function (object, md5) {
+  URIFactory.register(ItemTypes.CONCEPT_SCHEME, function (object, md5) {
       var ref = formatReference(object.label || object.prefLabel);
       return URI_BASE + '/id/metadata-codelists/' + md5(ref);
   });
 
-  URIFactory.register(Types.APPLICATION, function (object, md5) {
+  URIFactory.register(ItemTypes.APPLICATION, function (object, md5) {
       if (!object || !object.title) return null;
       var author = object.createdBy || object._createdBy || "";
       var ref = formatReference({ title: object.title, author: author });
       return URI_BASE + '/id/application/' + md5(ref);
   });
 
-  URIFactory.register(Types.TOPIC, function (object, md5) {
+  URIFactory.register(ItemTypes.TOPIC, function (object, md5) {
       if (!object || !object.title) return null;
       var author = object.createdBy || object._createdBy || "";
       var ref = formatReference({ title: object.title, author: author });
       return URI_BASE + '/id/topic/' + md5(ref);
   });
 
-  URIFactory.register(Types.WEBSITE, function (item, md5) {
+  URIFactory.register(ItemTypes.WEBSITE, function (item, md5) {
       if (!item || !item.landingPage) return null;
       var ref = formatReference(item.landingPage);
       return URI_BASE + '/id/website/' + md5(ref);
   });
 
-  URIFactory.register(Types.IMAGE_PRODUCT, function (item, md5) {
+  URIFactory.register(ItemTypes.IMAGE_PRODUCT, function (item, md5) {
       if (!item.productId) return null;
       var ref = formatReference(item.productId);
       return URI_BASE + '/id/product/' + md5(ref);
   });
 
-  URIFactory.register(Types.DOCUMENT, function () {
+  URIFactory.register(ItemTypes.DOCUMENT, function () {
       return null;
   });
 

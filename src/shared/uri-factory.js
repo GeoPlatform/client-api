@@ -121,7 +121,7 @@ const URIFactory = {
 
 
 
-URIFactory.register(Types.DATASET, function(dataset, md5) {
+URIFactory.register(ItemTypes.DATASET, function(dataset, md5) {
     let pubName = (dataset.publisher||dataset.publishers||[])
         .map( pub => { return pub.label||""; }).join('');
     let ref = formatReference({
@@ -131,13 +131,13 @@ URIFactory.register(Types.DATASET, function(dataset, md5) {
     return URI_BASE + '/id/dataset/' + md5(ref);
 });
 
-URIFactory.register(Types.SERVICE, function(service, md5) {
+URIFactory.register(ItemTypes.SERVICE, function(service, md5) {
     let url = fixServiceHref(service);
     let ref = formatReference(url);
     return URI_BASE + '/id/service/' + md5(ref);
 });
 
-URIFactory.register(Types.LAYER, function(layer, md5) {
+URIFactory.register(ItemTypes.LAYER, function(layer, md5) {
 
     let svcUrl = '';
     let services = layer.servicedBy || layer.services;
@@ -164,35 +164,35 @@ URIFactory.register(Types.LAYER, function(layer, md5) {
  * @param {object} map - GP Map object
  * @return {string} uri unique to this object
  */
-URIFactory.register(Types.MAP, function(map, md5) {
+URIFactory.register(ItemTypes.MAP, function(map, md5) {
     let author = map.createdBy || map._createdBy || "";
     let identifiers = (map.identifiers || map.identifier || []).join('');
     let ref = formatReference({title: map.title, author: author, identifiers: identifiers});
     return URI_BASE + '/id/map/' + md5(ref);
 });
 
-URIFactory.register(Types.GALLERY, function(gallery, md5) {
+URIFactory.register(ItemTypes.GALLERY, function(gallery, md5) {
     let author = gallery.createdBy || gallery._createdBy || "";
     let ref = formatReference({title: gallery.title, author: author});
     return URI_BASE + '/id/gallery/' + md5(ref);
 });
 
-URIFactory.register(Types.COMMUNITY, function(community, md5) {
+URIFactory.register(ItemTypes.COMMUNITY, function(community, md5) {
     let ref = formatReference({title: community.title});
     return URI_BASE + '/id/community/' + md5(ref);
 });
 
-URIFactory.register(Types.ORGANIZATION, function(org, md5) {
+URIFactory.register(ItemTypes.ORGANIZATION, function(org, md5) {
     let ref = formatReference(org.label || org.name);
     return URI_BASE + '/id/organization/' + md5(ref);
 });
 
-URIFactory.register(Types.PERSON, function(person, md5) {
+URIFactory.register(ItemTypes.PERSON, function(person, md5) {
     let ref = formatReference(person.name);
     return URI_BASE + '/id/person/' + md5(ref);
 });
 
-URIFactory.register(Types.VCARD, function(vcard, md5) {
+URIFactory.register(ItemTypes.VCARD, function(vcard, md5) {
     let ref = {};
     if(vcard.email || vcard.hasEmail)
         ref.email = vcard.email || vcard.hasEmail; //email
@@ -206,7 +206,7 @@ URIFactory.register(Types.VCARD, function(vcard, md5) {
     return URI_BASE + '/id/contact/' + md5(ref);
 });
 
-URIFactory.register(Types.CONCEPT, function(object, md5) {
+URIFactory.register(ItemTypes.CONCEPT, function(object, md5) {
     let scheme = object.inScheme || object.scheme;
     let schemeLabel = scheme ? (scheme.label || scheme.prefLabel) : '';
     let schemeRef = formatReference(schemeLabel);
@@ -214,39 +214,39 @@ URIFactory.register(Types.CONCEPT, function(object, md5) {
     return URI_BASE + '/id/metadata-codelists/' + md5(schemeRef) + '/' + md5(ref);
 });
 
-URIFactory.register(Types.CONCEPT_SCHEME, function(object, md5) {
+URIFactory.register(ItemTypes.CONCEPT_SCHEME, function(object, md5) {
     let ref = formatReference(object.label || object.prefLabel);
     return URI_BASE + '/id/metadata-codelists/' + md5(ref);
 });
 
 
-URIFactory.register(Types.APPLICATION, function(object, md5) {
+URIFactory.register(ItemTypes.APPLICATION, function(object, md5) {
     if(!object || !object.title) return null;
     let author = object.createdBy || object._createdBy || "";
     let ref = formatReference({title: object.title, author: author});
     return URI_BASE + '/id/application/' + md5(ref);
 });
 
-URIFactory.register(Types.TOPIC, function(object, md5) {
+URIFactory.register(ItemTypes.TOPIC, function(object, md5) {
     if(!object || !object.title) return null;
     let author = object.createdBy || object._createdBy || "";
     let ref = formatReference({title: object.title, author: author});
     return URI_BASE + '/id/topic/' + md5(ref);
 });
 
-URIFactory.register(Types.WEBSITE, function(item, md5) {
+URIFactory.register(ItemTypes.WEBSITE, function(item, md5) {
     if(!item || !item.landingPage) return null;
     let ref = formatReference(item.landingPage);
     return URI_BASE + '/id/website/' + md5(ref);
 });
 
-URIFactory.register(Types.IMAGE_PRODUCT, function(item, md5) {
+URIFactory.register(ItemTypes.IMAGE_PRODUCT, function(item, md5) {
     if(!item.productId) return null;
     let ref = formatReference(item.productId);
     return URI_BASE + '/id/product/' + md5(ref);
 });
 
-URIFactory.register(Types.DOCUMENT, function() { return null; });
+URIFactory.register(ItemTypes.DOCUMENT, function() { return null; });
 
 
 export default function(md5Fn) {

@@ -609,6 +609,8 @@
 
   var URI_BASE = 'http://www.geoplatform.gov';
 
+  var ESRI_TYPES = ["http://www.geoplatform.gov/spec/esri-feature-rest", "http://www.geoplatform.gov/spec/esri-image-rest", "http://www.geoplatform.gov/spec/esri-map-rest", "http://www.geoplatform.gov/spec/esri-tile-rest"];
+
   function formatReference(ref) {
       if (ref === null) return '';
       if (typeof ref === 'string') return ref.toLowerCase().replace(/\s/g, '');else if ((typeof ref === 'undefined' ? 'undefined' : _typeof(ref)) === 'object') {
@@ -634,7 +636,7 @@
    * @return {string} access url adjusted for URI generation needs
    */
   function fixServiceHref(service) {
-      Utils.stripLayerFromServiceHref(service);
+      stripLayerFromServiceHref(service);
       var url = service.accessURL || service.href;
       if (!url || !url.length) return null;
 
@@ -655,6 +657,34 @@
   }
 
   /**
+   * ESRI services sometimes have layer information baked into their URL
+   * which needs to be removed before the service can be used.
+   * @param service - GP Service object
+   */
+  function stripLayerFromServiceHref(service) {
+
+      if (!service) return;
+      var type = service.serviceType || service.conformsTo;
+      if (!type) return;
+
+      //if ESRI service, make sure it doesn't have a layer id on the href
+      if (ESRI_TYPES.indexOf(type.uri) >= 0) {
+
+          var href = service.href || service.accessURL;
+          var matches = href.match(/(Map|Feature|Image)(Server\/\d+)/i);
+          if (matches && matches.length > 2) {
+              // 0 < full string match (ie, 'MapServer/1')
+              // 1 < server type match (ie, 'Map' or 'Feature')
+              // 2 < bit we care about (ie, 'Server/1')
+              href = href.replace(matches[2], 'Server/');
+
+              if (service.href) service.href = href;
+              if (service.accessURL) service.accessURL = href;
+          }
+      }
+  }
+
+  /**
    * @see https://geoplatform.atlassian.net/wiki/display/DT/Common+Object+Identifier+Scheme
    */
   var URIFactory = {
@@ -671,6 +701,7 @@
               throw new Error("Must specify a MD5 function when using URIFactory");
           }
           var factory = this.factories[object.type];
+          if (!factory) return null;
           return factory(object, md5Fn);
       }
   };

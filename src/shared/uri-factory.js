@@ -42,7 +42,7 @@ function formatReference(ref) {
  * @return {string} access url adjusted for URI generation needs
  */
 function fixServiceHref(service) {
-    Utils.stripLayerFromServiceHref(service);
+    stripLayerFromServiceHref(service);
     let url = service.accessURL || service.href;
     if(!url || !url.length) return null;
 
@@ -117,6 +117,7 @@ const URIFactory = {
             throw new Error("Must specify a MD5 function when using URIFactory");
         }
         let factory = this.factories[object.type];
+        if(!factory) return null;
         return factory(object, md5Fn);
     }
 };

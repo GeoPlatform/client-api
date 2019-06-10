@@ -111,8 +111,11 @@ const URIFactory = {
         this.factories[type] = factory;
     },
 
-    generate : function(object, md5Fn) {
+    create : function(object, md5Fn) {
         if(!object || !object.type) return null;
+        if( typeof(md5Fn) !== 'function' ) {
+            throw new Error("Must specify a MD5 function when using URIFactory");
+        }
         let factory = this.factories[object.type];
         return factory(object, md5Fn);
     }
@@ -249,11 +252,18 @@ URIFactory.register(ItemTypes.IMAGE_PRODUCT, function(item, md5) {
 URIFactory.register(ItemTypes.DOCUMENT, function() { return null; });
 
 
-export default function(md5Fn) {
+function factoryFn(md5Fn) {
     if( typeof(md5Fn) !== 'function' ) {
         throw new Error("Must specify a MD5 function when using URIFactory");
     }
     return function(object) {
-        URIFactory.generate(object, md5Fn);
+        return URIFactory.create(object, md5Fn);
     };
 }
+
+
+
+export {
+    factoryFn as default,
+    factoryFn as URIFactory
+};

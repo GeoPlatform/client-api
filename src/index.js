@@ -5,7 +5,7 @@ import JQueryHttpClient from './http/jq';
 import NGHttpClient from './http/ng';
 import NodeHttpClient from './http/node';
 import { ItemTypes, ItemTypeLabels } from './shared/types';
-import * as URIFactory from './shared/uri-factory';
+import URIFactory from './shared/uri-factory';
 
 import ItemService from './services/item';
 import DatasetService from './services/dataset';

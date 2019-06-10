@@ -665,8 +665,11 @@
           this.factories[type] = factory;
       },
 
-      generate: function generate(object, md5Fn) {
+      create: function create(object, md5Fn) {
           if (!object || !object.type) return null;
+          if (typeof md5Fn !== 'function') {
+              throw new Error("Must specify a MD5 function when using URIFactory");
+          }
           var factory = this.factories[object.type];
           return factory(object, md5Fn);
       }
@@ -795,18 +798,14 @@
       return null;
   });
 
-  function uriFactory (md5Fn) {
+  function factoryFn(md5Fn) {
       if (typeof md5Fn !== 'function') {
           throw new Error("Must specify a MD5 function when using URIFactory");
       }
       return function (object) {
-          URIFactory.generate(object, md5Fn);
+          return URIFactory.create(object, md5Fn);
       };
   }
-
-  var uriFactory$1 = /*#__PURE__*/Object.freeze({
-    default: uriFactory
-  });
 
   /**
    * ItemService
@@ -5621,7 +5620,7 @@
   exports.QueryFields = Fields;
   exports.KGQuery = KGQuery;
   exports.KGClassifiers = Classifiers;
-  exports.URIFactory = uriFactory$1;
+  exports.URIFactory = factoryFn;
   exports.JQueryHttpClient = JQueryHttpClient;
   exports.NGHttpClient = NGHttpClient;
   exports.NodeHttpClient = NodeHttpClient;

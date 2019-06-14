@@ -18,7 +18,6 @@ const Categories = {
     APPLICATION:     'Application',
     TOPIC:           'Topic',
     WEBSITE:         'WebSite',
-    IMAGE_PRODUCT:   'Image Product',
     RIGHTS_STATEMENT:'RightsStatement',
     KNOWLEDGE_GRAPH: 'Knowledge Graph',
     USER:            'User',

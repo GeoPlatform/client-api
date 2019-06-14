@@ -580,7 +580,6 @@
       APPLICATION: 'Application',
       TOPIC: 'Topic',
       WEBSITE: 'WebSite',
-      IMAGE_PRODUCT: 'eo:Product',
       ORGANIZATION: "org:Organization",
       CONTACT: "vcard:VCard",
       PERSON: "foaf:Person",
@@ -600,7 +599,6 @@
   ItemTypeLabels[ItemTypes.APPLICATION] = 'Application';
   ItemTypeLabels[ItemTypes.TOPIC] = 'Topic';
   ItemTypeLabels[ItemTypes.WEBSITE] = 'WebSite';
-  ItemTypeLabels[ItemTypes.IMAGE_PRODUCT] = "Image Product";
   ItemTypeLabels[ItemTypes.ORGANIZATION] = "Organization";
   ItemTypeLabels[ItemTypes.CONTACT] = "Contact";
   ItemTypeLabels[ItemTypes.PERSON] = "Person";
@@ -819,12 +817,6 @@
       if (!item || !item.landingPage) return null;
       var ref = formatReference(item.landingPage);
       return URI_BASE + '/id/website/' + md5(ref);
-  });
-
-  URIFactory.register(ItemTypes.IMAGE_PRODUCT, function (item, md5) {
-      if (!item.productId) return null;
-      var ref = formatReference(item.productId);
-      return URI_BASE + '/id/product/' + md5(ref);
   });
 
   URIFactory.register(ItemTypes.DOCUMENT, function () {
@@ -5322,7 +5314,6 @@
       APPLICATION: 'Application',
       TOPIC: 'Topic',
       WEBSITE: 'WebSite',
-      IMAGE_PRODUCT: 'Image Product',
       RIGHTS_STATEMENT: 'RightsStatement',
       KNOWLEDGE_GRAPH: 'Knowledge Graph',
       USER: 'User',

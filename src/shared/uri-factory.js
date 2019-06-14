@@ -244,12 +244,6 @@ URIFactory.register(ItemTypes.WEBSITE, function(item, md5) {
     return URI_BASE + '/id/website/' + md5(ref);
 });
 
-URIFactory.register(ItemTypes.IMAGE_PRODUCT, function(item, md5) {
-    if(!item.productId) return null;
-    let ref = formatReference(item.productId);
-    return URI_BASE + '/id/product/' + md5(ref);
-});
-
 URIFactory.register(ItemTypes.DOCUMENT, function() { return null; });
 
 

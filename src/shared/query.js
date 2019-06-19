@@ -800,7 +800,7 @@ class Query {
         const classes = Object.keys(Classifiers).map(k=>Classifiers[k]);
         if(!value || typeof(value) !== 'object' || Array.isArray(value)) {
             classes.forEach( classifier => {
-                this.clearParameter( Parameters.CLASSIFIERS + "." + classifier, null ); 
+                this.clearParameter( Parameters.CLASSIFIERS + "." + classifier );
             });
             return;
         }

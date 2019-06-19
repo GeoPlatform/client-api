@@ -5643,6 +5643,9 @@
       return TrackingService;
   }();
 
+  var ClientVersion = '0.2.3';
+
+  exports.ClientVersion = ClientVersion;
   exports.ItemTypes = ItemTypes;
   exports.ItemTypeLabels = ItemTypeLabels;
   exports.QueryParameters = QueryParameters;

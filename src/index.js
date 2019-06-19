@@ -49,8 +49,12 @@ import {
 } from './services/tracking';
 
 
+const ClientVersion = '0.2.3';
+
 
 export {
+
+    ClientVersion,
 
     ItemTypes,
     ItemTypeLabels,

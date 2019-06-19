@@ -13,6 +13,8 @@ const HttpClient = GPClient.NodeHttpClient;
 
 const URL = 'https://sit-ual.geoplatform.us';
 
+console.log("Using version: " + GPClient.ClientVersion);
+
 
 let service = new ItemService(URL, new HttpClient());
 

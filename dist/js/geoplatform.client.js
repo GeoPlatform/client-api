@@ -2576,7 +2576,7 @@
               });
               if (!value || (typeof value === 'undefined' ? 'undefined' : _typeof(value)) !== 'object' || Array.isArray(value)) {
                   classes.forEach(function (classifier) {
-                      _this.clearParameter(QueryParameters.CLASSIFIERS + "." + classifier, null);
+                      _this.clearParameter(QueryParameters.CLASSIFIERS + "." + classifier);
                   });
                   return;
               }

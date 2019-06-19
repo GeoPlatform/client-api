@@ -2525,9 +2525,8 @@
       }, {
           key: 'setClassifier',
           value: function setClassifier(classifier, value) {
-              var classifiers = this.getParameter(QueryParameters.CLASSIFIERS) || {};
-              classifiers[classifier] = toArray$1(value);
-              this.setParameter(QueryParameters.CLASSIFIERS, classifiers);
+              var arr = toArray$1(value);
+              this.setParameter(QueryParameters.CLASSIFIERS + "." + classifier, arr);
           }
 
           /**
@@ -2538,8 +2537,7 @@
       }, {
           key: 'getClassifier',
           value: function getClassifier(classifier) {
-              var classifiers = this.getParameter(QueryParameters.CLASSIFIERS) || {};
-              return classifiers[classifier] || [];
+              return this.getParameter(QueryParameters.CLASSIFIERS + "." + classifier) || [];
           }
 
           /**
@@ -2571,20 +2569,22 @@
       }, {
           key: 'setClassifiers',
           value: function setClassifiers(value) {
-              if (!value || (typeof value === 'undefined' ? 'undefined' : _typeof(value)) !== 'object' || Array.isArray(value)) {
-                  this.setParameter(QueryParameters.CLASSIFIERS, null);
-                  return;
-              }
+              var _this = this;
+
               var classes = Object.keys(Classifiers).map(function (k) {
                   return Classifiers[k];
               });
-              var classifiers = this.getParameter(QueryParameters.CLASSIFIERS) || {};
+              if (!value || (typeof value === 'undefined' ? 'undefined' : _typeof(value)) !== 'object' || Array.isArray(value)) {
+                  classes.forEach(function (classifier) {
+                      _this.clearParameter(QueryParameters.CLASSIFIERS + "." + classifier, null);
+                  });
+                  return;
+              }
               Object.keys(value).forEach(function (classifier) {
                   if (~classes.indexOf(classifier)) {
-                      classifiers[classifier] = toArray$1(value[classifier]);
+                      _this.setClassifier(classifier, value[classifier]);
                   }
               });
-              this.setParameter(QueryParameters.CLASSIFIERS, classifiers);
           }
 
           /**
@@ -2594,7 +2594,15 @@
       }, {
           key: 'getClassifiers',
           value: function getClassifiers() {
-              return this.getParameter(QueryParameters.CLASSIFIERS) || null;
+              var _this2 = this;
+
+              var result = {};
+              Object.keys(Classifiers).map(function (k) {
+                  return Classifiers[k];
+              }).forEach(function (classifier) {
+                  result[classifier] = _this2.getClassifier(classifier);
+              });
+              return result;
           }
 
           // -----------------------------------------------------------

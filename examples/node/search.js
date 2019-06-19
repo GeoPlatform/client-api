@@ -7,10 +7,11 @@ const GPClient = require('../../dist/js/geoplatform.client');
 const Query = GPClient.Query;
 const ItemTypes = GPClient.ItemTypes;
 const QueryParameters = GPClient.QueryParameters;
+const Classifiers = GPClient.KGClassifiers;
 const ItemService = GPClient.ItemService;
 const HttpClient = GPClient.NodeHttpClient;
 
-const URL = 'https://ual.geoplatform.gov';
+const URL = 'https://sit-ual.geoplatform.us';
 
 
 let service = new ItemService(URL, new HttpClient());
@@ -30,9 +31,10 @@ let query = new Query()
      .fields(['label','theme', 'publisher'])
      .page(0)
      .pageSize(50)
-     .sort('modified', 'desc');
+     .sort('modified', 'desc')
+     .classifier(Classifiers.TOPIC_PRIMARY,'358a1c2b139d3e0e8d83c073c12d8b2d');
 
-// console.log(JSON.stringify(query.getQuery()));
+console.log(JSON.stringify(query.getQuery()));
 
 service.search(query)
 .then( response => {

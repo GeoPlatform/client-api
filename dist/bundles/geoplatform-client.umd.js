@@ -133,7 +133,6 @@ This software has been approved for release by the U.S. Department of the Interi
         APPLICATION: 'Application',
         TOPIC: 'Topic',
         WEBSITE: 'WebSite',
-        IMAGE_PRODUCT: 'eo:Product',
         ORGANIZATION: "org:Organization",
         CONTACT: "vcard:VCard",
         PERSON: "foaf:Person",
@@ -153,7 +152,6 @@ This software has been approved for release by the U.S. Department of the Interi
     ItemTypeLabels[ItemTypes.APPLICATION] = 'Application';
     ItemTypeLabels[ItemTypes.TOPIC] = 'Topic';
     ItemTypeLabels[ItemTypes.WEBSITE] = 'WebSite';
-    ItemTypeLabels[ItemTypes.IMAGE_PRODUCT] = "Image Product";
     ItemTypeLabels[ItemTypes.ORGANIZATION] = "Organization";
     ItemTypeLabels[ItemTypes.CONTACT] = "Contact";
     ItemTypeLabels[ItemTypes.PERSON] = "Person";
@@ -413,13 +411,6 @@ This software has been approved for release by the U.S. Department of the Interi
         /** @type {?} */
         var ref = formatReference(item.landingPage);
         return URI_BASE + '/id/website/' + md5(ref);
-    });
-    URIFactory.register(ItemTypes.IMAGE_PRODUCT, function (item, md5) {
-        if (!item.productId)
-            return null;
-        /** @type {?} */
-        var ref = formatReference(item.productId);
-        return URI_BASE + '/id/product/' + md5(ref);
     });
     /**
      * @param {?} md5Fn
@@ -1245,6 +1236,20 @@ This software has been approved for release by the U.S. Department of the Interi
          */
             function (key) {
                 return this.query[key];
+            };
+        /**
+         * @param name - name of parameter to remove existing value for
+         */
+        /**
+         * @param {?} name - name of parameter to remove existing value for
+         * @return {?}
+         */
+        Query.prototype.clearParameter = /**
+         * @param {?} name - name of parameter to remove existing value for
+         * @return {?}
+         */
+            function (name) {
+                delete this.query[name];
             };
         /**
          * @param obj - set of parameter/values to apply to this query
@@ -2232,9 +2237,8 @@ This software has been approved for release by the U.S. Department of the Interi
          */
             function (classifier, value) {
                 /** @type {?} */
-                var classifiers = this.getParameter(Parameters.CLASSIFIERS) || {};
-                classifiers[classifier] = toArray(value);
-                this.setParameter(Parameters.CLASSIFIERS, classifiers);
+                var arr = toArray(value);
+                this.setParameter(Parameters.CLASSIFIERS + "." + classifier, arr);
             };
         /**
          * @param classifier - name of classifier constraint in use
@@ -2249,9 +2253,7 @@ This software has been approved for release by the U.S. Department of the Interi
          * @return {?} array of concept ids
          */
             function (classifier) {
-                /** @type {?} */
-                var classifiers = this.getParameter(Parameters.CLASSIFIERS) || {};
-                return classifiers[classifier] || [];
+                return this.getParameter(Parameters.CLASSIFIERS + "." + classifier) || [];
             };
         /**
          * Ex.
@@ -2311,20 +2313,20 @@ This software has been approved for release by the U.S. Department of the Interi
          * @return {?}
          */
             function (value) {
-                if (!value || typeof (value) !== 'object' || Array.isArray(value)) {
-                    this.setParameter(Parameters.CLASSIFIERS, null);
-                    return;
-                }
+                var _this = this;
                 /** @type {?} */
                 var classes = Object.keys(Classifiers).map(function (k) { return Classifiers[k]; });
-                /** @type {?} */
-                var classifiers = this.getParameter(Parameters.CLASSIFIERS) || {};
+                if (!value || typeof (value) !== 'object' || Array.isArray(value)) {
+                    classes.forEach(function (classifier) {
+                        _this.clearParameter(Parameters.CLASSIFIERS + "." + classifier);
+                    });
+                    return;
+                }
                 Object.keys(value).forEach(function (classifier) {
                     if (~classes.indexOf(classifier)) {
-                        classifiers[classifier] = toArray(value[classifier]);
+                        _this.setClassifier(classifier, value[classifier]);
                     }
                 });
-                this.setParameter(Parameters.CLASSIFIERS, classifiers);
             };
         /**
          * @return classifiers used in the query
@@ -2336,7 +2338,13 @@ This software has been approved for release by the U.S. Department of the Interi
          * @return {?} classifiers used in the query
          */
             function () {
-                return this.getParameter(Parameters.CLASSIFIERS) || null;
+                var _this = this;
+                /** @type {?} */
+                var result = {};
+                Object.keys(Classifiers).map(function (k) { return Classifiers[k]; }).forEach(function (classifier) {
+                    result[classifier] = _this.getClassifier(classifier);
+                });
+                return result;
             };
         // -----------------------------------------------------------
         /**
@@ -6116,6 +6124,8 @@ This software has been approved for release by the U.S. Department of the Interi
      * @fileoverview added by tsickle
      * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
      */
+    /** @type {?} */
+    var VERSION = "0.3.0";
     Polyfills();
 
     /**
@@ -6123,6 +6133,7 @@ This software has been approved for release by the U.S. Department of the Interi
      * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
      */
 
+    exports.ClientVersion = VERSION;
     exports.GPError = GPError;
     exports.ItemTypes = ItemTypes;
     exports.ItemTypeLabels = ItemTypeLabels;

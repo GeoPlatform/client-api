@@ -223,7 +223,6 @@ URIFactory.register(ItemTypes.CONCEPT_SCHEME, function(object : any, md5 : Funct
     return URI_BASE + '/id/metadata-codelists/' + md5(ref);
 });
 
-
 URIFactory.register(ItemTypes.APPLICATION, function(object : any, md5 : Function) {
     if(!object || !object.title) return null;
     let author = object.createdBy || object._createdBy || "";
@@ -242,12 +241,6 @@ URIFactory.register(ItemTypes.WEBSITE, function(item : any, md5 : Function) {
     if(!item || !item.landingPage) return null;
     let ref = formatReference(item.landingPage);
     return URI_BASE + '/id/website/' + md5(ref);
-});
-
-URIFactory.register(ItemTypes.IMAGE_PRODUCT, function(item : any, md5 : Function) {
-    if(!item.productId) return null;
-    let ref = formatReference(item.productId);
-    return URI_BASE + '/id/product/' + md5(ref);
 });
 
 

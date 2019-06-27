@@ -223,6 +223,13 @@ class Query {
     }
 
     /**
+     * @param name - name of parameter to remove existing value for
+     */
+    clearParameter(name : string) {
+        delete this.query[name];
+    }
+
+    /**
      * @param obj - set of parameter/values to apply to this query
      */
     applyParameters (obj : KVP<any>) : void { 
@@ -755,9 +762,8 @@ class Query {
      * @param value - id or array of ids of concepts to use
      */
     setClassifier(classifier : string, value : string|string[]) {
-        let classifiers = this.getParameter(Parameters.CLASSIFIERS) || {};
-        classifiers[classifier] = toArray(value);
-        this.setParameter(Parameters.CLASSIFIERS, classifiers);
+        let arr = toArray(value);
+        this.setParameter(Parameters.CLASSIFIERS + "." + classifier, arr);
     }
 
     /**
@@ -765,8 +771,7 @@ class Query {
      * @return array of concept ids
      */
     getClassifier(classifier : string) : string[] {
-        let classifiers = this.getParameter(Parameters.CLASSIFIERS) || {};
-        return classifiers[classifier] || [];
+        return this.getParameter(Parameters.CLASSIFIERS + "." + classifier) || [];
     }
 
     /**
@@ -792,25 +797,29 @@ class Query {
      * @param value - object defining classifiers
      */
     setClassifiers (value : any) {
+        const classes = Object.keys(Classifiers).map(k=>Classifiers[k]);
         if(!value || typeof(value) !== 'object' || Array.isArray(value)) {
-            this.setParameter(Parameters.CLASSIFIERS, null);
+            classes.forEach( classifier => {
+                this.clearParameter( Parameters.CLASSIFIERS + "." + classifier );
+            });
             return;
         }
-        const classes = Object.keys(Classifiers).map(k=>Classifiers[k]);
-        let classifiers = this.getParameter(Parameters.CLASSIFIERS) || {};
         Object.keys(value).forEach( classifier => {
             if(~classes.indexOf(classifier)) {
-                classifiers[classifier] = toArray(value[classifier]);
+                this.setClassifier( classifier, value[classifier] );
             }
         });
-        this.setParameter(Parameters.CLASSIFIERS, classifiers);
     }
 
     /**
      * @return classifiers used in the query
      */
     getClassifiers () : any {
-        return this.getParameter(Parameters.CLASSIFIERS) || null;
+        let result = {};
+        Object.keys(Classifiers).map(k=>Classifiers[k]).forEach( classifier => {
+            result[classifier] = this.getClassifier(classifier);
+        });
+        return result;
     }
 
 

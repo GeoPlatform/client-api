@@ -1,3 +1,4 @@
+declare const VERSION = "0.3.0";
 import GPError from './shared/error';
 import { ItemTypes, ItemTypeLabels } from './shared/types';
 import URIFactory from './shared/uri-factory';
@@ -21,4 +22,4 @@ import { AgolService, AgolQuery } from './services/agol';
 import { TrackingEvent, TrackingService, TrackingCategories, TrackingTypes, TrackingEventFactory } from './services/tracking';
 import KGService from './services/kg';
 import ServiceFactory from './services/factory';
-export { GPError, ItemTypes, ItemTypeLabels, QueryParameters, QueryFacets, Query, QueryFactory, QueryFields, KGQuery, KGClassifiers, AgolQuery, URIFactory, Item, Asset, Dataset, Service, Layer, Map, Gallery, Application, Topic, WebSite, Organization, Contact, ConceptScheme, SearchResults, ServiceTypeStandard, Config, GPHttpClient, XHRHttpClient, ItemService, DatasetService, MapService, LayerService, ServiceService, GalleryService, UtilsService, KGService, ServiceFactory, AgolService, TrackingEvent, TrackingService, TrackingCategories, TrackingTypes, TrackingEventFactory };
+export { VERSION as ClientVersion, GPError, ItemTypes, ItemTypeLabels, QueryParameters, QueryFacets, Query, QueryFactory, QueryFields, KGQuery, KGClassifiers, AgolQuery, URIFactory, Item, Asset, Dataset, Service, Layer, Map, Gallery, Application, Topic, WebSite, Organization, Contact, ConceptScheme, SearchResults, ServiceTypeStandard, Config, GPHttpClient, XHRHttpClient, ItemService, DatasetService, MapService, LayerService, ServiceService, GalleryService, UtilsService, KGService, ServiceFactory, AgolService, TrackingEvent, TrackingService, TrackingCategories, TrackingTypes, TrackingEventFactory };

@@ -88,7 +88,6 @@ const ItemTypes = {
     APPLICATION: 'Application',
     TOPIC: 'Topic',
     WEBSITE: 'WebSite',
-    IMAGE_PRODUCT: 'eo:Product',
     ORGANIZATION: "org:Organization",
     CONTACT: "vcard:VCard",
     PERSON: "foaf:Person",
@@ -108,7 +107,6 @@ ItemTypeLabels[ItemTypes.COMMUNITY] = 'Community';
 ItemTypeLabels[ItemTypes.APPLICATION] = 'Application';
 ItemTypeLabels[ItemTypes.TOPIC] = 'Topic';
 ItemTypeLabels[ItemTypes.WEBSITE] = 'WebSite';
-ItemTypeLabels[ItemTypes.IMAGE_PRODUCT] = "Image Product";
 ItemTypeLabels[ItemTypes.ORGANIZATION] = "Organization";
 ItemTypeLabels[ItemTypes.CONTACT] = "Contact";
 ItemTypeLabels[ItemTypes.PERSON] = "Person";
@@ -368,13 +366,6 @@ URIFactory.register(ItemTypes.WEBSITE, function (item, md5) {
     /** @type {?} */
     let ref = formatReference(item.landingPage);
     return URI_BASE + '/id/website/' + md5(ref);
-});
-URIFactory.register(ItemTypes.IMAGE_PRODUCT, function (item, md5) {
-    if (!item.productId)
-        return null;
-    /** @type {?} */
-    let ref = formatReference(item.productId);
-    return URI_BASE + '/id/product/' + md5(ref);
 });
 /**
  * @param {?} md5Fn
@@ -975,6 +966,13 @@ class Query {
         return this.query[key];
     }
     /**
+     * @param {?} name - name of parameter to remove existing value for
+     * @return {?}
+     */
+    clearParameter(name) {
+        delete this.query[name];
+    }
+    /**
      * @param {?} obj - set of parameter/values to apply to this query
      * @return {?}
      */
@@ -1498,18 +1496,15 @@ class Query {
      */
     setClassifier(classifier, value) {
         /** @type {?} */
-        let classifiers = this.getParameter(Parameters.CLASSIFIERS) || {};
-        classifiers[classifier] = toArray(value);
-        this.setParameter(Parameters.CLASSIFIERS, classifiers);
+        let arr = toArray(value);
+        this.setParameter(Parameters.CLASSIFIERS + "." + classifier, arr);
     }
     /**
      * @param {?} classifier - name of classifier constraint in use
      * @return {?} array of concept ids
      */
     getClassifier(classifier) {
-        /** @type {?} */
-        let classifiers = this.getParameter(Parameters.CLASSIFIERS) || {};
-        return classifiers[classifier] || [];
+        return this.getParameter(Parameters.CLASSIFIERS + "." + classifier) || [];
     }
     /**
      * Ex.
@@ -1534,26 +1529,30 @@ class Query {
      * @return {?}
      */
     setClassifiers(value) {
-        if (!value || typeof (value) !== 'object' || Array.isArray(value)) {
-            this.setParameter(Parameters.CLASSIFIERS, null);
-            return;
-        }
         /** @type {?} */
         const classes = Object.keys(Classifiers).map(k => Classifiers[k]);
-        /** @type {?} */
-        let classifiers = this.getParameter(Parameters.CLASSIFIERS) || {};
+        if (!value || typeof (value) !== 'object' || Array.isArray(value)) {
+            classes.forEach(classifier => {
+                this.clearParameter(Parameters.CLASSIFIERS + "." + classifier);
+            });
+            return;
+        }
         Object.keys(value).forEach(classifier => {
             if (~classes.indexOf(classifier)) {
-                classifiers[classifier] = toArray(value[classifier]);
+                this.setClassifier(classifier, value[classifier]);
             }
         });
-        this.setParameter(Parameters.CLASSIFIERS, classifiers);
     }
     /**
      * @return {?} classifiers used in the query
      */
     getClassifiers() {
-        return this.getParameter(Parameters.CLASSIFIERS) || null;
+        /** @type {?} */
+        let result = {};
+        Object.keys(Classifiers).map(k => Classifiers[k]).forEach(classifier => {
+            result[classifier] = this.getClassifier(classifier);
+        });
+        return result;
     }
     /**
      * @param {?} date
@@ -4183,6 +4182,8 @@ const ServiceFactory = function (arg, baseUrl, httpClient) {
  * @fileoverview added by tsickle
  * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
  */
+/** @type {?} */
+const VERSION = "0.3.0";
 Polyfills();
 
 /**
@@ -4190,6 +4191,6 @@ Polyfills();
  * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
  */
 
-export { GPError, ItemTypes, ItemTypeLabels, Parameters as QueryParameters, Facets as QueryFacets, Query, queryFactory as QueryFactory, Fields as QueryFields, KGQuery, Classifiers as KGClassifiers, AgolQuery, factoryFn as URIFactory, Config, GPHttpClient, XHRHttpClient, ItemService, DatasetService, MapService, LayerService, ServiceService, GalleryService, UtilsService, KGService, ServiceFactory, AgolService, Event as TrackingEvent, TrackingService, Categories as TrackingCategories, Events as TrackingTypes, TrackingEventFactory };
+export { VERSION as ClientVersion, GPError, ItemTypes, ItemTypeLabels, Parameters as QueryParameters, Facets as QueryFacets, Query, queryFactory as QueryFactory, Fields as QueryFields, KGQuery, Classifiers as KGClassifiers, AgolQuery, factoryFn as URIFactory, Config, GPHttpClient, XHRHttpClient, ItemService, DatasetService, MapService, LayerService, ServiceService, GalleryService, UtilsService, KGService, ServiceFactory, AgolService, Event as TrackingEvent, TrackingService, Categories as TrackingCategories, Events as TrackingTypes, TrackingEventFactory };
 
 //# sourceMappingURL=geoplatform-client.js.map

@@ -10,7 +10,6 @@ const ItemTypes = {
     APPLICATION     : 'Application',
     TOPIC           : 'Topic',
     WEBSITE         : 'WebSite',
-    IMAGE_PRODUCT   : 'eo:Product',
     ORGANIZATION    : "org:Organization",
     CONTACT         : "vcard:VCard",
     PERSON          : "foaf:Person",
@@ -30,7 +29,6 @@ ItemTypeLabels[ItemTypes.COMMUNITY]        = 'Community';
 ItemTypeLabels[ItemTypes.APPLICATION]      = 'Application';
 ItemTypeLabels[ItemTypes.TOPIC]            = 'Topic';
 ItemTypeLabels[ItemTypes.WEBSITE]          = 'WebSite';
-ItemTypeLabels[ItemTypes.IMAGE_PRODUCT]    = "Image Product";
 ItemTypeLabels[ItemTypes.ORGANIZATION]     = "Organization";
 ItemTypeLabels[ItemTypes.CONTACT]          = "Contact";
 ItemTypeLabels[ItemTypes.PERSON]           = "Person";

@@ -41,6 +41,10 @@ declare class Query {
      */
     getParameter(key: string): any;
     /**
+     * @param name - name of parameter to remove existing value for
+     */
+    clearParameter(name: string): void;
+    /**
      * @param obj - set of parameter/values to apply to this query
      */
     applyParameters(obj: KVP<any>): void;

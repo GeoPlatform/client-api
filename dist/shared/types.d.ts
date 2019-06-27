@@ -8,7 +8,6 @@ declare const ItemTypes: {
     APPLICATION: string;
     TOPIC: string;
     WEBSITE: string;
-    IMAGE_PRODUCT: string;
     ORGANIZATION: string;
     CONTACT: string;
     PERSON: string;

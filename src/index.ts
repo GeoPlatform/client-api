@@ -1,3 +1,11 @@
+
+/*
+    Version of the library exposed to consumers.
+    Long-term this value should be auto-set to be whatever is set in package.json
+ */
+const VERSION = "0.3.0";
+
+
 import Polyfills from "./shared/polyfills";
 Polyfills();
 
@@ -48,8 +56,9 @@ import ServiceFactory  from './services/factory';
 
 
 
-
 export {
+
+    VERSION as ClientVersion,
 
     //shared classes
     GPError,

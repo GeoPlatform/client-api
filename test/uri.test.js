@@ -452,24 +452,4 @@ describe('## URI Factory', () => {
     });
 
 
-    describe("### EO Products", () => {
-        it("should generate URIs", (done) => {
-
-            let input = {
-                title: "Testing",
-                productId: 'test_1'
-            };
-
-            let uri = URIFactory(input);
-            expect(uri).to.not.be.ok;       //missing 'type'
-
-            input.type = ItemTypes.IMAGE_PRODUCT;
-            uri = URIFactory(input);
-            expect(uri).to.be.ok;
-            expect(uri).to.contain(URI_BASE + 'product/');
-
-            done();
-        });
-    });
-
 });

@@ -137,11 +137,9 @@ describe('# Query', function() {
         expect( json[Parameters.ENDS] ).to.equal(query.getEndDate().getTime());
 
         //classifiers
-        let classes = json[Parameters.CLASSIFIERS];
-        expect(classes, "Classifiers were empty in query").to.be.ok;
-        let purposes = classes[Classifiers.PURPOSE];
+        let purposes = json[Parameters.CLASSIFIERS + '.' + Classifiers.PURPOSE];
         expect(purposes, "Purpose classifiers were empty in query").to.be.ok;
-        expect(purposes).to.equal(query.getClassifier(Classifiers.PURPOSE));
+        expect(purposes).to.equal(query.getClassifier(Classifiers.PURPOSE).join(','));
 
         //validate generic parameters
         function expP(json, query, p) {return expect( json[p] ).to.equal( query.getParameter(p) );}
@@ -243,22 +241,27 @@ describe('# Query', function() {
 
         //test invalid arguments: strings
         query.setClassifiers('test');
-        expect(query.getClassifiers()).to.not.be.ok;
+        expect(query.getClassifiers()).to.be.ok;
+        expect(query.getClassifier(Classifiers.PURPOSE)).to.be.ok;
+        expect(query.getClassifier(Classifiers.PURPOSE).length).to.not.be.ok;
         query.setClassifiers(c1);   //reinit
 
         //test invalid arguments: array
         query.setClassifiers([]);
-        expect(query.getClassifiers()).to.not.be.ok;
+        expect(query.getClassifiers()).to.be.ok;
+        expect(query.getClassifier(Classifiers.PURPOSE).length).to.not.be.ok;
         query.setClassifiers(c1);   //reinit
 
         //test invalid arguments: undefined
         query.setClassifiers();
-        expect(query.getClassifiers()).to.not.be.ok;
+        expect(query.getClassifiers()).to.be.ok;
+        expect(query.getClassifier(Classifiers.PURPOSE).length).to.not.be.ok;
         query.setClassifiers(c1);   //reinit
 
         //test invalid arguments: null
         query.setClassifiers(null);
-        expect(query.getClassifiers()).to.not.be.ok;
+        expect(query.getClassifiers()).to.be.ok;
+        expect(query.getClassifier(Classifiers.PURPOSE).length).to.not.be.ok;
         query.setClassifiers(c1);   //reinit
 
         done();

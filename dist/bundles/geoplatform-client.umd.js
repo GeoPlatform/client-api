@@ -3504,10 +3504,19 @@ This software has been approved for release by the U.S. Department of the Interi
                 return Q.resolve(arg)
                     .then(function (params) {
                     /** @type {?} */
-                    var ps = params ? params.getQuery() : {};
+                    var ps = {};
+                    if (params && typeof (params.getQuery) === 'function')
+                        ps = params.getQuery();
+                    else if (typeof (params) === 'object')
+                        ps = params;
+                    else
+                        ps = {};
                     /** @type {?} */
                     var opts = _this.buildRequest({
-                        method: "GET", url: _this.baseUrl, params: ps, options: options
+                        method: "GET",
+                        url: _this.baseUrl,
+                        params: ps,
+                        options: options
                     });
                     return _this.execute(opts);
                 })

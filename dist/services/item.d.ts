@@ -1,6 +1,5 @@
 import * as Q from 'q';
 import { Item, SearchResults } from '../shared/models';
-import Query from '../shared/query';
 import GPHttpClient from '../http/client';
 /**
  * ItemService
@@ -92,7 +91,7 @@ declare class ItemService {
      * @param options - optional set of request options to apply to xhr request
      * @return Promise resolving search results
      */
-    search(arg?: Query, options?: any): Q.Promise<SearchResults>;
+    search(arg?: any, options?: any): Q.Promise<SearchResults>;
     /**
      *
      * @param arg - URL to metadata document or File to upload

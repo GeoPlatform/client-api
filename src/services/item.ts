@@ -227,17 +227,23 @@ class ItemService {
     }
 
     /**
-     * @param arg - either JS object of query parameters or GeoPlatform.Query instance
+     * @param arg - either JS object of query parameters or Query instance
      * @param options - optional set of request options to apply to xhr request
      * @return Promise resolving search results
      */
-    search (arg ?: Query, options ?: any) : Q.Promise<SearchResults> {
+    search (arg ?: any, options ?: any) : Q.Promise<SearchResults> {
 
         return Q.resolve( arg )
         .then( params => {
-            let ps = params ? params.getQuery() : {};
+            let ps = {};
+            if(params && typeof(params.getQuery) === 'function') ps = params.getQuery();
+            else if(typeof(params) === 'object') ps = params;
+            else ps = {};
             let opts = this.buildRequest({
-                method:"GET", url: this.baseUrl, params: ps, options: options
+                method:"GET",
+                url: this.baseUrl,
+                params: ps,
+                options: options
             });
             return this.execute(opts);
         })
@@ -476,7 +482,7 @@ class ItemService {
         .then( id => {
             let url = this.baseUrl + '/' + id + '/versions';
             let opts = this.buildRequest({
-                method:"GET", url:url, params: params, options:options 
+                method:"GET", url:url, params: params, options:options
             });
             return this.execute(opts);
         })

@@ -2332,10 +2332,19 @@ class ItemService {
         return resolve(arg)
             .then(params => {
             /** @type {?} */
-            let ps = params ? params.getQuery() : {};
+            let ps = {};
+            if (params && typeof (params.getQuery) === 'function')
+                ps = params.getQuery();
+            else if (typeof (params) === 'object')
+                ps = params;
+            else
+                ps = {};
             /** @type {?} */
             let opts = this.buildRequest({
-                method: "GET", url: this.baseUrl, params: ps, options: options
+                method: "GET",
+                url: this.baseUrl,
+                params: ps,
+                options: options
             });
             return this.execute(opts);
         })

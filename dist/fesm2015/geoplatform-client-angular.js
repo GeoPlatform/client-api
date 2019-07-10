@@ -1,7 +1,6 @@
-import { resolve } from 'q';
+import { defer } from 'q';
 import { HttpRequest, HttpHeaders, HttpParams, HttpResponse } from '@angular/common/http';
 import 'rxjs/add/operator/map';
-import 'rxjs/add/operator/toPromise';
 import { GPHttpClient } from '@geoplatform/client';
 
 /**
@@ -16,6 +15,13 @@ class NG2HttpClient extends GPHttpClient {
     constructor(http, options) {
         super(options);
         this.http = http;
+    }
+    /**
+     * @param {?} zone
+     * @return {?}
+     */
+    setZone(zone) {
+        this.zone = zone;
     }
     /**
      *
@@ -58,6 +64,10 @@ class NG2HttpClient extends GPHttpClient {
      */
     execute(request) {
         /** @type {?} */
+        let value = null;
+        /** @type {?} */
+        let deferred = defer();
+        /** @type {?} */
         let promise = this.http.request(request)
             .map((event) => {
             if (event instanceof HttpResponse) {
@@ -65,13 +75,15 @@ class NG2HttpClient extends GPHttpClient {
             }
             return {};
         })
-            .toPromise();
-        return resolve(promise);
-        // .subscribe( (v: any) => { value = v; },
-        //     (err : Error) => { deferred.reject(err); },
-        //     () => { deferred.resolve(value); }
-        // );
-        // return deferred.promise;
+            .subscribe((v) => { value = v; }, (err) => { deferred.reject(err); }, () => {
+            if (this.zone) {
+                this.zone.run(() => { deferred.resolve(value); });
+            }
+            else {
+                deferred.resolve(value);
+            }
+        });
+        return deferred.promise;
         /*
                 .toPromise()
                 .then( (result) => Q.resolve(result))

@@ -1,20 +1,29 @@
 
 import * as Q from 'q';
 
+import { NgZone } from "@angular/core";
 import {
     HttpClient, HttpRequest, HttpHeaders, HttpParams,
     HttpResponse, HttpEvent //, HttpErrorResponse
 } from '@angular/common/http';
 import 'rxjs/add/operator/map';
-import 'rxjs/add/operator/toPromise';
+// import 'rxjs/add/operator/toPromise';
 
 import { GPHttpClient } from '@geoplatform/client';
 
 
 class NG2HttpClient extends GPHttpClient {
 
+    //for use to ensure executed requests are handled inside angular zone
+    // (see issues with Observable.subscribe() and NgZone)
+    private zone : NgZone;
+
     constructor(private http: HttpClient, options?: any) {
         super(options);
+    }
+
+    setZone(zone : NgZone) {
+        this.zone = zone;
     }
 
     /**
@@ -61,7 +70,7 @@ class NG2HttpClient extends GPHttpClient {
     execute(request : HttpRequest<any>) : Q.Promise<any> {
 
         let value : any = null;
-        // let deferred = Q.defer();
+        let deferred = Q.defer();
 
         let promise = this.http.request(request)
         .map( (event: HttpEvent<any>) => {
@@ -70,15 +79,17 @@ class NG2HttpClient extends GPHttpClient {
             }
             return {};
         })
-        .toPromise();
-
-        return Q.resolve(promise);
-
-        // .subscribe( (v: any) => { value = v; },
-        //     (err : Error) => { deferred.reject(err); },
-        //     () => { deferred.resolve(value); }
-        // );
-        // return deferred.promise;
+        .subscribe( (v: any) => { value = v; },
+            (err : Error) => { deferred.reject(err); },
+            () => {
+                if(this.zone) {
+                    this.zone.run( () => { deferred.resolve(value); });
+                } else {
+                    deferred.resolve(value);
+                }
+            }
+        );
+        return deferred.promise;
 
         /*
         .toPromise()

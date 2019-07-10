@@ -2,10 +2,10 @@
 This software has been approved for release by the U.S. Department of the Interior. Although the software has been subjected to rigorous review, the DOI reserves the right to update the software as needed pursuant to further analysis and review. No warranty, expressed or implied, is made by the DOI or the U.S. Government as to the functionality of the software and related material nor shall the fact of release constitute any such warranty. Furthermore, the software is released on condition that neither the DOI nor the U.S. Government shall be held liable for any damages resulting from its authorized or unauthorized use.
 */
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('q'), require('@angular/common/http'), require('rxjs/add/operator/map'), require('@geoplatform/client')) :
-    typeof define === 'function' && define.amd ? define('@geoplatform/client/angular', ['exports', 'q', '@angular/common/http', 'rxjs/add/operator/map', '@geoplatform/client'], factory) :
-    (factory((global.geoplatform = global.geoplatform || {}, global.geoplatform.client = global.geoplatform.client || {}, global.geoplatform.client.angular = {}),global.Q,global.ng.common.http,global.rxjs['add/operator/map'],global.geoplatform.client));
-}(this, (function (exports,Q,http,map,client) { 'use strict';
+    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('q'), require('@angular/common/http'), require('rxjs/add/operator/map'), require('rxjs/add/operator/toPromise'), require('@geoplatform/client')) :
+    typeof define === 'function' && define.amd ? define('@geoplatform/client/angular', ['exports', 'q', '@angular/common/http', 'rxjs/add/operator/map', 'rxjs/add/operator/toPromise', '@geoplatform/client'], factory) :
+    (factory((global.geoplatform = global.geoplatform || {}, global.geoplatform.client = global.geoplatform.client || {}, global.geoplatform.client.angular = {}),global.Q,global.ng.common.http,global.rxjs['add/operator/map'],global.rxjs['add/operator/toPromise'],global.geoplatform.client));
+}(this, (function (exports,Q,http,map,toPromise,client) { 'use strict';
 
     /*! *****************************************************************************
     Copyright (c) Microsoft Corporation. All rights reserved.
@@ -104,35 +104,39 @@ This software has been approved for release by the U.S. Department of the Interi
          */
             function (request) {
                 /** @type {?} */
-                var value = null;
-                /** @type {?} */
-                var deferred = Q.defer();
-                this.http.request(request)
+                var promise = this.http.request(request)
                     .map(function (event) {
                     if (event instanceof http.HttpResponse) {
                         return ( /** @type {?} */(event)).body;
                     }
                     return {};
                 })
-                    .subscribe(function (v) { value = v; }, function (err) { deferred.reject(err); }, function () { deferred.resolve(value); });
-                return deferred.promise;
-                // .toPromise()
-                // .then( (result) => Q.resolve(result))
-                // .catch( (err : any) => {
-                //     // console.log("NG2HttpClient.catch() - " + JSON.stringify(err));
-                //     if (err instanceof HttpErrorResponse) {
-                //         let msg = "An error occurred communicating with the GeoPlatform API";
-                //         if(err.error && err.error.error && err.error.error.message) {
-                //             msg = err.error.error.message;
-                //         } else if (err.error && err.error.message) {
-                //             msg = err.error.message;
-                //         } else if(err.message) {
-                //             msg = err.message;
-                //         }
-                //         throw new Error(msg);
-                //     }
-                //     return {};
-                // });
+                    .toPromise();
+                return Q.resolve(promise);
+                // .subscribe( (v: any) => { value = v; },
+                //     (err : Error) => { deferred.reject(err); },
+                //     () => { deferred.resolve(value); }
+                // );
+                // return deferred.promise;
+                /*
+                        .toPromise()
+                        .then( (result) => Q.resolve(result))
+                        .catch( (err : any) => {
+                            // console.log("NG2HttpClient.catch() - " + JSON.stringify(err));
+                            if (err instanceof HttpErrorResponse) {
+                                let msg = "An error occurred communicating with the GeoPlatform API";
+                                if(err.error && err.error.error && err.error.error.message) {
+                                    msg = err.error.error.message;
+                                } else if (err.error && err.error.message) {
+                                    msg = err.error.message;
+                                } else if(err.message) {
+                                    msg = err.message;
+                                }
+                                throw new Error(msg);
+                            }
+                            return {};
+                        });
+                        */
             };
         return NG2HttpClient;
     }(client.GPHttpClient));

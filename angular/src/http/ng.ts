@@ -6,6 +6,7 @@ import {
     HttpResponse, HttpEvent //, HttpErrorResponse
 } from '@angular/common/http';
 import 'rxjs/add/operator/map';
+import 'rxjs/add/operator/toPromise';
 
 import { GPHttpClient } from '@geoplatform/client';
 
@@ -60,39 +61,44 @@ class NG2HttpClient extends GPHttpClient {
     execute(request : HttpRequest<any>) : Q.Promise<any> {
 
         let value : any = null;
-        let deferred = Q.defer();
+        // let deferred = Q.defer();
 
-        this.http.request(request)
+        let promise = this.http.request(request)
         .map( (event: HttpEvent<any>) => {
             if (event instanceof HttpResponse) {
                 return (event as HttpResponse<any>).body;
             }
             return {};
         })
-        .subscribe( (v: any) => { value = v; },
-            (err : Error) => { deferred.reject(err); },
-            () => { deferred.resolve(value); }
-        );
+        .toPromise();
 
-        return deferred.promise;
+        return Q.resolve(promise);
 
-        // .toPromise()
-        // .then( (result) => Q.resolve(result))
-        // .catch( (err : any) => {
-        //     // console.log("NG2HttpClient.catch() - " + JSON.stringify(err));
-        //     if (err instanceof HttpErrorResponse) {
-        //         let msg = "An error occurred communicating with the GeoPlatform API";
-        //         if(err.error && err.error.error && err.error.error.message) {
-        //             msg = err.error.error.message;
-        //         } else if (err.error && err.error.message) {
-        //             msg = err.error.message;
-        //         } else if(err.message) {
-        //             msg = err.message;
-        //         }
-        //         throw new Error(msg);
-        //     }
-        //     return {};
-        // });
+        // .subscribe( (v: any) => { value = v; },
+        //     (err : Error) => { deferred.reject(err); },
+        //     () => { deferred.resolve(value); }
+        // );
+        // return deferred.promise;
+
+        /*
+        .toPromise()
+        .then( (result) => Q.resolve(result))
+        .catch( (err : any) => {
+            // console.log("NG2HttpClient.catch() - " + JSON.stringify(err));
+            if (err instanceof HttpErrorResponse) {
+                let msg = "An error occurred communicating with the GeoPlatform API";
+                if(err.error && err.error.error && err.error.error.message) {
+                    msg = err.error.error.message;
+                } else if (err.error && err.error.message) {
+                    msg = err.error.message;
+                } else if(err.message) {
+                    msg = err.message;
+                }
+                throw new Error(msg);
+            }
+            return {};
+        });
+        */
     }
 
 }

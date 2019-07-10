@@ -1,6 +1,7 @@
 import * as Q from 'q';
 import { HttpClient, HttpRequest } from '@angular/common/http';
 import 'rxjs/add/operator/map';
+import 'rxjs/add/operator/toPromise';
 import { GPHttpClient } from '@geoplatform/client';
 declare class NG2HttpClient extends GPHttpClient {
     private http;

@@ -34,7 +34,7 @@ class GalleryService extends ItemService {
             let err = new Error("Error adding item: " + e.message);
             Object.assign(err, e);
             this.logError('GalleryService.addItem() - ' + err.message);
-            return Promise.reject(err);
+            throw err;
         });
     }
 
@@ -51,7 +51,7 @@ class GalleryService extends ItemService {
             let err = new Error("Error adding item: " + e.message);
             Object.assign(err, e);
             this.logError('GalleryService.addItem() - '+ err.message);
-            return Promise.reject(err);
+            throw err;
         });
     }
 

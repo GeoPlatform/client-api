@@ -34,7 +34,7 @@ class KGService {
         .catch(e => {
             let err = new Error(`KGService.suggest() - Error suggesting concepts: ${e.message}`);
             Object.assign(err, e);
-            return Promise.reject(err);
+            throw err;
         });
     }
 
@@ -50,7 +50,7 @@ class KGService {
         .catch(e => {
             let err = new Error(`KGService.types() - Error searching types: ${e.message}`);
             Object.assign(err, e);
-            return Promise.reject(err);
+            throw err;
         });
     }
 
@@ -67,7 +67,7 @@ class KGService {
         .catch(e => {
             let err = new Error(`KGService.sources() - Error searching sources: ${e.message}`);
             Object.assign(err, e);
-            return Promise.reject(err);
+            throw err;
         });
     }
 
@@ -126,7 +126,7 @@ class KGService {
                 e = new Error("KGService.execute() - Request failed but didn't return an " +
                 "error. This is most likely because the request timed out");
             }
-            return Promise.reject(e);
+            throw e;
         });
     }
 

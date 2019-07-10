@@ -41,7 +41,7 @@ class LayerService extends ItemService {
             let err = new Error(`Error fetching style: ${e.message}`);
             Object.assign(err, e);
             this.logError('LayerService.style() - ' + err.message);
-            return Promise.reject(err);
+            throw err;
         });
     }
 
@@ -88,7 +88,7 @@ class LayerService extends ItemService {
             let err = new Error(`Error describing layer feature: ${e.message}`);
             Object.assign(err, e);
             this.logError('LayerService.describe() - ' + err.message);
-            return Promise.reject(err);
+            throw err;
         });
     }
 
@@ -117,7 +117,7 @@ class LayerService extends ItemService {
             let err = new Error(`Error validating layer request: ${e.message}`);
             Object.assign(err, e);
             this.logError('LayerService.describe() - ' + err.message);
-            return Promise.reject(err);
+            throw err;
         });
     }
 

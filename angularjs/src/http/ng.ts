@@ -77,7 +77,7 @@ class NGHttpClient extends GPHttpClient {
             return $http(opts);
         })
         .then(response=>response.data)
-        .catch(response=>Promise.reject(response.data));
+        .catch(response=> { throw new Error(response.data); });
     }
 
 }

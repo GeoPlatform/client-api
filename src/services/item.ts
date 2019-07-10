@@ -117,7 +117,7 @@ class ItemService {
             let err = new Error(`Error fetching item ${id}: ${e.message}`);
             Object.assign(err, e);
             this.logError('ItemService.get() - ' + err.message);
-            return Promise.reject(err);
+            throw err;
         });
     }
 
@@ -158,7 +158,7 @@ class ItemService {
             let err = new Error(`Error saving item: ${e.message}`);
             Object.assign(err, e);
             this.logError('ItemService.save() - ' + err.message);
-            return Promise.reject(err);
+            throw err;
         });
     }
 
@@ -181,7 +181,7 @@ class ItemService {
             let err = new Error(`Error deleting item ${id}: ${e.message}`);
             Object.assign(err, e);
             this.logError('ItemService.remove() - ' + err.message);
-            return Promise.reject(err);
+            throw err;
         });
     }
 
@@ -204,7 +204,7 @@ class ItemService {
             let err = new Error(`Error patching item ${id}: ${e.message}`);
             Object.assign(err, e);
             this.logError('ItemService.patch() - ' + err.message);
-            return Promise.reject(err);
+            throw err;
         });
     }
 
@@ -228,7 +228,7 @@ class ItemService {
             let err = new Error(`Error cloning item ${id}: ${e.message}`);
             Object.assign(err, e);
             this.logError('ItemService.clone() - ' + err.message);
-            return Promise.reject(err);
+            throw err;
         });
     }
 
@@ -257,7 +257,7 @@ class ItemService {
             let err = new Error(`Error searching items: ${e.message}`);
             Object.assign(err, e);
             this.logError('ItemService.search() - ' + err.message);
-            return Promise.reject(err);
+            throw err;
         });
     }
 
@@ -305,7 +305,7 @@ class ItemService {
             if(e.item)
                 Object.assign(err, { item : e.item });
             this.logError('ItemService.import() - ' + err.message);
-            return Promise.reject(err);
+            throw err;
         });
     }
 
@@ -338,7 +338,7 @@ class ItemService {
             let err = new Error(`Error exporting item: ${msg}`);
             Object.assign(err, e);
             this.logError('ItemService.export() - ' + err.message);
-            return Promise.reject(err);
+            throw err;
         });
     }
 
@@ -366,7 +366,7 @@ class ItemService {
             let err = new Error(`Error getting URI for item: ${e.message}`);
             Object.assign(err, e);
             this.logError('ItemService.getUri() - ' + err.message);
-            return Promise.reject(err);
+            throw err;
         });
 
     }
@@ -393,7 +393,7 @@ class ItemService {
             let err = new Error(`Error fetching items: ${e.message}`);
             Object.assign(err, e);
             this.logError('ItemService.getMultiple() - ' + err.message);
-            return Promise.reject(err);
+            throw err;
         });
     }
 
@@ -414,7 +414,7 @@ class ItemService {
             let err = new Error(`Error resolving items: ${e.message}`);
             Object.assign(err, e);
             this.logError('ItemService.exists() - ' + err.message);
-            return Promise.reject(err);
+            throw err;
         });
     }
 
@@ -430,7 +430,7 @@ class ItemService {
             let err = new Error(`Error liking item ${item.id}: ${e.message}`);
             Object.assign(err, e);
             this.logError('ItemService.like() - ' + err.message);
-            return Promise.reject(err);
+            throw err;
         });
     }
 
@@ -445,7 +445,7 @@ class ItemService {
             let err = new Error(`Error incrementing views for item ${item.id}: ${e.message}`);
             Object.assign(err, e);
             this.logError('ItemService.like() - ' + err.message);
-            return Promise.reject(err);
+            throw err;
         });
     }
 
@@ -472,7 +472,7 @@ class ItemService {
             let err = new Error(`Error fetching associations for item ${id}: ${e.message}`);
             Object.assign(err, e);
             this.logError('ItemService.associations() - ' + err.message);
-            return Promise.reject(err);
+            throw err;
         });
     }
 
@@ -496,7 +496,7 @@ class ItemService {
             let err = new Error(`Error fetching versions for item ${id}: ${e.message}`);
             Object.assign(err, e);
             this.logError('ItemService.versions() - ' + err.message);
-            return Promise.reject(err);
+            throw err;
         });
     }
 

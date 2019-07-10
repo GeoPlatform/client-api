@@ -70,7 +70,7 @@ class UtilsService {
             let err = new Error(`Error getting capabilities: ${e.message}`);
             Object.assign(err, e);
             this.logError('UtilsService.capabilities() - ' + err.message);
-            return Promise.reject(err);
+            throw err;
         });
     }
 
@@ -101,7 +101,7 @@ class UtilsService {
             let err = new Error(`Error parsing file: ${e.message}`);
             Object.assign(err, e);
             this.logError('UtilsService.parseFile() - ' + err.message);
-            return Promise.reject(err);
+            throw err;
         });
     }
 
@@ -130,7 +130,7 @@ class UtilsService {
             let err = new Error(`Error resolving location: ${e.message}`);
             Object.assign(err, e);
             this.logError('UtilsService.locate() - ' + err.message);
-            return Promise.reject(err);
+            throw err;
         });
     }
 

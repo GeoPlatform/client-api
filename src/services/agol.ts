@@ -200,7 +200,7 @@ class AgolService {
         .catch(e => {
             let err = new Error(`AgolService.getOrg() - Error fetching org ${id}: ${e.message}`);
             Object.assign(err, e);
-            return Promise.reject(err);
+            throw err;
         });
     }
 
@@ -226,7 +226,7 @@ class AgolService {
         .catch(e => {
             let err = new Error(`AgolService.searchOrgs() - Error searching orgs: ${e.message}`);
             Object.assign(err, e);
-            return Promise.reject(err);
+            throw err;
         });
     }
 
@@ -254,7 +254,7 @@ class AgolService {
         .catch(e => {
             let err = new Error(`AgolService.getGroup() - Error fetching group ${id}: ${e.message}`);
             Object.assign(err, e);
-            return Promise.reject(err);
+            throw err;
         });
     }
 
@@ -281,7 +281,7 @@ class AgolService {
         .catch(e => {
             let err = new Error(`AgolService.searchGroups() - Error searching groups: ${e.message}`);
             Object.assign(err, e);
-            return Promise.reject(err);
+            throw err;
         });
     }
 
@@ -310,7 +310,7 @@ class AgolService {
         .catch(e => {
             let err = new Error(`AgolService.getItem() - Error fetching item ${id}: ${e.message}`);
             Object.assign(err, e);
-            return Promise.reject(err);
+            throw err;
         });
     }
 
@@ -337,7 +337,7 @@ class AgolService {
         .catch(e => {
             let err = new Error(`AgolService.searchItems() - Error searching items: ${e.message}`);
             Object.assign(err, e);
-            return Promise.reject(err);
+            throw err;
         });
     }
 
@@ -392,13 +392,16 @@ class AgolService {
     }
 
     execute(opts : {[key:string]:any}) : Promise<any> {
-        return this.client.execute(opts)
-        .catch(e => {
-            if(e === null || typeof(e) === 'undefined') {
-                e = new Error("AGOLService.execute() - Request failed but didn't return an " +
-                "error. This is most likely because the request timed out");
-            }
-            return Promise.reject(e);
+        return new Promise<any>( (resolve, reject) => {
+            this.client.execute(opts)
+            .then( result => resolve(result) )
+            .catch(e => {
+                if(e === null || typeof(e) === 'undefined') {
+                    e = new Error("AGOLService.execute() - Request failed but didn't return an " +
+                    "error. This is most likely because the request timed out");
+                }
+                reject(e);
+            });
         });
     }
 

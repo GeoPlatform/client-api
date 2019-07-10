@@ -87,7 +87,7 @@ var NGHttpClient = /** @class */ (function (_super) {
             return $http(opts);
         })
             .then(function (response) { return response.data; })
-            .catch(function (response) { return Promise.reject(response.data); });
+            .catch(function (response) { throw new Error(response.data); });
     };
     return NGHttpClient;
 }(GPHttpClient));

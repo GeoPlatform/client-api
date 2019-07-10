@@ -73,7 +73,7 @@ class XHRHttpClient extends GPHttpClient {
             if (error.response) {
                 err = new GPError(error.response.data);
             }
-            return promise.reject(err);
+            throw err;
         });
         return promise;
     }

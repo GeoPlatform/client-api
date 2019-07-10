@@ -120,7 +120,7 @@ This software has been approved for release by the U.S. Department of the Interi
                     return $http(opts);
                 })
                     .then(function (response) { return response.data; })
-                    .catch(function (response) { return Promise.reject(response.data); });
+                    .catch(function (response) { throw new Error(response.data); });
             };
         return NGHttpClient;
     }(client.GPHttpClient));

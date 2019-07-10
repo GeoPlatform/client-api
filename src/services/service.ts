@@ -48,7 +48,7 @@ class ServiceService extends ItemService {
             let err = new Error(`Error describing service: ${e.message}`);
             Object.assign(err, e);
             this.logError('ServiceService.about() - ' + err.message);
-            return Promise.reject(err);
+            throw err;
         });
     }
 
@@ -79,7 +79,7 @@ class ServiceService extends ItemService {
             let err = new Error(`Error fetching service types: ${e.message}`);
             Object.assign(err, e);
             this.logError('ServiceService.types() - ' + err.message);
-            return Promise.reject(err);
+            throw err;
         });
     }
 
@@ -103,7 +103,7 @@ class ServiceService extends ItemService {
             let err = new Error(`Error importing service: ${e.message}`);
             Object.assign(err, e);
             this.logError('ServiceService.import() - ' + err.message);
-            return Promise.reject(err);
+            throw err;
         });
     }
 
@@ -127,7 +127,7 @@ class ServiceService extends ItemService {
             let err = new Error(`Error harvesting layers from service: ${e.message}`);
             Object.assign(err, e);
             this.logError('ServiceService.harvest() - ' + err.message);
-            return Promise.reject(err);
+            throw err;
         });
 
     }
@@ -151,7 +151,7 @@ class ServiceService extends ItemService {
             let err = new Error(`Error testing service: ${e.message}`);
             Object.assign(err, e);
             this.logError('ServiceService.liveTest() - '  + err.message);
-            return Promise.reject(err);
+            throw err;
         });
     }
 
@@ -173,7 +173,7 @@ class ServiceService extends ItemService {
             let err = new Error(`Error getting service statistics: ${e.message}`);
             Object.assign(err, e);
             this.logError('ServiceService.statistics() - ' + err.message);
-            return Promise.reject(err);
+            throw err;
         });
     }
 

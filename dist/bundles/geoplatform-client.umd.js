@@ -3136,7 +3136,7 @@ This software has been approved for release by the U.S. Department of the Interi
                     if (error.response) {
                         err = new GPError(error.response.data);
                     }
-                    return promise.reject(err);
+                    throw err;
                 });
                 return promise;
             };
@@ -3334,7 +3334,7 @@ This software has been approved for release by the U.S. Department of the Interi
                     var err = new Error("Error fetching item " + id + ": " + e.message);
                     Object.assign(err, e);
                     _this.logError('ItemService.get() - ' + err.message);
-                    return Promise.reject(err);
+                    throw err;
                 });
             };
         /**
@@ -3387,7 +3387,7 @@ This software has been approved for release by the U.S. Department of the Interi
                     var err = new Error("Error saving item: " + e.message);
                     Object.assign(err, e);
                     _this.logError('ItemService.save() - ' + err.message);
-                    return Promise.reject(err);
+                    throw err;
                 });
             };
         /**
@@ -3421,7 +3421,7 @@ This software has been approved for release by the U.S. Department of the Interi
                     var err = new Error("Error deleting item " + id + ": " + e.message);
                     Object.assign(err, e);
                     _this.logError('ItemService.remove() - ' + err.message);
-                    return Promise.reject(err);
+                    throw err;
                 });
             };
         /**
@@ -3457,7 +3457,7 @@ This software has been approved for release by the U.S. Department of the Interi
                     var err = new Error("Error patching item " + id + ": " + e.message);
                     Object.assign(err, e);
                     _this.logError('ItemService.patch() - ' + err.message);
-                    return Promise.reject(err);
+                    throw err;
                 });
             };
         /**
@@ -3493,7 +3493,7 @@ This software has been approved for release by the U.S. Department of the Interi
                     var err = new Error("Error cloning item " + id + ": " + e.message);
                     Object.assign(err, e);
                     _this.logError('ItemService.clone() - ' + err.message);
-                    return Promise.reject(err);
+                    throw err;
                 });
             };
         /**
@@ -3537,7 +3537,7 @@ This software has been approved for release by the U.S. Department of the Interi
                     var err = new Error("Error searching items: " + e.message);
                     Object.assign(err, e);
                     _this.logError('ItemService.search() - ' + err.message);
-                    return Promise.reject(err);
+                    throw err;
                 });
             };
         /**
@@ -3604,7 +3604,7 @@ This software has been approved for release by the U.S. Department of the Interi
                     if (e.item)
                         Object.assign(err, { item: e.item });
                     _this.logError('ItemService.import() - ' + err.message);
-                    return Promise.reject(err);
+                    throw err;
                 });
             };
         /**
@@ -3650,7 +3650,7 @@ This software has been approved for release by the U.S. Department of the Interi
                     var err = new Error("Error exporting item: " + msg);
                     Object.assign(err, e);
                     _this.logError('ItemService.export() - ' + err.message);
-                    return Promise.reject(err);
+                    throw err;
                 });
             };
         /**
@@ -3689,7 +3689,7 @@ This software has been approved for release by the U.S. Department of the Interi
                     var err = new Error("Error getting URI for item: " + e.message);
                     Object.assign(err, e);
                     _this.logError('ItemService.getUri() - ' + err.message);
-                    return Promise.reject(err);
+                    throw err;
                 });
             };
         /**
@@ -3724,7 +3724,7 @@ This software has been approved for release by the U.S. Department of the Interi
                     var err = new Error("Error fetching items: " + e.message);
                     Object.assign(err, e);
                     _this.logError('ItemService.getMultiple() - ' + err.message);
-                    return Promise.reject(err);
+                    throw err;
                 });
             };
         /**
@@ -3759,7 +3759,7 @@ This software has been approved for release by the U.S. Department of the Interi
                     var err = new Error("Error resolving items: " + e.message);
                     Object.assign(err, e);
                     _this.logError('ItemService.exists() - ' + err.message);
-                    return Promise.reject(err);
+                    throw err;
                 });
             };
         /**
@@ -3789,7 +3789,7 @@ This software has been approved for release by the U.S. Department of the Interi
                     var err = new Error("Error liking item " + item.id + ": " + e.message);
                     Object.assign(err, e);
                     _this.logError('ItemService.like() - ' + err.message);
-                    return Promise.reject(err);
+                    throw err;
                 });
             };
         /**
@@ -3819,7 +3819,7 @@ This software has been approved for release by the U.S. Department of the Interi
                     var err = new Error("Error incrementing views for item " + item.id + ": " + e.message);
                     Object.assign(err, e);
                     _this.logError('ItemService.like() - ' + err.message);
-                    return Promise.reject(err);
+                    throw err;
                 });
             };
         /**
@@ -3859,7 +3859,7 @@ This software has been approved for release by the U.S. Department of the Interi
                     var err = new Error("Error fetching associations for item " + id + ": " + e.message);
                     Object.assign(err, e);
                     _this.logError('ItemService.associations() - ' + err.message);
-                    return Promise.reject(err);
+                    throw err;
                 });
             };
         /**
@@ -3897,7 +3897,7 @@ This software has been approved for release by the U.S. Department of the Interi
                     var err = new Error("Error fetching versions for item " + id + ": " + e.message);
                     Object.assign(err, e);
                     _this.logError('ItemService.versions() - ' + err.message);
-                    return Promise.reject(err);
+                    throw err;
                 });
             };
         /* ----------------------------------------------------------- */
@@ -4102,7 +4102,7 @@ This software has been approved for release by the U.S. Department of the Interi
                     var err = new Error("Error fetching style: " + e.message);
                     Object.assign(err, e);
                     _this.logError('LayerService.style() - ' + err.message);
-                    return Promise.reject(err);
+                    throw err;
                 });
             };
         /**
@@ -4163,7 +4163,7 @@ This software has been approved for release by the U.S. Department of the Interi
                     var err = new Error("Error describing layer feature: " + e.message);
                     Object.assign(err, e);
                     _this.logError('LayerService.describe() - ' + err.message);
-                    return Promise.reject(err);
+                    throw err;
                 });
             };
         /**
@@ -4204,7 +4204,7 @@ This software has been approved for release by the U.S. Department of the Interi
                     var err = new Error("Error validating layer request: " + e.message);
                     Object.assign(err, e);
                     _this.logError('LayerService.describe() - ' + err.message);
-                    return Promise.reject(err);
+                    throw err;
                 });
             };
         return LayerService;
@@ -4285,7 +4285,7 @@ This software has been approved for release by the U.S. Department of the Interi
                     var err = new Error("Error describing service: " + e.message);
                     Object.assign(err, e);
                     _this.logError('ServiceService.about() - ' + err.message);
-                    return Promise.reject(err);
+                    throw err;
                 });
             };
         /**
@@ -4324,7 +4324,7 @@ This software has been approved for release by the U.S. Department of the Interi
                     var err = new Error("Error fetching service types: " + e.message);
                     Object.assign(err, e);
                     _this.logError('ServiceService.types() - ' + err.message);
-                    return Promise.reject(err);
+                    throw err;
                 });
             };
         /**
@@ -4359,7 +4359,7 @@ This software has been approved for release by the U.S. Department of the Interi
                     var err = new Error("Error importing service: " + e.message);
                     Object.assign(err, e);
                     _this.logError('ServiceService.import() - ' + err.message);
-                    return Promise.reject(err);
+                    throw err;
                 });
             };
         /**
@@ -4394,7 +4394,7 @@ This software has been approved for release by the U.S. Department of the Interi
                     var err = new Error("Error harvesting layers from service: " + e.message);
                     Object.assign(err, e);
                     _this.logError('ServiceService.harvest() - ' + err.message);
-                    return Promise.reject(err);
+                    throw err;
                 });
             };
         /**
@@ -4429,7 +4429,7 @@ This software has been approved for release by the U.S. Department of the Interi
                     var err = new Error("Error testing service: " + e.message);
                     Object.assign(err, e);
                     _this.logError('ServiceService.liveTest() - ' + err.message);
-                    return Promise.reject(err);
+                    throw err;
                 });
             };
         /**
@@ -4464,7 +4464,7 @@ This software has been approved for release by the U.S. Department of the Interi
                     var err = new Error("Error getting service statistics: " + e.message);
                     Object.assign(err, e);
                     _this.logError('ServiceService.statistics() - ' + err.message);
-                    return Promise.reject(err);
+                    throw err;
                 });
             };
         return ServiceService;
@@ -4533,7 +4533,7 @@ This software has been approved for release by the U.S. Department of the Interi
                     var err = new Error("Error adding item: " + e.message);
                     Object.assign(err, e);
                     _this.logError('GalleryService.addItem() - ' + err.message);
-                    return Promise.reject(err);
+                    throw err;
                 });
             };
         /**
@@ -4564,7 +4564,7 @@ This software has been approved for release by the U.S. Department of the Interi
                     var err = new Error("Error adding item: " + e.message);
                     Object.assign(err, e);
                     _this.logError('GalleryService.addItem() - ' + err.message);
-                    return Promise.reject(err);
+                    throw err;
                 });
             };
         return GalleryService;
@@ -4676,7 +4676,7 @@ This software has been approved for release by the U.S. Department of the Interi
                     var err = new Error("Error getting capabilities: " + e.message);
                     Object.assign(err, e);
                     _this.logError('UtilsService.capabilities() - ' + err.message);
-                    return Promise.reject(err);
+                    throw err;
                 });
             };
         /**
@@ -4720,7 +4720,7 @@ This software has been approved for release by the U.S. Department of the Interi
                     var err = new Error("Error parsing file: " + e.message);
                     Object.assign(err, e);
                     _this.logError('UtilsService.parseFile() - ' + err.message);
-                    return Promise.reject(err);
+                    throw err;
                 });
             };
         /**
@@ -4762,7 +4762,7 @@ This software has been approved for release by the U.S. Department of the Interi
                     var err = new Error("Error resolving location: " + e.message);
                     Object.assign(err, e);
                     _this.logError('UtilsService.locate() - ' + err.message);
-                    return Promise.reject(err);
+                    throw err;
                 });
             };
         /* ----------------------------------------------------------- */
@@ -5221,7 +5221,7 @@ This software has been approved for release by the U.S. Department of the Interi
                     /** @type {?} */
                     var err = new Error("AgolService.getOrg() - Error fetching org " + id + ": " + e.message);
                     Object.assign(err, e);
-                    return Promise.reject(err);
+                    throw err;
                 });
             };
         /**
@@ -5258,7 +5258,7 @@ This software has been approved for release by the U.S. Department of the Interi
                     /** @type {?} */
                     var err = new Error("AgolService.searchOrgs() - Error searching orgs: " + e.message);
                     Object.assign(err, e);
-                    return Promise.reject(err);
+                    throw err;
                 });
             };
         // -----------------------------------------------------------------------
@@ -5292,7 +5292,7 @@ This software has been approved for release by the U.S. Department of the Interi
                     /** @type {?} */
                     var err = new Error("AgolService.getGroup() - Error fetching group " + id + ": " + e.message);
                     Object.assign(err, e);
-                    return Promise.reject(err);
+                    throw err;
                 });
             };
         /**
@@ -5329,7 +5329,7 @@ This software has been approved for release by the U.S. Department of the Interi
                     /** @type {?} */
                     var err = new Error("AgolService.searchGroups() - Error searching groups: " + e.message);
                     Object.assign(err, e);
-                    return Promise.reject(err);
+                    throw err;
                 });
             };
         // -----------------------------------------------------------------------
@@ -5365,7 +5365,7 @@ This software has been approved for release by the U.S. Department of the Interi
                     /** @type {?} */
                     var err = new Error("AgolService.getItem() - Error fetching item " + id + ": " + e.message);
                     Object.assign(err, e);
-                    return Promise.reject(err);
+                    throw err;
                 });
             };
         /**
@@ -5402,7 +5402,7 @@ This software has been approved for release by the U.S. Department of the Interi
                     /** @type {?} */
                     var err = new Error("AgolService.searchItems() - Error searching items: " + e.message);
                     Object.assign(err, e);
-                    return Promise.reject(err);
+                    throw err;
                 });
             };
         /* --------------------------- */
@@ -5475,13 +5475,17 @@ This software has been approved for release by the U.S. Department of the Interi
          * @return {?}
          */
             function (opts) {
-                return this.client.execute(opts)
-                    .catch(function (e) {
-                    if (e === null || typeof (e) === 'undefined') {
-                        e = new Error("AGOLService.execute() - Request failed but didn't return an " +
-                            "error. This is most likely because the request timed out");
-                    }
-                    return Promise.reject(e);
+                var _this = this;
+                return new Promise(function (resolve, reject) {
+                    _this.client.execute(opts)
+                        .then(function (result) { return resolve(result); })
+                        .catch(function (e) {
+                        if (e === null || typeof (e) === 'undefined') {
+                            e = new Error("AGOLService.execute() - Request failed but didn't return an " +
+                                "error. This is most likely because the request timed out");
+                        }
+                        reject(e);
+                    });
                 });
             };
         return AgolService;
@@ -5970,7 +5974,7 @@ This software has been approved for release by the U.S. Department of the Interi
                     /** @type {?} */
                     var err = new Error("KGService.suggest() - Error suggesting concepts: " + e.message);
                     Object.assign(err, e);
-                    return Promise.reject(err);
+                    throw err;
                 });
             };
         /**
@@ -5996,7 +6000,7 @@ This software has been approved for release by the U.S. Department of the Interi
                     /** @type {?} */
                     var err = new Error("KGService.types() - Error searching types: " + e.message);
                     Object.assign(err, e);
-                    return Promise.reject(err);
+                    throw err;
                 });
             };
         /**
@@ -6022,7 +6026,7 @@ This software has been approved for release by the U.S. Department of the Interi
                     /** @type {?} */
                     var err = new Error("KGService.sources() - Error searching sources: " + e.message);
                     Object.assign(err, e);
-                    return Promise.reject(err);
+                    throw err;
                 });
             };
         /* ----------------------------------------------------------- */
@@ -6106,7 +6110,7 @@ This software has been approved for release by the U.S. Department of the Interi
                         e = new Error("KGService.execute() - Request failed but didn't return an " +
                             "error. This is most likely because the request timed out");
                     }
-                    return Promise.reject(e);
+                    throw e;
                 });
             };
         return KGService;

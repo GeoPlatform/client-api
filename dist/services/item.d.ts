@@ -43,6 +43,10 @@ declare class ItemService {
      */
     timeout(milliseconds: number): ItemService;
     /**
+     * @return GPHttpClient instance or null if one was not provided
+     */
+    getClient(): GPHttpClient;
+    /**
      * @param logger - log service
      */
     setLogger(logger: any): void;
@@ -87,7 +91,7 @@ declare class ItemService {
      */
     clone(id: string, overrides: any, options?: any): Q.Promise<Item>;
     /**
-     * @param arg - either JS object of query parameters or GeoPlatform.Query instance
+     * @param arg - either JS object of query parameters or Query instance
      * @param options - optional set of request options to apply to xhr request
      * @return Promise resolving search results
      */

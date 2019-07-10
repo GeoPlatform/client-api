@@ -63,6 +63,13 @@ class ItemService {
     }
 
     /**
+     * @return GPHttpClient instance or null if one was not provided
+     */
+    getClient() {
+        return this.client;
+    }
+
+    /**
      * @param logger - log service
      */
     setLogger(logger : any) {

@@ -2162,6 +2162,12 @@ class ItemService {
         return this;
     }
     /**
+     * @return {?} GPHttpClient instance or null if one was not provided
+     */
+    getClient() {
+        return this.client;
+    }
+    /**
      * @param {?} logger - log service
      * @return {?}
      */
@@ -2324,7 +2330,7 @@ class ItemService {
         });
     }
     /**
-     * @param {?=} arg - either JS object of query parameters or GeoPlatform.Query instance
+     * @param {?=} arg - either JS object of query parameters or Query instance
      * @param {?=} options - optional set of request options to apply to xhr request
      * @return {?} Promise resolving search results
      */

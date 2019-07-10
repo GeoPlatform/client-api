@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { __extends } from 'tslib';
-import { reject, resolve } from 'q';
+import { resolve, reject } from 'q';
 
 /**
  * @fileoverview added by tsickle
@@ -3209,6 +3209,18 @@ ItemService = /** @class */ (function () {
         return this;
     };
     /**
+     * @return GPHttpClient instance or null if one was not provided
+     */
+    /**
+     * @return {?} GPHttpClient instance or null if one was not provided
+     */
+    ItemService.prototype.getClient = /**
+     * @return {?} GPHttpClient instance or null if one was not provided
+     */
+    function () {
+        return this.client;
+    };
+    /**
      * @param logger - log service
      */
     /**
@@ -3451,17 +3463,17 @@ ItemService = /** @class */ (function () {
         });
     };
     /**
-     * @param arg - either JS object of query parameters or GeoPlatform.Query instance
+     * @param arg - either JS object of query parameters or Query instance
      * @param options - optional set of request options to apply to xhr request
      * @return Promise resolving search results
      */
     /**
-     * @param {?=} arg - either JS object of query parameters or GeoPlatform.Query instance
+     * @param {?=} arg - either JS object of query parameters or Query instance
      * @param {?=} options - optional set of request options to apply to xhr request
      * @return {?} Promise resolving search results
      */
     ItemService.prototype.search = /**
-     * @param {?=} arg - either JS object of query parameters or GeoPlatform.Query instance
+     * @param {?=} arg - either JS object of query parameters or Query instance
      * @param {?=} options - optional set of request options to apply to xhr request
      * @return {?} Promise resolving search results
      */

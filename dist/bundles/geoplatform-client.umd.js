@@ -3243,6 +3243,18 @@ This software has been approved for release by the U.S. Department of the Interi
                 return this;
             };
         /**
+         * @return GPHttpClient instance or null if one was not provided
+         */
+        /**
+         * @return {?} GPHttpClient instance or null if one was not provided
+         */
+        ItemService.prototype.getClient = /**
+         * @return {?} GPHttpClient instance or null if one was not provided
+         */
+            function () {
+                return this.client;
+            };
+        /**
          * @param logger - log service
          */
         /**
@@ -3485,17 +3497,17 @@ This software has been approved for release by the U.S. Department of the Interi
                 });
             };
         /**
-         * @param arg - either JS object of query parameters or GeoPlatform.Query instance
+         * @param arg - either JS object of query parameters or Query instance
          * @param options - optional set of request options to apply to xhr request
          * @return Promise resolving search results
          */
         /**
-         * @param {?=} arg - either JS object of query parameters or GeoPlatform.Query instance
+         * @param {?=} arg - either JS object of query parameters or Query instance
          * @param {?=} options - optional set of request options to apply to xhr request
          * @return {?} Promise resolving search results
          */
         ItemService.prototype.search = /**
-         * @param {?=} arg - either JS object of query parameters or GeoPlatform.Query instance
+         * @param {?=} arg - either JS object of query parameters or Query instance
          * @param {?=} options - optional set of request options to apply to xhr request
          * @return {?} Promise resolving search results
          */

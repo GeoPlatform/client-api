@@ -1,4 +1,3 @@
-import * as Q from 'q';
 declare class GPHttpClient {
     protected token: any;
     protected timeout: number;
@@ -17,6 +16,6 @@ declare class GPHttpClient {
     createRequestOpts(options: {
         [key: string]: any;
     }): any;
-    execute(opts: any): Q.Promise<any>;
+    execute(opts: any): Promise<any>;
 }
 export default GPHttpClient;

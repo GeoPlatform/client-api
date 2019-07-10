@@ -1,5 +1,4 @@
 
-import * as Q from 'q';
 import Config from '../shared/config';
 import GPHttpClient from '../http/client';
 
@@ -54,13 +53,13 @@ class UtilsService {
      * @param options - optional config to send with http request
      * @return Promise resolving capabilities object
      */
-    capabilities (property : string|null, query : any, options ?: any) : Q.Promise<any> {
+    capabilities (property : string|null, query : any, options ?: any) : Promise<any> {
 
         let url = this.baseUrl + '/api/capabilities';
         if(property)
             url += '/' + property;
 
-        return Q.resolve( url )
+        return Promise.resolve( url )
         .then( (url) => {
             let opts = this.buildRequest({
                 method:"GET", url:url, params:query||{}, options:options
@@ -71,7 +70,7 @@ class UtilsService {
             let err = new Error(`Error getting capabilities: ${e.message}`);
             Object.assign(err, e);
             this.logError('UtilsService.capabilities() - ' + err.message);
-            return Q.reject(err);
+            return Promise.reject(err);
         });
     }
 
@@ -81,11 +80,11 @@ class UtilsService {
      * @param options
      * @return Promise
      */
-    parseFile (file : any, format : string, options ?: any) : Q.Promise<any> {
+    parseFile (file : any, format : string, options ?: any) : Promise<any> {
 
         var url = this.baseUrl + '/api/utils/parse';
 
-        return Q.resolve( url )
+        return Promise.resolve( url )
         .then( url => {
 
             let opts = this.buildRequest({
@@ -102,7 +101,7 @@ class UtilsService {
             let err = new Error(`Error parsing file: ${e.message}`);
             Object.assign(err, e);
             this.logError('UtilsService.parseFile() - ' + err.message);
-            return Q.reject(err);
+            return Promise.reject(err);
         });
     }
 
@@ -113,10 +112,10 @@ class UtilsService {
      * @param options - optional config to send with http request
      * @return Promise resolving an array of geocoded results
      */
-    locate(value : any, options ?: any) : Q.Promise<any> {
+    locate(value : any, options ?: any) : Promise<any> {
 
         var url = this.baseUrl + '/api/utils/gazetteer';
-        return Q.resolve(url)
+        return Promise.resolve(url)
         .then( url => {
             let opts = this.buildRequest({
                 method: 'GET',
@@ -131,7 +130,7 @@ class UtilsService {
             let err = new Error(`Error resolving location: ${e.message}`);
             Object.assign(err, e);
             this.logError('UtilsService.locate() - ' + err.message);
-            return Q.reject(err);
+            return Promise.reject(err);
         });
     }
 
@@ -167,14 +166,14 @@ class UtilsService {
         return this.client.createRequestOpts(options);
     }
 
-    execute(opts : {[key:string]:any}) : Q.Promise<any> {
+    execute(opts : {[key:string]:any}) : Promise<any> {
         return this.client.execute(opts)
         .catch(( e : Error ) => {
             if(e === null || typeof(e) === 'undefined') {
                 e = new Error("UtilsService.execute() - Request failed but didn't return an " +
                 "error. This is most likely because the request timed out");
             }
-            return Q.reject(e);
+            return Promise.reject(e);
         });
     }
 

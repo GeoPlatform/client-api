@@ -1,5 +1,4 @@
 
-import * as Q from 'q';
 import axios from 'axios';
 import GPError from '../shared/error';
 import GPHttpClient from './client';
@@ -59,7 +58,7 @@ class XHRHttpClient extends GPHttpClient {
     }
 
 
-    execute(opts : any) : Q.Promise<any> {
+    execute(opts : any) : Promise<any> {
 
         if(typeof(axios) === 'undefined') {
             throw new Error("Axios not found, check that you have included " +
@@ -74,9 +73,9 @@ class XHRHttpClient extends GPHttpClient {
             if (error.response) {
                 err = new GPError(error.response.data);
             }
-            return Q.reject(err);
+            return promise.reject(err);
         });
-        return Q.resolve(promise);
+        return promise;
     }
 
 }

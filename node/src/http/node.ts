@@ -1,5 +1,4 @@
 
-import * as Q from 'q';
 import { GPHttpClient } from '@geoplatform/client';
 
 
@@ -74,33 +73,32 @@ class NodeHttpClient extends GPHttpClient {
     /**
      *
      */
-    execute(options : any) : Q.Promise<any> {
-        let deferred = Q.defer();
+    execute(options : any) : Promise<any> {
 
         const request = require('request');
+        // require('request-debug')(request);
         if(!request) {
             throw new Error("Module 'request' not available");
         }
-        // require('request-debug')(request);
 
-        request(options, (error : any, response : any, body : any) => {
-            this.checkAndHandleError(error, response)
-            .then( () =>  {
-                if(options.json === false)
-                    deferred.resolve( response );
-                else
-                    deferred.resolve( body );
-            })
-            .catch( e => deferred.reject(e) );
+        return new Promise<any>( (resolve, reject) => {
+            request(options, (error : any, response : any, body : any) => {
+                this.checkAndHandleError(error, response)
+                .then( () =>  {
+                    if(options.json === false) resolve( response );
+                    else resolve( body );
+                })
+                .catch( e => reject(e) );
+            });
         });
-        return deferred.promise;
+
     }
 
 
     /**
      *
      */
-    checkAndHandleError (error : any, response : any) : Q.Promise<any> {
+    checkAndHandleError (error : any, response : any) : Promise<any> {
 
         let props : { [key:string]: any } = {
             message: null,
@@ -122,7 +120,7 @@ class NodeHttpClient extends GPHttpClient {
                 }
 
             } else {
-                return Q.reject(error);
+                return Promise.reject(error);
             }
 
         } else if(response.statusCode < 200 || response.statusCode > 204) {
@@ -208,10 +206,10 @@ class NodeHttpClient extends GPHttpClient {
             // Logger.debug("UTILS.checkAndHandleError : " + err);
             // Logger.debug("UTILS.checkAndHandleError : " + JSON.stringify(err));
             // Logger.debug("UTILS.checkAndHandleError : " + err.message);
-            return Q.reject(err);
+            return Promise.reject(err);
         }
 
-        return Q.resolve(null);
+        return Promise.resolve(null);
     }
 
 }

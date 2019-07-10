@@ -1,4 +1,3 @@
-import * as Q from 'q';
 import { NgZone } from "@angular/core";
 import { HttpClient, HttpRequest } from '@angular/common/http';
 import 'rxjs/add/operator/map';
@@ -18,6 +17,6 @@ declare class NG2HttpClient extends GPHttpClient {
      * @param request - Angular HttpRequest object
      * @return resolving the response or an error
      */
-    execute(request: HttpRequest<any>): Q.Promise<any>;
+    execute(request: HttpRequest<any>): Promise<any>;
 }
 export default NG2HttpClient;

@@ -1,6 +1,5 @@
 
 
-import * as Q from 'q';
 import ItemService from './item';
 import GPHttpClient from '../http/client';
 
@@ -28,8 +27,8 @@ class LayerService extends ItemService {
      * @param options - optional set of request options to apply to xhr request
      * @return Promise resolving style JSON object
      */
-    style (id : string, options ?: any) : Q.Promise<any> {
-        return Q.resolve( id )
+    style (id : string, options ?: any) : Promise<any> {
+        return Promise.resolve( id )
         .then( (id) => {
 
             let url = this.baseUrl + '/' + id + '/style';
@@ -42,7 +41,7 @@ class LayerService extends ItemService {
             let err = new Error(`Error fetching style: ${e.message}`);
             Object.assign(err, e);
             this.logError('LayerService.style() - ' + err.message);
-            return Q.reject(err);
+            return Promise.reject(err);
         });
     }
 
@@ -52,9 +51,9 @@ class LayerService extends ItemService {
      * @param options - optional set of request options to apply to xhr request
      * @return Promise resolving feature JSON object
      */
-    describe( id : string, req : any, options ?: any ) : Q.Promise<any> {
+    describe( id : string, req : any, options ?: any ) : Promise<any> {
 
-        return Q.resolve( req )
+        return Promise.resolve( req )
         .then( (req) => {
 
             if(!req) {
@@ -89,7 +88,7 @@ class LayerService extends ItemService {
             let err = new Error(`Error describing layer feature: ${e.message}`);
             Object.assign(err, e);
             this.logError('LayerService.describe() - ' + err.message);
-            return Q.reject(err);
+            return Promise.reject(err);
         });
     }
 
@@ -99,9 +98,9 @@ class LayerService extends ItemService {
      * @param options - optional set of request options to apply to xhr request
      * @return Promise resolving empty if successful or a message if failed
      */
-    validate(id : string, params : any, options ?: any) : Q.Promise<any> {
+    validate(id : string, params : any, options ?: any) : Promise<any> {
 
-        return Q.resolve( params )
+        return Promise.resolve( params )
         .then( params => {
 
             if(!params) {
@@ -118,7 +117,7 @@ class LayerService extends ItemService {
             let err = new Error(`Error validating layer request: ${e.message}`);
             Object.assign(err, e);
             this.logError('LayerService.describe() - ' + err.message);
-            return Q.reject(err);
+            return Promise.reject(err);
         });
     }
 

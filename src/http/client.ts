@@ -1,8 +1,5 @@
 
 
-import * as Q from 'q';
-
-
 class GPHttpClient {
 
     protected token : any;
@@ -43,8 +40,8 @@ class GPHttpClient {
     execute(
         // @ts-ignore
         opts : any
-    ) : Q.Promise<any> {
-        return Q.reject(new Error("Must overrdie 'execute' in a sub-class"));
+    ) : Promise<any> {
+        return Promise.reject(new Error("Must overrdie 'execute' in a sub-class"));
     }
 
 }

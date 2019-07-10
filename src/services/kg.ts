@@ -1,5 +1,4 @@
 
-import * as Q from 'q';
 import Config from '../shared/config';
 import KGQuery from '../shared/kg-query';
 import GPHttpClient from '../http/client';
@@ -29,13 +28,13 @@ class KGService {
      * @param options - optional config to send with http request
      * @return Promise resolving recommended concepts as search results
      */
-    suggest (query : KGQuery, options ?: any) : Q.Promise<any> {
+    suggest (query : KGQuery, options ?: any) : Promise<any> {
         let url = this.baseUrl + '/suggest';
         return this._search(url, query, options)
         .catch(e => {
             let err = new Error(`KGService.suggest() - Error suggesting concepts: ${e.message}`);
             Object.assign(err, e);
-            return Q.reject(err);
+            return Promise.reject(err);
         });
     }
 
@@ -45,13 +44,13 @@ class KGService {
      * @param options - optional config to send with http request
      * @return Promise resolving concept types as search results
      */
-    types (query : KGQuery, options ?: any) : Q.Promise<any> {
+    types (query : KGQuery, options ?: any) : Promise<any> {
         let url = this.baseUrl + '/types';
         return this._search(url, query, options)
         .catch(e => {
             let err = new Error(`KGService.types() - Error searching types: ${e.message}`);
             Object.assign(err, e);
-            return Q.reject(err);
+            return Promise.reject(err);
         });
     }
 
@@ -62,13 +61,13 @@ class KGService {
      * @param options - optional config to send with http request
      * @return Promise resolving concept sources as search results
      */
-    sources (query : KGQuery, options ?: any) : Q.Promise<any> {
+    sources (query : KGQuery, options ?: any) : Promise<any> {
         let url = this.baseUrl + '/sources';
         return this._search(url, query, options)
         .catch(e => {
             let err = new Error(`KGService.sources() - Error searching sources: ${e.message}`);
             Object.assign(err, e);
-            return Q.reject(err);
+            return Promise.reject(err);
         });
     }
 
@@ -82,8 +81,8 @@ class KGService {
     /**
      * internal method used by exposed methods
      */
-    _search (url : string, query : KGQuery, options ?: any) : Q.Promise<any> {
-        return Q.resolve( true )
+    _search (url : string, query : KGQuery, options ?: any) : Promise<any> {
+        return Promise.resolve( true )
         .then( () => {
             let q : { [key:string]:any } = query.getQuery();
             let opts = this.buildRequest({
@@ -120,14 +119,14 @@ class KGService {
         return this.client.createRequestOpts(options);
     }
 
-    execute(opts : {[key:string]:any}) : Q.Promise<any> {
+    execute(opts : {[key:string]:any}) : Promise<any> {
         return this.client.execute(opts)
         .catch(e => {
             if(e === null || typeof(e) === 'undefined') {
                 e = new Error("KGService.execute() - Request failed but didn't return an " +
                 "error. This is most likely because the request timed out");
             }
-            return Q.reject(e);
+            return Promise.reject(e);
         });
     }
 

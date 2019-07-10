@@ -1,6 +1,5 @@
 
 
-import * as Q from 'q';
 import ItemTypes from '../shared/types';
 import ItemService from './item';
 import Query from '../shared/query';
@@ -34,9 +33,9 @@ class ServiceService extends ItemService {
      * @param options - optional set of request options to apply to xhr request
      * @return Promise resolving service metadata
      */
-    about( service : any, options ?: any ) : Q.Promise<any> {
+    about( service : any, options ?: any ) : Promise<any> {
 
-        return Q.resolve( service )
+        return Promise.resolve( service )
         .then( svc => {
             if(!svc)
                 throw new Error("Must provide service to get metadata about");
@@ -49,7 +48,7 @@ class ServiceService extends ItemService {
             let err = new Error(`Error describing service: ${e.message}`);
             Object.assign(err, e);
             this.logError('ServiceService.about() - ' + err.message);
-            return Q.reject(err);
+            return Promise.reject(err);
         });
     }
 
@@ -59,7 +58,7 @@ class ServiceService extends ItemService {
      * @param options - optional set of request options to apply to request
      * @return Promise resolving service types
      */
-    types (options ?: any) : Q.Promise<any> {
+    types (options ?: any) : Promise<any> {
 
         let query = new Query()
         .types(ItemTypes.STANDARD)
@@ -67,7 +66,7 @@ class ServiceService extends ItemService {
         .pageSize(50)
         .getQuery();
 
-        return Q.resolve( query )
+        return Promise.resolve( query )
         .then( (params) => {
             let url = this.apiBase + '/api/items';
             let opts = this.buildRequest({
@@ -80,7 +79,7 @@ class ServiceService extends ItemService {
             let err = new Error(`Error fetching service types: ${e.message}`);
             Object.assign(err, e);
             this.logError('ServiceService.types() - ' + err.message);
-            return Q.reject(err);
+            return Promise.reject(err);
         });
     }
 
@@ -90,9 +89,9 @@ class ServiceService extends ItemService {
      * @param options - optional set of request options to apply to request
      * @return Promise resolving imported service
      */
-    import (service : any, options ?: any) : Q.Promise<any> {
+    import (service : any, options ?: any) : Promise<any> {
 
-        return Q.resolve( service )
+        return Promise.resolve( service )
         .then( svc => {
             let url = this.baseUrl + '/import';
             let opts = this.buildRequest({
@@ -104,7 +103,7 @@ class ServiceService extends ItemService {
             let err = new Error(`Error importing service: ${e.message}`);
             Object.assign(err, e);
             this.logError('ServiceService.import() - ' + err.message);
-            return Q.reject(err);
+            return Promise.reject(err);
         });
     }
 
@@ -114,9 +113,9 @@ class ServiceService extends ItemService {
      * @param options - optional set of request options to apply to request
      * @return Promise resolving service layers
      */
-    harvest (id : string, options ?: any) : Q.Promise<any> {
+    harvest (id : string, options ?: any) : Promise<any> {
 
-        return Q.resolve( id )
+        return Promise.resolve( id )
         .then( id => {
             let url = this.baseUrl + '/' + id + '/harvest';
             let opts = this.buildRequest({
@@ -128,7 +127,7 @@ class ServiceService extends ItemService {
             let err = new Error(`Error harvesting layers from service: ${e.message}`);
             Object.assign(err, e);
             this.logError('ServiceService.harvest() - ' + err.message);
-            return Q.reject(err);
+            return Promise.reject(err);
         });
 
     }
@@ -138,9 +137,9 @@ class ServiceService extends ItemService {
      * @param options - optional set of request options to apply to request
      * @return Promise resolving service statistics
      */
-    liveTest (id : string, options ?: any) : Q.Promise<any> {
+    liveTest (id : string, options ?: any) : Promise<any> {
 
-        return Q.resolve( id )
+        return Promise.resolve( id )
         .then( id => {
             let url = this.baseUrl + '/' + id + '/test';
             let opts = this.buildRequest({
@@ -152,7 +151,7 @@ class ServiceService extends ItemService {
             let err = new Error(`Error testing service: ${e.message}`);
             Object.assign(err, e);
             this.logError('ServiceService.liveTest() - '  + err.message);
-            return Q.reject(err);
+            return Promise.reject(err);
         });
     }
 
@@ -161,8 +160,8 @@ class ServiceService extends ItemService {
      * @param options - optional set of request options to apply to request
      * @return Promise resolving service statistics
      */
-    statistics (id : string, options ?: any) : Q.Promise<any> {
-        return Q.resolve( id )
+    statistics (id : string, options ?: any) : Promise<any> {
+        return Promise.resolve( id )
         .then( id => {
             let url = this.baseUrl + '/' + id + '/statistics';
             let opts = this.buildRequest({
@@ -174,7 +173,7 @@ class ServiceService extends ItemService {
             let err = new Error(`Error getting service statistics: ${e.message}`);
             Object.assign(err, e);
             this.logError('ServiceService.statistics() - ' + err.message);
-            return Q.reject(err);
+            return Promise.reject(err);
         });
     }
 

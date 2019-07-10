@@ -2,10 +2,10 @@
 This software has been approved for release by the U.S. Department of the Interior. Although the software has been subjected to rigorous review, the DOI reserves the right to update the software as needed pursuant to further analysis and review. No warranty, expressed or implied, is made by the DOI or the U.S. Government as to the functionality of the software and related material nor shall the fact of release constitute any such warranty. Furthermore, the software is released on condition that neither the DOI nor the U.S. Government shall be held liable for any damages resulting from its authorized or unauthorized use.
 */
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('q'), require('@geoplatform/client')) :
-    typeof define === 'function' && define.amd ? define('@geoplatform/client/node', ['exports', 'q', '@geoplatform/client'], factory) :
-    (factory((global.geoplatform = global.geoplatform || {}, global.geoplatform.client = global.geoplatform.client || {}, global.geoplatform.client.node = {}),global.Q,global.geoplatform.client));
-}(this, (function (exports,Q,client) { 'use strict';
+    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@geoplatform/client')) :
+    typeof define === 'function' && define.amd ? define('@geoplatform/client/node', ['exports', '@geoplatform/client'], factory) :
+    (factory((global.geoplatform = global.geoplatform || {}, global.geoplatform.client = global.geoplatform.client || {}, global.geoplatform.client.node = {}),global.geoplatform.client));
+}(this, (function (exports,client) { 'use strict';
 
     /*! *****************************************************************************
     Copyright (c) Microsoft Corporation. All rights reserved.
@@ -126,24 +126,23 @@ This software has been approved for release by the U.S. Department of the Interi
             function (options) {
                 var _this = this;
                 /** @type {?} */
-                var deferred = Q.defer();
-                /** @type {?} */
                 var request = require('request');
+                // require('request-debug')(request);
                 if (!request) {
                     throw new Error("Module 'request' not available");
                 }
-                // require('request-debug')(request);
-                request(options, function (error, response, body) {
-                    _this.checkAndHandleError(error, response)
-                        .then(function () {
-                        if (options.json === false)
-                            deferred.resolve(response);
-                        else
-                            deferred.resolve(body);
-                    })
-                        .catch(function (e) { return deferred.reject(e); });
+                return new Promise(function (resolve, reject) {
+                    request(options, function (error, response, body) {
+                        _this.checkAndHandleError(error, response)
+                            .then(function () {
+                            if (options.json === false)
+                                resolve(response);
+                            else
+                                resolve(body);
+                        })
+                            .catch(function (e) { return reject(e); });
+                    });
                 });
-                return deferred.promise;
             };
         /**
          *
@@ -179,7 +178,7 @@ This software has been approved for release by the U.S. Department of the Interi
                         }
                     }
                     else {
-                        return Q.reject(error);
+                        return Promise.reject(error);
                     }
                 }
                 else if (response.statusCode < 200 || response.statusCode > 204) {
@@ -259,9 +258,9 @@ This software has been approved for release by the U.S. Department of the Interi
                     // Logger.debug("UTILS.checkAndHandleError : " + err);
                     // Logger.debug("UTILS.checkAndHandleError : " + JSON.stringify(err));
                     // Logger.debug("UTILS.checkAndHandleError : " + err.message);
-                    return Q.reject(err);
+                    return Promise.reject(err);
                 }
-                return Q.resolve(null);
+                return Promise.resolve(null);
             };
         return NodeHttpClient;
     }(client.GPHttpClient));

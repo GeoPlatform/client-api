@@ -1,5 +1,4 @@
 import { __extends } from 'tslib';
-import { resolve, reject } from 'q';
 import * as angular from 'angular';
 import { module as module$1, injector } from 'angular';
 import { GPHttpClient, Config, QueryFactory, ItemService, UtilsService, TrackingService, DatasetService, ServiceService, LayerService, MapService, GalleryService } from '@geoplatform/client';
@@ -80,7 +79,7 @@ var NGHttpClient = /** @class */ (function (_super) {
     function (opts) {
         /** @type {?} */
         var $http = this.$http || injector(['ng']).get('$http');
-        return resolve($http)
+        return Promise.resolve($http)
             .then(function ($http) {
             if (typeof ($http) === 'undefined')
                 throw new Error("Angular $http not resolved");
@@ -88,7 +87,7 @@ var NGHttpClient = /** @class */ (function (_super) {
             return $http(opts);
         })
             .then(function (response) { return response.data; })
-            .catch(function (response) { return reject(response.data); });
+            .catch(function (response) { return Promise.reject(response.data); });
     };
     return NGHttpClient;
 }(GPHttpClient));

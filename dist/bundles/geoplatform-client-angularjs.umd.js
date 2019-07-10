@@ -2,10 +2,10 @@
 This software has been approved for release by the U.S. Department of the Interior. Although the software has been subjected to rigorous review, the DOI reserves the right to update the software as needed pursuant to further analysis and review. No warranty, expressed or implied, is made by the DOI or the U.S. Government as to the functionality of the software and related material nor shall the fact of release constitute any such warranty. Furthermore, the software is released on condition that neither the DOI nor the U.S. Government shall be held liable for any damages resulting from its authorized or unauthorized use.
 */
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('q'), require('angular'), require('@geoplatform/client')) :
-    typeof define === 'function' && define.amd ? define('@geoplatform/client/angularjs', ['exports', 'q', 'angular', '@geoplatform/client'], factory) :
-    (factory((global.geoplatform = global.geoplatform || {}, global.geoplatform.client = global.geoplatform.client || {}, global.geoplatform.client.angularjs = {}),global.Q,global.angular,global.geoplatform.client));
-}(this, (function (exports,Q,angular,client) { 'use strict';
+    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('angular'), require('@geoplatform/client')) :
+    typeof define === 'function' && define.amd ? define('@geoplatform/client/angularjs', ['exports', 'angular', '@geoplatform/client'], factory) :
+    (factory((global.geoplatform = global.geoplatform || {}, global.geoplatform.client = global.geoplatform.client || {}, global.geoplatform.client.angularjs = {}),global.angular,global.geoplatform.client));
+}(this, (function (exports,angular,client) { 'use strict';
 
     /*! *****************************************************************************
     Copyright (c) Microsoft Corporation. All rights reserved.
@@ -112,7 +112,7 @@ This software has been approved for release by the U.S. Department of the Interi
             function (opts) {
                 /** @type {?} */
                 var $http = this.$http || angular.injector(['ng']).get('$http');
-                return Q.resolve($http)
+                return Promise.resolve($http)
                     .then(function ($http) {
                     if (typeof ($http) === 'undefined')
                         throw new Error("Angular $http not resolved");
@@ -120,7 +120,7 @@ This software has been approved for release by the U.S. Department of the Interi
                     return $http(opts);
                 })
                     .then(function (response) { return response.data; })
-                    .catch(function (response) { return Q.reject(response.data); });
+                    .catch(function (response) { return Promise.reject(response.data); });
             };
         return NGHttpClient;
     }(client.GPHttpClient));

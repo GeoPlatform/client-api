@@ -1,4 +1,3 @@
-import { resolve, reject } from 'q';
 import * as angular from 'angular';
 import { module as module$1, injector } from 'angular';
 import { GPHttpClient, Config, QueryFactory, ItemService, UtilsService, TrackingService, DatasetService, ServiceService, LayerService, MapService, GalleryService } from '@geoplatform/client';
@@ -67,7 +66,7 @@ class NGHttpClient extends GPHttpClient {
     execute(opts) {
         /** @type {?} */
         let $http = this.$http || injector(['ng']).get('$http');
-        return resolve($http)
+        return Promise.resolve($http)
             .then($http => {
             if (typeof ($http) === 'undefined')
                 throw new Error("Angular $http not resolved");
@@ -75,7 +74,7 @@ class NGHttpClient extends GPHttpClient {
             return $http(opts);
         })
             .then(response => response.data)
-            .catch(response => reject(response.data));
+            .catch(response => Promise.reject(response.data));
     }
 }
 

@@ -1,4 +1,3 @@
-import * as Q from 'q';
 import ItemService from './item';
 import GPHttpClient from '../http/client';
 /**
@@ -11,7 +10,7 @@ import GPHttpClient from '../http/client';
 declare class GalleryService extends ItemService {
     constructor(url: string, httpClient: GPHttpClient);
     setUrl(baseUrl: string): void;
-    addItem(galleryId: string, itemObj: any, options?: any): Q.Promise<any>;
-    removeItem(galleryId: string, itemId: any, options?: any): Q.Promise<any>;
+    addItem(galleryId: string, itemObj: any, options?: any): Promise<any>;
+    removeItem(galleryId: string, itemId: any, options?: any): Promise<any>;
 }
 export default GalleryService;

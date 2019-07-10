@@ -1,5 +1,4 @@
 
-import * as Q from 'q';
 import ItemService from './item';
 import GPHttpClient from '../http/client';
 
@@ -22,8 +21,8 @@ class GalleryService extends ItemService {
         this.baseUrl = baseUrl + '/api/galleries';
     }
 
-    addItem (galleryId : string, itemObj : any, options ?: any) : Q.Promise<any> {
-        return Q.resolve( true )
+    addItem (galleryId : string, itemObj : any, options ?: any) : Promise<any> {
+        return Promise.resolve( true )
         .then( () => {
             let url = this.baseUrl + '/' + galleryId + '/items';
             let opts = this.buildRequest({
@@ -35,12 +34,12 @@ class GalleryService extends ItemService {
             let err = new Error("Error adding item: " + e.message);
             Object.assign(err, e);
             this.logError('GalleryService.addItem() - ' + err.message);
-            return Q.reject(err);
+            return Promise.reject(err);
         });
     }
 
-    removeItem( galleryId : string, itemId : any, options ?: any) : Q.Promise<any> {
-        return Q.resolve( this.baseUrl + '/' + galleryId + '/items/' + itemId )
+    removeItem( galleryId : string, itemId : any, options ?: any) : Promise<any> {
+        return Promise.resolve( this.baseUrl + '/' + galleryId + '/items/' + itemId )
         .then( url => {
             let opts = this.buildRequest({
                 method:'DELETE', url:url, options:options
@@ -52,7 +51,7 @@ class GalleryService extends ItemService {
             let err = new Error("Error adding item: " + e.message);
             Object.assign(err, e);
             this.logError('GalleryService.addItem() - '+ err.message);
-            return Q.reject(err);
+            return Promise.reject(err);
         });
     }
 

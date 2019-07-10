@@ -1,5 +1,4 @@
 import { __extends } from 'tslib';
-import { defer, reject, resolve } from 'q';
 import { GPHttpClient, Config, ItemService, Query, ServiceService, LayerService, DatasetService, MapService, GalleryService, UtilsService, AgolService } from '@geoplatform/client';
 
 /**
@@ -92,24 +91,23 @@ var NodeHttpClient = /** @class */ (function (_super) {
     function (options) {
         var _this = this;
         /** @type {?} */
-        var deferred = defer();
-        /** @type {?} */
         var request = require('request');
+        // require('request-debug')(request);
         if (!request) {
             throw new Error("Module 'request' not available");
         }
-        // require('request-debug')(request);
-        request(options, function (error, response, body) {
-            _this.checkAndHandleError(error, response)
-                .then(function () {
-                if (options.json === false)
-                    deferred.resolve(response);
-                else
-                    deferred.resolve(body);
-            })
-                .catch(function (e) { return deferred.reject(e); });
+        return new Promise(function (resolve, reject) {
+            request(options, function (error, response, body) {
+                _this.checkAndHandleError(error, response)
+                    .then(function () {
+                    if (options.json === false)
+                        resolve(response);
+                    else
+                        resolve(body);
+                })
+                    .catch(function (e) { return reject(e); });
+            });
         });
-        return deferred.promise;
     };
     /**
      *
@@ -145,7 +143,7 @@ var NodeHttpClient = /** @class */ (function (_super) {
                 }
             }
             else {
-                return reject(error);
+                return Promise.reject(error);
             }
         }
         else if (response.statusCode < 200 || response.statusCode > 204) {
@@ -225,9 +223,9 @@ var NodeHttpClient = /** @class */ (function (_super) {
             // Logger.debug("UTILS.checkAndHandleError : " + err);
             // Logger.debug("UTILS.checkAndHandleError : " + JSON.stringify(err));
             // Logger.debug("UTILS.checkAndHandleError : " + err.message);
-            return reject(err);
+            return Promise.reject(err);
         }
-        return resolve(null);
+        return Promise.resolve(null);
     };
     return NodeHttpClient;
 }(GPHttpClient));

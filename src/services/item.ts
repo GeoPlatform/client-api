@@ -1,5 +1,4 @@
 
-import * as Q from 'q';
 import { Item, SearchResults } from '../shared/models';
 import Query from '../shared/query';
 import GPHttpClient from '../http/client';
@@ -102,14 +101,14 @@ class ItemService {
      * @param options - optional set of request options to apply to xhr request
      * @return Promise resolving Item object or an error
      */
-    get (id : string, options ?: any) : Q.Promise<Item> {
+    get (id : string, options ?: any) : Promise<Item> {
 
         let url = this.baseUrl + '/' + id;
         if(options && options.version) {
             url += '/versions/' + options.version;
             // this.logDebug("Client.get requesting version: " + options.version);
         }
-        return Q.resolve( url )
+        return Promise.resolve( url )
         .then( url => {
             let opts = this.buildRequest({ method:"GET", url:url, options:options });
             return this.execute(opts);
@@ -118,7 +117,7 @@ class ItemService {
             let err = new Error(`Error fetching item ${id}: ${e.message}`);
             Object.assign(err, e);
             this.logError('ItemService.get() - ' + err.message);
-            return Q.reject(err);
+            return Promise.reject(err);
         });
     }
 
@@ -127,9 +126,9 @@ class ItemService {
      * @param options - optional set of request options to apply to xhr request
      * @return Promise resolving Item object or an error
      */
-    save (itemObj : Item, options ?: any) : Q.Promise<Item> {
+    save (itemObj : Item, options ?: any) : Promise<Item> {
 
-        return Q.resolve( itemObj )
+        return Promise.resolve( itemObj )
         .then( item => {
 
             let method = 'POST',
@@ -159,7 +158,7 @@ class ItemService {
             let err = new Error(`Error saving item: ${e.message}`);
             Object.assign(err, e);
             this.logError('ItemService.save() - ' + err.message);
-            return Q.reject(err);
+            return Promise.reject(err);
         });
     }
 
@@ -168,9 +167,9 @@ class ItemService {
      * @param options - optional set of request options to apply to xhr request
      * @return Promise resolving true if successful or an error
      */
-    remove (id : string, options ?: any) : Q.Promise<boolean> {
+    remove (id : string, options ?: any) : Promise<boolean> {
 
-        return Q.resolve( this.baseUrl + '/' + id )
+        return Promise.resolve( this.baseUrl + '/' + id )
         .then( url => {
             let opts = this.buildRequest({
                 method:"DELETE", url: url, options: options
@@ -182,7 +181,7 @@ class ItemService {
             let err = new Error(`Error deleting item ${id}: ${e.message}`);
             Object.assign(err, e);
             this.logError('ItemService.remove() - ' + err.message);
-            return Q.reject(err);
+            return Promise.reject(err);
         });
     }
 
@@ -192,9 +191,9 @@ class ItemService {
      * @param options - optional set of request options to apply to xhr request
      * @return Promise resolving Item object or an error
      */
-    patch (id : string, patch : any, options ?: any) : Q.Promise<Item> {
+    patch (id : string, patch : any, options ?: any) : Promise<Item> {
 
-        return Q.resolve( this.baseUrl + '/' + id )
+        return Promise.resolve( this.baseUrl + '/' + id )
         .then( url => {
             let opts = this.buildRequest({
                 method: "PATCH", url: url, data: patch, options: options
@@ -205,7 +204,7 @@ class ItemService {
             let err = new Error(`Error patching item ${id}: ${e.message}`);
             Object.assign(err, e);
             this.logError('ItemService.patch() - ' + err.message);
-            return Q.reject(err);
+            return Promise.reject(err);
         });
     }
 
@@ -216,9 +215,9 @@ class ItemService {
      * @param options - optional set of request options to apply to xhr request
      * @return Promise resolving clone of Item or an error
      */
-    clone (id : string, overrides : any, options ?: any) : Q.Promise<Item> {
+    clone (id : string, overrides : any, options ?: any) : Promise<Item> {
 
-        return Q.resolve( this.baseUrl + '/' + id + '/clone' )
+        return Promise.resolve( this.baseUrl + '/' + id + '/clone' )
         .then( url => {
             let opts = this.buildRequest({
                 method: "POST", url: url, data: overrides, options: options
@@ -229,7 +228,7 @@ class ItemService {
             let err = new Error(`Error cloning item ${id}: ${e.message}`);
             Object.assign(err, e);
             this.logError('ItemService.clone() - ' + err.message);
-            return Q.reject(err);
+            return Promise.reject(err);
         });
     }
 
@@ -238,9 +237,9 @@ class ItemService {
      * @param options - optional set of request options to apply to xhr request
      * @return Promise resolving search results
      */
-    search (arg ?: any, options ?: any) : Q.Promise<SearchResults> {
+    search (arg ?: any, options ?: any) : Promise<SearchResults> {
 
-        return Q.resolve( arg )
+        return Promise.resolve( arg )
         .then( params => {
             let ps = {};
             if(params && typeof(params.getQuery) === 'function') ps = params.getQuery();
@@ -258,7 +257,7 @@ class ItemService {
             let err = new Error(`Error searching items: ${e.message}`);
             Object.assign(err, e);
             this.logError('ItemService.search() - ' + err.message);
-            return Q.reject(err);
+            return Promise.reject(err);
         });
     }
 
@@ -269,9 +268,9 @@ class ItemService {
      * @param format - metadata format of specified document
      * @return Promise resolving GeoPlatform Item
      */
-    import (arg : any, format : string, options ?: any) : Q.Promise<Item> {
+    import (arg : any, format : string, options ?: any) : Promise<Item> {
 
-        return Q.resolve( true )
+        return Promise.resolve( true )
         .then( () => {
             if(arg===null || arg === undefined) {
                 throw new Error("Must provide a valid URL or File");
@@ -306,7 +305,7 @@ class ItemService {
             if(e.item)
                 Object.assign(err, { item : e.item });
             this.logError('ItemService.import() - ' + err.message);
-            return Q.reject(err);
+            return Promise.reject(err);
         });
     }
 
@@ -317,9 +316,9 @@ class ItemService {
      * @param format - string mime type to export
      * @return Promise resolving HTTP response object for enabling attachment downloading
      */
-    export (id : string, format : string, options ?: any) : Q.Promise<any> {
+    export (id : string, format : string, options ?: any) : Promise<any> {
 
-        return Q.resolve( true )
+        return Promise.resolve( true )
         .then( () => {
             let url = this.baseUrl + '/' + id + '/export';
             let opts = this.buildRequest({
@@ -339,7 +338,7 @@ class ItemService {
             let err = new Error(`Error exporting item: ${msg}`);
             Object.assign(err, e);
             this.logError('ItemService.export() - ' + err.message);
-            return Q.reject(err);
+            return Promise.reject(err);
         });
     }
 
@@ -349,9 +348,9 @@ class ItemService {
      * @param options - optional request options
      * @return Promise resolving string URI
      */
-    getUri (object : any, options ?: any) : Q.Promise<any> {
+    getUri (object : any, options ?: any) : Promise<any> {
 
-        return Q.resolve( object )
+        return Promise.resolve( object )
         .then( obj => {
             if(!obj || !obj.type)
                 throw new Error("Must provide an object with a type property");
@@ -367,7 +366,7 @@ class ItemService {
             let err = new Error(`Error getting URI for item: ${e.message}`);
             Object.assign(err, e);
             this.logError('ItemService.getUri() - ' + err.message);
-            return Q.reject(err);
+            return Promise.reject(err);
         });
 
     }
@@ -378,9 +377,9 @@ class ItemService {
      * @param options - optional set of request options to apply to xhr request
      * @return Promise resolving list of matching items or an error
      */
-    getMultiple (ids : string[], options ?: any) : Q.Promise<any> {
+    getMultiple (ids : string[], options ?: any) : Promise<any> {
 
-        return Q.resolve( ids )
+        return Promise.resolve( ids )
         .then( identifiers => {
 
             let method = 'POST',
@@ -394,7 +393,7 @@ class ItemService {
             let err = new Error(`Error fetching items: ${e.message}`);
             Object.assign(err, e);
             this.logError('ItemService.getMultiple() - ' + err.message);
-            return Q.reject(err);
+            return Promise.reject(err);
         });
     }
 
@@ -404,8 +403,8 @@ class ItemService {
      * @param options - optional set of request options to apply to xhr request
      * @return Promise resolving list containing uri-item association where exists
      */
-    exists(uris : string[], options ?: any) : Q.Promise<any> {
-        return Q.resolve(uris)
+    exists(uris : string[], options ?: any) : Promise<any> {
+        return Promise.resolve(uris)
         .then( uris => {
             let method = 'POST', url = this.apiBase + '/api/utils/exists';
             let opts = this.buildRequest({method:method, url:url, data:uris, options:options});
@@ -415,13 +414,13 @@ class ItemService {
             let err = new Error(`Error resolving items: ${e.message}`);
             Object.assign(err, e);
             this.logError('ItemService.exists() - ' + err.message);
-            return Q.reject(err);
+            return Promise.reject(err);
         });
     }
 
 
-    like(item : any, options ?: any) : Q.Promise<any> {
-        return Q.resolve(item.id)
+    like(item : any, options ?: any) : Promise<any> {
+        return Promise.resolve(item.id)
         .then( id => {
             let method = 'PUT', url = this.apiBase + '/api/items/' + id + '/likes';
             let opts = this.buildRequest({method:method, url:url, options:options});
@@ -431,12 +430,12 @@ class ItemService {
             let err = new Error(`Error liking item ${item.id}: ${e.message}`);
             Object.assign(err, e);
             this.logError('ItemService.like() - ' + err.message);
-            return Q.reject(err);
+            return Promise.reject(err);
         });
     }
 
-    view(item : any, options ?: any) : Q.Promise<any> {
-        return Q.resolve(item.id)
+    view(item : any, options ?: any) : Promise<any> {
+        return Promise.resolve(item.id)
         .then( id => {
             let method = 'PUT', url = this.apiBase + '/api/items/' + id + '/views';
             let opts = this.buildRequest({method:method, url:url, options:options});
@@ -446,7 +445,7 @@ class ItemService {
             let err = new Error(`Error incrementing views for item ${item.id}: ${e.message}`);
             Object.assign(err, e);
             this.logError('ItemService.like() - ' + err.message);
-            return Q.reject(err);
+            return Promise.reject(err);
         });
     }
 
@@ -456,9 +455,9 @@ class ItemService {
      * @param options - optional set of request options to apply to xhr request
      * @return Promise resolving array of associated items of the item in question
      */
-    associations (id : string, params : any, options ?: any) : Q.Promise<any> {
+    associations (id : string, params : any, options ?: any) : Promise<any> {
 
-        return Q.resolve( id )
+        return Promise.resolve( id )
         .then( id => {
             let url = this.baseUrl + '/' + id + '/associations';
             let opts = this.buildRequest({
@@ -473,7 +472,7 @@ class ItemService {
             let err = new Error(`Error fetching associations for item ${id}: ${e.message}`);
             Object.assign(err, e);
             this.logError('ItemService.associations() - ' + err.message);
-            return Q.reject(err);
+            return Promise.reject(err);
         });
     }
 
@@ -483,9 +482,9 @@ class ItemService {
      * @param options - optional set of request options to apply to xhr request
      * @return Promise resolving array of available versions of the item
      */
-    versions (id : string, params ?: any, options ?: any) : Q.Promise<any> {
+    versions (id : string, params ?: any, options ?: any) : Promise<any> {
 
-        return Q.resolve( id )
+        return Promise.resolve( id )
         .then( id => {
             let url = this.baseUrl + '/' + id + '/versions';
             let opts = this.buildRequest({
@@ -497,7 +496,7 @@ class ItemService {
             let err = new Error(`Error fetching versions for item ${id}: ${e.message}`);
             Object.assign(err, e);
             this.logError('ItemService.versions() - ' + err.message);
-            return Q.reject(err);
+            return Promise.reject(err);
         });
     }
 
@@ -532,14 +531,14 @@ class ItemService {
         return request;
     }
 
-    execute(opts : {[key:string]:any} ) : Q.Promise<any> {
+    execute(opts : {[key:string]:any} ) : Promise<any> {
         return this.client.execute(opts)
         .catch(e => {
             if(e === null || typeof(e) === 'undefined') {
                 e = new Error("ItemService.execute() - Request failed but didn't return an " +
                 "error. This is most likely because the request timed out");
             }
-            return Q.reject(e);
+            return Promise.reject(e);
         });
     }
 

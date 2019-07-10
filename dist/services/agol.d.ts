@@ -1,4 +1,3 @@
-import * as Q from 'q';
 import GPHttpClient from '../http/client';
 declare class AgolQuery {
     private _query;
@@ -61,37 +60,37 @@ declare class AgolService {
      * @param options - optional set of request options to apply to xhr request
      * @return Promise resolving Item object or an error
      */
-    getOrg(id: string, options?: any): Q.Promise<any>;
+    getOrg(id: string, options?: any): Promise<any>;
     /**
      * @param arg - either JS object of query parameters or Query instance
      * @param options - optional set of request options to apply to xhr request
      * @return Promise resolving search results
      */
-    searchOrgs(arg: AgolQuery, options?: any): Q.Promise<any>;
+    searchOrgs(arg: AgolQuery, options?: any): Promise<any>;
     /**
      * @param id - identifier of AGOL group to fetch
      * @param options - optional set of request options to apply to xhr request
      * @return Promise resolving Item object or an error
      */
-    getGroup(id: string, options?: any): Q.Promise<any>;
+    getGroup(id: string, options?: any): Promise<any>;
     /**
      * @param arg - either JS object of query parameters or AgolQuery instance
      * @param options - optional set of request options to apply to xhr request
      * @return Promise resolving search results
      */
-    searchGroups(arg: AgolQuery, options?: any): Q.Promise<any>;
+    searchGroups(arg: AgolQuery, options?: any): Promise<any>;
     /**
      * @param id - identifier of AGOL item to fetch
      * @param options - optional set of request options to apply to xhr request
      * @return Promise resolving Item object or an error
      */
-    getItem(id: string, options?: any): Q.Promise<any>;
+    getItem(id: string, options?: any): Promise<any>;
     /**
      * @param arg - either JS object of query parameters or AgolQuery instance
      * @param options - optional set of request options to apply to xhr request
      * @return Promise resolving search results
      */
-    searchItems(arg: AgolQuery, options?: any): Q.Promise<any>;
+    searchItems(arg: AgolQuery, options?: any): Promise<any>;
     getAgolId(obj: any): string | null;
     /**
      * @param method - one of "GET", "POST", "PUT", "DELETE", "PATCH"
@@ -113,6 +112,6 @@ declare class AgolService {
     };
     execute(opts: {
         [key: string]: any;
-    }): Q.Promise<any>;
+    }): Promise<any>;
 }
 export { AgolService as default, AgolService, AgolQuery };

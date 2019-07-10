@@ -1,6 +1,4 @@
 
-import * as Q from 'q';
-
 import { NgZone } from "@angular/core";
 import {
     HttpClient, HttpRequest, HttpHeaders, HttpParams,
@@ -67,33 +65,36 @@ class NG2HttpClient extends GPHttpClient {
      * @param request - Angular HttpRequest object
      * @return resolving the response or an error
      */
-    execute(request : HttpRequest<any>) : Q.Promise<any> {
+    execute(request : HttpRequest<any>) : Promise<any> {
 
         let value : any = null;
-        let deferred = Q.defer();
+        return new Promise<any>( (resolve, reject) => {
 
-        let promise = this.http.request(request)
-        .map( (event: HttpEvent<any>) => {
-            if (event instanceof HttpResponse) {
-                return (event as HttpResponse<any>).body;
-            }
-            return {};
-        })
-        .subscribe( (v: any) => { value = v; },
-            (err : Error) => { deferred.reject(err); },
-            () => {
-                if(this.zone) {
-                    this.zone.run( () => { deferred.resolve(value); });
-                } else {
-                    deferred.resolve(value);
+            this.http.request(request)
+            .map( (event: HttpEvent<any>) => {
+                if (event instanceof HttpResponse) {
+                    return (event as HttpResponse<any>).body;
                 }
-            }
-        );
-        return deferred.promise;
+                return {};
+            })
+            .subscribe( (v: any) => { value = v; },
+                (err : Error) => { reject(err); },
+                () => {
+                    if(this.zone) {
+                        this.zone.run( () => {
+                            resolve(value);
+                        });
+                    } else {
+                        resolve(value);
+                    }
+                }
+            );
+        });
+
 
         /*
         .toPromise()
-        .then( (result) => Q.resolve(result))
+        .then( (result) => Promise.resolve(result))
         .catch( (err : any) => {
             // console.log("NG2HttpClient.catch() - " + JSON.stringify(err));
             if (err instanceof HttpErrorResponse) {

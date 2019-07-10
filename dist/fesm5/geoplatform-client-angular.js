@@ -1,5 +1,4 @@
 import { __extends } from 'tslib';
-import { defer } from 'q';
 import { HttpRequest, HttpHeaders, HttpParams, HttpResponse } from '@angular/common/http';
 import 'rxjs/add/operator/map';
 import { GPHttpClient } from '@geoplatform/client';
@@ -85,28 +84,28 @@ var NG2HttpClient = /** @class */ (function (_super) {
         var _this = this;
         /** @type {?} */
         var value = null;
-        /** @type {?} */
-        var deferred = defer();
-        /** @type {?} */
-        var promise = this.http.request(request)
-            .map(function (event) {
-            if (event instanceof HttpResponse) {
-                return (/** @type {?} */ (event)).body;
-            }
-            return {};
-        })
-            .subscribe(function (v) { value = v; }, function (err) { deferred.reject(err); }, function () {
-            if (_this.zone) {
-                _this.zone.run(function () { deferred.resolve(value); });
-            }
-            else {
-                deferred.resolve(value);
-            }
+        return new Promise(function (resolve, reject) {
+            _this.http.request(request)
+                .map(function (event) {
+                if (event instanceof HttpResponse) {
+                    return (/** @type {?} */ (event)).body;
+                }
+                return {};
+            })
+                .subscribe(function (v) { value = v; }, function (err) { reject(err); }, function () {
+                if (_this.zone) {
+                    _this.zone.run(function () {
+                        resolve(value);
+                    });
+                }
+                else {
+                    resolve(value);
+                }
+            });
         });
-        return deferred.promise;
         /*
                 .toPromise()
-                .then( (result) => Q.resolve(result))
+                .then( (result) => Promise.resolve(result))
                 .catch( (err : any) => {
                     // console.log("NG2HttpClient.catch() - " + JSON.stringify(err));
                     if (err instanceof HttpErrorResponse) {

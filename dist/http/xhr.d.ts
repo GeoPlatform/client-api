@@ -1,4 +1,3 @@
-import * as Q from 'q';
 import GPHttpClient from './client';
 declare class XHRHttpClient extends GPHttpClient {
     /**
@@ -11,6 +10,6 @@ declare class XHRHttpClient extends GPHttpClient {
     createRequestOpts(options: {
         [key: string]: any;
     }): any;
-    execute(opts: any): Q.Promise<any>;
+    execute(opts: any): Promise<any>;
 }
 export default XHRHttpClient;

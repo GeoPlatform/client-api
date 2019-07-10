@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { reject, resolve } from 'q';
 
 /**
  * @fileoverview added by tsickle
@@ -2019,7 +2018,7 @@ class GPHttpClient {
     // @ts-ignore
     // @ts-ignore
     opts) {
-        return reject(new Error("Must overrdie 'execute' in a sub-class"));
+        return Promise.reject(new Error("Must overrdie 'execute' in a sub-class"));
     }
 }
 
@@ -2093,9 +2092,9 @@ class XHRHttpClient extends GPHttpClient {
             if (error.response) {
                 err = new GPError(error.response.data);
             }
-            return reject(err);
+            return promise.reject(err);
         });
-        return resolve(promise);
+        return promise;
     }
 }
 
@@ -2204,7 +2203,7 @@ class ItemService {
             url += '/versions/' + options.version;
             // this.logDebug("Client.get requesting version: " + options.version);
         }
-        return resolve(url)
+        return Promise.resolve(url)
             .then(url => {
             /** @type {?} */
             let opts = this.buildRequest({ method: "GET", url: url, options: options });
@@ -2215,7 +2214,7 @@ class ItemService {
             let err = new Error(`Error fetching item ${id}: ${e.message}`);
             Object.assign(err, e);
             this.logError('ItemService.get() - ' + err.message);
-            return reject(err);
+            return Promise.reject(err);
         });
     }
     /**
@@ -2224,7 +2223,7 @@ class ItemService {
      * @return {?} Promise resolving Item object or an error
      */
     save(itemObj, options) {
-        return resolve(itemObj)
+        return Promise.resolve(itemObj)
             .then(item => {
             /** @type {?} */
             let method = 'POST';
@@ -2257,7 +2256,7 @@ class ItemService {
             let err = new Error(`Error saving item: ${e.message}`);
             Object.assign(err, e);
             this.logError('ItemService.save() - ' + err.message);
-            return reject(err);
+            return Promise.reject(err);
         });
     }
     /**
@@ -2266,7 +2265,7 @@ class ItemService {
      * @return {?} Promise resolving true if successful or an error
      */
     remove(id, options) {
-        return resolve(this.baseUrl + '/' + id)
+        return Promise.resolve(this.baseUrl + '/' + id)
             .then(url => {
             /** @type {?} */
             let opts = this.buildRequest({
@@ -2280,7 +2279,7 @@ class ItemService {
             let err = new Error(`Error deleting item ${id}: ${e.message}`);
             Object.assign(err, e);
             this.logError('ItemService.remove() - ' + err.message);
-            return reject(err);
+            return Promise.reject(err);
         });
     }
     /**
@@ -2290,7 +2289,7 @@ class ItemService {
      * @return {?} Promise resolving Item object or an error
      */
     patch(id, patch, options) {
-        return resolve(this.baseUrl + '/' + id)
+        return Promise.resolve(this.baseUrl + '/' + id)
             .then(url => {
             /** @type {?} */
             let opts = this.buildRequest({
@@ -2303,7 +2302,7 @@ class ItemService {
             let err = new Error(`Error patching item ${id}: ${e.message}`);
             Object.assign(err, e);
             this.logError('ItemService.patch() - ' + err.message);
-            return reject(err);
+            return Promise.reject(err);
         });
     }
     /**
@@ -2313,7 +2312,7 @@ class ItemService {
      * @return {?} Promise resolving clone of Item or an error
      */
     clone(id, overrides, options) {
-        return resolve(this.baseUrl + '/' + id + '/clone')
+        return Promise.resolve(this.baseUrl + '/' + id + '/clone')
             .then(url => {
             /** @type {?} */
             let opts = this.buildRequest({
@@ -2326,7 +2325,7 @@ class ItemService {
             let err = new Error(`Error cloning item ${id}: ${e.message}`);
             Object.assign(err, e);
             this.logError('ItemService.clone() - ' + err.message);
-            return reject(err);
+            return Promise.reject(err);
         });
     }
     /**
@@ -2335,7 +2334,7 @@ class ItemService {
      * @return {?} Promise resolving search results
      */
     search(arg, options) {
-        return resolve(arg)
+        return Promise.resolve(arg)
             .then(params => {
             /** @type {?} */
             let ps = {};
@@ -2359,7 +2358,7 @@ class ItemService {
             let err = new Error(`Error searching items: ${e.message}`);
             Object.assign(err, e);
             this.logError('ItemService.search() - ' + err.message);
-            return reject(err);
+            return Promise.reject(err);
         });
     }
     /**
@@ -2370,7 +2369,7 @@ class ItemService {
      * @return {?} Promise resolving GeoPlatform Item
      */
     import(arg, format, options) {
-        return resolve(true)
+        return Promise.resolve(true)
             .then(() => {
             if (arg === null || arg === undefined) {
                 throw new Error("Must provide a valid URL or File");
@@ -2412,7 +2411,7 @@ class ItemService {
             if (e.item)
                 Object.assign(err, { item: e.item });
             this.logError('ItemService.import() - ' + err.message);
-            return reject(err);
+            return Promise.reject(err);
         });
     }
     /**
@@ -2422,7 +2421,7 @@ class ItemService {
      * @return {?} Promise resolving HTTP response object for enabling attachment downloading
      */
     export(id, format, options) {
-        return resolve(true)
+        return Promise.resolve(true)
             .then(() => {
             /** @type {?} */
             let url = this.baseUrl + '/' + id + '/export';
@@ -2446,7 +2445,7 @@ class ItemService {
             let err = new Error(`Error exporting item: ${msg}`);
             Object.assign(err, e);
             this.logError('ItemService.export() - ' + err.message);
-            return reject(err);
+            return Promise.reject(err);
         });
     }
     /**
@@ -2455,7 +2454,7 @@ class ItemService {
      * @return {?} Promise resolving string URI
      */
     getUri(object, options) {
-        return resolve(object)
+        return Promise.resolve(object)
             .then(obj => {
             if (!obj || !obj.type)
                 throw new Error("Must provide an object with a type property");
@@ -2474,7 +2473,7 @@ class ItemService {
             let err = new Error(`Error getting URI for item: ${e.message}`);
             Object.assign(err, e);
             this.logError('ItemService.getUri() - ' + err.message);
-            return reject(err);
+            return Promise.reject(err);
         });
     }
     /**
@@ -2483,7 +2482,7 @@ class ItemService {
      * @return {?} Promise resolving list of matching items or an error
      */
     getMultiple(ids, options) {
-        return resolve(ids)
+        return Promise.resolve(ids)
             .then(identifiers => {
             /** @type {?} */
             let method = 'POST';
@@ -2498,7 +2497,7 @@ class ItemService {
             let err = new Error(`Error fetching items: ${e.message}`);
             Object.assign(err, e);
             this.logError('ItemService.getMultiple() - ' + err.message);
-            return reject(err);
+            return Promise.reject(err);
         });
     }
     /**
@@ -2507,7 +2506,7 @@ class ItemService {
      * @return {?} Promise resolving list containing uri-item association where exists
      */
     exists(uris, options) {
-        return resolve(uris)
+        return Promise.resolve(uris)
             .then(uris => {
             /** @type {?} */
             let method = 'POST';
@@ -2522,7 +2521,7 @@ class ItemService {
             let err = new Error(`Error resolving items: ${e.message}`);
             Object.assign(err, e);
             this.logError('ItemService.exists() - ' + err.message);
-            return reject(err);
+            return Promise.reject(err);
         });
     }
     /**
@@ -2531,7 +2530,7 @@ class ItemService {
      * @return {?}
      */
     like(item, options) {
-        return resolve(item.id)
+        return Promise.resolve(item.id)
             .then(id => {
             /** @type {?} */
             let method = 'PUT';
@@ -2546,7 +2545,7 @@ class ItemService {
             let err = new Error(`Error liking item ${item.id}: ${e.message}`);
             Object.assign(err, e);
             this.logError('ItemService.like() - ' + err.message);
-            return reject(err);
+            return Promise.reject(err);
         });
     }
     /**
@@ -2555,7 +2554,7 @@ class ItemService {
      * @return {?}
      */
     view(item, options) {
-        return resolve(item.id)
+        return Promise.resolve(item.id)
             .then(id => {
             /** @type {?} */
             let method = 'PUT';
@@ -2570,7 +2569,7 @@ class ItemService {
             let err = new Error(`Error incrementing views for item ${item.id}: ${e.message}`);
             Object.assign(err, e);
             this.logError('ItemService.like() - ' + err.message);
-            return reject(err);
+            return Promise.reject(err);
         });
     }
     /**
@@ -2580,7 +2579,7 @@ class ItemService {
      * @return {?} Promise resolving array of associated items of the item in question
      */
     associations(id, params, options) {
-        return resolve(id)
+        return Promise.resolve(id)
             .then(id => {
             /** @type {?} */
             let url = this.baseUrl + '/' + id + '/associations';
@@ -2598,7 +2597,7 @@ class ItemService {
             let err = new Error(`Error fetching associations for item ${id}: ${e.message}`);
             Object.assign(err, e);
             this.logError('ItemService.associations() - ' + err.message);
-            return reject(err);
+            return Promise.reject(err);
         });
     }
     /**
@@ -2608,7 +2607,7 @@ class ItemService {
      * @return {?} Promise resolving array of available versions of the item
      */
     versions(id, params, options) {
-        return resolve(id)
+        return Promise.resolve(id)
             .then(id => {
             /** @type {?} */
             let url = this.baseUrl + '/' + id + '/versions';
@@ -2623,7 +2622,7 @@ class ItemService {
             let err = new Error(`Error fetching versions for item ${id}: ${e.message}`);
             Object.assign(err, e);
             this.logError('ItemService.versions() - ' + err.message);
-            return reject(err);
+            return Promise.reject(err);
         });
     }
     /**
@@ -2661,7 +2660,7 @@ class ItemService {
                 e = new Error("ItemService.execute() - Request failed but didn't return an " +
                     "error. This is most likely because the request timed out");
             }
-            return reject(e);
+            return Promise.reject(e);
         });
     }
 }
@@ -2757,7 +2756,7 @@ class LayerService extends ItemService {
      * @return {?} Promise resolving style JSON object
      */
     style(id, options) {
-        return resolve(id)
+        return Promise.resolve(id)
             .then((id) => {
             /** @type {?} */
             let url = this.baseUrl + '/' + id + '/style';
@@ -2772,7 +2771,7 @@ class LayerService extends ItemService {
             let err = new Error(`Error fetching style: ${e.message}`);
             Object.assign(err, e);
             this.logError('LayerService.style() - ' + err.message);
-            return reject(err);
+            return Promise.reject(err);
         });
     }
     /**
@@ -2782,7 +2781,7 @@ class LayerService extends ItemService {
      * @return {?} Promise resolving feature JSON object
      */
     describe(id, req, options) {
-        return resolve(req)
+        return Promise.resolve(req)
             .then((req) => {
             if (!req) {
                 throw new Error("Must provide describe parameters to use");
@@ -2820,7 +2819,7 @@ class LayerService extends ItemService {
             let err = new Error(`Error describing layer feature: ${e.message}`);
             Object.assign(err, e);
             this.logError('LayerService.describe() - ' + err.message);
-            return reject(err);
+            return Promise.reject(err);
         });
     }
     /**
@@ -2830,7 +2829,7 @@ class LayerService extends ItemService {
      * @return {?} Promise resolving empty if successful or a message if failed
      */
     validate(id, params, options) {
-        return resolve(params)
+        return Promise.resolve(params)
             .then(params => {
             if (!params) {
                 throw new Error("Must provide parameters to use in layer validation");
@@ -2848,7 +2847,7 @@ class LayerService extends ItemService {
             let err = new Error(`Error validating layer request: ${e.message}`);
             Object.assign(err, e);
             this.logError('LayerService.describe() - ' + err.message);
-            return reject(err);
+            return Promise.reject(err);
         });
     }
 }
@@ -2889,7 +2888,7 @@ class ServiceService extends ItemService {
      * @return {?} Promise resolving service metadata
      */
     about(service, options) {
-        return resolve(service)
+        return Promise.resolve(service)
             .then(svc => {
             if (!svc)
                 throw new Error("Must provide service to get metadata about");
@@ -2904,7 +2903,7 @@ class ServiceService extends ItemService {
             let err = new Error(`Error describing service: ${e.message}`);
             Object.assign(err, e);
             this.logError('ServiceService.about() - ' + err.message);
-            return reject(err);
+            return Promise.reject(err);
         });
     }
     /**
@@ -2918,7 +2917,7 @@ class ServiceService extends ItemService {
             .resourceTypes('ServiceType')
             .pageSize(50)
             .getQuery();
-        return resolve(query)
+        return Promise.resolve(query)
             .then((params) => {
             /** @type {?} */
             let url = this.apiBase + '/api/items';
@@ -2934,7 +2933,7 @@ class ServiceService extends ItemService {
             let err = new Error(`Error fetching service types: ${e.message}`);
             Object.assign(err, e);
             this.logError('ServiceService.types() - ' + err.message);
-            return reject(err);
+            return Promise.reject(err);
         });
     }
     /**
@@ -2943,7 +2942,7 @@ class ServiceService extends ItemService {
      * @return {?} Promise resolving imported service
      */
     import(service, options) {
-        return resolve(service)
+        return Promise.resolve(service)
             .then(svc => {
             /** @type {?} */
             let url = this.baseUrl + '/import';
@@ -2958,7 +2957,7 @@ class ServiceService extends ItemService {
             let err = new Error(`Error importing service: ${e.message}`);
             Object.assign(err, e);
             this.logError('ServiceService.import() - ' + err.message);
-            return reject(err);
+            return Promise.reject(err);
         });
     }
     /**
@@ -2967,7 +2966,7 @@ class ServiceService extends ItemService {
      * @return {?} Promise resolving service layers
      */
     harvest(id, options) {
-        return resolve(id)
+        return Promise.resolve(id)
             .then(id => {
             /** @type {?} */
             let url = this.baseUrl + '/' + id + '/harvest';
@@ -2982,7 +2981,7 @@ class ServiceService extends ItemService {
             let err = new Error(`Error harvesting layers from service: ${e.message}`);
             Object.assign(err, e);
             this.logError('ServiceService.harvest() - ' + err.message);
-            return reject(err);
+            return Promise.reject(err);
         });
     }
     /**
@@ -2991,7 +2990,7 @@ class ServiceService extends ItemService {
      * @return {?} Promise resolving service statistics
      */
     liveTest(id, options) {
-        return resolve(id)
+        return Promise.resolve(id)
             .then(id => {
             /** @type {?} */
             let url = this.baseUrl + '/' + id + '/test';
@@ -3006,7 +3005,7 @@ class ServiceService extends ItemService {
             let err = new Error(`Error testing service: ${e.message}`);
             Object.assign(err, e);
             this.logError('ServiceService.liveTest() - ' + err.message);
-            return reject(err);
+            return Promise.reject(err);
         });
     }
     /**
@@ -3015,7 +3014,7 @@ class ServiceService extends ItemService {
      * @return {?} Promise resolving service statistics
      */
     statistics(id, options) {
-        return resolve(id)
+        return Promise.resolve(id)
             .then(id => {
             /** @type {?} */
             let url = this.baseUrl + '/' + id + '/statistics';
@@ -3030,7 +3029,7 @@ class ServiceService extends ItemService {
             let err = new Error(`Error getting service statistics: ${e.message}`);
             Object.assign(err, e);
             this.logError('ServiceService.statistics() - ' + err.message);
-            return reject(err);
+            return Promise.reject(err);
         });
     }
 }
@@ -3069,7 +3068,7 @@ class GalleryService extends ItemService {
      * @return {?}
      */
     addItem(galleryId, itemObj, options) {
-        return resolve(true)
+        return Promise.resolve(true)
             .then(() => {
             /** @type {?} */
             let url = this.baseUrl + '/' + galleryId + '/items';
@@ -3084,7 +3083,7 @@ class GalleryService extends ItemService {
             let err = new Error("Error adding item: " + e.message);
             Object.assign(err, e);
             this.logError('GalleryService.addItem() - ' + err.message);
-            return reject(err);
+            return Promise.reject(err);
         });
     }
     /**
@@ -3094,7 +3093,7 @@ class GalleryService extends ItemService {
      * @return {?}
      */
     removeItem(galleryId, itemId, options) {
-        return resolve(this.baseUrl + '/' + galleryId + '/items/' + itemId)
+        return Promise.resolve(this.baseUrl + '/' + galleryId + '/items/' + itemId)
             .then(url => {
             /** @type {?} */
             let opts = this.buildRequest({
@@ -3108,7 +3107,7 @@ class GalleryService extends ItemService {
             let err = new Error("Error adding item: " + e.message);
             Object.assign(err, e);
             this.logError('GalleryService.addItem() - ' + err.message);
-            return reject(err);
+            return Promise.reject(err);
         });
     }
 }
@@ -3172,7 +3171,7 @@ class UtilsService {
         let url = this.baseUrl + '/api/capabilities';
         if (property)
             url += '/' + property;
-        return resolve(url)
+        return Promise.resolve(url)
             .then((url) => {
             /** @type {?} */
             let opts = this.buildRequest({
@@ -3185,7 +3184,7 @@ class UtilsService {
             let err = new Error(`Error getting capabilities: ${e.message}`);
             Object.assign(err, e);
             this.logError('UtilsService.capabilities() - ' + err.message);
-            return reject(err);
+            return Promise.reject(err);
         });
     }
     /**
@@ -3197,7 +3196,7 @@ class UtilsService {
     parseFile(file, format, options) {
         /** @type {?} */
         var url = this.baseUrl + '/api/utils/parse';
-        return resolve(url)
+        return Promise.resolve(url)
             .then(url => {
             /** @type {?} */
             let opts = this.buildRequest({
@@ -3216,7 +3215,7 @@ class UtilsService {
             let err = new Error(`Error parsing file: ${e.message}`);
             Object.assign(err, e);
             this.logError('UtilsService.parseFile() - ' + err.message);
-            return reject(err);
+            return Promise.reject(err);
         });
     }
     /**
@@ -3228,7 +3227,7 @@ class UtilsService {
     locate(value, options) {
         /** @type {?} */
         var url = this.baseUrl + '/api/utils/gazetteer';
-        return resolve(url)
+        return Promise.resolve(url)
             .then(url => {
             /** @type {?} */
             let opts = this.buildRequest({
@@ -3245,7 +3244,7 @@ class UtilsService {
             let err = new Error(`Error resolving location: ${e.message}`);
             Object.assign(err, e);
             this.logError('UtilsService.locate() - ' + err.message);
-            return reject(err);
+            return Promise.reject(err);
         });
     }
     /**
@@ -3278,7 +3277,7 @@ class UtilsService {
                 e = new Error("UtilsService.execute() - Request failed but didn't return an " +
                     "error. This is most likely because the request timed out");
             }
-            return reject(e);
+            return Promise.reject(e);
         });
     }
 }
@@ -3529,7 +3528,7 @@ class AgolService {
      * @return {?} Promise resolving Item object or an error
      */
     getOrg(id, options) {
-        return resolve(id)
+        return Promise.resolve(id)
             .then(id => {
             /** @type {?} */
             let opts = this.buildRequest({
@@ -3541,7 +3540,7 @@ class AgolService {
             /** @type {?} */
             let err = new Error(`AgolService.getOrg() - Error fetching org ${id}: ${e.message}`);
             Object.assign(err, e);
-            return reject(err);
+            return Promise.reject(err);
         });
     }
     /**
@@ -3550,7 +3549,7 @@ class AgolService {
      * @return {?} Promise resolving search results
      */
     searchOrgs(arg, options) {
-        return resolve(arg)
+        return Promise.resolve(arg)
             .then(params => {
             /** @type {?} */
             let ps = params.getQuery();
@@ -3567,7 +3566,7 @@ class AgolService {
             /** @type {?} */
             let err = new Error(`AgolService.searchOrgs() - Error searching orgs: ${e.message}`);
             Object.assign(err, e);
-            return reject(err);
+            return Promise.reject(err);
         });
     }
     /**
@@ -3576,7 +3575,7 @@ class AgolService {
      * @return {?} Promise resolving Item object or an error
      */
     getGroup(id, options) {
-        return resolve(id)
+        return Promise.resolve(id)
             .then(id => {
             /** @type {?} */
             let opts = this.buildRequest({
@@ -3588,7 +3587,7 @@ class AgolService {
             /** @type {?} */
             let err = new Error(`AgolService.getGroup() - Error fetching group ${id}: ${e.message}`);
             Object.assign(err, e);
-            return reject(err);
+            return Promise.reject(err);
         });
     }
     /**
@@ -3597,7 +3596,7 @@ class AgolService {
      * @return {?} Promise resolving search results
      */
     searchGroups(arg, options) {
-        return resolve(arg)
+        return Promise.resolve(arg)
             .then(params => {
             /** @type {?} */
             let ps = params.getQuery();
@@ -3614,7 +3613,7 @@ class AgolService {
             /** @type {?} */
             let err = new Error(`AgolService.searchGroups() - Error searching groups: ${e.message}`);
             Object.assign(err, e);
-            return reject(err);
+            return Promise.reject(err);
         });
     }
     /**
@@ -3623,7 +3622,7 @@ class AgolService {
      * @return {?} Promise resolving Item object or an error
      */
     getItem(id, options) {
-        return resolve(id)
+        return Promise.resolve(id)
             .then((id) => {
             /** @type {?} */
             let opts = this.buildRequest({
@@ -3637,7 +3636,7 @@ class AgolService {
             /** @type {?} */
             let err = new Error(`AgolService.getItem() - Error fetching item ${id}: ${e.message}`);
             Object.assign(err, e);
-            return reject(err);
+            return Promise.reject(err);
         });
     }
     /**
@@ -3646,7 +3645,7 @@ class AgolService {
      * @return {?} Promise resolving search results
      */
     searchItems(arg, options) {
-        return resolve(arg)
+        return Promise.resolve(arg)
             .then(params => {
             /** @type {?} */
             let ps = params.getQuery();
@@ -3663,7 +3662,7 @@ class AgolService {
             /** @type {?} */
             let err = new Error(`AgolService.searchItems() - Error searching items: ${e.message}`);
             Object.assign(err, e);
-            return reject(err);
+            return Promise.reject(err);
         });
     }
     /**
@@ -3716,7 +3715,7 @@ class AgolService {
                 e = new Error("AGOLService.execute() - Request failed but didn't return an " +
                     "error. This is most likely because the request timed out");
             }
-            return reject(e);
+            return Promise.reject(e);
         });
     }
 }
@@ -4075,7 +4074,7 @@ class KGService {
             /** @type {?} */
             let err = new Error(`KGService.suggest() - Error suggesting concepts: ${e.message}`);
             Object.assign(err, e);
-            return reject(err);
+            return Promise.reject(err);
         });
     }
     /**
@@ -4091,7 +4090,7 @@ class KGService {
             /** @type {?} */
             let err = new Error(`KGService.types() - Error searching types: ${e.message}`);
             Object.assign(err, e);
-            return reject(err);
+            return Promise.reject(err);
         });
     }
     /**
@@ -4107,7 +4106,7 @@ class KGService {
             /** @type {?} */
             let err = new Error(`KGService.sources() - Error searching sources: ${e.message}`);
             Object.assign(err, e);
-            return reject(err);
+            return Promise.reject(err);
         });
     }
     /**
@@ -4118,7 +4117,7 @@ class KGService {
      * @return {?}
      */
     _search(url, query, options) {
-        return resolve(true)
+        return Promise.resolve(true)
             .then(() => {
             /** @type {?} */
             let q = query.getQuery();
@@ -4159,7 +4158,7 @@ class KGService {
                 e = new Error("KGService.execute() - Request failed but didn't return an " +
                     "error. This is most likely because the request timed out");
             }
-            return reject(e);
+            return Promise.reject(e);
         });
     }
 }

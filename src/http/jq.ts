@@ -1,5 +1,4 @@
 
-import * as Q from 'q';
 import * as jQuery from "jquery";
 import GPError from '../shared/error';
 import GPHttpClient from './client';
@@ -60,12 +59,12 @@ class JQueryHttpClient extends GPHttpClient {
     }
 
 
-    execute(opts : any) : Q.Promise<any> {
+    execute(opts : any) : Promise<any> {
 
         if(typeof(jQuery) === 'undefined') {
             throw new Error("jQuery is not available. Ensure it is included in your application");
         }
-        let d = Q.defer<any>();
+        let d = new Promise<any>();
         opts.success = function(data : any) { d.resolve(data); };
         opts.error = function(
             xhr : any,

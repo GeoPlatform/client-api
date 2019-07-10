@@ -1,6 +1,5 @@
 
 
-import * as Q from 'q';
 import ItemTypes from '../shared/types';
 import Config from '../shared/config';
 import GPHttpClient from '../http/client';
@@ -189,9 +188,9 @@ class AgolService {
      * @param options - optional set of request options to apply to xhr request
      * @return Promise resolving Item object or an error
      */
-    getOrg (id : string, options ?: any) : Q.Promise<any> {
+    getOrg (id : string, options ?: any) : Promise<any> {
 
-        return Q.resolve( id )
+        return Promise.resolve( id )
         .then( id => {
             let opts = this.buildRequest({
                 method:"GET", url:this.baseUrl + '/orgs/' + id, options:options
@@ -201,7 +200,7 @@ class AgolService {
         .catch(e => {
             let err = new Error(`AgolService.getOrg() - Error fetching org ${id}: ${e.message}`);
             Object.assign(err, e);
-            return Q.reject(err);
+            return Promise.reject(err);
         });
     }
 
@@ -210,9 +209,9 @@ class AgolService {
      * @param options - optional set of request options to apply to xhr request
      * @return Promise resolving search results
      */
-    searchOrgs (arg : AgolQuery, options ?: any) : Q.Promise<any> {
+    searchOrgs (arg : AgolQuery, options ?: any) : Promise<any> {
 
-        return Q.resolve( arg )
+        return Promise.resolve( arg )
         .then( params => {
 
             let ps = params.getQuery();
@@ -227,7 +226,7 @@ class AgolService {
         .catch(e => {
             let err = new Error(`AgolService.searchOrgs() - Error searching orgs: ${e.message}`);
             Object.assign(err, e);
-            return Q.reject(err);
+            return Promise.reject(err);
         });
     }
 
@@ -243,9 +242,9 @@ class AgolService {
      * @param options - optional set of request options to apply to xhr request
      * @return Promise resolving Item object or an error
      */
-    getGroup (id : string, options ?: any) : Q.Promise<any> {
+    getGroup (id : string, options ?: any) : Promise<any> {
 
-        return Q.resolve( id )
+        return Promise.resolve( id )
         .then( id => {
             let opts = this.buildRequest({
                 method:"GET", url:this.baseUrl + '/groups/' + id, options:options
@@ -255,7 +254,7 @@ class AgolService {
         .catch(e => {
             let err = new Error(`AgolService.getGroup() - Error fetching group ${id}: ${e.message}`);
             Object.assign(err, e);
-            return Q.reject(err);
+            return Promise.reject(err);
         });
     }
 
@@ -265,9 +264,9 @@ class AgolService {
      * @param options - optional set of request options to apply to xhr request
      * @return Promise resolving search results
      */
-    searchGroups (arg : AgolQuery, options ?: any) : Q.Promise<any> {
+    searchGroups (arg : AgolQuery, options ?: any) : Promise<any> {
 
-        return Q.resolve( arg )
+        return Promise.resolve( arg )
         .then( params => {
 
             let ps = params.getQuery();
@@ -282,7 +281,7 @@ class AgolService {
         .catch(e => {
             let err = new Error(`AgolService.searchGroups() - Error searching groups: ${e.message}`);
             Object.assign(err, e);
-            return Q.reject(err);
+            return Promise.reject(err);
         });
     }
 
@@ -297,9 +296,9 @@ class AgolService {
      * @param options - optional set of request options to apply to xhr request
      * @return Promise resolving Item object or an error
      */
-    getItem (id : string, options ?: any) : Q.Promise<any> {
+    getItem (id : string, options ?: any) : Promise<any> {
 
-        return Q.resolve( id )
+        return Promise.resolve( id )
         .then( (id : string) => {
             let opts = this.buildRequest({
                 method:"GET",
@@ -311,7 +310,7 @@ class AgolService {
         .catch(e => {
             let err = new Error(`AgolService.getItem() - Error fetching item ${id}: ${e.message}`);
             Object.assign(err, e);
-            return Q.reject(err);
+            return Promise.reject(err);
         });
     }
 
@@ -321,9 +320,9 @@ class AgolService {
      * @param options - optional set of request options to apply to xhr request
      * @return Promise resolving search results
      */
-    searchItems (arg : AgolQuery, options ?: any) : Q.Promise<any> {
+    searchItems (arg : AgolQuery, options ?: any) : Promise<any> {
 
-        return Q.resolve( arg )
+        return Promise.resolve( arg )
         .then( params => {
 
             let ps = params.getQuery();
@@ -338,7 +337,7 @@ class AgolService {
         .catch(e => {
             let err = new Error(`AgolService.searchItems() - Error searching items: ${e.message}`);
             Object.assign(err, e);
-            return Q.reject(err);
+            return Promise.reject(err);
         });
     }
 
@@ -392,14 +391,14 @@ class AgolService {
         return this.client.createRequestOpts(options);
     }
 
-    execute(opts : {[key:string]:any}) : Q.Promise<any> {
+    execute(opts : {[key:string]:any}) : Promise<any> {
         return this.client.execute(opts)
         .catch(e => {
             if(e === null || typeof(e) === 'undefined') {
                 e = new Error("AGOLService.execute() - Request failed but didn't return an " +
                 "error. This is most likely because the request timed out");
             }
-            return Q.reject(e);
+            return Promise.reject(e);
         });
     }
 

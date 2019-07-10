@@ -1,4 +1,3 @@
-import * as Q from 'q';
 import { GPHttpClient } from '@geoplatform/client';
 declare class NodeHttpClient extends GPHttpClient {
     /**
@@ -14,10 +13,10 @@ declare class NodeHttpClient extends GPHttpClient {
     /**
      *
      */
-    execute(options: any): Q.Promise<any>;
+    execute(options: any): Promise<any>;
     /**
      *
      */
-    checkAndHandleError(error: any, response: any): Q.Promise<any>;
+    checkAndHandleError(error: any, response: any): Promise<any>;
 }
 export default NodeHttpClient;

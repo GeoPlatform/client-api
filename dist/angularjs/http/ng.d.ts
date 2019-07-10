@@ -1,4 +1,3 @@
-import * as Q from 'q';
 import { GPHttpClient } from "@geoplatform/client";
 declare class NGHttpClient extends GPHttpClient {
     private $http;
@@ -13,6 +12,6 @@ declare class NGHttpClient extends GPHttpClient {
     createRequestOpts(options: {
         [key: string]: any;
     }): any;
-    execute(opts: any): Q.Promise<any>;
+    execute(opts: any): Promise<any>;
 }
 export default NGHttpClient;

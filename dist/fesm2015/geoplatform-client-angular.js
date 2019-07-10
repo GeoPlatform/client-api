@@ -1,4 +1,3 @@
-import { defer } from 'q';
 import { HttpRequest, HttpHeaders, HttpParams, HttpResponse } from '@angular/common/http';
 import 'rxjs/add/operator/map';
 import { GPHttpClient } from '@geoplatform/client';
@@ -65,28 +64,28 @@ class NG2HttpClient extends GPHttpClient {
     execute(request) {
         /** @type {?} */
         let value = null;
-        /** @type {?} */
-        let deferred = defer();
-        /** @type {?} */
-        let promise = this.http.request(request)
-            .map((event) => {
-            if (event instanceof HttpResponse) {
-                return (/** @type {?} */ (event)).body;
-            }
-            return {};
-        })
-            .subscribe((v) => { value = v; }, (err) => { deferred.reject(err); }, () => {
-            if (this.zone) {
-                this.zone.run(() => { deferred.resolve(value); });
-            }
-            else {
-                deferred.resolve(value);
-            }
+        return new Promise((resolve, reject) => {
+            this.http.request(request)
+                .map((event) => {
+                if (event instanceof HttpResponse) {
+                    return (/** @type {?} */ (event)).body;
+                }
+                return {};
+            })
+                .subscribe((v) => { value = v; }, (err) => { reject(err); }, () => {
+                if (this.zone) {
+                    this.zone.run(() => {
+                        resolve(value);
+                    });
+                }
+                else {
+                    resolve(value);
+                }
+            });
         });
-        return deferred.promise;
         /*
                 .toPromise()
-                .then( (result) => Q.resolve(result))
+                .then( (result) => Promise.resolve(result))
                 .catch( (err : any) => {
                     // console.log("NG2HttpClient.catch() - " + JSON.stringify(err));
                     if (err instanceof HttpErrorResponse) {

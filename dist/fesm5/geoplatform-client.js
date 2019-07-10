@@ -1,6 +1,5 @@
 import axios from 'axios';
 import { __extends } from 'tslib';
-import { reject, resolve } from 'q';
 
 /**
  * @fileoverview added by tsickle
@@ -3016,7 +3015,7 @@ var GPHttpClient = /** @class */ (function () {
     // @ts-ignore
     // @ts-ignore
     opts) {
-        return reject(new Error("Must overrdie 'execute' in a sub-class"));
+        return Promise.reject(new Error("Must overrdie 'execute' in a sub-class"));
     };
     return GPHttpClient;
 }());
@@ -3101,9 +3100,9 @@ var XHRHttpClient = /** @class */ (function (_super) {
             if (error.response) {
                 err = new GPError(error.response.data);
             }
-            return reject(err);
+            return promise.reject(err);
         });
-        return resolve(promise);
+        return promise;
     };
     return XHRHttpClient;
 }(GPHttpClient));
@@ -3289,7 +3288,7 @@ ItemService = /** @class */ (function () {
             url += '/versions/' + options.version;
             // this.logDebug("Client.get requesting version: " + options.version);
         }
-        return resolve(url)
+        return Promise.resolve(url)
             .then(function (url) {
             /** @type {?} */
             var opts = _this.buildRequest({ method: "GET", url: url, options: options });
@@ -3300,7 +3299,7 @@ ItemService = /** @class */ (function () {
             var err = new Error("Error fetching item " + id + ": " + e.message);
             Object.assign(err, e);
             _this.logError('ItemService.get() - ' + err.message);
-            return reject(err);
+            return Promise.reject(err);
         });
     };
     /**
@@ -3320,7 +3319,7 @@ ItemService = /** @class */ (function () {
      */
     function (itemObj, options) {
         var _this = this;
-        return resolve(itemObj)
+        return Promise.resolve(itemObj)
             .then(function (item) {
             /** @type {?} */
             var method = 'POST';
@@ -3353,7 +3352,7 @@ ItemService = /** @class */ (function () {
             var err = new Error("Error saving item: " + e.message);
             Object.assign(err, e);
             _this.logError('ItemService.save() - ' + err.message);
-            return reject(err);
+            return Promise.reject(err);
         });
     };
     /**
@@ -3373,7 +3372,7 @@ ItemService = /** @class */ (function () {
      */
     function (id, options) {
         var _this = this;
-        return resolve(this.baseUrl + '/' + id)
+        return Promise.resolve(this.baseUrl + '/' + id)
             .then(function (url) {
             /** @type {?} */
             var opts = _this.buildRequest({
@@ -3387,7 +3386,7 @@ ItemService = /** @class */ (function () {
             var err = new Error("Error deleting item " + id + ": " + e.message);
             Object.assign(err, e);
             _this.logError('ItemService.remove() - ' + err.message);
-            return reject(err);
+            return Promise.reject(err);
         });
     };
     /**
@@ -3410,7 +3409,7 @@ ItemService = /** @class */ (function () {
      */
     function (id, patch, options) {
         var _this = this;
-        return resolve(this.baseUrl + '/' + id)
+        return Promise.resolve(this.baseUrl + '/' + id)
             .then(function (url) {
             /** @type {?} */
             var opts = _this.buildRequest({
@@ -3423,7 +3422,7 @@ ItemService = /** @class */ (function () {
             var err = new Error("Error patching item " + id + ": " + e.message);
             Object.assign(err, e);
             _this.logError('ItemService.patch() - ' + err.message);
-            return reject(err);
+            return Promise.reject(err);
         });
     };
     /**
@@ -3446,7 +3445,7 @@ ItemService = /** @class */ (function () {
      */
     function (id, overrides, options) {
         var _this = this;
-        return resolve(this.baseUrl + '/' + id + '/clone')
+        return Promise.resolve(this.baseUrl + '/' + id + '/clone')
             .then(function (url) {
             /** @type {?} */
             var opts = _this.buildRequest({
@@ -3459,7 +3458,7 @@ ItemService = /** @class */ (function () {
             var err = new Error("Error cloning item " + id + ": " + e.message);
             Object.assign(err, e);
             _this.logError('ItemService.clone() - ' + err.message);
-            return reject(err);
+            return Promise.reject(err);
         });
     };
     /**
@@ -3479,7 +3478,7 @@ ItemService = /** @class */ (function () {
      */
     function (arg, options) {
         var _this = this;
-        return resolve(arg)
+        return Promise.resolve(arg)
             .then(function (params) {
             /** @type {?} */
             var ps = {};
@@ -3503,7 +3502,7 @@ ItemService = /** @class */ (function () {
             var err = new Error("Error searching items: " + e.message);
             Object.assign(err, e);
             _this.logError('ItemService.search() - ' + err.message);
-            return reject(err);
+            return Promise.reject(err);
         });
     };
     /**
@@ -3528,7 +3527,7 @@ ItemService = /** @class */ (function () {
      */
     function (arg, format, options) {
         var _this = this;
-        return resolve(true)
+        return Promise.resolve(true)
             .then(function () {
             if (arg === null || arg === undefined) {
                 throw new Error("Must provide a valid URL or File");
@@ -3570,7 +3569,7 @@ ItemService = /** @class */ (function () {
             if (e.item)
                 Object.assign(err, { item: e.item });
             _this.logError('ItemService.import() - ' + err.message);
-            return reject(err);
+            return Promise.reject(err);
         });
     };
     /**
@@ -3592,7 +3591,7 @@ ItemService = /** @class */ (function () {
      */
     function (id, format, options) {
         var _this = this;
-        return resolve(true)
+        return Promise.resolve(true)
             .then(function () {
             /** @type {?} */
             var url = _this.baseUrl + '/' + id + '/export';
@@ -3616,7 +3615,7 @@ ItemService = /** @class */ (function () {
             var err = new Error("Error exporting item: " + msg);
             Object.assign(err, e);
             _this.logError('ItemService.export() - ' + err.message);
-            return reject(err);
+            return Promise.reject(err);
         });
     };
     /**
@@ -3636,7 +3635,7 @@ ItemService = /** @class */ (function () {
      */
     function (object, options) {
         var _this = this;
-        return resolve(object)
+        return Promise.resolve(object)
             .then(function (obj) {
             if (!obj || !obj.type)
                 throw new Error("Must provide an object with a type property");
@@ -3655,7 +3654,7 @@ ItemService = /** @class */ (function () {
             var err = new Error("Error getting URI for item: " + e.message);
             Object.assign(err, e);
             _this.logError('ItemService.getUri() - ' + err.message);
-            return reject(err);
+            return Promise.reject(err);
         });
     };
     /**
@@ -3675,7 +3674,7 @@ ItemService = /** @class */ (function () {
      */
     function (ids, options) {
         var _this = this;
-        return resolve(ids)
+        return Promise.resolve(ids)
             .then(function (identifiers) {
             /** @type {?} */
             var method = 'POST';
@@ -3690,7 +3689,7 @@ ItemService = /** @class */ (function () {
             var err = new Error("Error fetching items: " + e.message);
             Object.assign(err, e);
             _this.logError('ItemService.getMultiple() - ' + err.message);
-            return reject(err);
+            return Promise.reject(err);
         });
     };
     /**
@@ -3710,7 +3709,7 @@ ItemService = /** @class */ (function () {
      */
     function (uris, options) {
         var _this = this;
-        return resolve(uris)
+        return Promise.resolve(uris)
             .then(function (uris) {
             /** @type {?} */
             var method = 'POST';
@@ -3725,7 +3724,7 @@ ItemService = /** @class */ (function () {
             var err = new Error("Error resolving items: " + e.message);
             Object.assign(err, e);
             _this.logError('ItemService.exists() - ' + err.message);
-            return reject(err);
+            return Promise.reject(err);
         });
     };
     /**
@@ -3740,7 +3739,7 @@ ItemService = /** @class */ (function () {
      */
     function (item, options) {
         var _this = this;
-        return resolve(item.id)
+        return Promise.resolve(item.id)
             .then(function (id) {
             /** @type {?} */
             var method = 'PUT';
@@ -3755,7 +3754,7 @@ ItemService = /** @class */ (function () {
             var err = new Error("Error liking item " + item.id + ": " + e.message);
             Object.assign(err, e);
             _this.logError('ItemService.like() - ' + err.message);
-            return reject(err);
+            return Promise.reject(err);
         });
     };
     /**
@@ -3770,7 +3769,7 @@ ItemService = /** @class */ (function () {
      */
     function (item, options) {
         var _this = this;
-        return resolve(item.id)
+        return Promise.resolve(item.id)
             .then(function (id) {
             /** @type {?} */
             var method = 'PUT';
@@ -3785,7 +3784,7 @@ ItemService = /** @class */ (function () {
             var err = new Error("Error incrementing views for item " + item.id + ": " + e.message);
             Object.assign(err, e);
             _this.logError('ItemService.like() - ' + err.message);
-            return reject(err);
+            return Promise.reject(err);
         });
     };
     /**
@@ -3807,7 +3806,7 @@ ItemService = /** @class */ (function () {
      */
     function (id, params, options) {
         var _this = this;
-        return resolve(id)
+        return Promise.resolve(id)
             .then(function (id) {
             /** @type {?} */
             var url = _this.baseUrl + '/' + id + '/associations';
@@ -3825,7 +3824,7 @@ ItemService = /** @class */ (function () {
             var err = new Error("Error fetching associations for item " + id + ": " + e.message);
             Object.assign(err, e);
             _this.logError('ItemService.associations() - ' + err.message);
-            return reject(err);
+            return Promise.reject(err);
         });
     };
     /**
@@ -3848,7 +3847,7 @@ ItemService = /** @class */ (function () {
      */
     function (id, params, options) {
         var _this = this;
-        return resolve(id)
+        return Promise.resolve(id)
             .then(function (id) {
             /** @type {?} */
             var url = _this.baseUrl + '/' + id + '/versions';
@@ -3863,7 +3862,7 @@ ItemService = /** @class */ (function () {
             var err = new Error("Error fetching versions for item " + id + ": " + e.message);
             Object.assign(err, e);
             _this.logError('ItemService.versions() - ' + err.message);
-            return reject(err);
+            return Promise.reject(err);
         });
     };
     /* ----------------------------------------------------------- */
@@ -3922,7 +3921,7 @@ ItemService = /** @class */ (function () {
                 e = new Error("ItemService.execute() - Request failed but didn't return an " +
                     "error. This is most likely because the request timed out");
             }
-            return reject(e);
+            return Promise.reject(e);
         });
     };
     return ItemService;
@@ -4056,7 +4055,7 @@ LayerService = /** @class */ (function (_super) {
      */
     function (id, options) {
         var _this = this;
-        return resolve(id)
+        return Promise.resolve(id)
             .then(function (id) {
             /** @type {?} */
             var url = _this.baseUrl + '/' + id + '/style';
@@ -4071,7 +4070,7 @@ LayerService = /** @class */ (function (_super) {
             var err = new Error("Error fetching style: " + e.message);
             Object.assign(err, e);
             _this.logError('LayerService.style() - ' + err.message);
-            return reject(err);
+            return Promise.reject(err);
         });
     };
     /**
@@ -4094,7 +4093,7 @@ LayerService = /** @class */ (function (_super) {
      */
     function (id, req, options) {
         var _this = this;
-        return resolve(req)
+        return Promise.resolve(req)
             .then(function (req) {
             if (!req) {
                 throw new Error("Must provide describe parameters to use");
@@ -4132,7 +4131,7 @@ LayerService = /** @class */ (function (_super) {
             var err = new Error("Error describing layer feature: " + e.message);
             Object.assign(err, e);
             _this.logError('LayerService.describe() - ' + err.message);
-            return reject(err);
+            return Promise.reject(err);
         });
     };
     /**
@@ -4155,7 +4154,7 @@ LayerService = /** @class */ (function (_super) {
      */
     function (id, params, options) {
         var _this = this;
-        return resolve(params)
+        return Promise.resolve(params)
             .then(function (params) {
             if (!params) {
                 throw new Error("Must provide parameters to use in layer validation");
@@ -4173,7 +4172,7 @@ LayerService = /** @class */ (function (_super) {
             var err = new Error("Error validating layer request: " + e.message);
             Object.assign(err, e);
             _this.logError('LayerService.describe() - ' + err.message);
-            return reject(err);
+            return Promise.reject(err);
         });
     };
     return LayerService;
@@ -4240,7 +4239,7 @@ ServiceService = /** @class */ (function (_super) {
      */
     function (service, options) {
         var _this = this;
-        return resolve(service)
+        return Promise.resolve(service)
             .then(function (svc) {
             if (!svc)
                 throw new Error("Must provide service to get metadata about");
@@ -4255,7 +4254,7 @@ ServiceService = /** @class */ (function (_super) {
             var err = new Error("Error describing service: " + e.message);
             Object.assign(err, e);
             _this.logError('ServiceService.about() - ' + err.message);
-            return reject(err);
+            return Promise.reject(err);
         });
     };
     /**
@@ -4278,7 +4277,7 @@ ServiceService = /** @class */ (function (_super) {
             .resourceTypes('ServiceType')
             .pageSize(50)
             .getQuery();
-        return resolve(query)
+        return Promise.resolve(query)
             .then(function (params) {
             /** @type {?} */
             var url = _this.apiBase + '/api/items';
@@ -4294,7 +4293,7 @@ ServiceService = /** @class */ (function (_super) {
             var err = new Error("Error fetching service types: " + e.message);
             Object.assign(err, e);
             _this.logError('ServiceService.types() - ' + err.message);
-            return reject(err);
+            return Promise.reject(err);
         });
     };
     /**
@@ -4314,7 +4313,7 @@ ServiceService = /** @class */ (function (_super) {
      */
     function (service, options) {
         var _this = this;
-        return resolve(service)
+        return Promise.resolve(service)
             .then(function (svc) {
             /** @type {?} */
             var url = _this.baseUrl + '/import';
@@ -4329,7 +4328,7 @@ ServiceService = /** @class */ (function (_super) {
             var err = new Error("Error importing service: " + e.message);
             Object.assign(err, e);
             _this.logError('ServiceService.import() - ' + err.message);
-            return reject(err);
+            return Promise.reject(err);
         });
     };
     /**
@@ -4349,7 +4348,7 @@ ServiceService = /** @class */ (function (_super) {
      */
     function (id, options) {
         var _this = this;
-        return resolve(id)
+        return Promise.resolve(id)
             .then(function (id) {
             /** @type {?} */
             var url = _this.baseUrl + '/' + id + '/harvest';
@@ -4364,7 +4363,7 @@ ServiceService = /** @class */ (function (_super) {
             var err = new Error("Error harvesting layers from service: " + e.message);
             Object.assign(err, e);
             _this.logError('ServiceService.harvest() - ' + err.message);
-            return reject(err);
+            return Promise.reject(err);
         });
     };
     /**
@@ -4384,7 +4383,7 @@ ServiceService = /** @class */ (function (_super) {
      */
     function (id, options) {
         var _this = this;
-        return resolve(id)
+        return Promise.resolve(id)
             .then(function (id) {
             /** @type {?} */
             var url = _this.baseUrl + '/' + id + '/test';
@@ -4399,7 +4398,7 @@ ServiceService = /** @class */ (function (_super) {
             var err = new Error("Error testing service: " + e.message);
             Object.assign(err, e);
             _this.logError('ServiceService.liveTest() - ' + err.message);
-            return reject(err);
+            return Promise.reject(err);
         });
     };
     /**
@@ -4419,7 +4418,7 @@ ServiceService = /** @class */ (function (_super) {
      */
     function (id, options) {
         var _this = this;
-        return resolve(id)
+        return Promise.resolve(id)
             .then(function (id) {
             /** @type {?} */
             var url = _this.baseUrl + '/' + id + '/statistics';
@@ -4434,7 +4433,7 @@ ServiceService = /** @class */ (function (_super) {
             var err = new Error("Error getting service statistics: " + e.message);
             Object.assign(err, e);
             _this.logError('ServiceService.statistics() - ' + err.message);
-            return reject(err);
+            return Promise.reject(err);
         });
     };
     return ServiceService;
@@ -4489,7 +4488,7 @@ GalleryService = /** @class */ (function (_super) {
      */
     function (galleryId, itemObj, options) {
         var _this = this;
-        return resolve(true)
+        return Promise.resolve(true)
             .then(function () {
             /** @type {?} */
             var url = _this.baseUrl + '/' + galleryId + '/items';
@@ -4504,7 +4503,7 @@ GalleryService = /** @class */ (function (_super) {
             var err = new Error("Error adding item: " + e.message);
             Object.assign(err, e);
             _this.logError('GalleryService.addItem() - ' + err.message);
-            return reject(err);
+            return Promise.reject(err);
         });
     };
     /**
@@ -4521,7 +4520,7 @@ GalleryService = /** @class */ (function (_super) {
      */
     function (galleryId, itemId, options) {
         var _this = this;
-        return resolve(this.baseUrl + '/' + galleryId + '/items/' + itemId)
+        return Promise.resolve(this.baseUrl + '/' + galleryId + '/items/' + itemId)
             .then(function (url) {
             /** @type {?} */
             var opts = _this.buildRequest({
@@ -4535,7 +4534,7 @@ GalleryService = /** @class */ (function (_super) {
             var err = new Error("Error adding item: " + e.message);
             Object.assign(err, e);
             _this.logError('GalleryService.addItem() - ' + err.message);
-            return reject(err);
+            return Promise.reject(err);
         });
     };
     return GalleryService;
@@ -4634,7 +4633,7 @@ var UtilsService = /** @class */ (function () {
         var url = this.baseUrl + '/api/capabilities';
         if (property)
             url += '/' + property;
-        return resolve(url)
+        return Promise.resolve(url)
             .then(function (url) {
             /** @type {?} */
             var opts = _this.buildRequest({
@@ -4647,7 +4646,7 @@ var UtilsService = /** @class */ (function () {
             var err = new Error("Error getting capabilities: " + e.message);
             Object.assign(err, e);
             _this.logError('UtilsService.capabilities() - ' + err.message);
-            return reject(err);
+            return Promise.reject(err);
         });
     };
     /**
@@ -4672,7 +4671,7 @@ var UtilsService = /** @class */ (function () {
         var _this = this;
         /** @type {?} */
         var url = this.baseUrl + '/api/utils/parse';
-        return resolve(url)
+        return Promise.resolve(url)
             .then(function (url) {
             /** @type {?} */
             var opts = _this.buildRequest({
@@ -4691,7 +4690,7 @@ var UtilsService = /** @class */ (function () {
             var err = new Error("Error parsing file: " + e.message);
             Object.assign(err, e);
             _this.logError('UtilsService.parseFile() - ' + err.message);
-            return reject(err);
+            return Promise.reject(err);
         });
     };
     /**
@@ -4716,7 +4715,7 @@ var UtilsService = /** @class */ (function () {
         var _this = this;
         /** @type {?} */
         var url = this.baseUrl + '/api/utils/gazetteer';
-        return resolve(url)
+        return Promise.resolve(url)
             .then(function (url) {
             /** @type {?} */
             var opts = _this.buildRequest({
@@ -4733,7 +4732,7 @@ var UtilsService = /** @class */ (function () {
             var err = new Error("Error resolving location: " + e.message);
             Object.assign(err, e);
             _this.logError('UtilsService.locate() - ' + err.message);
-            return reject(err);
+            return Promise.reject(err);
         });
     };
     /* ----------------------------------------------------------- */
@@ -4787,7 +4786,7 @@ var UtilsService = /** @class */ (function () {
                 e = new Error("UtilsService.execute() - Request failed but didn't return an " +
                     "error. This is most likely because the request timed out");
             }
-            return reject(e);
+            return Promise.reject(e);
         });
     };
     return UtilsService;
@@ -5180,7 +5179,7 @@ var AgolService = /** @class */ (function () {
      */
     function (id, options) {
         var _this = this;
-        return resolve(id)
+        return Promise.resolve(id)
             .then(function (id) {
             /** @type {?} */
             var opts = _this.buildRequest({
@@ -5192,7 +5191,7 @@ var AgolService = /** @class */ (function () {
             /** @type {?} */
             var err = new Error("AgolService.getOrg() - Error fetching org " + id + ": " + e.message);
             Object.assign(err, e);
-            return reject(err);
+            return Promise.reject(err);
         });
     };
     /**
@@ -5212,7 +5211,7 @@ var AgolService = /** @class */ (function () {
      */
     function (arg, options) {
         var _this = this;
-        return resolve(arg)
+        return Promise.resolve(arg)
             .then(function (params) {
             /** @type {?} */
             var ps = params.getQuery();
@@ -5229,7 +5228,7 @@ var AgolService = /** @class */ (function () {
             /** @type {?} */
             var err = new Error("AgolService.searchOrgs() - Error searching orgs: " + e.message);
             Object.assign(err, e);
-            return reject(err);
+            return Promise.reject(err);
         });
     };
     // -----------------------------------------------------------------------
@@ -5251,7 +5250,7 @@ var AgolService = /** @class */ (function () {
      */
     function (id, options) {
         var _this = this;
-        return resolve(id)
+        return Promise.resolve(id)
             .then(function (id) {
             /** @type {?} */
             var opts = _this.buildRequest({
@@ -5263,7 +5262,7 @@ var AgolService = /** @class */ (function () {
             /** @type {?} */
             var err = new Error("AgolService.getGroup() - Error fetching group " + id + ": " + e.message);
             Object.assign(err, e);
-            return reject(err);
+            return Promise.reject(err);
         });
     };
     /**
@@ -5283,7 +5282,7 @@ var AgolService = /** @class */ (function () {
      */
     function (arg, options) {
         var _this = this;
-        return resolve(arg)
+        return Promise.resolve(arg)
             .then(function (params) {
             /** @type {?} */
             var ps = params.getQuery();
@@ -5300,7 +5299,7 @@ var AgolService = /** @class */ (function () {
             /** @type {?} */
             var err = new Error("AgolService.searchGroups() - Error searching groups: " + e.message);
             Object.assign(err, e);
-            return reject(err);
+            return Promise.reject(err);
         });
     };
     // -----------------------------------------------------------------------
@@ -5322,7 +5321,7 @@ var AgolService = /** @class */ (function () {
      */
     function (id, options) {
         var _this = this;
-        return resolve(id)
+        return Promise.resolve(id)
             .then(function (id) {
             /** @type {?} */
             var opts = _this.buildRequest({
@@ -5336,7 +5335,7 @@ var AgolService = /** @class */ (function () {
             /** @type {?} */
             var err = new Error("AgolService.getItem() - Error fetching item " + id + ": " + e.message);
             Object.assign(err, e);
-            return reject(err);
+            return Promise.reject(err);
         });
     };
     /**
@@ -5356,7 +5355,7 @@ var AgolService = /** @class */ (function () {
      */
     function (arg, options) {
         var _this = this;
-        return resolve(arg)
+        return Promise.resolve(arg)
             .then(function (params) {
             /** @type {?} */
             var ps = params.getQuery();
@@ -5373,7 +5372,7 @@ var AgolService = /** @class */ (function () {
             /** @type {?} */
             var err = new Error("AgolService.searchItems() - Error searching items: " + e.message);
             Object.assign(err, e);
-            return reject(err);
+            return Promise.reject(err);
         });
     };
     /* --------------------------- */
@@ -5452,7 +5451,7 @@ var AgolService = /** @class */ (function () {
                 e = new Error("AGOLService.execute() - Request failed but didn't return an " +
                     "error. This is most likely because the request timed out");
             }
-            return reject(e);
+            return Promise.reject(e);
         });
     };
     return AgolService;
@@ -5944,7 +5943,7 @@ var KGService = /** @class */ (function () {
             /** @type {?} */
             var err = new Error("KGService.suggest() - Error suggesting concepts: " + e.message);
             Object.assign(err, e);
-            return reject(err);
+            return Promise.reject(err);
         });
     };
     /**
@@ -5970,7 +5969,7 @@ var KGService = /** @class */ (function () {
             /** @type {?} */
             var err = new Error("KGService.types() - Error searching types: " + e.message);
             Object.assign(err, e);
-            return reject(err);
+            return Promise.reject(err);
         });
     };
     /**
@@ -5996,7 +5995,7 @@ var KGService = /** @class */ (function () {
             /** @type {?} */
             var err = new Error("KGService.sources() - Error searching sources: " + e.message);
             Object.assign(err, e);
-            return reject(err);
+            return Promise.reject(err);
         });
     };
     /* ----------------------------------------------------------- */
@@ -6019,7 +6018,7 @@ var KGService = /** @class */ (function () {
      */
     function (url, query, options) {
         var _this = this;
-        return resolve(true)
+        return Promise.resolve(true)
             .then(function () {
             /** @type {?} */
             var q = query.getQuery();
@@ -6080,7 +6079,7 @@ var KGService = /** @class */ (function () {
                 e = new Error("KGService.execute() - Request failed but didn't return an " +
                     "error. This is most likely because the request timed out");
             }
-            return reject(e);
+            return Promise.reject(e);
         });
     };
     return KGService;

@@ -1,4 +1,3 @@
-import * as Q from 'q';
 import ItemService from './item';
 import GPHttpClient from '../http/client';
 /**
@@ -16,20 +15,20 @@ declare class LayerService extends ItemService {
      * @param options - optional set of request options to apply to xhr request
      * @return Promise resolving style JSON object
      */
-    style(id: string, options?: any): Q.Promise<any>;
+    style(id: string, options?: any): Promise<any>;
     /**
      * @param id - GeoPlatform Layer identifier
      * @param req identifying extent, x, y
      * @param options - optional set of request options to apply to xhr request
      * @return Promise resolving feature JSON object
      */
-    describe(id: string, req: any, options?: any): Q.Promise<any>;
+    describe(id: string, req: any, options?: any): Promise<any>;
     /**
      * @param id - GeoPlatform Layer identifier
      * @param params describing layer request to validate
      * @param options - optional set of request options to apply to xhr request
      * @return Promise resolving empty if successful or a message if failed
      */
-    validate(id: string, params: any, options?: any): Q.Promise<any>;
+    validate(id: string, params: any, options?: any): Promise<any>;
 }
 export default LayerService;

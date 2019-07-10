@@ -1,4 +1,3 @@
-import { defer, reject, resolve } from 'q';
 import { GPHttpClient, Config, ItemService, Query, ServiceService, LayerService, DatasetService, MapService, GalleryService, UtilsService, AgolService } from '@geoplatform/client';
 
 /**
@@ -76,24 +75,23 @@ class NodeHttpClient extends GPHttpClient {
      */
     execute(options) {
         /** @type {?} */
-        let deferred = defer();
-        /** @type {?} */
         const request = require('request');
+        // require('request-debug')(request);
         if (!request) {
             throw new Error("Module 'request' not available");
         }
-        // require('request-debug')(request);
-        request(options, (error, response, body) => {
-            this.checkAndHandleError(error, response)
-                .then(() => {
-                if (options.json === false)
-                    deferred.resolve(response);
-                else
-                    deferred.resolve(body);
-            })
-                .catch(e => deferred.reject(e));
+        return new Promise((resolve, reject) => {
+            request(options, (error, response, body) => {
+                this.checkAndHandleError(error, response)
+                    .then(() => {
+                    if (options.json === false)
+                        resolve(response);
+                    else
+                        resolve(body);
+                })
+                    .catch(e => reject(e));
+            });
         });
-        return deferred.promise;
     }
     /**
      *
@@ -120,7 +118,7 @@ class NodeHttpClient extends GPHttpClient {
                 }
             }
             else {
-                return reject(error);
+                return Promise.reject(error);
             }
         }
         else if (response.statusCode < 200 || response.statusCode > 204) {
@@ -200,9 +198,9 @@ class NodeHttpClient extends GPHttpClient {
             // Logger.debug("UTILS.checkAndHandleError : " + err);
             // Logger.debug("UTILS.checkAndHandleError : " + JSON.stringify(err));
             // Logger.debug("UTILS.checkAndHandleError : " + err.message);
-            return reject(err);
+            return Promise.reject(err);
         }
-        return resolve(null);
+        return Promise.resolve(null);
     }
 }
 

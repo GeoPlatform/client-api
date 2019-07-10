@@ -1,5 +1,4 @@
 
-import * as Q from 'q';
 import Config from '../shared/config';
 import Query from '../shared/query';
 
@@ -57,8 +56,8 @@ class BaseService {
     get (
         // @ts-ignore
         id : string
-    ) : Q.Promise<any> {
-        return Q.reject(new Error("Must use a subclass of BaseService"));
+    ) : Promise<any> {
+        return Promise.reject(new Error("Must use a subclass of BaseService"));
     }
 
     /**
@@ -68,8 +67,8 @@ class BaseService {
     save (
         // @ts-ignore
         itemObj : any
-    ) : Q.Promise<any> {
-        return Q.reject(new Error("Must use a subclass of BaseService"));
+    ) : Promise<any> {
+        return Promise.reject(new Error("Must use a subclass of BaseService"));
     }
 
     /**
@@ -79,8 +78,8 @@ class BaseService {
     remove (
         // @ts-ignore
         id : string
-    ) : Q.Promise<any> {
-        return Q.reject(new Error("Must use a subclass of BaseService"));
+    ) : Promise<any> {
+        return Promise.reject(new Error("Must use a subclass of BaseService"));
     }
 
     /**
@@ -93,15 +92,15 @@ class BaseService {
         id : string,
         // @ts-ignore
         patch : any
-    ) : Q.Promise<any> {
-        return Q.reject(new Error("Must use a subclass of BaseService"));
+    ) : Promise<any> {
+        return Promise.reject(new Error("Must use a subclass of BaseService"));
     }
 
     search (
         // @ts-ignore
         arg ?: Query
-    ) : Q.Promise<any> {
-        return Q.reject(new Error("Must use a subclass of BaseService"));
+    ) : Promise<any> {
+        return Promise.reject(new Error("Must use a subclass of BaseService"));
     }
 
 }

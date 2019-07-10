@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { __extends } from 'tslib';
-import { resolve, reject } from 'q';
+import { reject, resolve } from 'q';
 
 /**
  * @fileoverview added by tsickle

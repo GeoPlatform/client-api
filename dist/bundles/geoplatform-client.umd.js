@@ -5729,11 +5729,21 @@ This software has been approved for release by the U.S. Department of the Interi
             // @ts-ignore
             // @ts-ignore
             related) {
-                console.log("EVENT (" + category + ") - " + event + " : " + item);
+                console.log("Event (" + category + ") - " + event + " : " + item);
             };
-        // logPageView( view, data ) {
-        //     console.log("PAGEVIEW " + view + (data ? " : " + JSON.stringify(data) : '') );
-        // }
+        /**
+         * @param {?} view
+         * @param {?} data
+         * @return {?}
+         */
+        DefaultTrackingServiceProvider.prototype.logPageView = /**
+         * @param {?} view
+         * @param {?} data
+         * @return {?}
+         */
+            function (view, data) {
+                console.log("Page View " + view + (data ? " : " + JSON.stringify(data) : ''));
+            };
         /**
          * @param {?} params
          * @param {?} resultCount
@@ -5925,10 +5935,12 @@ This software has been approved for release by the U.S. Department of the Interi
             // @ts-ignore
             // @ts-ignore
             data) {
-                this.logEvent(new Event(Categories["APP_PAGE"], Events["VIEWED"], view));
-                // if(this.provider && this.provider.logPageView) {
-                //     this.provider.logPageView(view, data);
-                // }
+                if (this.provider && this.provider.logPageView) {
+                    this.provider.logPageView(view, data);
+                }
+                else {
+                    this.logEvent(new Event(Categories["APP_PAGE"], Events["VIEWED"], view));
+                }
             };
         /**
          * @param params
@@ -5945,7 +5957,8 @@ This software has been approved for release by the U.S. Department of the Interi
          * @return {?}
          */
             function (params, resultCount) {
-                this.provider.logSearch(params, resultCount);
+                if (this.provider.logSearch)
+                    this.provider.logSearch(params, resultCount);
             };
         return TrackingService;
     }());

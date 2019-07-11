@@ -3931,7 +3931,15 @@ class DefaultTrackingServiceProvider {
     // @ts-ignore
     // @ts-ignore
     related) {
-        console.log("EVENT (" + category + ") - " + event + " : " + item);
+        console.log("Event (" + category + ") - " + event + " : " + item);
+    }
+    /**
+     * @param {?} view
+     * @param {?} data
+     * @return {?}
+     */
+    logPageView(view, data) {
+        console.log("Page View " + view + (data ? " : " + JSON.stringify(data) : ''));
     }
     /**
      * @param {?} params
@@ -4045,10 +4053,12 @@ class TrackingService {
     // @ts-ignore
     // @ts-ignore
     data) {
-        this.logEvent(new Event(Categories["APP_PAGE"], Events["VIEWED"], view));
-        // if(this.provider && this.provider.logPageView) {
-        //     this.provider.logPageView(view, data);
-        // }
+        if (this.provider && this.provider.logPageView) {
+            this.provider.logPageView(view, data);
+        }
+        else {
+            this.logEvent(new Event(Categories["APP_PAGE"], Events["VIEWED"], view));
+        }
     }
     /**
      * @param {?} params
@@ -4056,7 +4066,8 @@ class TrackingService {
      * @return {?}
      */
     logSearch(params, resultCount) {
-        this.provider.logSearch(params, resultCount);
+        if (this.provider.logSearch)
+            this.provider.logSearch(params, resultCount);
     }
 }
 

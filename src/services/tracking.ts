@@ -157,11 +157,11 @@ class DefaultTrackingServiceProvider {
         // @ts-ignore
         related ?: any
     ) {
-        console.log( "EVENT (" + category + ") - " + event + " : " + item);
+        console.log( "Event (" + category + ") - " + event + " : " + item);
     }
-    // logPageView( view, data ) {
-    //     console.log("PAGEVIEW " + view + (data ? " : " + JSON.stringify(data) : '') );
-    // }
+    logPageView( view, data ) {
+        console.log("Page View " + view + (data ? " : " + JSON.stringify(data) : '') );
+    }
     logSearch(params : string, resultCount : string|number) {
         console.log( "Query : " + JSON.stringify(params) + " found " + resultCount+ " matches");
     }
@@ -283,10 +283,11 @@ class TrackingService {
         // @ts-ignore
         data ?: any
     ) {
-        this.logEvent( new Event(Categories.APP_PAGE, Events.VIEWED, view) );
-        // if(this.provider && this.provider.logPageView) {
-        //     this.provider.logPageView(view, data);
-        // }
+        if(this.provider && this.provider.logPageView) {
+            this.provider.logPageView(view, data);
+        } else {
+            this.logEvent( new Event(Categories.APP_PAGE, Events.VIEWED, view) );
+        }
     }
 
     /**
@@ -294,7 +295,8 @@ class TrackingService {
      * @param resultCount
      */
     logSearch (params : any, resultCount : string|number) {
-        this.provider.logSearch(params, resultCount);
+        if(this.provider.logSearch)
+            this.provider.logSearch(params, resultCount);
     }
 
 }

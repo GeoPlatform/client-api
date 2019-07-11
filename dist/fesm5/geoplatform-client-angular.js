@@ -1,9 +1,143 @@
+import { __extends } from 'tslib';
+import { HttpRequest, HttpHeaders, HttpParams, HttpResponse } from '@angular/common/http';
+import 'rxjs/add/operator/map';
+import { GPHttpClient } from '@geoplatform/client';
+
 /**
  * @fileoverview added by tsickle
  * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
  */
+var NG2HttpClient = /** @class */ (function (_super) {
+    __extends(NG2HttpClient, _super);
+    function NG2HttpClient(http, options) {
+        var _this = _super.call(this, options) || this;
+        _this.http = http;
+        return _this;
+    }
+    /**
+     * @param {?} zone
+     * @return {?}
+     */
+    NG2HttpClient.prototype.setZone = /**
+     * @param {?} zone
+     * @return {?}
+     */
+    function (zone) {
+        this.zone = zone;
+    };
+    /**
+     *
+     */
+    /**
+     *
+     * @param {?} options
+     * @return {?}
+     */
+    NG2HttpClient.prototype.createRequestOpts = /**
+     *
+     * @param {?} options
+     * @return {?}
+     */
+    function (options) {
+        /** @type {?} */
+        var opts = {};
+        if (options["options"] && options["options"].responseType) {
+            opts.responseType = options["options"].responseType;
+        }
+        else
+            opts.responseType = 'json'; //default response type
+        if (options["params"]) {
+            opts.params = new HttpParams({ fromObject: options["params"] });
+        }
+        if (options["data"]) {
+            opts.body = options["data"];
+        }
+        opts.headers = new HttpHeaders();
+        /** @type {?} */
+        var token = this.getToken();
+        if (token) {
+            opts.headers.set('Authorization', 'Bearer ' + token);
+        }
+        if (opts.body) {
+            return new HttpRequest(options["method"], options["url"], opts.body, opts);
+        }
+        else {
+            return new HttpRequest(options["method"], options["url"], opts);
+        }
+    };
+    /**
+     * @param request - Angular HttpRequest object
+     * @return resolving the response or an error
+     */
+    /**
+     * @param {?} request - Angular HttpRequest object
+     * @return {?} resolving the response or an error
+     */
+    NG2HttpClient.prototype.execute = /**
+     * @param {?} request - Angular HttpRequest object
+     * @return {?} resolving the response or an error
+     */
+    function (request) {
+        var _this = this;
+        /** @type {?} */
+        var value = null;
+        return new Promise(function (resolve, reject) {
+            _this.http.request(request)
+                .map(function (event) {
+                if (event instanceof HttpResponse) {
+                    return (/** @type {?} */ (event)).body;
+                }
+                return {};
+            })
+                .subscribe(function (v) { value = v; }, function (err) { reject(err); }, function () {
+                if (_this.zone) {
+                    _this.zone.run(function () {
+                        resolve(value);
+                    });
+                }
+                else {
+                    resolve(value);
+                }
+            });
+        });
+        /*
+                .toPromise()
+                .then( (result) => Promise.resolve(result))
+                .catch( (err : any) => {
+                    // console.log("NG2HttpClient.catch() - " + JSON.stringify(err));
+                    if (err instanceof HttpErrorResponse) {
+                        let msg = "An error occurred communicating with the GeoPlatform API";
+                        if(err.error && err.error.error && err.error.error.message) {
+                            msg = err.error.error.message;
+                        } else if (err.error && err.error.message) {
+                            msg = err.error.message;
+                        } else if(err.message) {
+                            msg = err.message;
+                        }
+                        throw new Error(msg);
+                    }
+                    return {};
+                });
+                */
+    };
+    return NG2HttpClient;
+}(GPHttpClient));
+
 /**
- * Generated bundle index. Do not edit.
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
  */
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
+ */
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
+ */
+
+export { NG2HttpClient };
 
 //# sourceMappingURL=geoplatform-client-angular.js.map

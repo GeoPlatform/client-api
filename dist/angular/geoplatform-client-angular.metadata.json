@@ -1,1 +1,1 @@
-{"__symbolic":"module","version":4,"exports":[{"from":"./http/ng"}],"metadata":{},"origins":{},"importAs":"@geoplatform/client/angular"}
+{"__symbolic":"module","version":4,"metadata":{},"origins":{"NG2HttpClient":"./http/index"},"importAs":"@geoplatform/client/angular"}

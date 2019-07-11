@@ -1,2 +1,2 @@
 
-export * from './http/ng';
+export * from './http/index';

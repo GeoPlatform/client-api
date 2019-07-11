@@ -1,0 +1,8 @@
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
+ */
+import NG2HttpClient from './ng';
+export { NG2HttpClient };
+
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VSb290Ijoibmc6Ly9AZ2VvcGxhdGZvcm0vY2xpZW50L2FuZ3VsYXIvIiwic291cmNlcyI6WyJodHRwL2luZGV4LnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7Ozs7QUFDQSxPQUFPLGFBQWEsTUFBTSxNQUFNLENBQUM7QUFFakMsT0FBTyxFQUNILGFBQWEsRUFDaEIsQ0FBQyIsInNvdXJjZXNDb250ZW50IjpbIlxuaW1wb3J0IE5HMkh0dHBDbGllbnQgZnJvbSAnLi9uZyc7XG5cbmV4cG9ydCB7XG4gICAgTkcySHR0cENsaWVudFxufTtcbiJdfQ==

@@ -33,6 +33,6 @@ function apply() {
 }
 
 
-export default function() {
+export default function polyfills() {
     apply();
 };

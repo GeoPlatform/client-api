@@ -5,7 +5,6 @@ import {
     HttpResponse, HttpEvent //, HttpErrorResponse
 } from '@angular/common/http';
 import 'rxjs/add/operator/map';
-// import 'rxjs/add/operator/toPromise';
 
 import { GPHttpClient } from '@geoplatform/client';
 
@@ -46,11 +45,9 @@ class NG2HttpClient extends GPHttpClient {
         opts.headers = new HttpHeaders();
 
         //set authorization token if one was provided
-        if(this.token) {
-            let token = this.token();
-            if(token) {
-                opts.headers.set('Authorization', 'Bearer ' + token);
-            }
+        let token = this.getToken();
+        if(token) {
+            opts.headers.set('Authorization', 'Bearer ' + token);
         }
 
         if(opts.body) {

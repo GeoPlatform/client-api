@@ -30,6 +30,11 @@ class GPHttpClient {
         //else do nothing
     }
 
+    getToken() : string {
+        if(this.token && typeof(this.token) === 'function') return this.token();
+        else return this.token || null;
+    }
+
     createRequestOpts(
         // @ts-ignore
         options : { [key:string] : any }

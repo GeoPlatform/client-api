@@ -1,6 +1,6 @@
 
 import Query from './query';
 
-export default function() {
+export default function queryFactory() {
     return new Query();
 }

@@ -64,30 +64,32 @@ class JQueryHttpClient extends GPHttpClient {
         if(typeof(jQuery) === 'undefined') {
             throw new Error("jQuery is not available. Ensure it is included in your application");
         }
-        let d = new Promise<any>();
-        opts.success = function(data : any) { d.resolve(data); };
-        opts.error = function(
-            xhr : any,
-            // @ts-ignore
-            status : any,
-            message : string) {
-            let err : GPError = new GPError(message);
-            if(xhr.responseText) {
-                try {
-                    let json = JSON.parse(xhr.responseText);
-                    if(json) {
-                        err = new GPError(json.message);
-                        err.error = json.error; //label
-                        err.status = json.status; //code
+        return new Promise<any>( (resolve, reject) => {
+
+            opts.success = function(data : any) { resolve(data); };
+
+            opts.error = function(
+                xhr : any,
+                // @ts-ignore
+                status : any,
+                message : string) {
+                let err : GPError = new GPError(message);
+                if(xhr.responseText) {
+                    try {
+                        let json = JSON.parse(xhr.responseText);
+                        if(json) {
+                            err = new GPError(json.message);
+                            err.error = json.error; //label
+                            err.status = json.status; //code
+                        }
+                    } catch(e) {
+                        console.log("JQHttpClient.execute() - Failed to parse JSON from error message: " + e.message);
                     }
-                } catch(e) {
-                    console.log("JQHttpClient.execute() - Failed to parse JSON from error message: " + e.message);
                 }
-            }
-            d.reject(err);
-        };
-        jQuery.ajax(opts);
-        return d.promise;
+                reject(err);
+            };
+            jQuery.ajax(opts);
+        });
     }
 
 }

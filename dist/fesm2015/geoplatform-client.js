@@ -42,7 +42,7 @@ function apply() {
 /**
  * @return {?}
  */
-function Polyfills () {
+function polyfills() {
     apply();
 }
 
@@ -1950,7 +1950,7 @@ class Query {
 /**
  * @return {?}
  */
-function queryFactory () {
+function queryFactory() {
     return new Query();
 }
 
@@ -1967,6 +1967,11 @@ var Config = {
     //appId: '...',
     configure: ɵ0$1
 };
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
+ */
 
 /**
  * @fileoverview added by tsickle
@@ -1999,6 +2004,15 @@ class GPHttpClient {
         else if (arg && typeof (arg) === 'function')
             this.token = arg;
         //else do nothing
+    }
+    /**
+     * @return {?}
+     */
+    getToken() {
+        if (this.token && typeof (this.token) === 'function')
+            return this.token();
+        else
+            return this.token || null;
     }
     /**
      * @param {?} options
@@ -2097,6 +2111,11 @@ class XHRHttpClient extends GPHttpClient {
         return promise;
     }
 }
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
+ */
 
 /**
  * @fileoverview added by tsickle
@@ -4199,15 +4218,20 @@ const ServiceFactory = function (arg, baseUrl, httpClient) {
  * @fileoverview added by tsickle
  * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
  */
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
+ */
 /** @type {?} */
-const VERSION = "0.3.0";
-Polyfills();
+const ClientVersion = "0.3.0";
+polyfills();
 
 /**
  * @fileoverview added by tsickle
  * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
  */
 
-export { VERSION as ClientVersion, GPError, ItemTypes, ItemTypeLabels, Parameters as QueryParameters, Facets as QueryFacets, Query, queryFactory as QueryFactory, Fields as QueryFields, KGQuery, Classifiers as KGClassifiers, AgolQuery, factoryFn as URIFactory, Config, GPHttpClient, XHRHttpClient, ItemService, DatasetService, MapService, LayerService, ServiceService, GalleryService, UtilsService, KGService, ServiceFactory, AgolService, Event as TrackingEvent, TrackingService, Categories as TrackingCategories, Events as TrackingTypes, TrackingEventFactory };
+export { ClientVersion, GPError, ItemTypes, ItemTypeLabels, Parameters as QueryParameters, Facets as QueryFacets, Query, queryFactory as QueryFactory, Fields as QueryFields, KGQuery, Classifiers as KGClassifiers, factoryFn as URIFactory, Config, GPHttpClient, XHRHttpClient, ItemService, DatasetService, MapService, LayerService, ServiceService, GalleryService, UtilsService, KGService, ServiceFactory, AgolService, AgolQuery, Event as TrackingEvent, TrackingService, Categories as TrackingCategories, Events as TrackingTypes, TrackingEventFactory };
 
 //# sourceMappingURL=geoplatform-client.js.map

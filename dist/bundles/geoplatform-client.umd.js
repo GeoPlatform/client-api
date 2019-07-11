@@ -51,7 +51,7 @@ This software has been approved for release by the U.S. Department of the Interi
     /**
      * @return {?}
      */
-    function Polyfills () {
+    function polyfills() {
         apply();
     }
 
@@ -2963,7 +2963,7 @@ This software has been approved for release by the U.S. Department of the Interi
     /**
      * @return {?}
      */
-    function queryFactory () {
+    function queryFactory() {
         return new Query();
     }
 
@@ -2980,6 +2980,11 @@ This software has been approved for release by the U.S. Department of the Interi
         //appId: '...',
         configure: ɵ0$1
     };
+
+    /**
+     * @fileoverview added by tsickle
+     * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
+     */
 
     /**
      * @fileoverview added by tsickle
@@ -3024,6 +3029,18 @@ This software has been approved for release by the U.S. Department of the Interi
                 else if (arg && typeof (arg) === 'function')
                     this.token = arg;
                 //else do nothing
+            };
+        /**
+         * @return {?}
+         */
+        GPHttpClient.prototype.getToken = /**
+         * @return {?}
+         */
+            function () {
+                if (this.token && typeof (this.token) === 'function')
+                    return this.token();
+                else
+                    return this.token || null;
             };
         /**
          * @param {?} options
@@ -3142,6 +3159,11 @@ This software has been approved for release by the U.S. Department of the Interi
             };
         return XHRHttpClient;
     }(GPHttpClient));
+
+    /**
+     * @fileoverview added by tsickle
+     * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
+     */
 
     /**
      * @fileoverview added by tsickle
@@ -6149,16 +6171,21 @@ This software has been approved for release by the U.S. Department of the Interi
      * @fileoverview added by tsickle
      * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
      */
+
+    /**
+     * @fileoverview added by tsickle
+     * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
+     */
     /** @type {?} */
-    var VERSION = "0.3.0";
-    Polyfills();
+    var ClientVersion = "0.3.0";
+    polyfills();
 
     /**
      * @fileoverview added by tsickle
      * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
      */
 
-    exports.ClientVersion = VERSION;
+    exports.ClientVersion = ClientVersion;
     exports.GPError = GPError;
     exports.ItemTypes = ItemTypes;
     exports.ItemTypeLabels = ItemTypeLabels;
@@ -6169,7 +6196,6 @@ This software has been approved for release by the U.S. Department of the Interi
     exports.QueryFields = Fields;
     exports.KGQuery = KGQuery;
     exports.KGClassifiers = Classifiers;
-    exports.AgolQuery = AgolQuery;
     exports.URIFactory = factoryFn;
     exports.Config = Config;
     exports.GPHttpClient = GPHttpClient;
@@ -6184,6 +6210,7 @@ This software has been approved for release by the U.S. Department of the Interi
     exports.KGService = KGService;
     exports.ServiceFactory = ServiceFactory;
     exports.AgolService = AgolService;
+    exports.AgolQuery = AgolQuery;
     exports.TrackingEvent = Event;
     exports.TrackingService = TrackingService;
     exports.TrackingCategories = Categories;

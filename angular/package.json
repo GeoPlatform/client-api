@@ -4,13 +4,7 @@
     "typings": "dist/angular/index.d.ts",
     "ngPackage": {
         "lib": {
-            "entryFile": "src/index.ts",
-            "umdModuleIds": {
-                "q" : "Q"
-            },
-            "globals": {
-                "q" : "Q"
-            }
+            "entryFile": "src/public_api.ts"
         },
         "dest": "../dist/angular"
     },

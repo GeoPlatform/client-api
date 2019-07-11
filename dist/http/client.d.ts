@@ -13,6 +13,7 @@ declare class GPHttpClient {
      * @param arg - specify the bearer token or a function to retrieve it
      */
     setAuthToken(arg: string | Function): void;
+    getToken(): string;
     createRequestOpts(options: {
         [key: string]: any;
     }): any;

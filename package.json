@@ -12,7 +12,7 @@
         "amdId": "Client",
         "dest": "dist",
         "lib": {
-            "entryFile": "src/index.ts",
+            "entryFile": "src/public_api.ts",
             "externals": [
                 "q",
                 "axios"

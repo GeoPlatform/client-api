@@ -2122,30 +2122,12 @@ class XHRHttpClient extends GPHttpClient {
  * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
  */
 /**
- * ItemService
- * service for working with the GeoPlatform API to
+ * BaseService
+ * abstract service for working with the GeoPlatform API to
  * retrieve and manipulate items.
  *
- * Ex Searching Items
- *      let params = { q: 'test' };
- *      itemService.search(params).then(response=>{
- *          console.log(response.results.length + " of " + response.totalResults);
- *      }).catch(e=>{...});
- *
- * Ex Fetch Item:
- *      itemService.get(itemId).then(item=>{...}).catch(e=>{...});
- *
- * Ex Saving Item:
- *      itemService.save(item).then(item=>{...}).catch(e=>{...});
- *
- * Ex Deleting Item:
- *      itemService.remove(itemId).then(()=>{...}).catch(e=>{...});
- *
- * Ex Patching Item:
- *      itemService.patch(itemId,patch).then(item=>{...}).catch(e=>{...});
- *
  */
-class ItemService {
+class BaseService {
     /**
      * @param {?} url
      * @param {?} httpClient
@@ -2186,6 +2168,27 @@ class ItemService {
         return this.client;
     }
     /**
+     * @param {?} arg
+     * @return {?}
+     */
+    createPromise(arg) {
+        return new Promise(arg);
+    }
+    /**
+     * @param {?} value
+     * @return {?}
+     */
+    createAndResolvePromise(value) {
+        return Promise.resolve(value);
+    }
+    /**
+     * @param {?} error
+     * @return {?}
+     */
+    createAndRejectPromise(error) {
+        return Promise.reject(error);
+    }
+    /**
      * @param {?} logger - log service
      * @return {?}
      */
@@ -2211,6 +2214,82 @@ class ItemService {
         }
     }
     /**
+     * @param {?} options - optional object defining request options
+     * @return {?} request options for xhr
+     */
+    buildRequest(options) {
+        if (this.httpMethods.indexOf(options["method"]) < 0)
+            throw new Error(`Unsupported HTTP method ${options["method"]}`);
+        if (!options["url"])
+            throw new Error(`Must specify a URL for HTTP requests`);
+        options["timeout"] = this._timeout || 30000;
+        /** @type {?} */
+        let opts = this.createRequestOpts(options);
+        return opts;
+    }
+    /**
+     * @param {?} options
+     * @return {?}
+     */
+    createRequestOpts(options) {
+        /** @type {?} */
+        let request = this.client.createRequestOpts(options);
+        this.logDebug("BaseService.createRequestOpts() - " + JSON.stringify(request));
+        return request;
+    }
+    /**
+     * @param {?} opts
+     * @return {?}
+     */
+    execute(opts) {
+        return this.client.execute(opts)
+            .catch(e => {
+            if (e === null || typeof (e) === 'undefined') {
+                e = new Error("Request failed but didn't return an " +
+                    "error. This is most likely because the request timed out");
+            }
+            return this.createAndRejectPromise(e);
+        });
+    }
+}
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
+ */
+/**
+ * ItemService
+ * service for working with the GeoPlatform API to
+ * retrieve and manipulate items.
+ *
+ * Ex Searching Items
+ *      let params = { q: 'test' };
+ *      itemService.search(params).then(response=>{
+ *          console.log(response.results.length + " of " + response.totalResults);
+ *      }).catch(e=>{...});
+ *
+ * Ex Fetch Item:
+ *      itemService.get(itemId).then(item=>{...}).catch(e=>{...});
+ *
+ * Ex Saving Item:
+ *      itemService.save(item).then(item=>{...}).catch(e=>{...});
+ *
+ * Ex Deleting Item:
+ *      itemService.remove(itemId).then(()=>{...}).catch(e=>{...});
+ *
+ * Ex Patching Item:
+ *      itemService.patch(itemId,patch).then(item=>{...}).catch(e=>{...});
+ *
+ */
+class ItemService extends BaseService {
+    /**
+     * @param {?} url
+     * @param {?} httpClient
+     */
+    constructor(url, httpClient) {
+        super(url, httpClient);
+    }
+    /**
      * @param {?} id - identifier of item to fetch
      * @param {?=} options - optional set of request options to apply to xhr request
      * @return {?} Promise resolving Item object or an error
@@ -2222,7 +2301,7 @@ class ItemService {
             url += '/versions/' + options.version;
             // this.logDebug("Client.get requesting version: " + options.version);
         }
-        return Promise.resolve(url)
+        return this.createAndResolvePromise(url)
             .then(url => {
             /** @type {?} */
             let opts = this.buildRequest({ method: "GET", url: url, options: options });
@@ -2242,7 +2321,7 @@ class ItemService {
      * @return {?} Promise resolving Item object or an error
      */
     save(itemObj, options) {
-        return Promise.resolve(itemObj)
+        return this.createAndResolvePromise(itemObj)
             .then(item => {
             /** @type {?} */
             let method = 'POST';
@@ -2284,7 +2363,7 @@ class ItemService {
      * @return {?} Promise resolving true if successful or an error
      */
     remove(id, options) {
-        return Promise.resolve(this.baseUrl + '/' + id)
+        return this.createAndResolvePromise(this.baseUrl + '/' + id)
             .then(url => {
             /** @type {?} */
             let opts = this.buildRequest({
@@ -2308,7 +2387,7 @@ class ItemService {
      * @return {?} Promise resolving Item object or an error
      */
     patch(id, patch, options) {
-        return Promise.resolve(this.baseUrl + '/' + id)
+        return this.createAndResolvePromise(this.baseUrl + '/' + id)
             .then(url => {
             /** @type {?} */
             let opts = this.buildRequest({
@@ -2331,7 +2410,7 @@ class ItemService {
      * @return {?} Promise resolving clone of Item or an error
      */
     clone(id, overrides, options) {
-        return Promise.resolve(this.baseUrl + '/' + id + '/clone')
+        return this.createAndResolvePromise(this.baseUrl + '/' + id + '/clone')
             .then(url => {
             /** @type {?} */
             let opts = this.buildRequest({
@@ -2353,7 +2432,7 @@ class ItemService {
      * @return {?} Promise resolving search results
      */
     search(arg, options) {
-        return Promise.resolve(arg)
+        return this.createAndResolvePromise(arg)
             .then(params => {
             /** @type {?} */
             let ps = {};
@@ -2388,7 +2467,7 @@ class ItemService {
      * @return {?} Promise resolving GeoPlatform Item
      */
     import(arg, format, options) {
-        return Promise.resolve(true)
+        return this.createAndResolvePromise(true)
             .then(() => {
             if (arg === null || arg === undefined) {
                 throw new Error("Must provide a valid URL or File");
@@ -2440,7 +2519,7 @@ class ItemService {
      * @return {?} Promise resolving HTTP response object for enabling attachment downloading
      */
     export(id, format, options) {
-        return Promise.resolve(true)
+        return this.createAndResolvePromise(true)
             .then(() => {
             /** @type {?} */
             let url = this.baseUrl + '/' + id + '/export';
@@ -2473,7 +2552,7 @@ class ItemService {
      * @return {?} Promise resolving string URI
      */
     getUri(object, options) {
-        return Promise.resolve(object)
+        return this.createAndResolvePromise(object)
             .then(obj => {
             if (!obj || !obj.type)
                 throw new Error("Must provide an object with a type property");
@@ -2501,7 +2580,7 @@ class ItemService {
      * @return {?} Promise resolving list of matching items or an error
      */
     getMultiple(ids, options) {
-        return Promise.resolve(ids)
+        return this.createAndResolvePromise(ids)
             .then(identifiers => {
             /** @type {?} */
             let method = 'POST';
@@ -2525,7 +2604,7 @@ class ItemService {
      * @return {?} Promise resolving list containing uri-item association where exists
      */
     exists(uris, options) {
-        return Promise.resolve(uris)
+        return this.createAndResolvePromise(uris)
             .then(uris => {
             /** @type {?} */
             let method = 'POST';
@@ -2549,7 +2628,7 @@ class ItemService {
      * @return {?}
      */
     like(item, options) {
-        return Promise.resolve(item.id)
+        return this.createAndResolvePromise(item.id)
             .then(id => {
             /** @type {?} */
             let method = 'PUT';
@@ -2573,7 +2652,7 @@ class ItemService {
      * @return {?}
      */
     view(item, options) {
-        return Promise.resolve(item.id)
+        return this.createAndResolvePromise(item.id)
             .then(id => {
             /** @type {?} */
             let method = 'PUT';
@@ -2598,7 +2677,7 @@ class ItemService {
      * @return {?} Promise resolving array of associated items of the item in question
      */
     associations(id, params, options) {
-        return Promise.resolve(id)
+        return this.createAndResolvePromise(id)
             .then(id => {
             /** @type {?} */
             let url = this.baseUrl + '/' + id + '/associations';
@@ -2626,7 +2705,7 @@ class ItemService {
      * @return {?} Promise resolving array of available versions of the item
      */
     versions(id, params, options) {
-        return Promise.resolve(id)
+        return this.createAndResolvePromise(id)
             .then(id => {
             /** @type {?} */
             let url = this.baseUrl + '/' + id + '/versions';
@@ -2642,44 +2721,6 @@ class ItemService {
             Object.assign(err, e);
             this.logError('ItemService.versions() - ' + err.message);
             throw err;
-        });
-    }
-    /**
-     * @param {?} options - optional object defining request options
-     * @return {?} request options for xhr
-     */
-    buildRequest(options) {
-        if (this.httpMethods.indexOf(options["method"]) < 0)
-            throw new Error(`Unsupported HTTP method ${options["method"]}`);
-        if (!options["url"])
-            throw new Error(`Must specify a URL for HTTP requests`);
-        options["timeout"] = this._timeout || 30000;
-        /** @type {?} */
-        let opts = this.createRequestOpts(options);
-        return opts;
-    }
-    /**
-     * @param {?} options
-     * @return {?}
-     */
-    createRequestOpts(options) {
-        /** @type {?} */
-        let request = this.client.createRequestOpts(options);
-        this.logDebug("ItemService.createRequestOpts() - " + JSON.stringify(request));
-        return request;
-    }
-    /**
-     * @param {?} opts
-     * @return {?}
-     */
-    execute(opts) {
-        return this.client.execute(opts)
-            .catch(e => {
-            if (e === null || typeof (e) === 'undefined') {
-                e = new Error("ItemService.execute() - Request failed but didn't return an " +
-                    "error. This is most likely because the request timed out");
-            }
-            return Promise.reject(e);
         });
     }
 }
@@ -3135,49 +3176,22 @@ class GalleryService extends ItemService {
  * @fileoverview added by tsickle
  * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
  */
-class UtilsService {
+class UtilsService extends BaseService {
     /**
      * @param {?} url
      * @param {?} httpClient
      */
     constructor(url, httpClient) {
-        this.timeout = 30000;
-        this.httpMethods = ["GET", "POST", "PUT", "DELETE", "PATCH"];
-        this.client = httpClient;
-        this.baseUrl = url;
-        this.timeout = Config["timeout"] || 30000;
+        super(url, httpClient);
+        this.setTimeout(30000);
     }
     /**
      * @param {?} baseUrl
      * @return {?}
      */
     setUrl(baseUrl) {
+        super.setUrl(baseUrl);
         this.baseUrl = baseUrl;
-    }
-    /**
-     * @param {?} logger - log service
-     * @return {?}
-     */
-    setLogger(logger) {
-        this.logger = logger;
-    }
-    /**
-     * @param {?} e - error to log (if logger specified)
-     * @return {?}
-     */
-    logError(e) {
-        if (this.logger && this.logger.error) {
-            this.logger.error(e);
-        }
-    }
-    /**
-     * @param {?} msg - message to log as debug
-     * @return {?}
-     */
-    logDebug(msg) {
-        if (this.logger && this.logger.debug) {
-            this.logger.debug(msg);
-        }
     }
     /**
      * @param {?} property - optional capa property to specifically request
@@ -3190,7 +3204,7 @@ class UtilsService {
         let url = this.baseUrl + '/api/capabilities';
         if (property)
             url += '/' + property;
-        return Promise.resolve(url)
+        return this.createAndResolvePromise(url)
             .then((url) => {
             /** @type {?} */
             let opts = this.buildRequest({
@@ -3215,7 +3229,7 @@ class UtilsService {
     parseFile(file, format, options) {
         /** @type {?} */
         var url = this.baseUrl + '/api/utils/parse';
-        return Promise.resolve(url)
+        return this.createAndResolvePromise(url)
             .then(url => {
             /** @type {?} */
             let opts = this.buildRequest({
@@ -3246,7 +3260,7 @@ class UtilsService {
     locate(value, options) {
         /** @type {?} */
         var url = this.baseUrl + '/api/utils/gazetteer';
-        return Promise.resolve(url)
+        return this.createAndResolvePromise(url)
             .then(url => {
             /** @type {?} */
             let opts = this.buildRequest({
@@ -3264,39 +3278,6 @@ class UtilsService {
             Object.assign(err, e);
             this.logError('UtilsService.locate() - ' + err.message);
             throw err;
-        });
-    }
-    /**
-     * @param {?} options - optional object defining request options
-     * @return {?} request options for xhr
-     */
-    buildRequest(options) {
-        if (this.httpMethods.indexOf(options["method"]) < 0)
-            throw new Error(`Unsupported HTTP method ${options["method"]}`);
-        if (!options["url"])
-            throw new Error(`Must specify a URL for HTTP requests`);
-        options["timeout"] = this.timeout || Config["timeout"] || 30000;
-        return this.createRequestOpts(options);
-    }
-    /**
-     * @param {?} options
-     * @return {?}
-     */
-    createRequestOpts(options) {
-        return this.client.createRequestOpts(options);
-    }
-    /**
-     * @param {?} opts
-     * @return {?}
-     */
-    execute(opts) {
-        return this.client.execute(opts)
-            .catch((e) => {
-            if (e === null || typeof (e) === 'undefined') {
-                e = new Error("UtilsService.execute() - Request failed but didn't return an " +
-                    "error. This is most likely because the request timed out");
-            }
-            return Promise.reject(e);
         });
     }
 }
@@ -3522,23 +3503,21 @@ class AgolQuery {
         return this._query["size"];
     }
 }
-class AgolService {
+class AgolService extends BaseService {
     /**
      * @param {?} url
      * @param {?} httpClient
      */
     constructor(url, httpClient) {
-        this.timeout = 30000;
-        this.httpMethods = ["GET", "POST", "PUT", "DELETE", "PATCH"];
-        this.setUrl(url);
-        this.client = httpClient;
-        this.timeout = 30000;
+        super(url, httpClient);
+        this.setTimeout(30000);
     }
     /**
      * @param {?} baseUrl
      * @return {?}
      */
     setUrl(baseUrl) {
+        super.setUrl(baseUrl);
         this.baseUrl = baseUrl + '/api/agol';
     }
     /**
@@ -3547,7 +3526,7 @@ class AgolService {
      * @return {?} Promise resolving Item object or an error
      */
     getOrg(id, options) {
-        return Promise.resolve(id)
+        return this.createAndResolvePromise(id)
             .then(id => {
             /** @type {?} */
             let opts = this.buildRequest({
@@ -3568,7 +3547,7 @@ class AgolService {
      * @return {?} Promise resolving search results
      */
     searchOrgs(arg, options) {
-        return Promise.resolve(arg)
+        return this.createAndResolvePromise(arg)
             .then(params => {
             /** @type {?} */
             let ps = params.getQuery();
@@ -3594,7 +3573,7 @@ class AgolService {
      * @return {?} Promise resolving Item object or an error
      */
     getGroup(id, options) {
-        return Promise.resolve(id)
+        return this.createAndResolvePromise(id)
             .then(id => {
             /** @type {?} */
             let opts = this.buildRequest({
@@ -3615,7 +3594,7 @@ class AgolService {
      * @return {?} Promise resolving search results
      */
     searchGroups(arg, options) {
-        return Promise.resolve(arg)
+        return this.createAndResolvePromise(arg)
             .then(params => {
             /** @type {?} */
             let ps = params.getQuery();
@@ -3641,7 +3620,7 @@ class AgolService {
      * @return {?} Promise resolving Item object or an error
      */
     getItem(id, options) {
-        return Promise.resolve(id)
+        return this.createAndResolvePromise(id)
             .then((id) => {
             /** @type {?} */
             let opts = this.buildRequest({
@@ -3664,7 +3643,7 @@ class AgolService {
      * @return {?} Promise resolving search results
      */
     searchItems(arg, options) {
-        return Promise.resolve(arg)
+        return this.createAndResolvePromise(arg)
             .then(params => {
             /** @type {?} */
             let ps = params.getQuery();
@@ -3703,42 +3682,6 @@ class AgolService {
         if (!ids.length)
             return null;
         return ids[0].replace('agol:', '');
-    }
-    /**
-     * @param {?} options - optional object defining request options
-     * @return {?} request options for xhr
-     */
-    buildRequest(options) {
-        if (this.httpMethods.indexOf(options["method"]) < 0)
-            throw new Error(`Unsupported HTTP method ${options["method"]}`);
-        if (!options["url"])
-            throw new Error(`Must specify a URL for HTTP requests`);
-        options["timeout"] = this.timeout || Config["timeout"] || 30000;
-        return this.createRequestOpts(options);
-    }
-    /**
-     * @param {?} options
-     * @return {?}
-     */
-    createRequestOpts(options) {
-        return this.client.createRequestOpts(options);
-    }
-    /**
-     * @param {?} opts
-     * @return {?}
-     */
-    execute(opts) {
-        return new Promise((resolve, reject) => {
-            this.client.execute(opts)
-                .then(result => resolve(result))
-                .catch(e => {
-                if (e === null || typeof (e) === 'undefined') {
-                    e = new Error("AGOLService.execute() - Request failed but didn't return an " +
-                        "error. This is most likely because the request timed out");
-                }
-                reject(e);
-            });
-        });
     }
 }
 

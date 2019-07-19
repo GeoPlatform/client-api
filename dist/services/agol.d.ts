@@ -1,4 +1,6 @@
+import { Item, SearchResults } from '../shared/models';
 import GPHttpClient from '../http/client';
+import BaseService from "./base";
 declare class AgolQuery {
     private _query;
     constructor();
@@ -48,11 +50,7 @@ declare class AgolQuery {
     setPageSize(size: number): void;
     getPageSize(): number;
 }
-declare class AgolService {
-    private baseUrl;
-    private client;
-    private timeout;
-    private httpMethods;
+declare class AgolService extends BaseService {
     constructor(url: string, httpClient: GPHttpClient);
     setUrl(baseUrl: string): void;
     /**
@@ -60,58 +58,37 @@ declare class AgolService {
      * @param options - optional set of request options to apply to xhr request
      * @return Promise resolving Item object or an error
      */
-    getOrg(id: string, options?: any): Promise<any>;
+    getOrg(id: string, options?: any): Promise<Item>;
     /**
      * @param arg - either JS object of query parameters or Query instance
      * @param options - optional set of request options to apply to xhr request
      * @return Promise resolving search results
      */
-    searchOrgs(arg: AgolQuery, options?: any): Promise<any>;
+    searchOrgs(arg: AgolQuery, options?: any): Promise<SearchResults>;
     /**
      * @param id - identifier of AGOL group to fetch
      * @param options - optional set of request options to apply to xhr request
      * @return Promise resolving Item object or an error
      */
-    getGroup(id: string, options?: any): Promise<any>;
+    getGroup(id: string, options?: any): Promise<Item>;
     /**
      * @param arg - either JS object of query parameters or AgolQuery instance
      * @param options - optional set of request options to apply to xhr request
      * @return Promise resolving search results
      */
-    searchGroups(arg: AgolQuery, options?: any): Promise<any>;
+    searchGroups(arg: AgolQuery, options?: any): Promise<SearchResults>;
     /**
      * @param id - identifier of AGOL item to fetch
      * @param options - optional set of request options to apply to xhr request
      * @return Promise resolving Item object or an error
      */
-    getItem(id: string, options?: any): Promise<any>;
+    getItem(id: string, options?: any): Promise<Item>;
     /**
      * @param arg - either JS object of query parameters or AgolQuery instance
      * @param options - optional set of request options to apply to xhr request
      * @return Promise resolving search results
      */
-    searchItems(arg: AgolQuery, options?: any): Promise<any>;
+    searchItems(arg: AgolQuery, options?: any): Promise<SearchResults>;
     getAgolId(obj: any): string | null;
-    /**
-     * @param method - one of "GET", "POST", "PUT", "DELETE", "PATCH"
-     * @param url - destination of xhr request
-     * @param params - object to be sent with request as query parameters
-     * @param data - object to be sent with request as body
-     * @param options - optional object defining request options
-     * @return request options for xhr
-     */
-    buildRequest(options: {
-        [key: string]: any;
-    }): {
-        [key: string]: any;
-    };
-    createRequestOpts(options: {
-        [key: string]: any;
-    }): {
-        [key: string]: any;
-    };
-    execute(opts: {
-        [key: string]: any;
-    }): Promise<any>;
 }
 export { AgolService as default, AgolService, AgolQuery };

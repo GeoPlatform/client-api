@@ -25,7 +25,6 @@
     .config(['$httpProvider','gpConfigProvider',
         function myAppConfig ($httpProvider, gpConfigProvider) {
             $httpProvider.defaults.withCredentials = true;
-
             gpConfigProvider.$get().configure({
                 ualUrl: "https://ual.geoplatform.gov"
             });
@@ -39,14 +38,11 @@
                 </li>
             </ul>
         `,
-        controller: function($http, $timeout, gpItemService, gpQueryFactory) {
+        controller: function(gpItemService, gpQueryFactory) {
             this.$onInit = function() {
-                gpItemService.search(gpQueryFactory())
-                .then( response => {
-                    $timeout( () => {
-                        this.results = response.results;
-                    });
-                });
+                gpItemService.search( gpQueryFactory() )
+                .then( response => { this.results = response.results; })
+                .catch( error => { console.log(error.message); });
             };
         }
     });

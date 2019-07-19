@@ -3,6 +3,8 @@ import { Item, SearchResults } from '../shared/models';
 import Query from '../shared/query';
 import GPHttpClient from '../http/client';
 
+import BaseService from './base';
+
 /**
  * ItemService
  * service for working with the GeoPlatform API to
@@ -27,73 +29,11 @@ import GPHttpClient from '../http/client';
  *      itemService.patch(itemId,patch).then(item=>{...}).catch(e=>{...});
  *
  */
-class ItemService {
-
-    protected apiBase ?: string;
-    protected baseUrl ?: string;
-    protected client : GPHttpClient;
-    protected _timeout : number = 30000;
-    protected logger : any;
-    protected httpMethods : string[] = ["GET", "POST", "PUT", "DELETE", "PATCH"];
+class ItemService extends BaseService {
 
     constructor(url : string, httpClient : GPHttpClient) {
-        this.setUrl(url);
-        this.client = httpClient;
+        super(url, httpClient);
     }
-
-    setUrl(baseUrl : string) {
-        this.apiBase = baseUrl;
-        this.baseUrl = baseUrl + '/api/items';
-    }
-
-    /**
-     * @param milliseconds - override environment variable timeout
-     */
-    setTimeout(milliseconds : number) {
-        this._timeout = milliseconds;
-    }
-
-    /**
-     * @param milliseconds - override environment variable timeout
-     */
-    timeout(milliseconds : number) : ItemService {
-        this.setTimeout(milliseconds);
-        return this;
-    }
-
-    /**
-     * @return GPHttpClient instance or null if one was not provided
-     */
-    getClient() {
-        return this.client;
-    }
-
-    /**
-     * @param logger - log service
-     */
-    setLogger(logger : any) {
-        this.logger = logger;
-    }
-
-    /**
-     * @param e - error to log (if logger specified)
-     */
-    logError(e : string|Error) {
-        if(this.logger && this.logger.error) {
-            this.logger.error(e);
-        }
-    }
-
-    /**
-     * @param msg - message to log as debug
-     */
-    logDebug(msg : string) {
-        if(this.logger && this.logger.debug) {
-            this.logger.debug(msg);
-        }
-    }
-
-
 
 
     /**
@@ -108,7 +48,7 @@ class ItemService {
             url += '/versions/' + options.version;
             // this.logDebug("Client.get requesting version: " + options.version);
         }
-        return Promise.resolve( url )
+        return this.createAndResolvePromise( url )
         .then( url => {
             let opts = this.buildRequest({ method:"GET", url:url, options:options });
             return this.execute(opts);
@@ -128,7 +68,7 @@ class ItemService {
      */
     save (itemObj : Item, options ?: any) : Promise<Item> {
 
-        return Promise.resolve( itemObj )
+        return this.createAndResolvePromise( itemObj )
         .then( item => {
 
             let method = 'POST',
@@ -169,7 +109,7 @@ class ItemService {
      */
     remove (id : string, options ?: any) : Promise<boolean> {
 
-        return Promise.resolve( this.baseUrl + '/' + id )
+        return this.createAndResolvePromise( this.baseUrl + '/' + id )
         .then( url => {
             let opts = this.buildRequest({
                 method:"DELETE", url: url, options: options
@@ -193,7 +133,7 @@ class ItemService {
      */
     patch (id : string, patch : any, options ?: any) : Promise<Item> {
 
-        return Promise.resolve( this.baseUrl + '/' + id )
+        return this.createAndResolvePromise( this.baseUrl + '/' + id )
         .then( url => {
             let opts = this.buildRequest({
                 method: "PATCH", url: url, data: patch, options: options
@@ -217,7 +157,7 @@ class ItemService {
      */
     clone (id : string, overrides : any, options ?: any) : Promise<Item> {
 
-        return Promise.resolve( this.baseUrl + '/' + id + '/clone' )
+        return this.createAndResolvePromise( this.baseUrl + '/' + id + '/clone' )
         .then( url => {
             let opts = this.buildRequest({
                 method: "POST", url: url, data: overrides, options: options
@@ -239,7 +179,7 @@ class ItemService {
      */
     search (arg ?: any, options ?: any) : Promise<SearchResults> {
 
-        return Promise.resolve( arg )
+        return this.createAndResolvePromise( arg )
         .then( params => {
             let ps = {};
             if(params && typeof(params.getQuery) === 'function') ps = params.getQuery();
@@ -270,7 +210,7 @@ class ItemService {
      */
     import (arg : any, format : string, options ?: any) : Promise<Item> {
 
-        return Promise.resolve( true )
+        return this.createAndResolvePromise( true )
         .then( () => {
             if(arg===null || arg === undefined) {
                 throw new Error("Must provide a valid URL or File");
@@ -318,7 +258,7 @@ class ItemService {
      */
     export (id : string, format : string, options ?: any) : Promise<any> {
 
-        return Promise.resolve( true )
+        return this.createAndResolvePromise( true )
         .then( () => {
             let url = this.baseUrl + '/' + id + '/export';
             let opts = this.buildRequest({
@@ -350,7 +290,7 @@ class ItemService {
      */
     getUri (object : any, options ?: any) : Promise<any> {
 
-        return Promise.resolve( object )
+        return this.createAndResolvePromise( object )
         .then( obj => {
             if(!obj || !obj.type)
                 throw new Error("Must provide an object with a type property");
@@ -379,7 +319,7 @@ class ItemService {
      */
     getMultiple (ids : string[], options ?: any) : Promise<any> {
 
-        return Promise.resolve( ids )
+        return this.createAndResolvePromise( ids )
         .then( identifiers => {
 
             let method = 'POST',
@@ -404,7 +344,7 @@ class ItemService {
      * @return Promise resolving list containing uri-item association where exists
      */
     exists(uris : string[], options ?: any) : Promise<any> {
-        return Promise.resolve(uris)
+        return this.createAndResolvePromise(uris)
         .then( uris => {
             let method = 'POST', url = this.apiBase + '/api/utils/exists';
             let opts = this.buildRequest({method:method, url:url, data:uris, options:options});
@@ -420,7 +360,7 @@ class ItemService {
 
 
     like(item : any, options ?: any) : Promise<any> {
-        return Promise.resolve(item.id)
+        return this.createAndResolvePromise(item.id)
         .then( id => {
             let method = 'PUT', url = this.apiBase + '/api/items/' + id + '/likes';
             let opts = this.buildRequest({method:method, url:url, options:options});
@@ -435,7 +375,7 @@ class ItemService {
     }
 
     view(item : any, options ?: any) : Promise<any> {
-        return Promise.resolve(item.id)
+        return this.createAndResolvePromise(item.id)
         .then( id => {
             let method = 'PUT', url = this.apiBase + '/api/items/' + id + '/views';
             let opts = this.buildRequest({method:method, url:url, options:options});
@@ -457,7 +397,7 @@ class ItemService {
      */
     associations (id : string, params : any, options ?: any) : Promise<any> {
 
-        return Promise.resolve( id )
+        return this.createAndResolvePromise( id )
         .then( id => {
             let url = this.baseUrl + '/' + id + '/associations';
             let opts = this.buildRequest({
@@ -484,7 +424,7 @@ class ItemService {
      */
     versions (id : string, params ?: any, options ?: any) : Promise<any> {
 
-        return Promise.resolve( id )
+        return this.createAndResolvePromise( id )
         .then( id => {
             let url = this.baseUrl + '/' + id + '/versions';
             let opts = this.buildRequest({
@@ -497,48 +437,6 @@ class ItemService {
             Object.assign(err, e);
             this.logError('ItemService.versions() - ' + err.message);
             throw err;
-        });
-    }
-
-
-
-    /* ----------------------------------------------------------- */
-
-    /**
-     * @param method - one of "GET", "POST", "PUT", "DELETE", "PATCH"
-     * @param url - destination of xhr request
-     * @param params - object to be sent with request as query parameters
-     * @param data - object to be sent with request as body
-     * @param options - optional object defining request options
-     * @return request options for xhr
-     */
-    buildRequest (options : {[key:string]:any}) : {[key:string]:any} {
-
-        if(this.httpMethods.indexOf(options.method)<0)
-            throw new Error(`Unsupported HTTP method ${options.method}`);
-
-        if(!options.url)
-            throw new Error(`Must specify a URL for HTTP requests`);
-
-        options.timeout = this._timeout || 30000;
-        let opts = this.createRequestOpts(options);
-        return opts;
-    }
-
-    createRequestOpts(options : {[key:string]:any}) : {[key:string]:any} {
-        let request = this.client.createRequestOpts(options);
-        this.logDebug("ItemService.createRequestOpts() - " + JSON.stringify(request));
-        return request;
-    }
-
-    execute(opts : {[key:string]:any} ) : Promise<any> {
-        return this.client.execute(opts)
-        .catch(e => {
-            if(e === null || typeof(e) === 'undefined') {
-                e = new Error("ItemService.execute() - Request failed but didn't return an " +
-                "error. This is most likely because the request timed out");
-            }
-            return Promise.reject(e);
         });
     }
 

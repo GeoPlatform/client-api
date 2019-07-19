@@ -7,6 +7,7 @@ import { GPHttpClient } from "@geoplatform/client";
 class NGHttpClient extends GPHttpClient {
 
     private $http : any;
+    private $q : any;
 
     /**
      * @param options.timeout
@@ -20,6 +21,8 @@ class NGHttpClient extends GPHttpClient {
         }
         if(options && options.$http)
             this.$http = options.$http;
+        if(options && options.$q)
+            this.$q = options.$q;
     }
 
     createRequestOpts(options : { [key:string] : any }) : any {
@@ -67,17 +70,28 @@ class NGHttpClient extends GPHttpClient {
 
     execute(opts : any) : Promise<any> {
 
-        let $http = this.$http || angular.injector(['ng']).get('$http');
-        return Promise.resolve( $http )
-        .then($http => {
-            if(typeof($http) === 'undefined')
-                throw new Error("Angular $http not resolved");
+        let $injector = angular.injector(['ng']);
+        let $q = this.$q || $injector.get('$q');
+        let $http = this.$http || $injector.get('$http');
 
-            // console.log(opts);
-            return $http(opts);
-        })
-        .then(response=>response.data)
-        .catch(response=> { throw new Error(response.data); });
+        let deferred = $q.defer();
+        $http(opts)
+        .then( response => { deferred.resolve(response.data); })
+        .catch(response => { deferred.reject(new Error(response.data)); });
+        return deferred.promise.then((data)=>data) as Promise<any>;
+
+        // return Promise.resolve( $http )
+        // .then($http => {
+        //     if(typeof($http) === 'undefined')
+        //         throw new Error("Angular $http not resolved");
+        //
+        //     // console.log(opts);
+        //     return $http(opts);
+        // })
+        // .then(response=> () => {
+        //     return $timeout(()=>{return response.data;});
+        // })
+        // .catch(response=> { throw new Error(response.data); });
     }
 
 }

@@ -1,51 +1,20 @@
 
 import Config from '../shared/config';
 import GPHttpClient from '../http/client';
+import BaseService from './base';
 
-class UtilsService {
 
-    private baseUrl : string;
-    private client : GPHttpClient;
-    private timeout : number = 30000;
-    private logger : any;
-    private httpMethods : string[] = ["GET", "POST", "PUT", "DELETE", "PATCH"];
-
+class UtilsService extends BaseService {
 
     constructor(url : string, httpClient : GPHttpClient) {
-        this.client = httpClient;
-        this.baseUrl = url;
-        this.timeout = Config.timeout || 30000;
+        super(url, httpClient);
+        this.setTimeout(30000);
     }
 
     setUrl(baseUrl : string) {
+        super.setUrl(baseUrl);
         this.baseUrl = baseUrl;
     }
-
-    /**
-     * @param logger - log service
-     */
-    setLogger(logger : any) {
-        this.logger = logger;
-    }
-
-    /**
-     * @param e - error to log (if logger specified)
-     */
-    logError(e : string|Error) {
-        if(this.logger && this.logger.error) {
-            this.logger.error(e);
-        }
-    }
-
-    /**
-     * @param msg - message to log as debug
-     */
-    logDebug(msg : string) {
-        if(this.logger && this.logger.debug) {
-            this.logger.debug(msg);
-        }
-    }
-
 
     /**
      * @param property - optional capa property to specifically request
@@ -59,7 +28,7 @@ class UtilsService {
         if(property)
             url += '/' + property;
 
-        return Promise.resolve( url )
+        return this.createAndResolvePromise( url )
         .then( (url) => {
             let opts = this.buildRequest({
                 method:"GET", url:url, params:query||{}, options:options
@@ -84,7 +53,7 @@ class UtilsService {
 
         var url = this.baseUrl + '/api/utils/parse';
 
-        return Promise.resolve( url )
+        return this.createAndResolvePromise( url )
         .then( url => {
 
             let opts = this.buildRequest({
@@ -115,7 +84,7 @@ class UtilsService {
     locate(value : any, options ?: any) : Promise<any> {
 
         var url = this.baseUrl + '/api/utils/gazetteer';
-        return Promise.resolve(url)
+        return this.createAndResolvePromise(url)
         .then( url => {
             let opts = this.buildRequest({
                 method: 'GET',
@@ -131,49 +100,6 @@ class UtilsService {
             Object.assign(err, e);
             this.logError('UtilsService.locate() - ' + err.message);
             throw err;
-        });
-    }
-
-
-
-
-
-
-    /* ----------------------------------------------------------- */
-
-    /**
-     * @param method - one of "GET", "POST", "PUT", "DELETE", "PATCH"
-     * @param url - destination of xhr request
-     * @param params - object to be sent with request as query parameters
-     * @param data - object to be sent with request as body
-     * @param options - optional object defining request options
-     * @return request options for xhr
-     */
-    buildRequest (options : {[key:string]:any}) : {[key:string]:any} {
-
-        if(this.httpMethods.indexOf(options.method)<0)
-            throw new Error(`Unsupported HTTP method ${options.method}`);
-
-        if(!options.url)
-            throw new Error(`Must specify a URL for HTTP requests`);
-
-        options.timeout = this.timeout || Config.timeout || 30000;
-
-        return this.createRequestOpts(options);
-    }
-
-    createRequestOpts(options : {[key:string]:any}) : {[key:string]:any} {
-        return this.client.createRequestOpts(options);
-    }
-
-    execute(opts : {[key:string]:any}) : Promise<any> {
-        return this.client.execute(opts)
-        .catch(( e : Error ) => {
-            if(e === null || typeof(e) === 'undefined') {
-                e = new Error("UtilsService.execute() - Request failed but didn't return an " +
-                "error. This is most likely because the request timed out");
-            }
-            return Promise.reject(e);
         });
     }
 

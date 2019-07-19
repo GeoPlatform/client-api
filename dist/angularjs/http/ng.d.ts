@@ -1,6 +1,7 @@
 import { GPHttpClient } from "@geoplatform/client";
 declare class NGHttpClient extends GPHttpClient {
     private $http;
+    private $q;
     /**
      * @param options.timeout
      * @param options.token - the bearer token or a function to retrieve it

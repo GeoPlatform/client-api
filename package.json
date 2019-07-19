@@ -14,15 +14,12 @@
         "lib": {
             "entryFile": "src/public_api.ts",
             "externals": [
-                "q",
                 "axios"
             ],
             "umdModuleIds": {
-                "q": "Q",
                 "axios": "axios"
             },
             "globals": {
-                "q": "Q",
                 "axios": "axios"
             }
         }
@@ -44,8 +41,7 @@
     ],
     "private": true,
     "peerDependencies": {
-        "axios": "^0.18.0",
-        "q": "1.5.1"
+        "axios": "^0.18.0"
     },
     "devDependencies": {
         "@angular/cli": "~1.7.4",

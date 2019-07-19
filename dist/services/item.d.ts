@@ -1,5 +1,6 @@
 import { Item, SearchResults } from '../shared/models';
 import GPHttpClient from '../http/client';
+import BaseService from './base';
 /**
  * ItemService
  * service for working with the GeoPlatform API to
@@ -24,39 +25,8 @@ import GPHttpClient from '../http/client';
  *      itemService.patch(itemId,patch).then(item=>{...}).catch(e=>{...});
  *
  */
-declare class ItemService {
-    protected apiBase?: string;
-    protected baseUrl?: string;
-    protected client: GPHttpClient;
-    protected _timeout: number;
-    protected logger: any;
-    protected httpMethods: string[];
+declare class ItemService extends BaseService {
     constructor(url: string, httpClient: GPHttpClient);
-    setUrl(baseUrl: string): void;
-    /**
-     * @param milliseconds - override environment variable timeout
-     */
-    setTimeout(milliseconds: number): void;
-    /**
-     * @param milliseconds - override environment variable timeout
-     */
-    timeout(milliseconds: number): ItemService;
-    /**
-     * @return GPHttpClient instance or null if one was not provided
-     */
-    getClient(): GPHttpClient;
-    /**
-     * @param logger - log service
-     */
-    setLogger(logger: any): void;
-    /**
-     * @param e - error to log (if logger specified)
-     */
-    logError(e: string | Error): void;
-    /**
-     * @param msg - message to log as debug
-     */
-    logDebug(msg: string): void;
     /**
      * @param id - identifier of item to fetch
      * @param options - optional set of request options to apply to xhr request
@@ -141,26 +111,5 @@ declare class ItemService {
      * @return Promise resolving array of available versions of the item
      */
     versions(id: string, params?: any, options?: any): Promise<any>;
-    /**
-     * @param method - one of "GET", "POST", "PUT", "DELETE", "PATCH"
-     * @param url - destination of xhr request
-     * @param params - object to be sent with request as query parameters
-     * @param data - object to be sent with request as body
-     * @param options - optional object defining request options
-     * @return request options for xhr
-     */
-    buildRequest(options: {
-        [key: string]: any;
-    }): {
-        [key: string]: any;
-    };
-    createRequestOpts(options: {
-        [key: string]: any;
-    }): {
-        [key: string]: any;
-    };
-    execute(opts: {
-        [key: string]: any;
-    }): Promise<any>;
 }
 export default ItemService;

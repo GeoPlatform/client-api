@@ -1,9 +1,9 @@
 
-
+import { Item, SearchResults } from '../shared/models';
 import ItemTypes from '../shared/types';
 import Config from '../shared/config';
 import GPHttpClient from '../http/client';
-
+import BaseService from "./base";
 
 class AgolQuery {
 
@@ -158,24 +158,15 @@ class AgolQuery {
 }
 
 
-
-
-class AgolService {
-
-
-    // @ts-ignore
-    private baseUrl : string;
-    private client : GPHttpClient;
-    private timeout : number = 30000;
-    private httpMethods : string[] = ["GET", "POST", "PUT", "DELETE", "PATCH"];
+class AgolService extends BaseService {
 
     constructor(url : string, httpClient : GPHttpClient) {
-        this.setUrl(url);
-        this.client = httpClient;
-        this.timeout = 30000;
+        super(url, httpClient);
+        this.setTimeout(30000);
     }
 
     setUrl(baseUrl : string) {
+        super.setUrl(baseUrl);
         this.baseUrl = baseUrl + '/api/agol';
     }
 
@@ -188,9 +179,9 @@ class AgolService {
      * @param options - optional set of request options to apply to xhr request
      * @return Promise resolving Item object or an error
      */
-    getOrg (id : string, options ?: any) : Promise<any> {
+    getOrg (id : string, options ?: any) : Promise<Item> {
 
-        return Promise.resolve( id )
+        return this.createAndResolvePromise( id )
         .then( id => {
             let opts = this.buildRequest({
                 method:"GET", url:this.baseUrl + '/orgs/' + id, options:options
@@ -209,9 +200,9 @@ class AgolService {
      * @param options - optional set of request options to apply to xhr request
      * @return Promise resolving search results
      */
-    searchOrgs (arg : AgolQuery, options ?: any) : Promise<any> {
+    searchOrgs (arg : AgolQuery, options ?: any) : Promise<SearchResults> {
 
-        return Promise.resolve( arg )
+        return this.createAndResolvePromise( arg )
         .then( params => {
 
             let ps = params.getQuery();
@@ -242,9 +233,9 @@ class AgolService {
      * @param options - optional set of request options to apply to xhr request
      * @return Promise resolving Item object or an error
      */
-    getGroup (id : string, options ?: any) : Promise<any> {
+    getGroup (id : string, options ?: any) : Promise<Item> {
 
-        return Promise.resolve( id )
+        return this.createAndResolvePromise( id )
         .then( id => {
             let opts = this.buildRequest({
                 method:"GET", url:this.baseUrl + '/groups/' + id, options:options
@@ -264,9 +255,9 @@ class AgolService {
      * @param options - optional set of request options to apply to xhr request
      * @return Promise resolving search results
      */
-    searchGroups (arg : AgolQuery, options ?: any) : Promise<any> {
+    searchGroups (arg : AgolQuery, options ?: any) : Promise<SearchResults> {
 
-        return Promise.resolve( arg )
+        return this.createAndResolvePromise( arg )
         .then( params => {
 
             let ps = params.getQuery();
@@ -296,9 +287,9 @@ class AgolService {
      * @param options - optional set of request options to apply to xhr request
      * @return Promise resolving Item object or an error
      */
-    getItem (id : string, options ?: any) : Promise<any> {
+    getItem (id : string, options ?: any) : Promise<Item> {
 
-        return Promise.resolve( id )
+        return this.createAndResolvePromise( id )
         .then( (id : string) => {
             let opts = this.buildRequest({
                 method:"GET",
@@ -320,9 +311,9 @@ class AgolService {
      * @param options - optional set of request options to apply to xhr request
      * @return Promise resolving search results
      */
-    searchItems (arg : AgolQuery, options ?: any) : Promise<any> {
+    searchItems (arg : AgolQuery, options ?: any) : Promise<SearchResults> {
 
-        return Promise.resolve( arg )
+        return this.createAndResolvePromise( arg )
         .then( params => {
 
             let ps = params.getQuery();
@@ -358,51 +349,6 @@ class AgolService {
         let ids = obj.identifiers.filter( (id:string) => ~id.indexOf('agol:'));
         if(!ids.length) return null;
         return ids[0].replace('agol:','');
-    }
-
-
-
-
-
-    /* ----------------------------------------------------------- */
-
-    /**
-     * @param method - one of "GET", "POST", "PUT", "DELETE", "PATCH"
-     * @param url - destination of xhr request
-     * @param params - object to be sent with request as query parameters
-     * @param data - object to be sent with request as body
-     * @param options - optional object defining request options
-     * @return request options for xhr
-     */
-    buildRequest (options : {[key:string]:any} ) : {[key:string]:any} {
-
-        if(this.httpMethods.indexOf(options.method)<0)
-            throw new Error(`Unsupported HTTP method ${options.method}`);
-
-        if(!options.url)
-            throw new Error(`Must specify a URL for HTTP requests`);
-
-        options.timeout = this.timeout || Config.timeout || 30000 ;
-
-        return this.createRequestOpts(options);
-    }
-
-    createRequestOpts(options : {[key:string]:any}) : {[key:string]:any} {
-        return this.client.createRequestOpts(options);
-    }
-
-    execute(opts : {[key:string]:any}) : Promise<any> {
-        return new Promise<any>( (resolve, reject) => {
-            this.client.execute(opts)
-            .then( result => resolve(result) )
-            .catch(e => {
-                if(e === null || typeof(e) === 'undefined') {
-                    e = new Error("AGOLService.execute() - Request failed but didn't return an " +
-                    "error. This is most likely because the request timed out");
-                }
-                reject(e);
-            });
-        });
     }
 
 }

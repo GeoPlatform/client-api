@@ -3134,6 +3134,223 @@ var XHRHttpClient = /** @class */ (function (_super) {
  * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
  */
 /**
+ * BaseService
+ * abstract service for working with the GeoPlatform API to
+ * retrieve and manipulate items.
+ *
+ */
+var /**
+ * BaseService
+ * abstract service for working with the GeoPlatform API to
+ * retrieve and manipulate items.
+ *
+ */
+BaseService = /** @class */ (function () {
+    function BaseService(url, httpClient) {
+        this._timeout = 30000;
+        this.httpMethods = ["GET", "POST", "PUT", "DELETE", "PATCH"];
+        this.setUrl(url);
+        this.client = httpClient;
+    }
+    /**
+     * @param {?} baseUrl
+     * @return {?}
+     */
+    BaseService.prototype.setUrl = /**
+     * @param {?} baseUrl
+     * @return {?}
+     */
+    function (baseUrl) {
+        this.apiBase = baseUrl;
+        this.baseUrl = baseUrl + '/api/items';
+    };
+    /**
+     * @param milliseconds - override environment variable timeout
+     */
+    /**
+     * @param {?} milliseconds - override environment variable timeout
+     * @return {?}
+     */
+    BaseService.prototype.setTimeout = /**
+     * @param {?} milliseconds - override environment variable timeout
+     * @return {?}
+     */
+    function (milliseconds) {
+        this._timeout = milliseconds;
+    };
+    /**
+     * @param milliseconds - override environment variable timeout
+     */
+    /**
+     * @param {?} milliseconds - override environment variable timeout
+     * @return {?}
+     */
+    BaseService.prototype.timeout = /**
+     * @param {?} milliseconds - override environment variable timeout
+     * @return {?}
+     */
+    function (milliseconds) {
+        this.setTimeout(milliseconds);
+        return this;
+    };
+    /**
+     * @return GPHttpClient instance or null if one was not provided
+     */
+    /**
+     * @return {?} GPHttpClient instance or null if one was not provided
+     */
+    BaseService.prototype.getClient = /**
+     * @return {?} GPHttpClient instance or null if one was not provided
+     */
+    function () {
+        return this.client;
+    };
+    /**
+     * @param {?} arg
+     * @return {?}
+     */
+    BaseService.prototype.createPromise = /**
+     * @param {?} arg
+     * @return {?}
+     */
+    function (arg) {
+        return new Promise(arg);
+    };
+    /**
+     * @param {?} value
+     * @return {?}
+     */
+    BaseService.prototype.createAndResolvePromise = /**
+     * @param {?} value
+     * @return {?}
+     */
+    function (value) {
+        return Promise.resolve(value);
+    };
+    /**
+     * @param {?} error
+     * @return {?}
+     */
+    BaseService.prototype.createAndRejectPromise = /**
+     * @param {?} error
+     * @return {?}
+     */
+    function (error) {
+        return Promise.reject(error);
+    };
+    /**
+     * @param logger - log service
+     */
+    /**
+     * @param {?} logger - log service
+     * @return {?}
+     */
+    BaseService.prototype.setLogger = /**
+     * @param {?} logger - log service
+     * @return {?}
+     */
+    function (logger) {
+        this.logger = logger;
+    };
+    /**
+     * @param e - error to log (if logger specified)
+     */
+    /**
+     * @param {?} e - error to log (if logger specified)
+     * @return {?}
+     */
+    BaseService.prototype.logError = /**
+     * @param {?} e - error to log (if logger specified)
+     * @return {?}
+     */
+    function (e) {
+        if (this.logger && this.logger.error) {
+            this.logger.error(e);
+        }
+    };
+    /**
+     * @param msg - message to log as debug
+     */
+    /**
+     * @param {?} msg - message to log as debug
+     * @return {?}
+     */
+    BaseService.prototype.logDebug = /**
+     * @param {?} msg - message to log as debug
+     * @return {?}
+     */
+    function (msg) {
+        if (this.logger && this.logger.debug) {
+            this.logger.debug(msg);
+        }
+    };
+    /**
+     * @param method - one of "GET", "POST", "PUT", "DELETE", "PATCH"
+     * @param url - destination of xhr request
+     * @param params - object to be sent with request as query parameters
+     * @param data - object to be sent with request as body
+     * @param options - optional object defining request options
+     * @return request options for xhr
+     */
+    /**
+     * @param {?} options - optional object defining request options
+     * @return {?} request options for xhr
+     */
+    BaseService.prototype.buildRequest = /**
+     * @param {?} options - optional object defining request options
+     * @return {?} request options for xhr
+     */
+    function (options) {
+        if (this.httpMethods.indexOf(options["method"]) < 0)
+            throw new Error("Unsupported HTTP method " + options["method"]);
+        if (!options["url"])
+            throw new Error("Must specify a URL for HTTP requests");
+        options["timeout"] = this._timeout || 30000;
+        /** @type {?} */
+        var opts = this.createRequestOpts(options);
+        return opts;
+    };
+    /**
+     * @param {?} options
+     * @return {?}
+     */
+    BaseService.prototype.createRequestOpts = /**
+     * @param {?} options
+     * @return {?}
+     */
+    function (options) {
+        /** @type {?} */
+        var request = this.client.createRequestOpts(options);
+        this.logDebug("BaseService.createRequestOpts() - " + JSON.stringify(request));
+        return request;
+    };
+    /**
+     * @param {?} opts
+     * @return {?}
+     */
+    BaseService.prototype.execute = /**
+     * @param {?} opts
+     * @return {?}
+     */
+    function (opts) {
+        var _this = this;
+        return this.client.execute(opts)
+            .catch(function (e) {
+            if (e === null || typeof (e) === 'undefined') {
+                e = new Error("Request failed but didn't return an " +
+                    "error. This is most likely because the request timed out");
+            }
+            return _this.createAndRejectPromise(e);
+        });
+    };
+    return BaseService;
+}());
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
+ */
+/**
  * ItemService
  * service for working with the GeoPlatform API to
  * retrieve and manipulate items.
@@ -3181,112 +3398,11 @@ var /**
  *      itemService.patch(itemId,patch).then(item=>{...}).catch(e=>{...});
  *
  */
-ItemService = /** @class */ (function () {
+ItemService = /** @class */ (function (_super) {
+    __extends(ItemService, _super);
     function ItemService(url, httpClient) {
-        this._timeout = 30000;
-        this.httpMethods = ["GET", "POST", "PUT", "DELETE", "PATCH"];
-        this.setUrl(url);
-        this.client = httpClient;
+        return _super.call(this, url, httpClient) || this;
     }
-    /**
-     * @param {?} baseUrl
-     * @return {?}
-     */
-    ItemService.prototype.setUrl = /**
-     * @param {?} baseUrl
-     * @return {?}
-     */
-    function (baseUrl) {
-        this.apiBase = baseUrl;
-        this.baseUrl = baseUrl + '/api/items';
-    };
-    /**
-     * @param milliseconds - override environment variable timeout
-     */
-    /**
-     * @param {?} milliseconds - override environment variable timeout
-     * @return {?}
-     */
-    ItemService.prototype.setTimeout = /**
-     * @param {?} milliseconds - override environment variable timeout
-     * @return {?}
-     */
-    function (milliseconds) {
-        this._timeout = milliseconds;
-    };
-    /**
-     * @param milliseconds - override environment variable timeout
-     */
-    /**
-     * @param {?} milliseconds - override environment variable timeout
-     * @return {?}
-     */
-    ItemService.prototype.timeout = /**
-     * @param {?} milliseconds - override environment variable timeout
-     * @return {?}
-     */
-    function (milliseconds) {
-        this.setTimeout(milliseconds);
-        return this;
-    };
-    /**
-     * @return GPHttpClient instance or null if one was not provided
-     */
-    /**
-     * @return {?} GPHttpClient instance or null if one was not provided
-     */
-    ItemService.prototype.getClient = /**
-     * @return {?} GPHttpClient instance or null if one was not provided
-     */
-    function () {
-        return this.client;
-    };
-    /**
-     * @param logger - log service
-     */
-    /**
-     * @param {?} logger - log service
-     * @return {?}
-     */
-    ItemService.prototype.setLogger = /**
-     * @param {?} logger - log service
-     * @return {?}
-     */
-    function (logger) {
-        this.logger = logger;
-    };
-    /**
-     * @param e - error to log (if logger specified)
-     */
-    /**
-     * @param {?} e - error to log (if logger specified)
-     * @return {?}
-     */
-    ItemService.prototype.logError = /**
-     * @param {?} e - error to log (if logger specified)
-     * @return {?}
-     */
-    function (e) {
-        if (this.logger && this.logger.error) {
-            this.logger.error(e);
-        }
-    };
-    /**
-     * @param msg - message to log as debug
-     */
-    /**
-     * @param {?} msg - message to log as debug
-     * @return {?}
-     */
-    ItemService.prototype.logDebug = /**
-     * @param {?} msg - message to log as debug
-     * @return {?}
-     */
-    function (msg) {
-        if (this.logger && this.logger.debug) {
-            this.logger.debug(msg);
-        }
-    };
     /**
      * @param id - identifier of item to fetch
      * @param options - optional set of request options to apply to xhr request
@@ -3310,7 +3426,7 @@ ItemService = /** @class */ (function () {
             url += '/versions/' + options.version;
             // this.logDebug("Client.get requesting version: " + options.version);
         }
-        return Promise.resolve(url)
+        return this.createAndResolvePromise(url)
             .then(function (url) {
             /** @type {?} */
             var opts = _this.buildRequest({ method: "GET", url: url, options: options });
@@ -3341,7 +3457,7 @@ ItemService = /** @class */ (function () {
      */
     function (itemObj, options) {
         var _this = this;
-        return Promise.resolve(itemObj)
+        return this.createAndResolvePromise(itemObj)
             .then(function (item) {
             /** @type {?} */
             var method = 'POST';
@@ -3394,7 +3510,7 @@ ItemService = /** @class */ (function () {
      */
     function (id, options) {
         var _this = this;
-        return Promise.resolve(this.baseUrl + '/' + id)
+        return this.createAndResolvePromise(this.baseUrl + '/' + id)
             .then(function (url) {
             /** @type {?} */
             var opts = _this.buildRequest({
@@ -3431,7 +3547,7 @@ ItemService = /** @class */ (function () {
      */
     function (id, patch, options) {
         var _this = this;
-        return Promise.resolve(this.baseUrl + '/' + id)
+        return this.createAndResolvePromise(this.baseUrl + '/' + id)
             .then(function (url) {
             /** @type {?} */
             var opts = _this.buildRequest({
@@ -3467,7 +3583,7 @@ ItemService = /** @class */ (function () {
      */
     function (id, overrides, options) {
         var _this = this;
-        return Promise.resolve(this.baseUrl + '/' + id + '/clone')
+        return this.createAndResolvePromise(this.baseUrl + '/' + id + '/clone')
             .then(function (url) {
             /** @type {?} */
             var opts = _this.buildRequest({
@@ -3500,7 +3616,7 @@ ItemService = /** @class */ (function () {
      */
     function (arg, options) {
         var _this = this;
-        return Promise.resolve(arg)
+        return this.createAndResolvePromise(arg)
             .then(function (params) {
             /** @type {?} */
             var ps = {};
@@ -3549,7 +3665,7 @@ ItemService = /** @class */ (function () {
      */
     function (arg, format, options) {
         var _this = this;
-        return Promise.resolve(true)
+        return this.createAndResolvePromise(true)
             .then(function () {
             if (arg === null || arg === undefined) {
                 throw new Error("Must provide a valid URL or File");
@@ -3613,7 +3729,7 @@ ItemService = /** @class */ (function () {
      */
     function (id, format, options) {
         var _this = this;
-        return Promise.resolve(true)
+        return this.createAndResolvePromise(true)
             .then(function () {
             /** @type {?} */
             var url = _this.baseUrl + '/' + id + '/export';
@@ -3657,7 +3773,7 @@ ItemService = /** @class */ (function () {
      */
     function (object, options) {
         var _this = this;
-        return Promise.resolve(object)
+        return this.createAndResolvePromise(object)
             .then(function (obj) {
             if (!obj || !obj.type)
                 throw new Error("Must provide an object with a type property");
@@ -3696,7 +3812,7 @@ ItemService = /** @class */ (function () {
      */
     function (ids, options) {
         var _this = this;
-        return Promise.resolve(ids)
+        return this.createAndResolvePromise(ids)
             .then(function (identifiers) {
             /** @type {?} */
             var method = 'POST';
@@ -3731,7 +3847,7 @@ ItemService = /** @class */ (function () {
      */
     function (uris, options) {
         var _this = this;
-        return Promise.resolve(uris)
+        return this.createAndResolvePromise(uris)
             .then(function (uris) {
             /** @type {?} */
             var method = 'POST';
@@ -3761,7 +3877,7 @@ ItemService = /** @class */ (function () {
      */
     function (item, options) {
         var _this = this;
-        return Promise.resolve(item.id)
+        return this.createAndResolvePromise(item.id)
             .then(function (id) {
             /** @type {?} */
             var method = 'PUT';
@@ -3791,7 +3907,7 @@ ItemService = /** @class */ (function () {
      */
     function (item, options) {
         var _this = this;
-        return Promise.resolve(item.id)
+        return this.createAndResolvePromise(item.id)
             .then(function (id) {
             /** @type {?} */
             var method = 'PUT';
@@ -3828,7 +3944,7 @@ ItemService = /** @class */ (function () {
      */
     function (id, params, options) {
         var _this = this;
-        return Promise.resolve(id)
+        return this.createAndResolvePromise(id)
             .then(function (id) {
             /** @type {?} */
             var url = _this.baseUrl + '/' + id + '/associations';
@@ -3869,7 +3985,7 @@ ItemService = /** @class */ (function () {
      */
     function (id, params, options) {
         var _this = this;
-        return Promise.resolve(id)
+        return this.createAndResolvePromise(id)
             .then(function (id) {
             /** @type {?} */
             var url = _this.baseUrl + '/' + id + '/versions';
@@ -3887,67 +4003,8 @@ ItemService = /** @class */ (function () {
             throw err;
         });
     };
-    /* ----------------------------------------------------------- */
-    /**
-     * @param method - one of "GET", "POST", "PUT", "DELETE", "PATCH"
-     * @param url - destination of xhr request
-     * @param params - object to be sent with request as query parameters
-     * @param data - object to be sent with request as body
-     * @param options - optional object defining request options
-     * @return request options for xhr
-     */
-    /**
-     * @param {?} options - optional object defining request options
-     * @return {?} request options for xhr
-     */
-    ItemService.prototype.buildRequest = /**
-     * @param {?} options - optional object defining request options
-     * @return {?} request options for xhr
-     */
-    function (options) {
-        if (this.httpMethods.indexOf(options["method"]) < 0)
-            throw new Error("Unsupported HTTP method " + options["method"]);
-        if (!options["url"])
-            throw new Error("Must specify a URL for HTTP requests");
-        options["timeout"] = this._timeout || 30000;
-        /** @type {?} */
-        var opts = this.createRequestOpts(options);
-        return opts;
-    };
-    /**
-     * @param {?} options
-     * @return {?}
-     */
-    ItemService.prototype.createRequestOpts = /**
-     * @param {?} options
-     * @return {?}
-     */
-    function (options) {
-        /** @type {?} */
-        var request = this.client.createRequestOpts(options);
-        this.logDebug("ItemService.createRequestOpts() - " + JSON.stringify(request));
-        return request;
-    };
-    /**
-     * @param {?} opts
-     * @return {?}
-     */
-    ItemService.prototype.execute = /**
-     * @param {?} opts
-     * @return {?}
-     */
-    function (opts) {
-        return this.client.execute(opts)
-            .catch(function (e) {
-            if (e === null || typeof (e) === 'undefined') {
-                e = new Error("ItemService.execute() - Request failed but didn't return an " +
-                    "error. This is most likely because the request timed out");
-            }
-            return Promise.reject(e);
-        });
-    };
     return ItemService;
-}());
+}(BaseService));
 
 /**
  * @fileoverview added by tsickle
@@ -4566,13 +4623,12 @@ GalleryService = /** @class */ (function (_super) {
  * @fileoverview added by tsickle
  * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
  */
-var UtilsService = /** @class */ (function () {
+var UtilsService = /** @class */ (function (_super) {
+    __extends(UtilsService, _super);
     function UtilsService(url, httpClient) {
-        this.timeout = 30000;
-        this.httpMethods = ["GET", "POST", "PUT", "DELETE", "PATCH"];
-        this.client = httpClient;
-        this.baseUrl = url;
-        this.timeout = Config["timeout"] || 30000;
+        var _this = _super.call(this, url, httpClient) || this;
+        _this.setTimeout(30000);
+        return _this;
     }
     /**
      * @param {?} baseUrl
@@ -4583,53 +4639,8 @@ var UtilsService = /** @class */ (function () {
      * @return {?}
      */
     function (baseUrl) {
+        _super.prototype.setUrl.call(this, baseUrl);
         this.baseUrl = baseUrl;
-    };
-    /**
-     * @param logger - log service
-     */
-    /**
-     * @param {?} logger - log service
-     * @return {?}
-     */
-    UtilsService.prototype.setLogger = /**
-     * @param {?} logger - log service
-     * @return {?}
-     */
-    function (logger) {
-        this.logger = logger;
-    };
-    /**
-     * @param e - error to log (if logger specified)
-     */
-    /**
-     * @param {?} e - error to log (if logger specified)
-     * @return {?}
-     */
-    UtilsService.prototype.logError = /**
-     * @param {?} e - error to log (if logger specified)
-     * @return {?}
-     */
-    function (e) {
-        if (this.logger && this.logger.error) {
-            this.logger.error(e);
-        }
-    };
-    /**
-     * @param msg - message to log as debug
-     */
-    /**
-     * @param {?} msg - message to log as debug
-     * @return {?}
-     */
-    UtilsService.prototype.logDebug = /**
-     * @param {?} msg - message to log as debug
-     * @return {?}
-     */
-    function (msg) {
-        if (this.logger && this.logger.debug) {
-            this.logger.debug(msg);
-        }
     };
     /**
      * @param property - optional capa property to specifically request
@@ -4655,7 +4666,7 @@ var UtilsService = /** @class */ (function () {
         var url = this.baseUrl + '/api/capabilities';
         if (property)
             url += '/' + property;
-        return Promise.resolve(url)
+        return this.createAndResolvePromise(url)
             .then(function (url) {
             /** @type {?} */
             var opts = _this.buildRequest({
@@ -4693,7 +4704,7 @@ var UtilsService = /** @class */ (function () {
         var _this = this;
         /** @type {?} */
         var url = this.baseUrl + '/api/utils/parse';
-        return Promise.resolve(url)
+        return this.createAndResolvePromise(url)
             .then(function (url) {
             /** @type {?} */
             var opts = _this.buildRequest({
@@ -4737,7 +4748,7 @@ var UtilsService = /** @class */ (function () {
         var _this = this;
         /** @type {?} */
         var url = this.baseUrl + '/api/utils/gazetteer';
-        return Promise.resolve(url)
+        return this.createAndResolvePromise(url)
             .then(function (url) {
             /** @type {?} */
             var opts = _this.buildRequest({
@@ -4757,62 +4768,8 @@ var UtilsService = /** @class */ (function () {
             throw err;
         });
     };
-    /* ----------------------------------------------------------- */
-    /**
-     * @param method - one of "GET", "POST", "PUT", "DELETE", "PATCH"
-     * @param url - destination of xhr request
-     * @param params - object to be sent with request as query parameters
-     * @param data - object to be sent with request as body
-     * @param options - optional object defining request options
-     * @return request options for xhr
-     */
-    /**
-     * @param {?} options - optional object defining request options
-     * @return {?} request options for xhr
-     */
-    UtilsService.prototype.buildRequest = /**
-     * @param {?} options - optional object defining request options
-     * @return {?} request options for xhr
-     */
-    function (options) {
-        if (this.httpMethods.indexOf(options["method"]) < 0)
-            throw new Error("Unsupported HTTP method " + options["method"]);
-        if (!options["url"])
-            throw new Error("Must specify a URL for HTTP requests");
-        options["timeout"] = this.timeout || Config["timeout"] || 30000;
-        return this.createRequestOpts(options);
-    };
-    /**
-     * @param {?} options
-     * @return {?}
-     */
-    UtilsService.prototype.createRequestOpts = /**
-     * @param {?} options
-     * @return {?}
-     */
-    function (options) {
-        return this.client.createRequestOpts(options);
-    };
-    /**
-     * @param {?} opts
-     * @return {?}
-     */
-    UtilsService.prototype.execute = /**
-     * @param {?} opts
-     * @return {?}
-     */
-    function (opts) {
-        return this.client.execute(opts)
-            .catch(function (e) {
-            if (e === null || typeof (e) === 'undefined') {
-                e = new Error("UtilsService.execute() - Request failed but didn't return an " +
-                    "error. This is most likely because the request timed out");
-            }
-            return Promise.reject(e);
-        });
-    };
     return UtilsService;
-}());
+}(BaseService));
 
 /**
  * @fileoverview added by tsickle
@@ -5163,13 +5120,12 @@ var AgolQuery = /** @class */ (function () {
     };
     return AgolQuery;
 }());
-var AgolService = /** @class */ (function () {
+var AgolService = /** @class */ (function (_super) {
+    __extends(AgolService, _super);
     function AgolService(url, httpClient) {
-        this.timeout = 30000;
-        this.httpMethods = ["GET", "POST", "PUT", "DELETE", "PATCH"];
-        this.setUrl(url);
-        this.client = httpClient;
-        this.timeout = 30000;
+        var _this = _super.call(this, url, httpClient) || this;
+        _this.setTimeout(30000);
+        return _this;
     }
     /**
      * @param {?} baseUrl
@@ -5180,6 +5136,7 @@ var AgolService = /** @class */ (function () {
      * @return {?}
      */
     function (baseUrl) {
+        _super.prototype.setUrl.call(this, baseUrl);
         this.baseUrl = baseUrl + '/api/agol';
     };
     // -----------------------------------------------------------------------
@@ -5201,7 +5158,7 @@ var AgolService = /** @class */ (function () {
      */
     function (id, options) {
         var _this = this;
-        return Promise.resolve(id)
+        return this.createAndResolvePromise(id)
             .then(function (id) {
             /** @type {?} */
             var opts = _this.buildRequest({
@@ -5233,7 +5190,7 @@ var AgolService = /** @class */ (function () {
      */
     function (arg, options) {
         var _this = this;
-        return Promise.resolve(arg)
+        return this.createAndResolvePromise(arg)
             .then(function (params) {
             /** @type {?} */
             var ps = params.getQuery();
@@ -5272,7 +5229,7 @@ var AgolService = /** @class */ (function () {
      */
     function (id, options) {
         var _this = this;
-        return Promise.resolve(id)
+        return this.createAndResolvePromise(id)
             .then(function (id) {
             /** @type {?} */
             var opts = _this.buildRequest({
@@ -5304,7 +5261,7 @@ var AgolService = /** @class */ (function () {
      */
     function (arg, options) {
         var _this = this;
-        return Promise.resolve(arg)
+        return this.createAndResolvePromise(arg)
             .then(function (params) {
             /** @type {?} */
             var ps = params.getQuery();
@@ -5343,7 +5300,7 @@ var AgolService = /** @class */ (function () {
      */
     function (id, options) {
         var _this = this;
-        return Promise.resolve(id)
+        return this.createAndResolvePromise(id)
             .then(function (id) {
             /** @type {?} */
             var opts = _this.buildRequest({
@@ -5377,7 +5334,7 @@ var AgolService = /** @class */ (function () {
      */
     function (arg, options) {
         var _this = this;
-        return Promise.resolve(arg)
+        return this.createAndResolvePromise(arg)
             .then(function (params) {
             /** @type {?} */
             var ps = params.getQuery();
@@ -5422,66 +5379,8 @@ var AgolService = /** @class */ (function () {
             return null;
         return ids[0].replace('agol:', '');
     };
-    /* ----------------------------------------------------------- */
-    /**
-     * @param method - one of "GET", "POST", "PUT", "DELETE", "PATCH"
-     * @param url - destination of xhr request
-     * @param params - object to be sent with request as query parameters
-     * @param data - object to be sent with request as body
-     * @param options - optional object defining request options
-     * @return request options for xhr
-     */
-    /**
-     * @param {?} options - optional object defining request options
-     * @return {?} request options for xhr
-     */
-    AgolService.prototype.buildRequest = /**
-     * @param {?} options - optional object defining request options
-     * @return {?} request options for xhr
-     */
-    function (options) {
-        if (this.httpMethods.indexOf(options["method"]) < 0)
-            throw new Error("Unsupported HTTP method " + options["method"]);
-        if (!options["url"])
-            throw new Error("Must specify a URL for HTTP requests");
-        options["timeout"] = this.timeout || Config["timeout"] || 30000;
-        return this.createRequestOpts(options);
-    };
-    /**
-     * @param {?} options
-     * @return {?}
-     */
-    AgolService.prototype.createRequestOpts = /**
-     * @param {?} options
-     * @return {?}
-     */
-    function (options) {
-        return this.client.createRequestOpts(options);
-    };
-    /**
-     * @param {?} opts
-     * @return {?}
-     */
-    AgolService.prototype.execute = /**
-     * @param {?} opts
-     * @return {?}
-     */
-    function (opts) {
-        var _this = this;
-        return new Promise(function (resolve, reject) {
-            _this.client.execute(opts)
-                .then(function (result) { return resolve(result); })
-                .catch(function (e) {
-                if (e === null || typeof (e) === 'undefined') {
-                    e = new Error("AGOLService.execute() - Request failed but didn't return an " +
-                        "error. This is most likely because the request timed out");
-                }
-                reject(e);
-            });
-        });
-    };
     return AgolService;
-}());
+}(BaseService));
 
 /**
  * @fileoverview added by tsickle

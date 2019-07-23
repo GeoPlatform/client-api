@@ -4,7 +4,7 @@ import {
     HttpClient, HttpRequest, HttpHeaders, HttpParams,
     HttpResponse, HttpEvent //, HttpErrorResponse
 } from '@angular/common/http';
-import 'rxjs/add/operator/map';
+import { map } from 'rxjs/operators';
 
 import { GPHttpClient } from '@geoplatform/client';
 
@@ -68,12 +68,14 @@ class NG2HttpClient extends GPHttpClient {
         return new Promise<any>( (resolve, reject) => {
 
             this.http.request(request)
-            .map( (event: HttpEvent<any>) => {
-                if (event instanceof HttpResponse) {
-                    return (event as HttpResponse<any>).body;
-                }
-                return {};
-            })
+            .pipe(
+                map( (event: HttpEvent<any>) => {
+                    if (event instanceof HttpResponse) {
+                        return (event as HttpResponse<any>).body;
+                    }
+                    return {};
+                })
+            )
             .subscribe( (v: any) => { value = v; },
                 (err : Error) => { reject(err); },
                 () => {

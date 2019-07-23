@@ -1,5 +1,5 @@
 import { HttpRequest, HttpHeaders, HttpParams, HttpResponse } from '@angular/common/http';
-import 'rxjs/add/operator/map';
+import { map } from 'rxjs/operators';
 import { GPHttpClient } from '@geoplatform/client';
 
 /**
@@ -63,12 +63,12 @@ class NG2HttpClient extends GPHttpClient {
         let value = null;
         return new Promise((resolve, reject) => {
             this.http.request(request)
-                .map((event) => {
+                .pipe(map((event) => {
                 if (event instanceof HttpResponse) {
                     return (/** @type {?} */ (event)).body;
                 }
                 return {};
-            })
+            }))
                 .subscribe((v) => { value = v; }, (err) => { reject(err); }, () => {
                 if (this.zone) {
                     this.zone.run(() => {

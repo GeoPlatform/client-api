@@ -2,10 +2,10 @@
 This software has been approved for release by the U.S. Department of the Interior. Although the software has been subjected to rigorous review, the DOI reserves the right to update the software as needed pursuant to further analysis and review. No warranty, expressed or implied, is made by the DOI or the U.S. Government as to the functionality of the software and related material nor shall the fact of release constitute any such warranty. Furthermore, the software is released on condition that neither the DOI nor the U.S. Government shall be held liable for any damages resulting from its authorized or unauthorized use.
 */
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/common/http'), require('rxjs/add/operator/map'), require('@geoplatform/client')) :
-    typeof define === 'function' && define.amd ? define('@geoplatform/client/angular', ['exports', '@angular/common/http', 'rxjs/add/operator/map', '@geoplatform/client'], factory) :
-    (factory((global.geoplatform = global.geoplatform || {}, global.geoplatform.client = global.geoplatform.client || {}, global.geoplatform.client.angular = {}),global.ng.common.http,global.rxjs['add/operator/map'],global.geoplatform.client));
-}(this, (function (exports,http,map,client) { 'use strict';
+    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/common/http'), require('rxjs/operators'), require('@geoplatform/client')) :
+    typeof define === 'function' && define.amd ? define('@geoplatform/client/angular', ['exports', '@angular/common/http', 'rxjs/operators', '@geoplatform/client'], factory) :
+    (factory((global.geoplatform = global.geoplatform || {}, global.geoplatform.client = global.geoplatform.client || {}, global.geoplatform.client.angular = {}),global.ng.common.http,global.rxjs.operators,global.geoplatform.client));
+}(this, (function (exports,http,operators,client) { 'use strict';
 
     /*! *****************************************************************************
     Copyright (c) Microsoft Corporation. All rights reserved.
@@ -116,12 +116,12 @@ This software has been approved for release by the U.S. Department of the Interi
                 var value = null;
                 return new Promise(function (resolve, reject) {
                     _this.http.request(request)
-                        .map(function (event) {
+                        .pipe(operators.map(function (event) {
                         if (event instanceof http.HttpResponse) {
                             return ( /** @type {?} */(event)).body;
                         }
                         return {};
-                    })
+                    }))
                         .subscribe(function (v) { value = v; }, function (err) { reject(err); }, function () {
                         if (_this.zone) {
                             _this.zone.run(function () {

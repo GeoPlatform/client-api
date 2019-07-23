@@ -1,6 +1,6 @@
 import { __extends } from 'tslib';
 import { HttpRequest, HttpHeaders, HttpParams, HttpResponse } from '@angular/common/http';
-import 'rxjs/add/operator/map';
+import { map } from 'rxjs/operators';
 import { GPHttpClient } from '@geoplatform/client';
 
 /**
@@ -83,12 +83,12 @@ var NG2HttpClient = /** @class */ (function (_super) {
         var value = null;
         return new Promise(function (resolve, reject) {
             _this.http.request(request)
-                .map(function (event) {
+                .pipe(map(function (event) {
                 if (event instanceof HttpResponse) {
                     return (/** @type {?} */ (event)).body;
                 }
                 return {};
-            })
+            }))
                 .subscribe(function (v) { value = v; }, function (err) { reject(err); }, function () {
                 if (_this.zone) {
                     _this.zone.run(function () {

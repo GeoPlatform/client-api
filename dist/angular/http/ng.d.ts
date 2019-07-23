@@ -1,6 +1,5 @@
 import { NgZone } from "@angular/core";
 import { HttpClient, HttpRequest } from '@angular/common/http';
-import 'rxjs/add/operator/map';
 import { GPHttpClient } from '@geoplatform/client';
 declare class NG2HttpClient extends GPHttpClient {
     private http;

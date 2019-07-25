@@ -1,7 +1,9 @@
 import { __extends } from 'tslib';
-import { HttpRequest, HttpHeaders, HttpParams, HttpResponse } from '@angular/common/http';
 import { map } from 'rxjs/operators';
-import { GPHttpClient } from '@geoplatform/client';
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { HttpRequest, HttpHeaders, HttpParams, HttpResponse, HttpClient, HttpClientModule } from '@angular/common/http';
+import { GPHttpClient, Config, ItemService, DatasetService, ServiceService, LayerService, MapService, GalleryService, UtilsService } from '@geoplatform/client';
 
 /**
  * @fileoverview added by tsickle
@@ -132,12 +134,142 @@ var NG2HttpClient = /** @class */ (function (_super) {
  * @fileoverview added by tsickle
  * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
  */
+/**
+ * @param {?} http
+ * @return {?}
+ */
+function ng2HttpClientFactory(http) {
+    return new NG2HttpClient(http);
+}
+/**
+ * @param {?} http
+ * @return {?}
+ */
+function itemServiceProviderFactory(http) {
+    /** @type {?} */
+    var client = ng2HttpClientFactory(http);
+    return new ItemService(Config["ualUrl"], client);
+}
+/**
+ * @param {?} http
+ * @return {?}
+ */
+function datasetServiceProviderFactory(http) {
+    /** @type {?} */
+    var client = ng2HttpClientFactory(http);
+    return new DatasetService(Config["ualUrl"], client);
+}
+/**
+ * @param {?} http
+ * @return {?}
+ */
+function serviceServiceProviderFactory(http) {
+    /** @type {?} */
+    var client = ng2HttpClientFactory(http);
+    return new ServiceService(Config["ualUrl"], client);
+}
+/**
+ * @param {?} http
+ * @return {?}
+ */
+function layerServiceProviderFactory(http) {
+    /** @type {?} */
+    var client = ng2HttpClientFactory(http);
+    return new LayerService(Config["ualUrl"], client);
+}
+/**
+ * @param {?} http
+ * @return {?}
+ */
+function mapServiceProviderFactory(http) {
+    /** @type {?} */
+    var client = ng2HttpClientFactory(http);
+    return new MapService(Config["ualUrl"], client);
+}
+/**
+ * @param {?} http
+ * @return {?}
+ */
+function galleryServiceProviderFactory(http) {
+    /** @type {?} */
+    var client = ng2HttpClientFactory(http);
+    return new GalleryService(Config["ualUrl"], client);
+}
+/**
+ * @param {?} http
+ * @return {?}
+ */
+function utilsServiceProviderFactory(http) {
+    /** @type {?} */
+    var client = ng2HttpClientFactory(http);
+    return new UtilsService(Config["ualUrl"], client);
+}
+var GeoPlatformClientModule = /** @class */ (function () {
+    function GeoPlatformClientModule() {
+    }
+    GeoPlatformClientModule.decorators = [
+        { type: NgModule, args: [{
+                    imports: [
+                        CommonModule,
+                        HttpClientModule
+                    ],
+                    providers: [
+                        {
+                            provide: NG2HttpClient,
+                            useFactory: ng2HttpClientFactory,
+                            deps: [HttpClient]
+                        },
+                        {
+                            provide: ItemService,
+                            useFactory: itemServiceProviderFactory,
+                            deps: [HttpClient]
+                        },
+                        {
+                            provide: DatasetService,
+                            useFactory: datasetServiceProviderFactory,
+                            deps: [HttpClient]
+                        },
+                        {
+                            provide: ServiceService,
+                            useFactory: serviceServiceProviderFactory,
+                            deps: [HttpClient]
+                        },
+                        {
+                            provide: LayerService,
+                            useFactory: layerServiceProviderFactory,
+                            deps: [HttpClient]
+                        },
+                        {
+                            provide: MapService,
+                            useFactory: mapServiceProviderFactory,
+                            deps: [HttpClient]
+                        },
+                        {
+                            provide: GalleryService,
+                            useFactory: galleryServiceProviderFactory,
+                            deps: [HttpClient]
+                        },
+                        {
+                            provide: UtilsService,
+                            useFactory: utilsServiceProviderFactory,
+                            deps: [HttpClient]
+                        }
+                    ]
+                },] }
+    ];
+    return GeoPlatformClientModule;
+}());
 
 /**
  * @fileoverview added by tsickle
  * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
  */
 
-export { NG2HttpClient };
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
+ */
+
+export { NG2HttpClient, ng2HttpClientFactory, itemServiceProviderFactory, datasetServiceProviderFactory, serviceServiceProviderFactory, layerServiceProviderFactory, mapServiceProviderFactory, galleryServiceProviderFactory, utilsServiceProviderFactory, GeoPlatformClientModule };
 
 //# sourceMappingURL=geoplatform-client-angular.js.map

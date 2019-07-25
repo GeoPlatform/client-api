@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import {
-    GPHttpClient,
+    Config, GPHttpClient,
     ItemService, UtilsService, TrackingService,
     DatasetService, ServiceService, LayerService,
     MapService, GalleryService
@@ -41,6 +41,10 @@ function serviceFactory(clazz : any, args : ServiceArgs) {
     if(!client) throw new Error(ARGS_ERROR);
     return new clazz(args.url, client);
 }
+
+
+
+
 
 export {
     ServiceArgs,

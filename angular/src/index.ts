@@ -1,5 +1,7 @@
 
 import NG2HttpClient from './http/ng';
+import GeoPlatformClientModule from './module';
+
 import {
     ServiceArgs,
     itemServiceFactory,
@@ -14,6 +16,7 @@ import {
 
 export {
 
+    GeoPlatformClientModule,
     NG2HttpClient,
     ServiceArgs,
     itemServiceFactory,

@@ -15,16 +15,18 @@ const router  = require('express').Router();
 // ... any app setup like ports, error handling, bodyparser, multer, etc ...
 //
 
-const GPAPI = require('geoplatform.client');
+const GPAPI = require('@geoplatform/client');
 GPAPI.Config.configure({
     //... any configuration items needed
 });
+
+const GPProxies = require('@geoplatform/client/node');
 
 const proxyOptions = {
     //...any proxy settings desired
 };
 //bind GP Item Service methods to the router
-router.use( GPAPI.ItemServiceProxy( proxyOptions ));
+router.use( GPProxies.ItemServiceProxy( proxyOptions ));
 
 //bind our router to 'api' path
 app.use('/api', router);
@@ -71,21 +73,29 @@ Each proxy function accepts a configuration object which allows specifying the f
 |onFinish(pathId,req,res)|none|Function to invoke once a request has been handled and response written out (useful for deleting temp files, etc)|
 
 ### Path Configuration
-You can override the route bindings used by the proxy by passing a `paths` property object. Keys should be those defined in the specific proxy instance and values should be strings containing the paths _after_ the route path and trailing '/'.  For example, overriding the `ItemServiceProxy` path defaults could be done as follows:
+You can override the settings such as the route bindings used by the proxy.
+Keys should be those defined in the specific proxy instance and values can be one
+or more of the folowing:
+
+|Property|Description|
+|:-------|:----------|
+|path    |api route to bind the proxy endpoint to|
+|auth    |boolean flag indicating if the endpoint should support authentication|
+|respFn  |function to process responses from GeoPlatform before returning|
+
 
 ```javascript
+const GPProxies = require('@geoplatform/client/node');
 const proxyOptions = {
-    paths: {
-        //will bind service.search() to 'api/query' instead of 'api/items'
-        'search': 'query',
-        //will bind service.get() to 'api/data/:id' instead of 'api/items/:id'
-        'get': 'data/:id',
-        //will disable export endpoint from being bound and exposed
-        'export': false
-    }
+    //will bind service.search() to 'api/query' instead of 'api/items'
+    'search': { path: 'query' },
+    //will bind service.get() to 'api/data/:id' instead of 'api/items/:id'
+    'get': { path: 'data/:id' },
+    //will disable export endpoint from being bound and exposed
+    'export': false
 };
 //bind GP Item Service methods to the router
-router.use( GPAPI.ItemServiceProxy( proxyOptions ));
+router.use( GPProxies.ItemServiceProxy( proxyOptions ));
 app.use('api', router);
 ```
 

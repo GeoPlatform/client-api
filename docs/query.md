@@ -9,7 +9,7 @@ You can instantiate `Query` directly or use `QueryFactory` to get a new `Query` 
 
 ```javascript
 //using ES6 imports
-import { Query, QueryFactory } from 'geoplatform.client';
+import { Query, QueryFactory } from '@geoplatform/client';
 
 let queryA = new Query();
 queryA.setQ("testing");
@@ -41,7 +41,7 @@ You can get a list of the predefined query parameters supported by the
 `Query` object using the `QueryParameters` object:
 
 ```javascript
-import { Query, QueryParameters } from 'geoplatform.client';
+import { Query, QueryParameters } from '@geoplatform/client';
 let query = new Query();
 query.setParameter(QueryParameters.TYPES, "Layer");
 ```
@@ -90,7 +90,7 @@ _Note:_ You must specify the property name to use. For example, to also request
 the geographic extent for each item in the search results, do the following:
 
 ```javascript
-import { Query, QueryFields } from 'geoplatform.client';
+import { Query, QueryFields } from '@geoplatform/client';
 let query = new Query();
 //add a desired field to the default set requested
 query.addField(QueryFields.EXTENT);
@@ -104,7 +104,7 @@ within the entire repository of data.  Use the `QueryFacets` object's set of
 facets to request specific ones with a query.
 
 ```javascript
-import { Query, QueryFacets } from 'geoplatform.client';
+import { Query, QueryFacets } from '@geoplatform/client';
 //only request these 2 facets
 query.facets([QueryFacets.TYPES, QueryFacets.THEMES]);
 //add another facet to the list
@@ -117,13 +117,13 @@ To omit facet information, use `Query.setFacets(false)`.
 
 By default, the following facets are requested with each search:
 
-- QueryFacet.TYPES - GeoPlatform CBO Item types
-- QueryFacets.THEMES - GeoPlatform Concepts associated as themes
-- QueryFacets.PUBLISHERS - GeoPlatform Organizations associated as publishing agencies
-- QueryFacets.SERVICE_TYPES - GeoPlatform Service specification association (only applies to type "regp:Service" items)
-- QueryFacets.SCHEMES - GeoPlatform Concept Schemes associated (only applies to type "skos:Concept" items)
-- QueryFacets.VISIBILITY - visible status of Items
-- QueryFacets.CREATED_BY - authors of Items
+- `QueryFacet.TYPES` - GeoPlatform CBO Item types
+- `QueryFacets.THEMES` - GeoPlatform Concepts associated as themes
+- `QueryFacets.PUBLISHERS` - GeoPlatform Organizations associated as publishing agencies
+- `QueryFacets.SERVICE_TYPES` - GeoPlatform Service specification association (only applies to type "regp:Service" items)
+- `QueryFacets.SCHEMES` - GeoPlatform Concept Schemes associated (only applies to type "skos:Concept" items)
+- `QueryFacets.VISIBILITY` - visible status of Items
+- `QueryFacets.CREATED_BY` - authors of Items
 
 See [QueryFacets](../src/shared/query.js) for a larger list of available facets.
 

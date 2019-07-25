@@ -12,31 +12,23 @@
 
 
 ## Services
-[ItemService](../src/services/item.js) is the primary class for interacting with
-GeoPlatform model objects such as Maps, Layers, Services, etc.  
-Included with the the library's main build file are implementations of ItemService
-which provide specialized support for specific item types
-
-- [MapService](../src/services/map.js) - extension of ItemService which works with GP Map objects
-- [LayerService](../src/services/layer.js) - extension of ItemService which works with GP Layer objects
-- [ServiceService](../src/services/service.js) - extension of ItemService which works with GP Service objects
-- [GalleryService](../src/services/gallery.js) - extension of ItemService which works with GP Gallery objects
+- [ItemService](../src/services/item.js) primary class for interacting with any GeoPlatform resource
 - [DatasetService](../src/services/dataset.js) - extension of ItemService which works with GP Dataset objects
-
-### Non-Item Support
-
-### Utils Service
-The [UtilsService](../src/services/utils.js) class is provided for working with non-item API endpoints, such as GeoPlatform capabilities queries.
+- [ServiceService](../src/services/service.js) - extension of ItemService which works with GP Service objects
+- [LayerService](../src/services/layer.js) - extension of ItemService which works with GP Layer objects
+- [MapService](../src/services/map.js) - extension of ItemService which works with GP Map objects
+- [GalleryService](../src/services/gallery.js) - extension of ItemService which works with GP Gallery objects
+- [UtilsService](../src/services/utils.js) class for working with non-item API endpoints, such as GeoPlatform capabilities queries and gazetteer lookups.
+- [KGService](../src/services/kg.js) class for recommending concepts to be associated with GeoPlatform Items.
+- [AgolService][../src/services/agol.js] class allows searching ArcGIS Online data including Web Maps, Services, Organizations, and Groups.
 
 ### Knowledge Graph Service
-The [KGService](../src/services/kg.js) class is provided for recommending concepts to be associated with GeoPlatform Items.
-
 __Note:__ You must use [KGQuery](../src/shared/kg-query.js) instances with the `KGService` instead of the a normal [Query](../src/shared/query.js).
 
 ### ArcGIS Online Service
-The [AgolService][../src/services/agol.js] class allows searching ArcGIS Online data including Web Maps, Services, Organizations, and Groups. Items matching queries are transformed into
-their appropriate GeoPlatform business object instance prior to being returned but
-are not automatically inserted into the GeoPlatform.
+The AGOL items matching queries are transformed into their appropriate
+GeoPlatform business object instance prior to being returned but are not
+automatically inserted into the GeoPlatform.
 
 __Note:__ You must use [AgolQuery](../src/shared/agol.js) instances with this service
 instead of normal `Query` instances.
@@ -52,65 +44,42 @@ Pass the desired implementation to the service at construction along with the UR
 GeoPlatform API:
 
 ```javascript
-import { Config, JQueryHttpClient, ItemService } from 'geoplatform.client';
+import { Config, XHRHttpClient, ItemService } from '@geoplatform/client';
 
 //or using require()
-//const GeoPlatformClient = require('geoplatform.client');
+//const GeoPlatformClient = require('@geoplatform/client');
 //const Config = GeoPlatformClient.Config;
-//const JQueryHttpClient = GeoPlatformClient.JQueryHttpClient;
+//const XHRHttpClient = GeoPlatformClient.XHRHttpClient;
 //const ItemService = GeoPlatformClient.ItemService;
 
-//or using global
-//const Config = GeoPlatformClient.Config;
-//const JQueryHttpClient = GeoPlatformClient.JQueryHttpClient;
-//const ItemService = GeoPlatformClient.ItemService;
+//or using global variable
+//const Config = geoplatform.client.Config;
+//const XHRHttpClient = geoplatform.client.XHRHttpClient;
+//const ItemService = geoplatform.client.ItemService;
 
 let url = Config.ualUrl;
-let client = new JQueryHttpClient();
+let client = new XHRHttpClient();
 let svc = new ItemService(url, client);
 ```
 
 
 HttpClients provided by this library are:
 
-- [JQueryHttpClient](../src/http/jq.js) - client capable of using jQuery ajax support
-  - _requires jQuery v3.x to be included in your application._
-- [NGHttpClient](../src/http/ng.js) - client capable of using Angular 1.x $http
+- [XHRHttpClient](../src/http/xhr.js) - client capable of using Axios ajax support
+  - _requires Axios v0.18+ to be included in your application._
+- [NGHttpClient](../angularjs/src/http/ng.js) - client capable of using AngularJS `$http`
   - _requires Angular v1.x to be included in your application._
-- [NodeHttpClient](../src/http/node.js) - client capable of using [RequestJS](https://github.com/request/request)
+- [NG2HttpClient](../angular/src/http/ng.js) - client capable of using Angular `HttpClient`
+  - _requires Angular v8+ to be included in your application._
+- [NodeHttpClient](../node/src/http/node.js) - client capable of using [RequestJS](https://github.com/request/request)
   - _requires requestJS version ? to be included in your application_
 
-
-### Angular $http defaults
-If you are using GeoPlatform's ng-common library, which updates the $http defaults to include the 'Authorization' header with the user's token, please note that you must still provide the token to the NGHttpClient or you must provide the $http instance. NGClient by default uses the default angular injector to gain access to $http, which results in a different instance than one injected within your application.
-
-```javascript
-//Note: using the "GeoPlatformClient" global variable in this example
-const URL = GeoPlatformClient.Config.ualUrl;
-angular.module('myApp').service('MyService', ['$http',  'AuthenticationService', function($http, AuthenticationService) {
-
-    //option 1: provide $http instance
-    let client = new new NGHttpClient({
-        $http: $http
-    });
-
-    //option 2: set auth token
-    let token = AuthenticationService.getJWTfromLocalStorage();
-    client = new GeoPlatformClient.NGHttpClient({
-        token: token
-    })
-
-    return new GeoPlatformClient.ItemService(URL, client);
-}])
-```
 
 ### HttpClient Options
 | Name    | Type    | Default  |
 |:----    |:----    |:-------  |
 | timeout | integer | 10000 ms |
 | token   | string or function | _N/A_ |
-| $http   | $http instance | the 'ng' module $http instance |
-
 
 
 
@@ -126,9 +95,9 @@ Creates a new instance of the service and points api calls to the specified GP A
 
 ```javascript
 //using es6 import in this example
-import { Config, JQueryHttpClient, ItemService } from 'geoplatform.client';
+import { Config, XHRHttpClient, ItemService } from '@geoplatform/client';
 let url = Config.ualUrl;
-let client = new JQueryHttpClient();
+let client = new XHRHttpClient();
 let itemSvc = new ItemService(url, client);
 ```
 
@@ -141,7 +110,7 @@ Searches items using specified query parameters.
 
 ```javascript
 //continuing from example above...
-import { Query } from 'geoplatform.client';
+import { Query } from '@geoplatform/client';
 let query = new Query().q('water');
 itemSvc.search(query)
 .then( response => {
@@ -207,7 +176,7 @@ Create or update the specified item. If 'item.id' exists, updates with HTTP-PUT.
 
 ```javascript
 //continuing from examples above
-import { ItemTypes } from 'geoplatform.client';
+import { ItemTypes } from '@geoplatform/client';
 let item = {
     type: ItemTypes.DATASET,
     label: "My New Dataset",
@@ -355,9 +324,9 @@ Requests JSON style content for the FeatureLayer with the specified identifier.
 
 ```javascript
 //using es6 import in this example
-import { Config, JQueryHttpClient, LayerService } from 'geoplatform.client';
+import { Config, XHRHttpClient, LayerService } from '@geoplatform/client';
 const url = Config.ualUrl;
-let client = new JQueryHttpClient();
+let client = new XHRHttpClient();
 let svc = new LayerService(url, client);
 svc.get(layerId).then( layer => {
     //fetch layer style info (feature layers only)
@@ -385,7 +354,7 @@ Requests feature information for RasterLayer with specified identifier using OGC
 
 ```javascript
 //using es6 import in this example
-import { Config, JQueryHttpClient, LayerService } from 'geoplatform.client';
+import { Config, XHRHttpClient, LayerService } from '@geoplatform/client';
 
 const WMS_LABEL = 'OGC Web Map Service (WMS)';
 let descOpts = {
@@ -424,7 +393,7 @@ requests updated service information from the remote web service
 
 ```javascript
 //using es6 import in this example
-import { Config, JQueryHttpClient, ServiceService } from 'geoplatform.client';
+import { Config, XHRHttpClient, ServiceService } from '@geoplatform/client';
 let svc = new ServiceService(url, client);
 svc.get(serviceId)
 //get service information using Service Harvester
@@ -442,7 +411,7 @@ Requests the list of supported service types that may be selected from, such as 
 
 ```javascript
 //using es6 import in this example
-import { Config, JQueryHttpClient, ServiceService } from 'geoplatform.client';
+import { Config, XHRHttpClient, ServiceService } from '@geoplatform/client';
 let svc = new ServiceService(url, client);
 svc.types()
 //get service information using Service Harvester
@@ -464,7 +433,7 @@ Creates a new GeoPlatform Service object using harvested service capabilities an
 
 ```javascript
 //using es6 import in this example
-import { Config, JQueryHttpClient, ServiceService } from 'geoplatform.client';
+import { Config, XHRHttpClient, ServiceService } from '@geoplatform/client';
 let service = {
     href: "http://www.url.to/service/",
     serviceType: "OGC Web Map Service (WMS)" //or other type
@@ -488,7 +457,7 @@ Re-harvests service layer information and updates the list of Layer objects.
 
 ```javascript
 //using es6 import in this example
-import { Config, JQueryHttpClient, ServiceService } from 'geoplatform.client';
+import { Config, XHRHttpClient, ServiceService } from '@geoplatform/client';
 let svc = new ServiceService(url, client);
 svc.harvest(serviceId)
 //get service information using Service Harvester
@@ -510,7 +479,7 @@ Initiates a performance test against the service and returns the service with up
 
 ```javascript
 //using es6 import in this example
-import { Config, JQueryHttpClient, ServiceService } from 'geoplatform.client';
+import { Config, XHRHttpClient, ServiceService } from '@geoplatform/client';
 let svc = new ServiceService(url, client);
 svc.liveTest(serviceId)
 //get service information using Service Harvester
@@ -530,7 +499,7 @@ Fetches most recent service statistics
 
 ```javascript
 //using es6 import in this example
-import { Config, JQueryHttpClient, ServiceService } from 'geoplatform.client';
+import { Config, XHRHttpClient, ServiceService } from '@geoplatform/client';
 let svc = new ServiceService(url, client);
 svc.statistics(serviceId)
 //get service information using Service Harvester
@@ -580,8 +549,8 @@ Query non-org, non-group data inside AGOL
 
 ```javascript
 //using es6 import in this example
-import { AgolService, AgolQuery, Config, JQueryHttpClient } from 'geoplatform.client';
-let svc = new AgolService(Config.ualUrl, new JQueryHttpClient());
+import { AgolService, AgolQuery, Config, XHRHttpClient } from '@geoplatform/client';
+let svc = new AgolService(Config.ualUrl, new XHRHttpClient());
 
 let query = new AgolQuery();
 query.setQ('testing');
@@ -605,8 +574,8 @@ Retrieve single AGOL data item by its AGOL identifier
 
 ```javascript
 //using es6 import in this example
-import { AgolService, Config, JQueryHttpClient } from 'geoplatform.client';
-let svc = new AgolService(Config.ualUrl, new JQueryHttpClient());
+import { AgolService, Config, XHRHttpClient } from '@geoplatform/client';
+let svc = new AgolService(Config.ualUrl, new XHRHttpClient());
 let id = ...;
 svc.getItem(id)
 //get service information using Service Harvester
@@ -624,8 +593,8 @@ Query AGOL Organization entities
 
 ```javascript
 //using es6 import in this example
-import { AgolService, AgolQuery, Config, JQueryHttpClient } from 'geoplatform.client';
-let svc = new AgolService(Config.ualUrl, new JQueryHttpClient());
+import { AgolService, AgolQuery, Config, XHRHttpClient } from '@geoplatform/client';
+let svc = new AgolService(Config.ualUrl, new XHRHttpClient());
 
 let query = new AgolQuery();
 query.setQ('testing');
@@ -647,8 +616,8 @@ Retrieve single AGOL organization by its AGOL identifier
 
 ```javascript
 //using es6 import in this example
-import { AgolService, Config, JQueryHttpClient } from 'geoplatform.client';
-let svc = new AgolService(Config.ualUrl, new JQueryHttpClient());
+import { AgolService, Config, XHRHttpClient } from '@geoplatform/client';
+let svc = new AgolService(Config.ualUrl, new XHRHttpClient());
 let id = ...;
 svc.getOrg(id)
 //get service information using Service Harvester
@@ -666,8 +635,8 @@ Query AGOL Group entities
 
 ```javascript
 //using es6 import in this example
-import { AgolService, AgolQuery, Config, JQueryHttpClient } from 'geoplatform.client';
-let svc = new AgolService(Config.ualUrl, new JQueryHttpClient());
+import { AgolService, AgolQuery, Config, XHRHttpClient } from '@geoplatform/client';
+let svc = new AgolService(Config.ualUrl, new XHRHttpClient());
 
 let query = new AgolQuery();
 query.setQ('testing');
@@ -689,8 +658,8 @@ Retrieve single AGOL group by its AGOL identifier
 
 ```javascript
 //using es6 import in this example
-import { AgolService, Config, JQueryHttpClient } from 'geoplatform.client';
-let svc = new AgolService(Config.ualUrl, new JQueryHttpClient());
+import { AgolService, Config, XHRHttpClient } from '@geoplatform/client';
+let svc = new AgolService(Config.ualUrl, new XHRHttpClient());
 let id = ...;
 svc.getGroup(id)
 //get service information using Service Harvester
@@ -725,7 +694,7 @@ Send tracking event to GeoPlatform Resource Portfolio Management
 //using es6 import in this example
 import {
     TrackingService, TrackingEvent, TrackingCategories, TrackingTypes
-} from 'geoplatform.client';
+} from '@geoplatform/client';
 
 //Specify RPM Provider class using that library's mechanism (not covered here)
 let rpmProvider = ...
@@ -747,12 +716,12 @@ be provided to a service:
 
 ```javascript
 import {
-    Config, JQueryHttpClient, ItemService, QueryFactory
-} from 'geoplatform.client';
+    Config, XHRHttpClient, ItemService, QueryFactory
+} from '@geoplatform/client';
 import Logger from './logger';
 
 let url = Config.ualUrl;
-let svc = new ItemService(url, new JQueryHttpClient());
+let svc = new ItemService(url, new XHRHttpClient());
 svc.setLogger(Logger);
 ```
 
@@ -765,14 +734,14 @@ logger instance.
 
 ## Examples
 
-### JQuery
+### XHR
 ```javascript
 //using es6 import in this example
-import { Config, JQueryHttpClient, ItemService, QueryFactory } from 'geoplatform.client';
+import { Config, XHRHttpClient, ItemService, QueryFactory } from '@geoplatform/client';
 
 let url = Config.ualUrl;
 let query = QueryFactory().types('Map','Layer');
-let svc = new ItemService(url, new JQueryHttpClient());
+let svc = new ItemService(url, new XHRHttpClient());
 svc.search(query)
 .then( response => {
     if(!response.results.length) {
@@ -821,7 +790,8 @@ angular.module('my-app', []).service('myService', ['$http', function($http) {
 
 ```javascript
 //using es6 import in this example
-import { Config, NodeHttpClient, ItemService, Query } from 'geoplatform.client';
+import { Config, ItemService, Query } from '@geoplatform/client';
+import { NodeHttpClient } from '@geoplatform/client/node';
 
 module.exports = {
     listDatasets: function() {

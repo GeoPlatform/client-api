@@ -57,7 +57,7 @@ If not using a build tool like WebPack or Browserify, make sure to include the d
 
 __Note:__ You can also load the library from a CDN:
 ```html
-<script src="https://s3.amazonaws.com/geoplatform-cdn/geoplatform.client/_VERSION_/js/geoplatform.client.js"></script>
+<script src="https://s3.amazonaws.com/geoplatform-cdn/@geoplatform/client/_VERSION_/js/geoplatform.client.js"></script>
 ```
 
 ### Referencing Components in your App
@@ -65,12 +65,12 @@ __Note:__ You can also load the library from a CDN:
 #### Using 'require()'
 ```javascript
 //include the config export used to define API properties needed later
-const ItemService = require('geoplatform.client').ItemService;
+const ItemService = require('@geoplatform/client').ItemService;
 ```
 #### Using ES6 'import ... from'
 ```javascript
 //include the config export used to define API properties needed later
-import { ItemService } from 'geoplatform.client';
+import { ItemService } from '@geoplatform/client';
 ```
 #### Using the "GeoPlatformClient" Global
 ```javascript
@@ -84,7 +84,7 @@ environment variables necessary to interact with the GeoPlatform API. Below is
 an example of how to configure this object.
 
 ```javascript
-import { Config } from 'geoplatform.client';
+import { Config } from '@geoplatform/client';
 Config.configure({
 
     //REQUIRED: environment the application is deployed within

@@ -4,11 +4,8 @@ It is not required to interact with the GeoPlatform API, but offers services and
 functionality to speed up your application's integration with the GeoPlatform.
 
 This library is framework _flexible_. The default implementations
-require JQuery to facilitate AJAX XHR requests with the GeoPlatform API hosts.
-Alternatively, implementations for Angular 1.x and NodeJS are provided.
-
-__Note:__ The JQuery and Angular implementations require an Internet browser environment
-and the NodeJS implementation requires a NodeJS environment of at least 6.9 or later.
+require Axios to facilitate AJAX XHR requests with the GeoPlatform API hosts.
+Alternatively, implementations for Angular 1.x, Angular 8+ and NodeJS are provided.
 
 ## Table of Contents
 - [Dependencies and Requirements](#dependencies-and-requirements)
@@ -23,41 +20,50 @@ and the NodeJS implementation requires a NodeJS environment of at least 6.9 or l
 ## Dependencies and Requirements
 This library requires the following dependencies be present in your application:
 
-- [Q](https://cdnjs.cloudflare.com/ajax/libs/q.js/1.5.1/q.js) - version 1.5+
-- [jQuery](https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js) - version 2.1+
-- [Request](https://github.com/request/request) - version 2.75+, optional (used by `NodeHttpClient`)
-- [AngularJS](http://...) - 1.x, optional (used by `NGHttpClient`)
+- [Axios](https://github.com/axios/axios) - version 0.18+
+- [AngularJS](https://angularjs.org/) - 1.x, required if using the [AngularJS support](angularjs/README.md)
+- [Angular](https://angular.io) - 8+, required if using the [Angular support](angular/README.md)
+- [Request](https://github.com/request/request) - version 2.75+, required if using the [Node support](node/README.md)
 
 
-## Using GeoPlatform API Client in Your App
+For more information about how to use API Client inside AngularJS, see the [AngularJS documentation](angularjs/README.md).
 
-### Include as a Dependency
-Include API Client as a dependency of your application inside the package.json file (or similar dependency definition file).
+
+For more information about how to use API Client inside Angular, see the [Angular documentation](angular/README.md)
+
+
+For more information about how to use API Client inside NodeJS, see the [Node documentation](node/README.md)
+
+## Installation
+Include API Client as a dependency of your application inside the package.json file
+(or similar dependency definition file).
 
 ```
    ...
    "dependencies": {
        ...,
-       "geoplatform.client": "git+https://github.com/GeoPlatform/client-api.git",
+       "@geoplatform/client": "git+https://github.com/GeoPlatform/client-api.git",
        ...
    }
    ...
 ```
 
-and then run `npm install geoplatform.client` or `yarn add geoplatform.client`.  
+Then run `npm install @geoplatform/client` or `yarn add @geoplatform/client`.  
 
 _Note:_ You can try installing using the --save option but NPM sometimes has issues with installing and updating GIT repo-hosted modules. It's better to explicitly add it to your package.json and then install it.
 
 
+## Using GeoPlatform API Client in Your App
+
 If not using a build tool like WebPack or Browserify, make sure to include the distribution in your application's HTML file(s):
 
 ```html
-<script src="geoplatform.client.js"></script>
+<script src="path/to/geoplatform.client.js"></script>
 ```
 
 __Note:__ You can also load the library from a CDN:
 ```html
-<script src="https://s3.amazonaws.com/geoplatform-cdn/geoplatform.client/_VERSION_/js/geoplatform.client.js"></script>
+<script src="https://s3.amazonaws.com/geoplatform-cdn/@geoplatform/client/_VERSION_/js/geoplatform.client.js"></script>
 ```
 
 ### Referencing Components in your App
@@ -65,17 +71,17 @@ __Note:__ You can also load the library from a CDN:
 #### Using 'require()'
 ```javascript
 //include the config export used to define API properties needed later
-const ItemService = require('geoplatform.client').ItemService;
+const ItemService = require('@geoplatform/client').ItemService;
 ```
 #### Using ES6 'import ... from'
 ```javascript
 //include the config export used to define API properties needed later
-import { ItemService } from 'geoplatform.client';
+import { ItemService } from '@geoplatform/client';
 ```
-#### Using the "GeoPlatformClient" Global
+#### Using the Global Variable
 ```javascript
 //include the config export used to define API properties needed later
-const ItemService = GeoPlatformClient.ItemService;
+const ItemService = geoplatform.client.ItemService;
 ```
 
 #### Environment Variables
@@ -84,7 +90,7 @@ environment variables necessary to interact with the GeoPlatform API. Below is
 an example of how to configure this object.
 
 ```javascript
-import { Config } from 'geoplatform.client';
+import { Config } from '@geoplatform/client';
 Config.configure({
 
     //REQUIRED: environment the application is deployed within
@@ -136,12 +142,6 @@ to enable authenticating users and providing authorization tokens with requests.
 
 Look inside the "examples" folder and its sub-folders to see how to use the client API.
 
-To run the JQuery and Angular examples, it is recommended you use http-server:
-
-1. Install http-server if it isn't already: `npm install -g http-server`
-2. Run an http server in the root folder of the api project: `http-server -p8080`
-3. Load the desired example in your browser (e.g., http://localhost:8080/examples/jq/item.html)
-
 To run the NodeJS examples, run Node from the api project root folder passing it
 the desired example JS file (e.g., `node examples/node/item.js`)
 
@@ -153,7 +153,6 @@ the desired example JS file (e.g., `node examples/node/item.js`)
 - Classes use capitalized case (e.g., `class MyClass { ... }`)
 - Variables and functions use camel-case (e.g., `let myObj = ...`)
 - Constants use uppercase (e.g., `const DEFINITIONS = { ... }`)
-
 
 
 
@@ -210,7 +209,7 @@ import { NG2HttpClient } from "@geoplatform/client/angular");
 
 *Note:* When using version 0.3 inside client-side SPAs that do not support ES6 imports,
 the global constant ("GeoPlatformClient") has been replaced with "geoplatform.client"
-(case sensitive). Sub-package constants extend this constant (e.g., "geoplatform.client.angularjs" for angularJS-specific classes).
+(case sensitive). Sub-package constants extend this constant (e.g., "geoplatform.client.angularjs" for AngularJS-specific classes, "geoplatform.client.angular" for Angular).
 
 
 

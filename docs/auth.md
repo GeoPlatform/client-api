@@ -10,14 +10,14 @@ an authentication token or the request will be denied by the GeoPlatform API.
 
 ```javascript
 //es6 import
-import { JQueryHttpClient } from 'geoplatform.client';
+import { XHRHttpClient } from '@geoplatform/client';
 //or using require()
-//const JQueryHttpClient = require('geoplatform.client').JQueryHttpClient;
+//const XHRHttpClient = require('@geoplatform/client').XHRHttpClient;
 //or using global
-//const JQueryHttpClient = GeoPlatformClient.JQueryHttpClient;
+//const XHRHttpClient = geoplatform.client.XHRHttpClient;
 
 let myJwtToken = //fetched previous to this code block
-let client = new JQueryHttpClient({
+let client = new XHRHttpClient({
     token: myJwtToken
 });
 

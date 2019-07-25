@@ -97,8 +97,8 @@ if(angular && typeof(angular.module) !== 'undefined') {
             settings may change after the service singleton is
             created, in which case the factory option should be used.
          */
-        .service(name, ['gpNgHttpClient', 'gpConfig', '$q',
-            function(gpNgHttpClient, gpConfig, $q) {
+        .service(name, [ 'gpNgHttpClient', 'gpConfig', '$q',
+            function( gpNgHttpClient, gpConfig, $q ) {
                 return serviceFactory(gpNgHttpClient, svcClass, gpConfig.ualUrl, $q);
             }
         ])
@@ -109,11 +109,18 @@ if(angular && typeof(angular.module) !== 'undefined') {
             this if services need to be able to change API endpoints
             during application runtime.
          */
-        .factory(name+'Factory', ['gpNgHttpClient', '$q', function(gpNgHttpClient, $q) {
-            return function(url) {
-                return serviceFactory(gpNgHttpClient, svcClass, url, $q);
-            };
-        }]);
+        .factory(name+'Factory', [ 'gpNgHttpClient', 'gpConfig', '$q',
+            function( gpNgHttpClient, gpConfig, $q ) {
+                return function( url ?: string ) {
+                    return serviceFactory(
+                        gpNgHttpClient,
+                        svcClass,
+                        url || gpConfig.ualUrl,
+                        $q
+                    );
+                };
+            }
+        ]);
 
     });
 }

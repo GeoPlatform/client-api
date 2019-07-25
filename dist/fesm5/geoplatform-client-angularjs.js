@@ -529,11 +529,13 @@ if (angular && typeof (module$1) !== 'undefined') {
                 this if services need to be able to change API endpoints
                 during application runtime.
              */
-            .factory(name + 'Factory', ['gpNgHttpClient', '$q', function (gpNgHttpClient, $q) {
+            .factory(name + 'Factory', ['gpNgHttpClient', 'gpConfig', '$q',
+            function (gpNgHttpClient, gpConfig, $q) {
                 return function (url) {
-                    return serviceFactory_1(gpNgHttpClient, svcClass, url, $q);
+                    return serviceFactory_1(gpNgHttpClient, svcClass, url || gpConfig.ualUrl, $q);
                 };
-            }]);
+            }
+        ]);
     });
 }
 

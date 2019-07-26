@@ -3,7 +3,7 @@ import { map } from 'rxjs/operators';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpRequest, HttpHeaders, HttpParams, HttpResponse, HttpClient, HttpClientModule } from '@angular/common/http';
-import { GPHttpClient, Config, ItemService, DatasetService, ServiceService, LayerService, MapService, GalleryService, UtilsService } from '@geoplatform/client';
+import { GPHttpClient, Config, ItemService, DatasetService, ServiceService, LayerService, MapService, GalleryService, UtilsService, KGService } from '@geoplatform/client';
 
 /**
  * @fileoverview added by tsickle
@@ -180,6 +180,15 @@ function utilsServiceProviderFactory(http) {
     var client = ng2HttpClientFactory(http);
     return new UtilsService(Config["ualUrl"], client);
 }
+/**
+ * @param {?} http
+ * @return {?}
+ */
+function kgServiceProviderFactory(http) {
+    /** @type {?} */
+    var client = ng2HttpClientFactory(http);
+    return new KGService(Config["ualUrl"], client);
+}
 var GeoPlatformClientModule = /** @class */ (function () {
     function GeoPlatformClientModule() {
     }
@@ -229,6 +238,11 @@ var GeoPlatformClientModule = /** @class */ (function () {
                             provide: UtilsService,
                             useFactory: utilsServiceProviderFactory,
                             deps: [HttpClient]
+                        },
+                        {
+                            provide: KGService,
+                            useFactory: kgServiceProviderFactory,
+                            deps: [HttpClient]
                         }
                     ]
                 },] }
@@ -251,6 +265,6 @@ var GeoPlatformClientModule = /** @class */ (function () {
  * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
  */
 
-export { GeoPlatformClientModule, NG2HttpClient, ng2HttpClientFactory, itemServiceProviderFactory, datasetServiceProviderFactory, serviceServiceProviderFactory, layerServiceProviderFactory, mapServiceProviderFactory, galleryServiceProviderFactory, utilsServiceProviderFactory };
+export { GeoPlatformClientModule, NG2HttpClient, ng2HttpClientFactory, itemServiceProviderFactory, datasetServiceProviderFactory, serviceServiceProviderFactory, layerServiceProviderFactory, mapServiceProviderFactory, galleryServiceProviderFactory, utilsServiceProviderFactory, kgServiceProviderFactory as ɵa };
 
 //# sourceMappingURL=geoplatform-client-angular.js.map

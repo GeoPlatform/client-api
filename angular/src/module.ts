@@ -4,8 +4,8 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
 
 import {
     Config, GPHttpClient,
-    ItemService, DatasetService, ServiceService,
-    LayerService, MapService, GalleryService, UtilsService
+    ItemService, DatasetService, ServiceService, LayerService,
+    MapService, GalleryService, UtilsService, KGService
 } from '@geoplatform/client';
 
 import { NG2HttpClient } from './http/ng';
@@ -41,6 +41,10 @@ export function galleryServiceProviderFactory( http : HttpClient ) {
 export function utilsServiceProviderFactory( http : HttpClient ) {
     let client = ng2HttpClientFactory(http);
     return new UtilsService(Config.ualUrl, client);
+}
+export function kgServiceProviderFactory( http : HttpClient ) {
+    let client = ng2HttpClientFactory(http);
+    return new KGService(Config.ualUrl, client);
 }
 
 
@@ -88,6 +92,11 @@ export function utilsServiceProviderFactory( http : HttpClient ) {
         {
             provide:    UtilsService,
             useFactory: utilsServiceProviderFactory,
+            deps:       [ HttpClient ]
+        },
+        {
+            provide:    KGService,
+            useFactory: kgServiceProviderFactory,
             deps:       [ HttpClient ]
         }
     ]

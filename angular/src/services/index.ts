@@ -6,7 +6,7 @@ import {
     MapService, GalleryService
 } from "@geoplatform/client";
 
-import NG2HttpClient from '../http/ng';
+import { NG2HttpClient } from '../http/ng';
 
 
 interface ServiceArgs {

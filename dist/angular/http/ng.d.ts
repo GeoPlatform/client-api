@@ -18,4 +18,4 @@ declare class NG2HttpClient extends GPHttpClient {
      */
     execute(request: HttpRequest<any>): Promise<any>;
 }
-export default NG2HttpClient;
+export { NG2HttpClient };

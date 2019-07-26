@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { ItemService, DatasetService, ServiceService, LayerService, MapService, GalleryService, UtilsService } from '@geoplatform/client';
-import NG2HttpClient from './http/ng';
+import { NG2HttpClient } from './http/ng';
 export declare function ng2HttpClientFactory(http: HttpClient): NG2HttpClient;
 export declare function itemServiceProviderFactory(http: HttpClient): ItemService;
 export declare function datasetServiceProviderFactory(http: HttpClient): DatasetService;

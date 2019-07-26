@@ -160,11 +160,6 @@ This software has been approved for release by the U.S. Department of the Interi
      * @fileoverview added by tsickle
      * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
      */
-
-    /**
-     * @fileoverview added by tsickle
-     * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
-     */
     /**
      * @param {?} http
      * @return {?}
@@ -301,6 +296,12 @@ This software has been approved for release by the U.S. Department of the Interi
      * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
      */
 
+    /**
+     * @fileoverview added by tsickle
+     * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
+     */
+
+    exports.GeoPlatformClientModule = GeoPlatformClientModule;
     exports.NG2HttpClient = NG2HttpClient;
     exports.ng2HttpClientFactory = ng2HttpClientFactory;
     exports.itemServiceProviderFactory = itemServiceProviderFactory;
@@ -310,7 +311,6 @@ This software has been approved for release by the U.S. Department of the Interi
     exports.mapServiceProviderFactory = mapServiceProviderFactory;
     exports.galleryServiceProviderFactory = galleryServiceProviderFactory;
     exports.utilsServiceProviderFactory = utilsServiceProviderFactory;
-    exports.GeoPlatformClientModule = GeoPlatformClientModule;
 
     Object.defineProperty(exports, '__esModule', { value: true });
 

@@ -8,7 +8,7 @@ import {
     LayerService, MapService, GalleryService, UtilsService
 } from '@geoplatform/client';
 
-import NG2HttpClient from './http/ng';
+import { NG2HttpClient } from './http/ng';
 
 
 export function ng2HttpClientFactory( http : HttpClient ) {

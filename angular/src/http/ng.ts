@@ -89,29 +89,16 @@ class NG2HttpClient extends GPHttpClient {
                 }
             );
         });
-
-
-        /*
-        .toPromise()
-        .then( (result) => Promise.resolve(result))
-        .catch( (err : any) => {
-            // console.log("NG2HttpClient.catch() - " + JSON.stringify(err));
-            if (err instanceof HttpErrorResponse) {
-                let msg = "An error occurred communicating with the GeoPlatform API";
-                if(err.error && err.error.error && err.error.error.message) {
-                    msg = err.error.error.message;
-                } else if (err.error && err.error.message) {
-                    msg = err.error.message;
-                } else if(err.message) {
-                    msg = err.message;
-                }
-                throw new Error(msg);
-            }
-            return {};
-        });
-        */
     }
-
 }
 
-export default NG2HttpClient;
+
+/*
+Don't use 'default' when exporting something being provided by the module
+or else you may get "Invalid provider for the module" when compiling using AOT.
+See:
+https://stackoverflow.com/questions/48183594/invalid-provider-for-the-ngmodule-when-using-aot
+ */
+export {
+    NG2HttpClient
+}

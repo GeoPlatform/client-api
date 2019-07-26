@@ -9,8 +9,8 @@ Add the API Client library to your project's package.json file as described in
 the [Installation documentation](../README.md#Installation).
 
 In addition, it's recommended you configure the Angular-CLI project settings
-(angular.json or .angular-cli.json) to know where to find the Angular-specific
-portion of API Client, as shown below.
+(angular.json or .angular-cli.json for older projects) to know where to find
+the Angular-specific portion of API Client, as shown below.
 
 ```
 {
@@ -46,7 +46,6 @@ import { NG2HttpClient } from '@geoplatform/client/angular';
 class MyComponent implements OnInit {
 
     public results      : SearchResults;
-
     private query       : Query;
     private itemService : ItemService;
 
@@ -72,60 +71,28 @@ class MyComponent implements OnInit {
 
 ### Using Dependency Injection
 If you want to create singleton instances for use across multiple components in your application,
-you can define a service provider which configures the desired endpoint URL as
-well as the instance of NG2HttpClient.
+you can use service providers defined inside the `GeoPlatformClientModule`
+which configures the desired endpoint URL as well as the instance of NG2HttpClient.
 
 
-#### Define the Service Provider (e.g., `shared/service.provider.ts`)
-```javascript
-import { HttpClient } from '@angular/common/http';
-import { Config, ItemService } from '@geoplatform/client';
-import { NG2HttpClient } from '@geoplatform/client/angular';
-
-//singleton instances
-var _client : NG2HttpClient = null;
-var _itemService : ItemService = null;
-v
-export function itemServiceFactory( http : HttpClient ) {
-    if(_itemService) return _itemService;
-    if(_client === null) _client = new NG2HttpClient(http);
-    // console.log("Creating ItemService using:");
-    // console.log(Config);
-    _itemService = new ItemService(Config.ualUrl, _client);
-    return _itemService;
-}
-
-export let itemServiceProvider = {
-    provide: ItemService,
-    useFactory: itemServiceFactory,
-    deps: [ HttpClient ]
-}
-```
-
-#### Register Provider Inside App Module
+#### Import GeoPlatformClientModule in AppModule
 ```javascript
 import { NgModule } from '@angular/core';
 import { HttpClientModule, HttpClient } from '@angular/common/http';
-import { itemServiceProvider } from './shared/service.provider';
-import { NG2HttpClient } from '@geoplatform/client/angular';
+import { GeoPlatformClientModule } from '@geoplatform/client/angular';
 
 @NgModule({
     declarations: [...],
     imports: [
         HttpClientModule,
+
+        //import the module into your application's module
+        GeoPlatformClientModule,
+        // --------------------
+
         ...
     ],
-    providers: [
-        {
-            provide: NG2HttpClient,
-            useFactory: (http:HttpClient) => {
-                return new NG2HttpClient(http);
-            },
-            deps: [HttpClient]
-        },
-        itemServiceProvider,
-        ...
-    ],
+    providers: [...],
     entryComponents: [...],
     bootstrap: [ ... ]
 })
@@ -148,6 +115,7 @@ export class MyComponent {
     private itemService : ItemService;
 
     constructor(
+        //inject service instance into your component
         @Inject(ItemService) itemService: ItemService
     ) {
         this.itemService = itemService;

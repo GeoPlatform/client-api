@@ -8,9 +8,9 @@ Angular framework.
 Add the API Client library to your project's package.json file as described in
 the [Installation documentation](../README.md#Installation).
 
-In addition, it's recommended you configure the Angular-CLI project settings
-(angular.json or .angular-cli.json for older projects) to know where to find
-the Angular-specific portion of API Client, as shown below.
+In addition, it's recommended you configure the TypeScript compiler
+(in `src/tsconfig.app.json`) to specify the location of the Angular-specific
+portion of API Client, as shown below.
 
 ```
 {

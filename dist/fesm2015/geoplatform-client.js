@@ -4186,6 +4186,6 @@ polyfills();
  * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
  */
 
-export { ClientVersion, GPError, ItemTypes, ItemTypeLabels, Parameters as QueryParameters, Facets as QueryFacets, Query, queryFactory as QueryFactory, Fields as QueryFields, KGQuery, Classifiers as KGClassifiers, factoryFn as URIFactory, Config, GPHttpClient, XHRHttpClient, ItemService, DatasetService, MapService, LayerService, ServiceService, GalleryService, UtilsService, KGService, ServiceFactory, AgolService, AgolQuery, Event as TrackingEvent, TrackingService, Categories as TrackingCategories, Events as TrackingTypes, TrackingEventFactory };
+export { ClientVersion, GPError, ItemTypes, ItemTypeLabels, Parameters as QueryParameters, Facets as QueryFacets, Query, queryFactory as QueryFactory, Fields as QueryFields, KGQuery, Classifiers as KGClassifiers, factoryFn as URIFactory, Config, GPHttpClient, XHRHttpClient, BaseService as AbstractService, ItemService, DatasetService, MapService, LayerService, ServiceService, GalleryService, UtilsService, KGService, ServiceFactory, AgolService, AgolQuery, Event as TrackingEvent, TrackingService, Categories as TrackingCategories, Events as TrackingTypes, TrackingEventFactory };
 
 //# sourceMappingURL=geoplatform-client.js.map

@@ -440,6 +440,49 @@ class ItemService extends BaseService {
         });
     }
 
+    /*
+    getThumbnail ( id : string, options ?: any ) : Promise<any> {
+        return this.createAndResolvePromise( true )
+        .then( () => {
+            let url = this.baseUrl + '/' + id + '/thumbnail';
+            let opts = this.buildRequest({
+                method: "GET", url: url,
+                json: false,
+                options: options
+            });
+            return this.execute(opts);
+        })
+        .catch( e => {
+            let msg = e.message;
+            let err = new Error(`Error getting thumbnail for item: ${msg}`);
+            Object.assign(err, e);
+            this.logError(`ItemService.getThumbnail() - ${msg}`);
+            throw err;
+        });
+    }
+
+    createThumbnail ( id : string, options ?: any ) : Promise<any> {
+        return this.createAndResolvePromise( true )
+        .then( () => {
+            let url = this.baseUrl + '/' + id + '/thumbnail';
+            let opts = this.buildRequest({
+                method: "POST", url: url,
+                json: false,
+                options: options
+            });
+            return this.execute(opts);
+        })
+        .catch( e => {
+            let msg = e.message;
+            let err = new Error(`Error creating thumbnail for item: ${msg}`);
+            Object.assign(err, e);
+            this.logError(`ItemService.createThumbnail() - ${msg}`);
+            throw err;
+        });
+    }
+    */
+
+
 }
 
 export default ItemService;

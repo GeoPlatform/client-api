@@ -1,4 +1,5 @@
 
+import BaseService from './base';
 import ItemService from './item';
 import DatasetService from './dataset';
 import MapService from './map';
@@ -23,6 +24,7 @@ import ServiceFactory  from './factory';
 
 export {
 
+    BaseService as AbstractService,
     ItemService,
     DatasetService,
     MapService,

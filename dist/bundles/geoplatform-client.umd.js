@@ -6111,6 +6111,7 @@ This software has been approved for release by the U.S. Department of the Interi
     exports.Config = Config;
     exports.GPHttpClient = GPHttpClient;
     exports.XHRHttpClient = XHRHttpClient;
+    exports.AbstractService = BaseService;
     exports.ItemService = ItemService;
     exports.DatasetService = DatasetService;
     exports.MapService = MapService;

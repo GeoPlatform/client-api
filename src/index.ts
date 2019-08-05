@@ -33,7 +33,7 @@ import GPHttpClient from './http/client';
 // import JQueryHttpClient from './http/jq';
 import XHRHttpClient from './http/xhr';
 
-
+import BaseService from './services/base';
 import ItemService from './services/item';
 import DatasetService from './services/dataset';
 import MapService from './services/map';
@@ -84,7 +84,7 @@ export {
     GPHttpClient,
     XHRHttpClient,
 
-
+    BaseService as AbstractService,
     ItemService,
     DatasetService,
     MapService,

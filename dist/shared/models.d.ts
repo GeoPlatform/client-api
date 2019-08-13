@@ -14,6 +14,7 @@ export interface Item {
     [propName: string]: any;
 }
 export interface Asset extends Item {
+    keywords?: string[];
     themes?: Concept[];
     publishers?: Organization[];
     contributors?: Organization[];
@@ -29,6 +30,8 @@ export interface Asset extends Item {
         height?: string | number;
         mimeType?: string;
     };
+    related?: any[];
+    auxillaryResources?: any[];
 }
 export interface Dataset extends Asset {
     distributions?: any[];

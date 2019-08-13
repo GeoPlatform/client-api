@@ -18,21 +18,24 @@ export interface Item {
 }
 
 export interface Asset extends Item {
-    themes ?: Concept[];
-    publishers ?: Organization[];
+    keywords     ?: string[];
+    themes       ?: Concept[];
+    publishers   ?: Organization[];
     contributors ?: Organization[];
-    contacts ?: Contact[];
-    assets ?: Asset[];
-    classifiers ?: any;
-    href ?: string;
-    landingPage ?: string;
-    thumbnail ?: {
-        url ?: string;
+    contacts     ?: Contact[];
+    assets       ?: Asset[];
+    classifiers  ?: any;
+    href         ?: string;
+    landingPage  ?: string;
+    thumbnail    ?: {
+        url         ?: string;
         contentData ?: string;
-        width ?: string|number;
-        height ?: string|number;
-        mimeType ?: string;
+        width       ?: string|number;
+        height      ?: string|number;
+        mimeType    ?: string;
     };
+    related     ?: any[];
+    auxillaryResources ?: any[];
 }
 
 

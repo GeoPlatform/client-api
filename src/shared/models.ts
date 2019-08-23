@@ -1,19 +1,28 @@
 
+export interface AuxillaryResource {
+    label     ?: string;
+    href      ?: string;
+    role      ?: Concept;
+    mediaType ?: string;
+    format    ?: string;
+    //contentId ?: string;
+}
+
 
 export interface Item {
-    id : string;
-    type : string;
-    uri ?: string;
-    title : string;
-    label ?: string;
-    description ?: string;
-    createdBy ?: string;
+    id              : string;
+    type            : string;
+    uri            ?: string;
+    title           : string;
+    label          ?: string;
+    description    ?: string;
+    createdBy      ?: string;
     lastModifiedBy ?: string;
-    created ?: number;
-    modified ?: number;
-    _modified ?: number;
-    resourceTypes ?: string[];
-
+    created        ?: number;
+    modified       ?: number;
+    _modified      ?: number;
+    resourceTypes  ?: string[];
+    related        ?: AuxillaryResource[];
     [propName: string]: any;
 }
 
@@ -34,8 +43,6 @@ export interface Asset extends Item {
         height      ?: string|number;
         mimeType    ?: string;
     };
-    related     ?: any[];
-    auxillaryResources ?: any[];
 }
 
 

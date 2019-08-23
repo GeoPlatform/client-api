@@ -26,7 +26,8 @@ import Config from './shared/config';
 import {
     Item, Asset, Dataset, Service, Layer, Map, Gallery,
     Application, Topic, WebSite,
-    Organization, Contact, ConceptScheme, SearchResults, ServiceTypeStandard
+    Organization, Contact, ConceptScheme, SearchResults,
+    ServiceTypeStandard, AuxillaryResource
 } from "./shared/models";
 
 import GPHttpClient from './http/client';
@@ -77,7 +78,8 @@ export {
     //model interfaces
     Item, Asset, Dataset, Service, Layer, Map, Gallery,
     Application, Topic, WebSite,
-    Organization, Contact, ConceptScheme, SearchResults, ServiceTypeStandard,
+    Organization, Contact, ConceptScheme, SearchResults,
+    ServiceTypeStandard, AuxillaryResource,
 
     Config,
 

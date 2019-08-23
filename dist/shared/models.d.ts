@@ -1,3 +1,10 @@
+export interface AuxillaryResource {
+    label?: string;
+    href?: string;
+    role?: Concept;
+    mediaType?: string;
+    format?: string;
+}
 export interface Item {
     id: string;
     type: string;
@@ -11,6 +18,7 @@ export interface Item {
     modified?: number;
     _modified?: number;
     resourceTypes?: string[];
+    related?: AuxillaryResource[];
     [propName: string]: any;
 }
 export interface Asset extends Item {
@@ -30,8 +38,6 @@ export interface Asset extends Item {
         height?: string | number;
         mimeType?: string;
     };
-    related?: any[];
-    auxillaryResources?: any[];
 }
 export interface Dataset extends Asset {
     distributions?: any[];

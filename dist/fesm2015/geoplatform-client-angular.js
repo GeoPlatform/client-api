@@ -1,73 +1,58 @@
+import { HttpParams, HttpHeaders, HttpRequest, HttpResponse, HttpClientModule, HttpClient } from '@angular/common/http';
 import { map } from 'rxjs/operators';
+import { GPHttpClient, ItemService, Config, DatasetService, ServiceService, LayerService, MapService, GalleryService, UtilsService, KGService } from '@geoplatform/client';
+import { __decorate } from 'tslib';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HttpRequest, HttpHeaders, HttpParams, HttpResponse, HttpClient, HttpClientModule } from '@angular/common/http';
-import { GPHttpClient, Config, ItemService, DatasetService, ServiceService, LayerService, MapService, GalleryService, UtilsService, KGService } from '@geoplatform/client';
 
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
- */
 class NG2HttpClient extends GPHttpClient {
-    /**
-     * @param {?} http
-     * @param {?=} options
-     */
     constructor(http, options) {
         super(options);
         this.http = http;
     }
-    /**
-     * @param {?} zone
-     * @return {?}
-     */
     setZone(zone) {
         this.zone = zone;
     }
     /**
      *
-     * @param {?} options
-     * @return {?}
      */
     createRequestOpts(options) {
-        /** @type {?} */
         let opts = {};
-        if (options["options"] && options["options"].responseType) {
-            opts.responseType = options["options"].responseType;
+        if (options.options && options.options.responseType) {
+            opts.responseType = options.options.responseType;
         }
         else
             opts.responseType = 'json'; //default response type
-        if (options["params"]) {
-            opts.params = new HttpParams({ fromObject: options["params"] });
+        if (options.params) {
+            opts.params = new HttpParams({ fromObject: options.params });
         }
-        if (options["data"]) {
-            opts.body = options["data"];
+        if (options.data) {
+            opts.body = options.data;
         }
         opts.headers = new HttpHeaders();
-        /** @type {?} */
+        //set authorization token if one was provided
         let token = this.getToken();
         if (token) {
-            opts.headers.set('Authorization', 'Bearer ' + token);
+            opts.headers = opts.headers.set('Authorization', 'Bearer ' + token);
         }
         if (opts.body) {
-            return new HttpRequest(options["method"], options["url"], opts.body, opts);
+            return new HttpRequest(options.method, options.url, opts.body, opts);
         }
         else {
-            return new HttpRequest(options["method"], options["url"], opts);
+            return new HttpRequest(options.method, options.url, opts);
         }
     }
     /**
-     * @param {?} request - Angular HttpRequest object
-     * @return {?} resolving the response or an error
+     * @param request - Angular HttpRequest object
+     * @return resolving the response or an error
      */
     execute(request) {
-        /** @type {?} */
         let value = null;
         return new Promise((resolve, reject) => {
             this.http.request(request)
                 .pipe(map((event) => {
                 if (event instanceof HttpResponse) {
-                    return (/** @type {?} */ (event)).body;
+                    return event.body;
                 }
                 return {};
             }))
@@ -85,162 +70,104 @@ class NG2HttpClient extends GPHttpClient {
     }
 }
 
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
- */
-/**
- * @param {?} http
- * @return {?}
- */
 function ng2HttpClientFactory(http) {
     return new NG2HttpClient(http);
 }
-/**
- * @param {?} http
- * @return {?}
- */
 function itemServiceProviderFactory(http) {
-    /** @type {?} */
     let client = ng2HttpClientFactory(http);
-    return new ItemService(Config["ualUrl"], client);
+    return new ItemService(Config.ualUrl, client);
 }
-/**
- * @param {?} http
- * @return {?}
- */
 function datasetServiceProviderFactory(http) {
-    /** @type {?} */
     let client = ng2HttpClientFactory(http);
-    return new DatasetService(Config["ualUrl"], client);
+    return new DatasetService(Config.ualUrl, client);
 }
-/**
- * @param {?} http
- * @return {?}
- */
 function serviceServiceProviderFactory(http) {
-    /** @type {?} */
     let client = ng2HttpClientFactory(http);
-    return new ServiceService(Config["ualUrl"], client);
+    return new ServiceService(Config.ualUrl, client);
 }
-/**
- * @param {?} http
- * @return {?}
- */
 function layerServiceProviderFactory(http) {
-    /** @type {?} */
     let client = ng2HttpClientFactory(http);
-    return new LayerService(Config["ualUrl"], client);
+    return new LayerService(Config.ualUrl, client);
 }
-/**
- * @param {?} http
- * @return {?}
- */
 function mapServiceProviderFactory(http) {
-    /** @type {?} */
     let client = ng2HttpClientFactory(http);
-    return new MapService(Config["ualUrl"], client);
+    return new MapService(Config.ualUrl, client);
 }
-/**
- * @param {?} http
- * @return {?}
- */
 function galleryServiceProviderFactory(http) {
-    /** @type {?} */
     let client = ng2HttpClientFactory(http);
-    return new GalleryService(Config["ualUrl"], client);
+    return new GalleryService(Config.ualUrl, client);
 }
-/**
- * @param {?} http
- * @return {?}
- */
 function utilsServiceProviderFactory(http) {
-    /** @type {?} */
     let client = ng2HttpClientFactory(http);
-    return new UtilsService(Config["ualUrl"], client);
+    return new UtilsService(Config.ualUrl, client);
 }
-/**
- * @param {?} http
- * @return {?}
- */
 function kgServiceProviderFactory(http) {
-    /** @type {?} */
     let client = ng2HttpClientFactory(http);
-    return new KGService(Config["ualUrl"], client);
+    return new KGService(Config.ualUrl, client);
 }
-class GeoPlatformClientModule {
-}
-GeoPlatformClientModule.decorators = [
-    { type: NgModule, args: [{
-                imports: [
-                    CommonModule,
-                    HttpClientModule
-                ],
-                providers: [
-                    {
-                        provide: NG2HttpClient,
-                        useFactory: ng2HttpClientFactory,
-                        deps: [HttpClient]
-                    },
-                    {
-                        provide: ItemService,
-                        useFactory: itemServiceProviderFactory,
-                        deps: [HttpClient]
-                    },
-                    {
-                        provide: DatasetService,
-                        useFactory: datasetServiceProviderFactory,
-                        deps: [HttpClient]
-                    },
-                    {
-                        provide: ServiceService,
-                        useFactory: serviceServiceProviderFactory,
-                        deps: [HttpClient]
-                    },
-                    {
-                        provide: LayerService,
-                        useFactory: layerServiceProviderFactory,
-                        deps: [HttpClient]
-                    },
-                    {
-                        provide: MapService,
-                        useFactory: mapServiceProviderFactory,
-                        deps: [HttpClient]
-                    },
-                    {
-                        provide: GalleryService,
-                        useFactory: galleryServiceProviderFactory,
-                        deps: [HttpClient]
-                    },
-                    {
-                        provide: UtilsService,
-                        useFactory: utilsServiceProviderFactory,
-                        deps: [HttpClient]
-                    },
-                    {
-                        provide: KGService,
-                        useFactory: kgServiceProviderFactory,
-                        deps: [HttpClient]
-                    }
-                ]
-            },] }
-];
+let GeoPlatformClientModule = class GeoPlatformClientModule {
+};
+GeoPlatformClientModule = __decorate([
+    NgModule({
+        imports: [
+            CommonModule,
+            HttpClientModule
+        ],
+        providers: [
+            {
+                provide: NG2HttpClient,
+                useFactory: ng2HttpClientFactory,
+                deps: [HttpClient]
+            },
+            {
+                provide: ItemService,
+                useFactory: itemServiceProviderFactory,
+                deps: [HttpClient]
+            },
+            {
+                provide: DatasetService,
+                useFactory: datasetServiceProviderFactory,
+                deps: [HttpClient]
+            },
+            {
+                provide: ServiceService,
+                useFactory: serviceServiceProviderFactory,
+                deps: [HttpClient]
+            },
+            {
+                provide: LayerService,
+                useFactory: layerServiceProviderFactory,
+                deps: [HttpClient]
+            },
+            {
+                provide: MapService,
+                useFactory: mapServiceProviderFactory,
+                deps: [HttpClient]
+            },
+            {
+                provide: GalleryService,
+                useFactory: galleryServiceProviderFactory,
+                deps: [HttpClient]
+            },
+            {
+                provide: UtilsService,
+                useFactory: utilsServiceProviderFactory,
+                deps: [HttpClient]
+            },
+            {
+                provide: KGService,
+                useFactory: kgServiceProviderFactory,
+                deps: [HttpClient]
+            }
+        ]
+    })
+], GeoPlatformClientModule);
+
+// export * from './http/index';
 
 /**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
+ * Generated bundle index. Do not edit.
  */
 
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
- */
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
- */
-
-export { GeoPlatformClientModule, NG2HttpClient, ng2HttpClientFactory, itemServiceProviderFactory, datasetServiceProviderFactory, serviceServiceProviderFactory, layerServiceProviderFactory, mapServiceProviderFactory, galleryServiceProviderFactory, utilsServiceProviderFactory, kgServiceProviderFactory as ɵa };
-
+export { GeoPlatformClientModule, NG2HttpClient, datasetServiceProviderFactory, galleryServiceProviderFactory, itemServiceProviderFactory, layerServiceProviderFactory, mapServiceProviderFactory, ng2HttpClientFactory, serviceServiceProviderFactory, utilsServiceProviderFactory, kgServiceProviderFactory as ɵa };
 //# sourceMappingURL=geoplatform-client-angular.js.map

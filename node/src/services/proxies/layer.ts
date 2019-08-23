@@ -7,72 +7,72 @@ import ServiceProxy from "./base";
 
 const Routes = [
     {
-        key: 'search',
+        key   : 'search',
         method: 'get',
-        path: 'layers',
-        auth: false,
-        execFn: function(svc : LayerService, req : any) {
+        path  : 'layers',
+        auth  : false,
+        onExecute: function(svc : LayerService, req : any) {
             return svc.search(req.query);
         }
     },
     {
-        key: 'get',
+        key   : 'get',
         method: 'get',
-        path: 'layers/:id',
-        auth: false,
-        execFn: function(svc : LayerService, req : any) {
+        path  : 'layers/:id',
+        auth  : false,
+        onExecute: function(svc : LayerService, req : any) {
             return svc.get(req.params.id);
         }
     },
     {
-        key: 'create',
+        key   : 'create',
         method: 'post',
-        path: 'layers',
-        auth: true,
-        execFn: function(svc : LayerService, req : any) {
+        path  : 'layers',
+        auth  : true,
+        onExecute: function(svc : LayerService, req : any) {
             return svc.save(req.body);
         }
     },
     {
-        key: 'update',
+        key   : 'update',
         method: 'put',
-        path: 'layers/:id',
-        auth: true,
-        execFn: function(svc : LayerService, req : any) {
+        path  : 'layers/:id',
+        auth  : true,
+        onExecute: function(svc : LayerService, req : any) {
             return svc.save(req.body);
         }
     },
     {
-        key: 'delete',
+        key   : 'delete',
         method: 'delete',
-        path: 'layers/:id',
-        auth: true,
-        execFn: function(svc : LayerService, req : any) {
-            return svc.remove(req.params.id); }
-            ,
-        respFn: function(
+        path  : 'layers/:id',
+        auth  : true,
+        onExecute: function(svc : LayerService, req : any) {
+            return svc.remove(req.params.id);
+        },
+        onResponse: function(
             // @ts-ignore
             result : any,
             res : any) { res.status(204).end(); }
     },
     {
-        key: 'patch',
+        key   : 'patch',
         method: 'patch',
-        path: 'layers/:id',
-        auth: true,
-        execFn: function(svc : LayerService, req : any) {
+        path  : 'layers/:id',
+        auth  : true,
+        onExecute: function(svc : LayerService, req : any) {
             return svc.patch(req.params.id, req.body);
         }
     },
     {
-        key: 'export',
+        key   : 'export',
         method: 'get',
-        path: 'layers/:id/export',
-        auth: false,
-        execFn: function(svc : LayerService, req : any) {
+        path  : 'layers/:id/export',
+        auth  : false,
+        onExecute: function(svc : LayerService, req : any) {
             return svc.export(req.params.id, req.query.format); }
             ,
-        respFn: function(result : any, res : any) {
+        onResponse: function(result : any, res : any) {
             let mimeType = result.headers['content-type'];
             let disposition = result.headers['content-disposition'];
             res.set("Content-Type", mimeType);
@@ -81,29 +81,47 @@ const Routes = [
         }
     },
     {
-        key: 'style',
+        key   : 'style',
         method: 'get',
-        path: 'layers/:id/style',
-        auth: false,
-        execFn: function(svc : LayerService, req : any) {
+        path  : 'layers/:id/style',
+        auth  : false,
+        onExecute: function(svc : LayerService, req : any) {
             return svc.style(req.params.id);
         }
     },
     {
-        key: 'describe',
+        key   : 'styleById',
+        method: 'get',
+        path  : 'layers/:id/styles/:styleId',
+        auth  : false,
+        onExecute: function(svc : LayerService, req : any) {
+            return svc.style(req.params.id, req.params.styleId);
+        }
+    },
+    {
+        key   : 'styles',
+        method: 'get',
+        path  : 'layers/:id/styles',
+        auth  : false,
+        onExecute: function(svc : LayerService, req : any) {
+            return svc.styles(req.params.id);
+        }
+    },
+    {
+        key   : 'describe',
         method: 'post',
-        path: 'layers/:id/describe',
-        auth: false,
-        execFn: function(svc : LayerService, req : any) {
+        path  : 'layers/:id/describe',
+        auth  : false,
+        onExecute: function(svc : LayerService, req : any) {
             return svc.describe(req.params.id, req.body);
         }
     },
     {
-        key: 'validate',
+        key   : 'validate',
         method: 'post',
-        path: 'layers/:id/validate',
-        auth: false,
-        execFn: function(svc : LayerService, req : any) {
+        path  : 'layers/:id/validate',
+        auth  : false,
+        onExecute: function(svc : LayerService, req : any) {
             return svc.validate(req.params.id, req.body);
         }
     }

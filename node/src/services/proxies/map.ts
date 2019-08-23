@@ -9,7 +9,7 @@ const Routes = [
         method: 'get',
         path: 'maps',
         auth: false,
-        execFn: function(svc : MapService, req : any) {
+        onExecute: function(svc : MapService, req : any) {
             return svc.search(req.query);
         }
     },
@@ -18,7 +18,7 @@ const Routes = [
         method: 'get',
         path: 'maps/:id',
         auth: false,
-        execFn: function(svc : MapService, req : any) {
+        onExecute: function(svc : MapService, req : any) {
             return svc.get(req.params.id);
         }
     },
@@ -27,7 +27,7 @@ const Routes = [
         method: 'post',
         path: 'maps',
         auth: true,
-        execFn: function(svc : MapService, req : any) {
+        onExecute: function(svc : MapService, req : any) {
             return svc.save(req.body);
         }
     },
@@ -36,7 +36,7 @@ const Routes = [
         method: 'put',
         path: 'maps/:id',
         auth: true,
-        execFn: function(svc : MapService, req : any) {
+        onExecute: function(svc : MapService, req : any) {
             return svc.save(req.body);
         }
     },
@@ -45,10 +45,10 @@ const Routes = [
         method: 'delete',
         path: 'maps/:id',
         auth: true,
-        execFn: function(svc : MapService, req : any) {
+        onExecute: function(svc : MapService, req : any) {
             return svc.remove(req.params.id); }
             ,
-        respFn: function(
+        onResponse: function(
             // @ts-ignore
             result : any,
             res : any) {
@@ -60,7 +60,7 @@ const Routes = [
         method: 'patch',
         path: 'maps/:id',
         auth: true,
-        execFn: function(svc : MapService, req : any) {
+        onExecute: function(svc : MapService, req : any) {
             return svc.patch(req.params.id, req.body);
         }
     },
@@ -69,10 +69,10 @@ const Routes = [
         method: 'get',
         path: 'maps/:id/export',
         auth: false,
-        execFn: function(svc : MapService, req : any) {
+        onExecute: function(svc : MapService, req : any) {
             return svc.export(req.params.id, req.query.format); }
             ,
-        respFn: function(result : any, res : any) {
+        onResponse: function(result : any, res : any) {
             let mimeType = result.headers['content-type'];
             let disposition = result.headers['content-disposition'];
             res.set("Content-Type", mimeType);

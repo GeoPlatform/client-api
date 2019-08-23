@@ -1,11 +1,7 @@
 import KGQuery from '../shared/kg-query';
 import GPHttpClient from '../http/client';
-declare class KGService {
-    private apiBase;
-    private baseUrl;
-    private client;
-    private timeout;
-    private httpMethods;
+import BaseService from './base';
+declare class KGService extends BaseService {
     constructor(url: string, httpClient: GPHttpClient);
     setUrl(baseUrl: string): void;
     /**
@@ -30,26 +26,5 @@ declare class KGService {
      * internal method used by exposed methods
      */
     _search(url: string, query: KGQuery, options?: any): Promise<any>;
-    /**
-     * @param method - one of "GET", "POST", "PUT", "DELETE", "PATCH"
-     * @param url - destination of xhr request
-     * @param params - object to be sent with request as query parameters
-     * @param data - object to be sent with request as body
-     * @param options - optional object defining request options
-     * @return request options for xhr
-     */
-    buildRequest(options: {
-        [key: string]: any;
-    }): {
-        [key: string]: any;
-    };
-    createRequestOpts(options: {
-        [key: string]: any;
-    }): {
-        [key: string]: any;
-    };
-    execute(opts: {
-        [key: string]: any;
-    }): Promise<any>;
 }
 export default KGService;

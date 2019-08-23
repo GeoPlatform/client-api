@@ -10,7 +10,7 @@ const Routes = [
         method: 'get',
         path: 'services',
         auth: false,
-        execFn: function(svc: ServiceService, req : any) {
+        onExecute: function(svc: ServiceService, req : any) {
             return svc.search(req.query);
         }
     },
@@ -19,7 +19,7 @@ const Routes = [
         method: 'get',
         path: 'services/:id',
         auth: false,
-        execFn: function(svc : ServiceService, req : any ) {
+        onExecute: function(svc : ServiceService, req : any ) {
             return svc.get(req.params.id);
         }
     },
@@ -28,7 +28,7 @@ const Routes = [
         method: 'post',
         path: 'services',
         auth: true,
-        execFn: function(svc : ServiceService, req : any ) {
+        onExecute: function(svc : ServiceService, req : any ) {
             return svc.save(req.body);
         }
     },
@@ -37,7 +37,7 @@ const Routes = [
         method: 'put',
         path: 'services/:id',
         auth: true,
-        execFn: function(svc : ServiceService, req : any ) {
+        onExecute: function(svc : ServiceService, req : any ) {
             return svc.save(req.body);
         }
     },
@@ -46,10 +46,10 @@ const Routes = [
         method: 'delete',
         path: 'services/:id',
         auth: true,
-        execFn: function(svc : ServiceService, req : any ) {
+        onExecute: function(svc : ServiceService, req : any ) {
             return svc.remove(req.params.id);
         },
-        respFn: function(
+        onResponse: function(
             // @ts-ignore
             result : any,
             res : any) {
@@ -61,7 +61,7 @@ const Routes = [
         method: 'patch',
         path: 'services/:id',
         auth: true,
-        execFn: function(svc : ServiceService, req : any ) {
+        onExecute: function(svc : ServiceService, req : any ) {
             return svc.patch(req.params.id, req.body);
         }
     },
@@ -70,10 +70,10 @@ const Routes = [
         method: 'get',
         path: 'services/:id/export',
         auth: false,
-        execFn: function(svc : ServiceService, req : any ) {
+        onExecute: function(svc : ServiceService, req : any ) {
             return svc.export(req.params.id, req.query.format);
         },
-        respFn: function(result : any, res : any) {
+        onResponse: function(result : any, res : any) {
             let mimeType = result.headers['content-type'];
             let disposition = result.headers['content-disposition'];
             res.set("Content-Type", mimeType);
@@ -86,7 +86,7 @@ const Routes = [
         method: 'get',
         path: 'serviceTypes',
         auth: false,
-        execFn: function(svc : ServiceService) {
+        onExecute: function(svc : ServiceService) {
             return svc.types();
         }
     },
@@ -95,7 +95,7 @@ const Routes = [
         method: 'post',
         path: 'services/import',
         auth: true,
-        execFn: function(svc : ServiceService, req : any ) {
+        onExecute: function(svc : ServiceService, req : any ) {
             return svc.import(req.body);
         }
     },
@@ -104,7 +104,7 @@ const Routes = [
         method: 'get',
         path: 'services/:id/about',
         auth: false,
-        execFn: function(svc : ServiceService, req : any ) {
+        onExecute: function(svc : ServiceService, req : any ) {
             return svc.about(req.params.id);
         }
     },
@@ -113,7 +113,7 @@ const Routes = [
         method: 'get',
         path: 'services/:id/harvest',
         auth: false,
-        execFn: function(svc : ServiceService, req : any ) {
+        onExecute: function(svc : ServiceService, req : any ) {
             return svc.harvest(req.params.id);
         }
     },
@@ -122,7 +122,7 @@ const Routes = [
         method: 'get',
         path: 'services/:id/test',
         auth: false,
-        execFn: function(svc : ServiceService, req : any ) {
+        onExecute: function(svc : ServiceService, req : any ) {
             return svc.liveTest(req.params.id);
         }
     },
@@ -131,7 +131,7 @@ const Routes = [
         method: 'get',
         path: 'services/:id/statistics',
         auth: false,
-        execFn: function(svc : ServiceService, req : any ) {
+        onExecute: function(svc : ServiceService, req : any ) {
             return svc.statistics(req.params.id);
         }
     }

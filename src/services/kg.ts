@@ -3,23 +3,26 @@ import Config from '../shared/config';
 import KGQuery from '../shared/kg-query';
 import GPHttpClient from '../http/client';
 
-class KGService {
+import BaseService from './base';
+
+
+
+class KGService extends BaseService {
 
     // @ts-ignore
-    private apiBase : string;
+    // private apiBase : string;
     // @ts-ignore
-    private baseUrl : string;
-    private client : GPHttpClient;
-    private timeout : number = 30000;
-    private httpMethods : string[] = ["GET", "POST", "PUT", "DELETE", "PATCH"];
+    // private baseUrl : string;
+    // private client : GPHttpClient;
+    // private timeout : number = 30000;
+    // private httpMethods : string[] = ["GET", "POST", "PUT", "DELETE", "PATCH"];
 
     constructor(url : string, httpClient : GPHttpClient) {
-        this.setUrl(url);
-        this.client = httpClient;
+        super(url, httpClient);
     }
 
     setUrl(baseUrl : string) {
-        this.apiBase = baseUrl;
+        super.setUrl(baseUrl);
         this.baseUrl = baseUrl + '/api/recommender';
     }
 
@@ -29,10 +32,12 @@ class KGService {
      * @return Promise resolving recommended concepts as search results
      */
     suggest (query : KGQuery, options ?: any) : Promise<any> {
+
         let url = this.baseUrl + '/suggest';
         return this._search(url, query, options)
         .catch(e => {
-            let err = new Error(`KGService.suggest() - Error suggesting concepts: ${e.message}`);
+            this.logError('KGService.suggest() - ' + e.message);
+            let err = new Error(`Error suggesting concepts: ${e.message}`);
             Object.assign(err, e);
             throw err;
         });
@@ -48,7 +53,8 @@ class KGService {
         let url = this.baseUrl + '/types';
         return this._search(url, query, options)
         .catch(e => {
-            let err = new Error(`KGService.types() - Error searching types: ${e.message}`);
+            this.logError('KGService.types() - ' + e.message);
+            let err = new Error(`Error searching types: ${e.message}`);
             Object.assign(err, e);
             throw err;
         });
@@ -65,7 +71,8 @@ class KGService {
         let url = this.baseUrl + '/sources';
         return this._search(url, query, options)
         .catch(e => {
-            let err = new Error(`KGService.sources() - Error searching sources: ${e.message}`);
+            this.logError('KGService.sources() - ' + e.message);
+            let err = new Error(`Error searching sources: ${e.message}`);
             Object.assign(err, e);
             throw err;
         });
@@ -82,8 +89,8 @@ class KGService {
      * internal method used by exposed methods
      */
     _search (url : string, query : KGQuery, options ?: any) : Promise<any> {
-        return Promise.resolve( true )
-        .then( () => {
+        return this.createAndResolvePromise( url )
+        .then( (url) => {
             let q : { [key:string]:any } = query.getQuery();
             let opts = this.buildRequest({
                 method:"GET", url:url, params:q, options:options
@@ -94,41 +101,41 @@ class KGService {
 
 
 
-    /**
-     * @param method - one of "GET", "POST", "PUT", "DELETE", "PATCH"
-     * @param url - destination of xhr request
-     * @param params - object to be sent with request as query parameters
-     * @param data - object to be sent with request as body
-     * @param options - optional object defining request options
-     * @return request options for xhr
-     */
-    buildRequest (options : {[key:string]:any}) : {[key:string]:any} {
-
-        if(this.httpMethods.indexOf(options.method)<0)
-            throw new Error(`Unsupported HTTP method ${options.method}`);
-
-        if(!options.url)
-            throw new Error(`Must specify a URL for HTTP requests`);
-
-        options.timeout = this.timeout || Config.timeout || 30000;
-
-        return this.createRequestOpts(options);
-    }
-
-    createRequestOpts(options : {[key:string]:any}) : {[key:string]:any} {
-        return this.client.createRequestOpts(options);
-    }
-
-    execute(opts : {[key:string]:any}) : Promise<any> {
-        return this.client.execute(opts)
-        .catch(e => {
-            if(e === null || typeof(e) === 'undefined') {
-                e = new Error("KGService.execute() - Request failed but didn't return an " +
-                "error. This is most likely because the request timed out");
-            }
-            throw e;
-        });
-    }
+    // /**
+    //  * @param method - one of "GET", "POST", "PUT", "DELETE", "PATCH"
+    //  * @param url - destination of xhr request
+    //  * @param params - object to be sent with request as query parameters
+    //  * @param data - object to be sent with request as body
+    //  * @param options - optional object defining request options
+    //  * @return request options for xhr
+    //  */
+    // buildRequest (options : {[key:string]:any}) : {[key:string]:any} {
+    //
+    //     if(this.httpMethods.indexOf(options.method)<0)
+    //         throw new Error(`Unsupported HTTP method ${options.method}`);
+    //
+    //     if(!options.url)
+    //         throw new Error(`Must specify a URL for HTTP requests`);
+    //
+    //     options.timeout = this.timeout || Config.timeout || 30000;
+    //
+    //     return this.createRequestOpts(options);
+    // }
+    //
+    // createRequestOpts(options : {[key:string]:any}) : {[key:string]:any} {
+    //     return this.client.createRequestOpts(options);
+    // }
+    //
+    // execute(opts : {[key:string]:any}) : Promise<any> {
+    //     return this.client.execute(opts)
+    //     .catch(e => {
+    //         if(e === null || typeof(e) === 'undefined') {
+    //             e = new Error("KGService.execute() - Request failed but didn't return an " +
+    //             "error. This is most likely because the request timed out");
+    //         }
+    //         throw e;
+    //     });
+    // }
 
 }
 

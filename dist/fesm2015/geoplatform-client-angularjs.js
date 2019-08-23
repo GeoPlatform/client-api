@@ -1,83 +1,67 @@
 import * as angular from 'angular';
-import { module as module$1, injector } from 'angular';
-import { GPHttpClient, ItemService, UtilsService, DatasetService, ServiceService, LayerService, MapService, GalleryService, Config, QueryFactory, TrackingService } from '@geoplatform/client';
+import { injector, module } from 'angular';
+import { GPHttpClient, ItemService, DatasetService, GalleryService, LayerService, MapService, ServiceService, UtilsService, Config, QueryFactory, TrackingService } from '@geoplatform/client';
 
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
- */
 class NGHttpClient extends GPHttpClient {
     /**
-     * @param {?=} options
+     * @param options.timeout
+     * @param options.token - the bearer token or a function to retrieve it
+     * @param options.$http - angular $http service instance
      */
     constructor(options) {
         super(options);
         if (typeof (angular) === 'undefined' || angular === null) {
             throw new Error("AngularJS could not be found globally");
         }
-        if (options && options["$http"])
-            this.$http = options["$http"];
-        if (options && options["$q"])
-            this.$q = options["$q"];
+        if (options && options.$http)
+            this.$http = options.$http;
+        if (options && options.$q)
+            this.$q = options.$q;
     }
-    /**
-     * @param {?} options
-     * @return {?}
-     */
     createRequestOpts(options) {
-        /** @type {?} */
         let opts = {
-            method: options["method"],
-            url: options["url"],
-            timeout: options["timeout"] || this.timeout
+            method: options.method,
+            url: options.url,
+            timeout: options.timeout || this.timeout
         };
-        if (options["json"] === true || 'json' === options["responseType"])
-            opts["dataType"] = 'json';
-        else if ('text' === options["responseType"])
-            opts["dataType"] = 'text';
-        if (options["params"]) {
-            opts["params"] = options["params"];
+        if (options.json === true || 'json' === options.responseType)
+            opts.dataType = 'json';
+        else if ('text' === options.responseType)
+            opts.dataType = 'text';
+        if (options.params) {
+            opts.params = options.params;
         }
-        if (options["data"]) {
-            opts["data"] = options["data"];
+        if (options.data) {
+            opts.data = options.data;
         }
         //set authorization token if one was provided
         if (this.token) {
-            /** @type {?} */
             let token = this.token();
             if (token) {
-                opts["headers"] = opts["headers"] || {};
-                opts["headers"].Authorization = 'Bearer ' + token;
-                opts["useXDomain"] = true;
+                opts.headers = opts.headers || {};
+                opts.headers.Authorization = 'Bearer ' + token;
+                opts.useXDomain = true;
             }
         }
         //copy over user-supplied options
-        if (options["options"]) {
-            for (let o in options["options"]) {
-                if (options["options"].hasOwnProperty(o)) {
-                    opts[o] = options["options"][o];
+        if (options.options) {
+            for (let o in options.options) {
+                if (options.options.hasOwnProperty(o)) {
+                    opts[o] = options.options[o];
                 }
             }
         }
         return opts;
     }
-    /**
-     * @param {?} opts
-     * @return {?}
-     */
     execute(opts) {
-        /** @type {?} */
         let $injector = injector(['ng']);
-        /** @type {?} */
         let $q = this.$q || $injector.get('$q');
-        /** @type {?} */
         let $http = this.$http || $injector.get('$http');
-        /** @type {?} */
         let deferred = $q.defer();
         $http(opts)
             .then(response => { deferred.resolve(response.data); })
             .catch(response => { deferred.reject(new Error(response.data)); });
-        return /** @type {?} */ (deferred.promise.then((data) => data));
+        return deferred.promise.then((data) => data);
         // return Promise.resolve( $http )
         // .then($http => {
         //     if(typeof($http) === 'undefined')
@@ -93,262 +77,132 @@ class NGHttpClient extends GPHttpClient {
     }
 }
 
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
+/*
+ * NOTICE:
+ *
+ * These services are angular aware (using angular's $q wrapper)
+ * to ensure that any Promises returned are ultimately gated
+ * through a $q instance and therefore will trigger a digest
+ * upon completion.
+ *
+ * If you manually create an instance that is not angular aware,
+ * you will need to wrap any response handler's manipulation of data
+ * with $scope.$apply, $timeout, or an equivalent to trigger a digest
  */
-/**
- * Angular-aware instance of ItemService
- */
+/** Angular-aware instance of ItemService */
 class NGItemService extends ItemService {
-    /**
-     * @param {?} url
-     * @param {?} httpClient
-     * @param {?} $q
-     */
     constructor(url, httpClient, $q) {
         super(url, httpClient);
         this.$q = $q;
     }
-    /**
-     * @param {?} arg
-     * @return {?}
-     */
     createPromise(arg) {
         return this.$q(arg);
     }
-    /**
-     * @param {?} value
-     * @return {?}
-     */
     createAndResolvePromise(value) {
         return this.$q.resolve(value);
     }
-    /**
-     * @param {?} error
-     * @return {?}
-     */
     createAndRejectPromise(error) {
         return this.$q.reject(error);
     }
 }
-/**
- * Angular-aware instance of DatasetService
- */
+/** Angular-aware instance of DatasetService */
 class NGDatasetService extends DatasetService {
-    /**
-     * @param {?} url
-     * @param {?} httpClient
-     * @param {?} $q
-     */
     constructor(url, httpClient, $q) {
         super(url, httpClient);
         this.$q = $q;
     }
-    /**
-     * @param {?} arg
-     * @return {?}
-     */
     createPromise(arg) {
         return this.$q(arg);
     }
-    /**
-     * @param {?} value
-     * @return {?}
-     */
     createAndResolvePromise(value) {
         return this.$q.resolve(value);
     }
-    /**
-     * @param {?} error
-     * @return {?}
-     */
     createAndRejectPromise(error) {
         return this.$q.reject(error);
     }
 }
-/**
- * Angular-aware instance of GalleryService
- */
+/** Angular-aware instance of GalleryService */
 class NGGalleryService extends GalleryService {
-    /**
-     * @param {?} url
-     * @param {?} httpClient
-     * @param {?} $q
-     */
     constructor(url, httpClient, $q) {
         super(url, httpClient);
         this.$q = $q;
     }
-    /**
-     * @param {?} arg
-     * @return {?}
-     */
     createPromise(arg) {
         return this.$q(arg);
     }
-    /**
-     * @param {?} value
-     * @return {?}
-     */
     createAndResolvePromise(value) {
         return this.$q.resolve(value);
     }
-    /**
-     * @param {?} error
-     * @return {?}
-     */
     createAndRejectPromise(error) {
         return this.$q.reject(error);
     }
 }
-/**
- * Angular-aware instance of LayerService
- */
+/** Angular-aware instance of LayerService */
 class NGLayerService extends LayerService {
-    /**
-     * @param {?} url
-     * @param {?} httpClient
-     * @param {?} $q
-     */
     constructor(url, httpClient, $q) {
         super(url, httpClient);
         this.$q = $q;
     }
-    /**
-     * @param {?} arg
-     * @return {?}
-     */
     createPromise(arg) {
         return this.$q(arg);
     }
-    /**
-     * @param {?} value
-     * @return {?}
-     */
     createAndResolvePromise(value) {
         return this.$q.resolve(value);
     }
-    /**
-     * @param {?} error
-     * @return {?}
-     */
     createAndRejectPromise(error) {
         return this.$q.reject(error);
     }
 }
-/**
- * Angular-aware instance of MapService
- */
+/** Angular-aware instance of MapService */
 class NGMapService extends MapService {
-    /**
-     * @param {?} url
-     * @param {?} httpClient
-     * @param {?} $q
-     */
     constructor(url, httpClient, $q) {
         super(url, httpClient);
         this.$q = $q;
     }
-    /**
-     * @param {?} arg
-     * @return {?}
-     */
     createPromise(arg) {
         return this.$q(arg);
     }
-    /**
-     * @param {?} value
-     * @return {?}
-     */
     createAndResolvePromise(value) {
         return this.$q.resolve(value);
     }
-    /**
-     * @param {?} error
-     * @return {?}
-     */
     createAndRejectPromise(error) {
         return this.$q.reject(error);
     }
 }
-/**
- * Angular-aware instance of ServiceService
- */
+/** Angular-aware instance of ServiceService */
 class NGServiceService extends ServiceService {
-    /**
-     * @param {?} url
-     * @param {?} httpClient
-     * @param {?} $q
-     */
     constructor(url, httpClient, $q) {
         super(url, httpClient);
         this.$q = $q;
     }
-    /**
-     * @param {?} arg
-     * @return {?}
-     */
     createPromise(arg) {
         return this.$q(arg);
     }
-    /**
-     * @param {?} value
-     * @return {?}
-     */
     createAndResolvePromise(value) {
         return this.$q.resolve(value);
     }
-    /**
-     * @param {?} error
-     * @return {?}
-     */
     createAndRejectPromise(error) {
         return this.$q.reject(error);
     }
 }
-/**
- * Angular-aware instance of UtilsService
- */
+/** Angular-aware instance of UtilsService */
 class NGUtilsService extends UtilsService {
-    /**
-     * @param {?} url
-     * @param {?} httpClient
-     * @param {?} $q
-     */
     constructor(url, httpClient, $q) {
         super(url, httpClient);
         this.$q = $q;
     }
-    /**
-     * @param {?} arg
-     * @return {?}
-     */
     createPromise(arg) {
         return this.$q(arg);
     }
-    /**
-     * @param {?} value
-     * @return {?}
-     */
     createAndResolvePromise(value) {
         return this.$q.resolve(value);
     }
-    /**
-     * @param {?} error
-     * @return {?}
-     */
     createAndRejectPromise(error) {
         return this.$q.reject(error);
     }
 }
 
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
- */
-if (angular && typeof (module$1) !== 'undefined') {
-    /** @type {?} */
+if (angular && typeof (module) !== 'undefined') {
     let serviceFactory = function (gpNgHttpClient, svcClass, url, $q) {
         if (NGItemService === svcClass || NGDatasetService === svcClass ||
             NGServiceService === svcClass || NGLayerService === svcClass ||
@@ -359,22 +213,22 @@ if (angular && typeof (module$1) !== 'undefined') {
         return new svcClass(url, gpNgHttpClient);
     };
     /*
-         * Define AngularJS module that can be included in downstream applications
-         *
-         * Example:
-         *
-         *  angular.module('myApp', [ 'ui-router', 'gpClient' ])
-         *  .component('myComponent', {
-         *    bindings: { },
-         *    template: "<div></div>",
-         *    controller: function(gpQueryFactory, gpItemService) {
-         *       this.$onInit = function() {
-         *          gpItemService.search( gpQueryFactory() ).then( response => { ... });
-         *       };
-         *    }
-         *  ]);
-         */
-    module$1('gpClient', [])
+     * Define AngularJS module that can be included in downstream applications
+     *
+     * Example:
+     *
+     *  angular.module('myApp', [ 'ui-router', 'gpClient' ])
+     *  .component('myComponent', {
+     *    bindings: { },
+     *    template: "<div></div>",
+     *    controller: function(gpQueryFactory, gpItemService) {
+     *       this.$onInit = function() {
+     *          gpItemService.search( gpQueryFactory() ).then( response => { ... });
+     *       };
+     *    }
+     *  ]);
+     */
+    module('gpClient', [])
         .provider('gpConfig', function () {
         return {
             $get: function () {
@@ -393,7 +247,10 @@ if (angular && typeof (module$1) !== 'undefined') {
             return new TrackingService(options);
         };
     });
-    /** @type {?} */
+    /*
+     * Expose Service instances in the 'gpClient' module
+     * These services are angular aware using angular's $q wrapper
+     */
     const serviceClasses = {
         'gpItemService': NGItemService,
         'gpUtilsService': NGUtilsService,
@@ -404,9 +261,8 @@ if (angular && typeof (module$1) !== 'undefined') {
         'gpGalleryService': NGGalleryService
     };
     Object.keys(serviceClasses).forEach((name) => {
-        /** @type {?} */
         let svcClass = serviceClasses[name];
-        module$1('gpClient')
+        module('gpClient')
             /*
                 Service for each client service class that uses the
                 currently configured settings when created.  Note the
@@ -435,10 +291,8 @@ if (angular && typeof (module$1) !== 'undefined') {
 }
 
 /**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
+ * Generated bundle index. Do not edit.
  */
 
 export { NGHttpClient };
-
 //# sourceMappingURL=geoplatform-client-angularjs.js.map

@@ -7,19 +7,10 @@
     "version": "0.3.0",
     "license": "MIT",
     "ngPackage": {
-        "name": "Client",
-        "moduleName": "Client",
-        "amdId": "Client",
         "dest": "dist",
         "lib": {
             "entryFile": "src/public_api.ts",
-            "externals": [
-                "axios"
-            ],
             "umdModuleIds": {
-                "axios": "axios"
-            },
-            "globals": {
                 "axios": "axios"
             }
         }
@@ -33,6 +24,7 @@
         "build": "ng-packagr -p package.json",
         "postbuild": "gulp license",
         "test": "mocha",
+        "test-node": "mocha node/test",
         "lint": "ng lint",
         "e2e": "ng e2e"
     },
@@ -44,34 +36,37 @@
         "axios": "^0.18.0"
     },
     "devDependencies": {
+        "@angular/compiler-cli": "^8.1.2",
+        "@angular/compiler": "^8.1.2",
+        "@angular/common": "^8.1.2",
+        "@angular/core": "^8.1.2",
         "@types/jasmine": "~2.8.3",
         "@types/jasminewd2": "~2.0.2",
         "@types/jquery": "^3.3.29",
         "@types/node": "~6.0.60",
         "@types/q": "^1.5.1",
-        "axios": "^0.18.0",
-        "codelyzer": "^4.0.1",
+        "axios": "^0.18.1",
+        "chai": "^3.4.1",
         "core-js": "^2.4.1",
-        "gulp": "^3.9.1",
+        "gulp": "^4.0.2",
         "gulp-append-prepend": "^1.0.8",
         "jasmine-core": "~2.8.0",
         "jasmine-spec-reporter": "~4.2.1",
-        "karma": "~2.0.0",
+        "karma": "~4.2.0",
         "karma-chrome-launcher": "~2.2.0",
         "karma-coverage-istanbul-reporter": "^1.2.1",
         "karma-jasmine": "~1.1.0",
         "karma-jasmine-html-reporter": "^0.2.2",
         "md5": "2.2.1",
-        "ng-packagr": "^4.7.0",
+        "mocha": "6.2.0",
+        "mock-require": "^3.0.3",
+        "ng-packagr": "^5.5.0",
         "pre-commit": "^1.2.2",
-        "protractor": "~5.1.2",
+        "protractor": "~6.0.0",
+        "supertest": "4.0.2",
         "ts-node": "~8.0.2",
         "tslint": "~5.9.1",
-        "typescript": "^2.9.2",
-        "zone.js": "^0.8.19",
-        "chai": "^3.4.1",
-        "mocha": "3.2.0",
-        "supertest": "4.0.2",
-        "mock-require": "^3.0.3"
+        "typescript": "^3.4.0",
+        "zone.js": "^0.8.19"
     }
 }

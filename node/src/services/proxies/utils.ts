@@ -1,44 +1,52 @@
 
-
 import {UtilsService} from "@geoplatform/client";
 import ServiceProxy from "./base";
 
 
 const Routes = [
     {
-        key: 'locate',
+        key   : 'locate',
         method: 'get',
-        path: 'utils/locate',
-        auth: false,
-        execFn: function(svc : UtilsService, req : any) {
-            return svc.locate(req.query.q);
+        path  : 'utils/locate',
+        auth  : false,
+        onExecute: function(svc : UtilsService, req : any) {
+            return svc.locate(req.query.location);
         }
     },
     {
-        key: 'parseFile',
+        key   : 'parseFile',
         method: 'post',
-        path: 'utils/parse',
-        auth: false,
-        execFn: function(svc : UtilsService, req : any) {
+        path  : 'utils/parse',
+        auth  : false,
+        onExecute: function(svc : UtilsService, req : any) {
             return svc.parseFile(req.files.file, req.body.format);
         }
     },
     {
-        key: 'capabilities',
+        key   : 'capabilities',
         method: 'get',
-        path: 'utils/capabilities',
-        auth: false,
-        execFn: function(svc : UtilsService, req : any) {
+        path  : 'utils/capabilities',
+        auth  : false,
+        onExecute: function(svc : UtilsService, req : any) {
             return svc.capabilities(null, req.query);
         }
     },
     {
-        key: 'capabilitiesProperty',
+        key   : 'capabilitiesProperty',
         method: 'get',
-        path: 'utils/capabilities/:id',
-        auth: false,
-        execFn: function(svc : UtilsService, req : any) {
+        path  : 'utils/capabilities/:id',
+        auth  : false,
+        onExecute: function(svc : UtilsService, req : any) {
             return svc.capabilities(req.params.id, req.query);
+        }
+    },
+    {
+        key   : 'store',
+        method: 'post',
+        path  : 'store',
+        auth  : true,
+        onExecute: function(svc : UtilsService, req : any) {
+            return svc.store(req.files.file, req.body.format);
         }
     }
 ];

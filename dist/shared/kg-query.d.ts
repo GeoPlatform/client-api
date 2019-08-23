@@ -4,7 +4,7 @@ interface KVP<U> {
 declare class KGQuery {
     query: KVP<any>;
     private defaultQuery;
-    constructor();
+    constructor(options?: KVP<any>);
     getQuery(): KVP<any>;
     parameter(name: string, value: any): KGQuery;
     setParameter(name: string, value: any): void;

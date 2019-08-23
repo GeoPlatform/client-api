@@ -23,18 +23,35 @@ class LayerService extends ItemService {
     }
 
     /**
+     * Fetch a style associated with a given GeoPlatform Layer asset. This may
+     * be the style for an Esri FeatureServer layer using the following:
+     *
+     *   .style( layerId, options);
+     *
+     * or a specific style definition for a non-Esri layer using the following call:
+     *
+     *   .style( layerId, styleId, options);
+     *
      * @param id - GeoPlatform Layer identifier
      * @param options - optional set of request options to apply to xhr request
      * @return Promise resolving style JSON object
      */
-    style (id : string, options ?: any) : Promise<any> {
+    style (id : string, ...args) : Promise<any> {
         return Promise.resolve( id )
         .then( (id) => {
 
+            let options = null;
             let url = this.baseUrl + '/' + id + '/style';
-            let opts = this.buildRequest({
-                method:"GET", url:url, options:options
-            });
+
+            if(args[0] && typeof(args[0]) === 'string') { //style id parameter
+                url += 's/' + args[0];                    //
+                if(args[1]) options = args[1];            // ... plus options parameter
+
+            } else if(args[0] && typeof(args[0]) === 'object') { //options parameter
+                options = args[0];
+            }
+
+            let opts = this.buildRequest({ method:"GET", url:url, options:options });
             return this.execute(opts);
         })
         .catch(e => {
@@ -44,6 +61,28 @@ class LayerService extends ItemService {
             throw err;
         });
     }
+
+    /**
+     * Fetch the list of styles associated with a given GeoPlatform Layer asset
+     * @param id - GeoPlatform Layer identifier
+     * @param options - optional set of request options to apply to xhr request
+     * @return Promise resolving style JSON object
+     */
+    styles ( id : string, options ?: any ) : Promise<any[]> {
+        return Promise.resolve( id )
+        .then( (id) => {
+            let url = this.baseUrl + '/' + id + '/styles';
+            let opts = this.buildRequest({ method:"GET", url:url, options:options });
+            return this.execute(opts);
+        })
+        .catch(e => {
+            let err = new Error(`Error fetching style: ${e.message}`);
+            Object.assign(err, e);
+            this.logError('LayerService.style() - ' + err.message);
+            throw err;
+        });
+    }
+
 
     /**
      * @param id - GeoPlatform Layer identifier

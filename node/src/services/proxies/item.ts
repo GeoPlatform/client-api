@@ -8,8 +8,9 @@ const Routes = [
         method: 'get',
         path: 'items',
         auth: false,
-        execFn: function(svc : ItemService, req : any) {
-            return svc.search(req.query);
+        onExecute: function(svc : ItemService, req : any) {
+            let query = new Query(req.query);
+            return svc.search(query);
         }
     },
     {
@@ -17,7 +18,7 @@ const Routes = [
         method: 'get',
         path: 'items/:id',
         auth: false,
-        execFn: function(svc : ItemService, req : any) {
+        onExecute: function(svc : ItemService, req : any) {
             return svc.get(req.params.id);
         }
     },
@@ -26,7 +27,7 @@ const Routes = [
         method: 'post',
         path: 'items',
         auth: true,
-        execFn: function(svc : ItemService, req : any) {
+        onExecute: function(svc : ItemService, req : any) {
             return svc.save(req.body);
         }
     },
@@ -35,7 +36,7 @@ const Routes = [
         method: 'put',
         path: 'items/:id',
         auth: true,
-        execFn: function(svc : ItemService, req : any) {
+        onExecute: function(svc : ItemService, req : any) {
             return svc.save(req.body);
         }
     },
@@ -44,10 +45,10 @@ const Routes = [
         method: 'delete',
         path: 'items/:id',
         auth: true,
-        execFn: function(svc : ItemService, req : any) {
+        onExecute: function(svc : ItemService, req : any) {
             return svc.remove(req.params.id);
         },
-        respFn: function(
+        onResponse: function(
             // @ts-ignore
             result : any,
             res : any) {
@@ -59,7 +60,7 @@ const Routes = [
         method: 'patch',
         path: 'items/:id',
         auth: true,
-        execFn: function(svc : ItemService, req : any) {
+        onExecute: function(svc : ItemService, req : any) {
             return svc.patch(req.params.id, req.body);
         }
     },
@@ -68,16 +69,16 @@ const Routes = [
         method: 'post',
         path: 'items/:id/clone',
         auth: true,
-        execFn: function(svc, req) { return svc.clone(req.params.id, req.body); }
+        onExecute: function(svc, req) { return svc.clone(req.params.id, req.body); }
     },
     {
         key: 'export',
         method: 'get',
         path: 'items/:id/export',
         auth: false,
-        execFn: function(svc : ItemService, req : any) {
+        onExecute: function(svc : ItemService, req : any) {
             return svc.export(req.params.id, req.query.format); },
-        respFn: function(result : any, res : any) {
+        onResponse: function(result : any, res : any) {
             let mimeType = result.headers['content-type'];
             let disposition = result.headers['content-disposition'];
             res.set("Content-Type", mimeType);
@@ -90,10 +91,10 @@ const Routes = [
         method: 'post',
         path: 'items/uri',
         auth: false,
-        execFn: function(svc : ItemService, req : any) {
+        onExecute: function(svc : ItemService, req : any) {
             return svc.getUri(req.body);
         },
-        respFn: function(result : any, res : any) {
+        onResponse: function(result : any, res : any) {
             res.json({ uri: result });
         }
     },
@@ -102,7 +103,7 @@ const Routes = [
         method: 'post',
         path: 'items/exists',
         auth: false,
-        execFn: function(svc : ItemService, req : any) {
+        onExecute: function(svc : ItemService, req : any) {
             return svc.getUri(req.body)
             .then( uri => {
                 let fields = ['serviceType','services','scheme','themes','publishers','keywords'];
@@ -116,7 +117,7 @@ const Routes = [
         method: 'post',
         path: 'items/import',
         auth: true,
-        execFn: function(svc : ItemService, req : any) {
+        onExecute: function(svc : ItemService, req : any) {
             let input = req.body.url || req.files.file;
             return svc.import(input, req.query.format);
         }
@@ -126,7 +127,7 @@ const Routes = [
         method: 'get',
         path: 'items/:id/associations',
         auth: false,
-        execFn: function(svc : ItemService, req : any) {
+        onExecute: function(svc : ItemService, req : any) {
             return svc.associations(req.params.id, req.query); }
     },
     {
@@ -134,7 +135,7 @@ const Routes = [
         method: 'get',
         path: 'items/:id/versions',
         auth: false,
-        execFn: function(svc : ItemService, req : any) {
+        onExecute: function(svc : ItemService, req : any) {
             return svc.versions(req.params.id, req.query); }
     },
     {
@@ -142,7 +143,7 @@ const Routes = [
         method: 'get',
         path: 'items/:id/versions/:version',
         auth: false,
-        execFn: function(svc : ItemService, req : any) {
+        onExecute: function(svc : ItemService, req : any) {
             return svc.get(req.params.id, { version: req.params.version });
         }
     }

@@ -28,7 +28,7 @@ const ServiceProxy = {
             //   'create': {
             //     'path': 'custom/path',
             //     'auth': true,
-            //     'respFn': function(result, res, next) { }
+            //     'onResponse': function(result, res, next) { }
             //   }
             // }
             let overrides = options[route.key] || {};
@@ -38,26 +38,49 @@ const ServiceProxy = {
             //look for authentication override in either new structure or older format
             let needsAuth = overrides.auth || auths[route.key] || route.auth;
 
-            // console.log(`Binding Service Route [${route.method}] ${path}`)
+            if(options.logger) {
+                options.logger.debug(`Binding Service Route [${route.method}] ${path}`)
+            }
             router[route.method]( path, (req : any, res : any, next : Function) => {
-                // console.log(`Executing Service Route [${route.method}] ${path}`)
-                // console.log(JSON.stringify(req.params));
-                // console.log(" ");
-                let svc = this.getService(req, needsAuth, options);
-                let promise = route.execFn(svc, req)
-                promise.then( ( result:any ) => {
-                    let respFn = overrides.respFn || route.respFn;
-                    if(respFn) respFn(result, res, next);
+
+                let promise = null;
+                if(typeof(route.onExecute) !== 'function') {
+                    promise = Promise.resolve( null );
+                } else {
+                    if(options.logger) {
+                        options.logger.debug(`Executing Service Route [${route.method}] ${path}`)
+                        options.logger.debug(JSON.stringify(req.params));
+                        options.logger.debug("-------------------------");
+                    }
+                    let svc = this.getService(req, needsAuth, options);
+
+                    try {
+                        promise = route.onExecute(svc, req);
+                    } catch( e ) {
+                        promise = Promise.reject(e);
+                    }
+                }
+
+                promise.then( ( result : any ) => {
+                    let onResponse = overrides.onResponse || route.onResponse;
+                    if(onResponse) onResponse(result, res, next);
                     else res.json(result);
                 })
                 .catch( (err : Error) => {
-                    if(options.onError)
-                        options.onError(route.key, err);
+                    if(overrides.onError) overrides.onError(err);
+                    if(options.onError) options.onError(route.key, err);
                     next(err);
                 })
                 .finally( () => {
-                    if(options.onFinish)
-                        options.onFinish(route.key, req, res);
+
+                    //if route has a finish function defined, invoke it
+                    if(overrides.onFinish) {
+                        overrides.onFinish(req, res);
+                    }
+
+                    //if proxy has an overall finish function defined, invoke it
+                    let finishFn = options.onFinish;
+                    if(finishFn) finishFn(route.key, req, res);
                 });
             })
         });
@@ -73,11 +96,10 @@ const ServiceProxy = {
     getClient: function(req : any, needsAuth : boolean, options ?: any) {
 
         let token = req.accessToken || null;
-        if(needsAuth) {
-            if(!token && options.logger)
+        if(needsAuth && options.logger) {
+            if(!token) {
                 options.logger.warn("ServiceProxy.getClient() - No Access Token was provided on incoming request header!");
-
-            else if(!!options.debug && options.logger) {
+            } else if(!!options.debug) {
                 options.logger.debug(`ServiceProxy.getClient() - Token: ${token}`);
                 options.logger.debug(`ServiceProxy.getClient() - JWT: ${req.jwt}`);
             }
@@ -98,6 +120,11 @@ const ServiceProxy = {
     getService: function(req : any, needsAuth : boolean, options ?: any) {
         let client = this.getClient(req, needsAuth, options);
         let svcClass = options.serviceClass || ItemService;
+        // console.log("Proxying to " + Config.ualUrl);
+        if(options.logger) {
+            options.logger.debug(`Proxying to ${Config.ualUrl}`);
+            // options.logger.debug("Using service class: " + svcClass);
+        }
         let service = new svcClass(Config.ualUrl, client);
         if(options.logger) {
             service.setLogger(options.logger);

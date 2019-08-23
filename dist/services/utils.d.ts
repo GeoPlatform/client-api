@@ -24,5 +24,15 @@ declare class UtilsService extends BaseService {
      * @return Promise resolving an array of geocoded results
      */
     locate(value: any, options?: any): Promise<any>;
+    /**
+     * Upload a file to store within the GeoPlatform for association with
+     * one or more portfolio Assets.
+     *
+     * @param file File to store
+     * @param format string media type of the file being stored
+     * @param options optional
+     * @return Promise resolving metadata for stored content
+     */
+    store(file: any, format: string, options?: any): Promise<any>;
 }
 export default UtilsService;

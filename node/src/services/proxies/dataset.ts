@@ -10,7 +10,7 @@ const Routes = [
         method: 'get',
         path: 'datasets',
         auth: false,
-        execFn: function(svc : DatasetService, req : any) {
+        onExecute: function(svc : DatasetService, req : any) {
             return svc.search(req.query);
         }
     },
@@ -19,7 +19,7 @@ const Routes = [
         method: 'get',
         path: 'datasets/:id',
         auth: false,
-        execFn: function(svc : DatasetService, req : any) {
+        onExecute: function(svc : DatasetService, req : any) {
             return svc.get(req.params.id);
         }
     },
@@ -28,7 +28,7 @@ const Routes = [
         method: 'post',
         path: 'datasets',
         auth: true,
-        execFn: function(svc : DatasetService, req : any) {
+        onExecute: function(svc : DatasetService, req : any) {
             return svc.save(req.body);
         }
     },
@@ -37,7 +37,7 @@ const Routes = [
         method: 'put',
         path: 'datasets/:id',
         auth: true,
-        execFn: function(svc : DatasetService, req : any) {
+        onExecute: function(svc : DatasetService, req : any) {
             return svc.save(req.body);
         }
     },
@@ -46,10 +46,10 @@ const Routes = [
         method: 'delete',
         path: 'datasets/:id',
         auth: true,
-        execFn: function(svc : DatasetService, req : any) {
+        onExecute: function(svc : DatasetService, req : any) {
             return svc.remove(req.params.id);
         },
-        respFn: function(
+        onResponse: function(
             // @ts-ignore
             result : any,
             res : any) {
@@ -61,7 +61,7 @@ const Routes = [
         method: 'patch',
         path: 'datasets/:id',
         auth: true,
-        execFn: function(svc : DatasetService, req : any) {
+        onExecute: function(svc : DatasetService, req : any) {
             return svc.patch(req.params.id, req.body); }
     },
     {
@@ -69,10 +69,10 @@ const Routes = [
         method: 'get',
         path: 'datasets/:id/export',
         auth: false,
-        execFn: function(svc : DatasetService, req : any) {
+        onExecute: function(svc : DatasetService, req : any) {
             return svc.export(req.params.id, req.query.format);
         },
-        respFn: function(result : any, res : any) {
+        onResponse: function(result : any, res : any) {
             let mimeType = result.headers['content-type'];
             let disposition = result.headers['content-disposition'];
             res.set("Content-Type", mimeType);

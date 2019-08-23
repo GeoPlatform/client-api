@@ -103,6 +103,42 @@ class UtilsService extends BaseService {
         });
     }
 
+
+    /**
+     * Upload a file to store within the GeoPlatform for association with
+     * one or more portfolio Assets.
+     *
+     * @param file File to store
+     * @param format string media type of the file being stored
+     * @param options optional
+     * @return Promise resolving metadata for stored content
+     */
+    store (file : any, format : string, options ?: any) : Promise<any> {
+
+        var url = this.baseUrl + '/api/store';
+
+        return this.createAndResolvePromise( url )
+        .then( url => {
+
+            let opts = this.buildRequest({
+                method:"POST",
+                url:url,
+                data: { format: format },
+                file: file,
+                formData: true,   //NodeJS (RequestJS)
+                options: options
+            });
+            return this.execute(opts);
+        })
+        .then( response => response )
+        .catch(e => {
+            let err = new Error(`Error uploading file for storage: ${e.message}`);
+            Object.assign(err, e);
+            this.logError('UtilsService.store() - ' + err.message);
+            throw err;
+        });
+    }
+
 }
 
 export default UtilsService;

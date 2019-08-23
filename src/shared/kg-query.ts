@@ -20,7 +20,7 @@ class KGQuery {
     public query : KVP<any>;
     private defaultQuery : KVP<any>;
 
-    constructor() {
+    constructor( options ?: KVP<any> ) {
 
         this.defaultQuery = {
             page: 0,
@@ -34,6 +34,9 @@ class KGQuery {
             sort: "modified,desc"
         };
 
+        if(options) {
+            this.applyParameters(options);
+        }
     }
 
 

@@ -11,11 +11,27 @@ declare class LayerService extends ItemService {
     constructor(url: string, httpClient: GPHttpClient);
     setUrl(baseUrl: string): void;
     /**
+     * Fetch a style associated with a given GeoPlatform Layer asset. This may
+     * be the style for an Esri FeatureServer layer using the following:
+     *
+     *   .style( layerId, options);
+     *
+     * or a specific style definition for a non-Esri layer using the following call:
+     *
+     *   .style( layerId, styleId, options);
+     *
      * @param id - GeoPlatform Layer identifier
      * @param options - optional set of request options to apply to xhr request
      * @return Promise resolving style JSON object
      */
-    style(id: string, options?: any): Promise<any>;
+    style(id: string, ...args: any[]): Promise<any>;
+    /**
+     * Fetch the list of styles associated with a given GeoPlatform Layer asset
+     * @param id - GeoPlatform Layer identifier
+     * @param options - optional set of request options to apply to xhr request
+     * @return Promise resolving style JSON object
+     */
+    styles(id: string, options?: any): Promise<any[]>;
     /**
      * @param id - GeoPlatform Layer identifier
      * @param req identifying extent, x, y

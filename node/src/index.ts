@@ -8,6 +8,7 @@ import DatasetServiceProxy from './services/proxies/dataset';
 import MapServiceProxy from './services/proxies/map';
 import GalleryServiceProxy from './services/proxies/gallery';
 import UtilsServiceProxy from './services/proxies/utils';
+import KGServiceProxy from './services/proxies/kg';
 import AgolServiceProxy from './services/proxies/agol';
 
 
@@ -24,6 +25,7 @@ export {
     MapServiceProxy,
     GalleryServiceProxy,
     UtilsServiceProxy,
+    KGServiceProxy,
     AgolServiceProxy
 
 };

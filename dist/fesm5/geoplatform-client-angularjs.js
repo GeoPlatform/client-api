@@ -1,12 +1,8 @@
-import * as angular from 'angular';
-import { module as module$1, injector } from 'angular';
 import { __extends } from 'tslib';
-import { GPHttpClient, ItemService, UtilsService, DatasetService, ServiceService, LayerService, MapService, GalleryService, Config, QueryFactory, TrackingService } from '@geoplatform/client';
+import * as angular from 'angular';
+import { injector, module } from 'angular';
+import { GPHttpClient, ItemService, DatasetService, GalleryService, LayerService, MapService, ServiceService, UtilsService, Config, QueryFactory, TrackingService } from '@geoplatform/client';
 
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
- */
 var NGHttpClient = /** @class */ (function (_super) {
     __extends(NGHttpClient, _super);
     /**
@@ -19,78 +15,56 @@ var NGHttpClient = /** @class */ (function (_super) {
         if (typeof (angular) === 'undefined' || angular === null) {
             throw new Error("AngularJS could not be found globally");
         }
-        if (options && options["$http"])
-            _this.$http = options["$http"];
-        if (options && options["$q"])
-            _this.$q = options["$q"];
+        if (options && options.$http)
+            _this.$http = options.$http;
+        if (options && options.$q)
+            _this.$q = options.$q;
         return _this;
     }
-    /**
-     * @param {?} options
-     * @return {?}
-     */
-    NGHttpClient.prototype.createRequestOpts = /**
-     * @param {?} options
-     * @return {?}
-     */
-    function (options) {
-        /** @type {?} */
+    NGHttpClient.prototype.createRequestOpts = function (options) {
         var opts = {
-            method: options["method"],
-            url: options["url"],
-            timeout: options["timeout"] || this.timeout
+            method: options.method,
+            url: options.url,
+            timeout: options.timeout || this.timeout
         };
-        if (options["json"] === true || 'json' === options["responseType"])
-            opts["dataType"] = 'json';
-        else if ('text' === options["responseType"])
-            opts["dataType"] = 'text';
-        if (options["params"]) {
-            opts["params"] = options["params"];
+        if (options.json === true || 'json' === options.responseType)
+            opts.dataType = 'json';
+        else if ('text' === options.responseType)
+            opts.dataType = 'text';
+        if (options.params) {
+            opts.params = options.params;
         }
-        if (options["data"]) {
-            opts["data"] = options["data"];
+        if (options.data) {
+            opts.data = options.data;
         }
         //set authorization token if one was provided
         if (this.token) {
-            /** @type {?} */
             var token = this.token();
             if (token) {
-                opts["headers"] = opts["headers"] || {};
-                opts["headers"].Authorization = 'Bearer ' + token;
-                opts["useXDomain"] = true;
+                opts.headers = opts.headers || {};
+                opts.headers.Authorization = 'Bearer ' + token;
+                opts.useXDomain = true;
             }
         }
         //copy over user-supplied options
-        if (options["options"]) {
-            for (var o in options["options"]) {
-                if (options["options"].hasOwnProperty(o)) {
-                    opts[o] = options["options"][o];
+        if (options.options) {
+            for (var o in options.options) {
+                if (options.options.hasOwnProperty(o)) {
+                    opts[o] = options.options[o];
                 }
             }
         }
         return opts;
     };
-    /**
-     * @param {?} opts
-     * @return {?}
-     */
-    NGHttpClient.prototype.execute = /**
-     * @param {?} opts
-     * @return {?}
-     */
-    function (opts) {
-        /** @type {?} */
+    NGHttpClient.prototype.execute = function (opts) {
         var $injector = injector(['ng']);
-        /** @type {?} */
         var $q = this.$q || $injector.get('$q');
-        /** @type {?} */
         var $http = this.$http || $injector.get('$http');
-        /** @type {?} */
         var deferred = $q.defer();
         $http(opts)
             .then(function (response) { deferred.resolve(response.data); })
             .catch(function (response) { deferred.reject(new Error(response.data)); });
-        return /** @type {?} */ (deferred.promise.then(function (data) { return data; }));
+        return deferred.promise.then(function (data) { return data; });
         // return Promise.resolve( $http )
         // .then($http => {
         //     if(typeof($http) === 'undefined')
@@ -107,353 +81,153 @@ var NGHttpClient = /** @class */ (function (_super) {
     return NGHttpClient;
 }(GPHttpClient));
 
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
+/*
+ * NOTICE:
+ *
+ * These services are angular aware (using angular's $q wrapper)
+ * to ensure that any Promises returned are ultimately gated
+ * through a $q instance and therefore will trigger a digest
+ * upon completion.
+ *
+ * If you manually create an instance that is not angular aware,
+ * you will need to wrap any response handler's manipulation of data
+ * with $scope.$apply, $timeout, or an equivalent to trigger a digest
  */
-/**
- * Angular-aware instance of ItemService
- */
-var /**
- * Angular-aware instance of ItemService
- */
-NGItemService = /** @class */ (function (_super) {
+/** Angular-aware instance of ItemService */
+var NGItemService = /** @class */ (function (_super) {
     __extends(NGItemService, _super);
     function NGItemService(url, httpClient, $q) {
         var _this = _super.call(this, url, httpClient) || this;
         _this.$q = $q;
         return _this;
     }
-    /**
-     * @param {?} arg
-     * @return {?}
-     */
-    NGItemService.prototype.createPromise = /**
-     * @param {?} arg
-     * @return {?}
-     */
-    function (arg) {
+    NGItemService.prototype.createPromise = function (arg) {
         return this.$q(arg);
     };
-    /**
-     * @param {?} value
-     * @return {?}
-     */
-    NGItemService.prototype.createAndResolvePromise = /**
-     * @param {?} value
-     * @return {?}
-     */
-    function (value) {
+    NGItemService.prototype.createAndResolvePromise = function (value) {
         return this.$q.resolve(value);
     };
-    /**
-     * @param {?} error
-     * @return {?}
-     */
-    NGItemService.prototype.createAndRejectPromise = /**
-     * @param {?} error
-     * @return {?}
-     */
-    function (error) {
+    NGItemService.prototype.createAndRejectPromise = function (error) {
         return this.$q.reject(error);
     };
     return NGItemService;
 }(ItemService));
-/**
- * Angular-aware instance of DatasetService
- */
-var /**
- * Angular-aware instance of DatasetService
- */
-NGDatasetService = /** @class */ (function (_super) {
+/** Angular-aware instance of DatasetService */
+var NGDatasetService = /** @class */ (function (_super) {
     __extends(NGDatasetService, _super);
     function NGDatasetService(url, httpClient, $q) {
         var _this = _super.call(this, url, httpClient) || this;
         _this.$q = $q;
         return _this;
     }
-    /**
-     * @param {?} arg
-     * @return {?}
-     */
-    NGDatasetService.prototype.createPromise = /**
-     * @param {?} arg
-     * @return {?}
-     */
-    function (arg) {
+    NGDatasetService.prototype.createPromise = function (arg) {
         return this.$q(arg);
     };
-    /**
-     * @param {?} value
-     * @return {?}
-     */
-    NGDatasetService.prototype.createAndResolvePromise = /**
-     * @param {?} value
-     * @return {?}
-     */
-    function (value) {
+    NGDatasetService.prototype.createAndResolvePromise = function (value) {
         return this.$q.resolve(value);
     };
-    /**
-     * @param {?} error
-     * @return {?}
-     */
-    NGDatasetService.prototype.createAndRejectPromise = /**
-     * @param {?} error
-     * @return {?}
-     */
-    function (error) {
+    NGDatasetService.prototype.createAndRejectPromise = function (error) {
         return this.$q.reject(error);
     };
     return NGDatasetService;
 }(DatasetService));
-/**
- * Angular-aware instance of GalleryService
- */
-var /**
- * Angular-aware instance of GalleryService
- */
-NGGalleryService = /** @class */ (function (_super) {
+/** Angular-aware instance of GalleryService */
+var NGGalleryService = /** @class */ (function (_super) {
     __extends(NGGalleryService, _super);
     function NGGalleryService(url, httpClient, $q) {
         var _this = _super.call(this, url, httpClient) || this;
         _this.$q = $q;
         return _this;
     }
-    /**
-     * @param {?} arg
-     * @return {?}
-     */
-    NGGalleryService.prototype.createPromise = /**
-     * @param {?} arg
-     * @return {?}
-     */
-    function (arg) {
+    NGGalleryService.prototype.createPromise = function (arg) {
         return this.$q(arg);
     };
-    /**
-     * @param {?} value
-     * @return {?}
-     */
-    NGGalleryService.prototype.createAndResolvePromise = /**
-     * @param {?} value
-     * @return {?}
-     */
-    function (value) {
+    NGGalleryService.prototype.createAndResolvePromise = function (value) {
         return this.$q.resolve(value);
     };
-    /**
-     * @param {?} error
-     * @return {?}
-     */
-    NGGalleryService.prototype.createAndRejectPromise = /**
-     * @param {?} error
-     * @return {?}
-     */
-    function (error) {
+    NGGalleryService.prototype.createAndRejectPromise = function (error) {
         return this.$q.reject(error);
     };
     return NGGalleryService;
 }(GalleryService));
-/**
- * Angular-aware instance of LayerService
- */
-var /**
- * Angular-aware instance of LayerService
- */
-NGLayerService = /** @class */ (function (_super) {
+/** Angular-aware instance of LayerService */
+var NGLayerService = /** @class */ (function (_super) {
     __extends(NGLayerService, _super);
     function NGLayerService(url, httpClient, $q) {
         var _this = _super.call(this, url, httpClient) || this;
         _this.$q = $q;
         return _this;
     }
-    /**
-     * @param {?} arg
-     * @return {?}
-     */
-    NGLayerService.prototype.createPromise = /**
-     * @param {?} arg
-     * @return {?}
-     */
-    function (arg) {
+    NGLayerService.prototype.createPromise = function (arg) {
         return this.$q(arg);
     };
-    /**
-     * @param {?} value
-     * @return {?}
-     */
-    NGLayerService.prototype.createAndResolvePromise = /**
-     * @param {?} value
-     * @return {?}
-     */
-    function (value) {
+    NGLayerService.prototype.createAndResolvePromise = function (value) {
         return this.$q.resolve(value);
     };
-    /**
-     * @param {?} error
-     * @return {?}
-     */
-    NGLayerService.prototype.createAndRejectPromise = /**
-     * @param {?} error
-     * @return {?}
-     */
-    function (error) {
+    NGLayerService.prototype.createAndRejectPromise = function (error) {
         return this.$q.reject(error);
     };
     return NGLayerService;
 }(LayerService));
-/**
- * Angular-aware instance of MapService
- */
-var /**
- * Angular-aware instance of MapService
- */
-NGMapService = /** @class */ (function (_super) {
+/** Angular-aware instance of MapService */
+var NGMapService = /** @class */ (function (_super) {
     __extends(NGMapService, _super);
     function NGMapService(url, httpClient, $q) {
         var _this = _super.call(this, url, httpClient) || this;
         _this.$q = $q;
         return _this;
     }
-    /**
-     * @param {?} arg
-     * @return {?}
-     */
-    NGMapService.prototype.createPromise = /**
-     * @param {?} arg
-     * @return {?}
-     */
-    function (arg) {
+    NGMapService.prototype.createPromise = function (arg) {
         return this.$q(arg);
     };
-    /**
-     * @param {?} value
-     * @return {?}
-     */
-    NGMapService.prototype.createAndResolvePromise = /**
-     * @param {?} value
-     * @return {?}
-     */
-    function (value) {
+    NGMapService.prototype.createAndResolvePromise = function (value) {
         return this.$q.resolve(value);
     };
-    /**
-     * @param {?} error
-     * @return {?}
-     */
-    NGMapService.prototype.createAndRejectPromise = /**
-     * @param {?} error
-     * @return {?}
-     */
-    function (error) {
+    NGMapService.prototype.createAndRejectPromise = function (error) {
         return this.$q.reject(error);
     };
     return NGMapService;
 }(MapService));
-/**
- * Angular-aware instance of ServiceService
- */
-var /**
- * Angular-aware instance of ServiceService
- */
-NGServiceService = /** @class */ (function (_super) {
+/** Angular-aware instance of ServiceService */
+var NGServiceService = /** @class */ (function (_super) {
     __extends(NGServiceService, _super);
     function NGServiceService(url, httpClient, $q) {
         var _this = _super.call(this, url, httpClient) || this;
         _this.$q = $q;
         return _this;
     }
-    /**
-     * @param {?} arg
-     * @return {?}
-     */
-    NGServiceService.prototype.createPromise = /**
-     * @param {?} arg
-     * @return {?}
-     */
-    function (arg) {
+    NGServiceService.prototype.createPromise = function (arg) {
         return this.$q(arg);
     };
-    /**
-     * @param {?} value
-     * @return {?}
-     */
-    NGServiceService.prototype.createAndResolvePromise = /**
-     * @param {?} value
-     * @return {?}
-     */
-    function (value) {
+    NGServiceService.prototype.createAndResolvePromise = function (value) {
         return this.$q.resolve(value);
     };
-    /**
-     * @param {?} error
-     * @return {?}
-     */
-    NGServiceService.prototype.createAndRejectPromise = /**
-     * @param {?} error
-     * @return {?}
-     */
-    function (error) {
+    NGServiceService.prototype.createAndRejectPromise = function (error) {
         return this.$q.reject(error);
     };
     return NGServiceService;
 }(ServiceService));
-/**
- * Angular-aware instance of UtilsService
- */
-var /**
- * Angular-aware instance of UtilsService
- */
-NGUtilsService = /** @class */ (function (_super) {
+/** Angular-aware instance of UtilsService */
+var NGUtilsService = /** @class */ (function (_super) {
     __extends(NGUtilsService, _super);
     function NGUtilsService(url, httpClient, $q) {
         var _this = _super.call(this, url, httpClient) || this;
         _this.$q = $q;
         return _this;
     }
-    /**
-     * @param {?} arg
-     * @return {?}
-     */
-    NGUtilsService.prototype.createPromise = /**
-     * @param {?} arg
-     * @return {?}
-     */
-    function (arg) {
+    NGUtilsService.prototype.createPromise = function (arg) {
         return this.$q(arg);
     };
-    /**
-     * @param {?} value
-     * @return {?}
-     */
-    NGUtilsService.prototype.createAndResolvePromise = /**
-     * @param {?} value
-     * @return {?}
-     */
-    function (value) {
+    NGUtilsService.prototype.createAndResolvePromise = function (value) {
         return this.$q.resolve(value);
     };
-    /**
-     * @param {?} error
-     * @return {?}
-     */
-    NGUtilsService.prototype.createAndRejectPromise = /**
-     * @param {?} error
-     * @return {?}
-     */
-    function (error) {
+    NGUtilsService.prototype.createAndRejectPromise = function (error) {
         return this.$q.reject(error);
     };
     return NGUtilsService;
 }(UtilsService));
 
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
- */
-if (angular && typeof (module$1) !== 'undefined') {
-    /** @type {?} */
+if (angular && typeof (module) !== 'undefined') {
     var serviceFactory_1 = function (gpNgHttpClient, svcClass, url, $q) {
         if (NGItemService === svcClass || NGDatasetService === svcClass ||
             NGServiceService === svcClass || NGLayerService === svcClass ||
@@ -464,22 +238,22 @@ if (angular && typeof (module$1) !== 'undefined') {
         return new svcClass(url, gpNgHttpClient);
     };
     /*
-         * Define AngularJS module that can be included in downstream applications
-         *
-         * Example:
-         *
-         *  angular.module('myApp', [ 'ui-router', 'gpClient' ])
-         *  .component('myComponent', {
-         *    bindings: { },
-         *    template: "<div></div>",
-         *    controller: function(gpQueryFactory, gpItemService) {
-         *       this.$onInit = function() {
-         *          gpItemService.search( gpQueryFactory() ).then( response => { ... });
-         *       };
-         *    }
-         *  ]);
-         */
-    module$1('gpClient', [])
+     * Define AngularJS module that can be included in downstream applications
+     *
+     * Example:
+     *
+     *  angular.module('myApp', [ 'ui-router', 'gpClient' ])
+     *  .component('myComponent', {
+     *    bindings: { },
+     *    template: "<div></div>",
+     *    controller: function(gpQueryFactory, gpItemService) {
+     *       this.$onInit = function() {
+     *          gpItemService.search( gpQueryFactory() ).then( response => { ... });
+     *       };
+     *    }
+     *  ]);
+     */
+    module('gpClient', [])
         .provider('gpConfig', function () {
         return {
             $get: function () {
@@ -498,7 +272,10 @@ if (angular && typeof (module$1) !== 'undefined') {
             return new TrackingService(options);
         };
     });
-    /** @type {?} */
+    /*
+     * Expose Service instances in the 'gpClient' module
+     * These services are angular aware using angular's $q wrapper
+     */
     var serviceClasses_1 = {
         'gpItemService': NGItemService,
         'gpUtilsService': NGUtilsService,
@@ -509,9 +286,8 @@ if (angular && typeof (module$1) !== 'undefined') {
         'gpGalleryService': NGGalleryService
     };
     Object.keys(serviceClasses_1).forEach(function (name) {
-        /** @type {?} */
         var svcClass = serviceClasses_1[name];
-        module$1('gpClient')
+        module('gpClient')
             /*
                 Service for each client service class that uses the
                 currently configured settings when created.  Note the
@@ -540,10 +316,8 @@ if (angular && typeof (module$1) !== 'undefined') {
 }
 
 /**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,uselessCode} checked by tsc
+ * Generated bundle index. Do not edit.
  */
 
 export { NGHttpClient };
-
 //# sourceMappingURL=geoplatform-client-angularjs.js.map

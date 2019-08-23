@@ -10,7 +10,7 @@ const Routes = [
         method: 'get',
         path: 'agol/items',
         auth: false,
-        execFn: function(svc : AgolService, req : any) {
+        onExecute: function(svc : AgolService, req : any) {
             return svc.searchItems(req.query);
         }
     },
@@ -19,7 +19,7 @@ const Routes = [
         method: 'get',
         path: 'agol/groups',
         auth: false,
-        execFn: function(svc : AgolService, req : any) {
+        onExecute: function(svc : AgolService, req : any) {
             return svc.searchGroups(req.query);
         }
     },
@@ -28,7 +28,7 @@ const Routes = [
         method: 'get',
         path: 'agol/orgs',
         auth: false,
-        execFn: function(svc : AgolService, req : any) {
+        onExecute: function(svc : AgolService, req : any) {
             return svc.searchOrgs(req.query);
         }
     },
@@ -37,7 +37,7 @@ const Routes = [
         method: 'get',
         path: 'agol/items/:id',
         auth: false,
-        execFn: function(svc : AgolService, req : any) {
+        onExecute: function(svc : AgolService, req : any) {
             return svc.getItem(req.params.id);
         }
     },
@@ -46,7 +46,7 @@ const Routes = [
         method: 'get',
         path: 'agol/groups/:id',
         auth: false,
-        execFn: function(svc : AgolService, req : any) {
+        onExecute: function(svc : AgolService, req : any) {
             return svc.getGroup(req.params.id);
         }
     },
@@ -55,7 +55,7 @@ const Routes = [
         method: 'get',
         path: 'agol/orgs/:id',
         auth: false,
-        execFn: function(svc : AgolService, req : any) {
+        onExecute: function(svc : AgolService, req : any) {
             return svc.getOrg(req.params.id);
         }
     }

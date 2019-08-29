@@ -1958,6 +1958,12 @@ This software has been approved for release by the U.S. Department of the Interi
             return opts;
         };
         BaseService.prototype.createRequestOpts = function (options) {
+            if (typeof (options.options) === 'object') {
+                var req = options.options;
+                delete options.options;
+                Object.assign(req, options);
+                options = req;
+            }
             var request = this.client.createRequestOpts(options);
             this.logDebug("BaseService.createRequestOpts() - " + JSON.stringify(request));
             return request;

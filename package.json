@@ -63,6 +63,8 @@
         "ng-packagr": "^5.5.0",
         "pre-commit": "^1.2.2",
         "protractor": "~6.0.0",
+        "request": "^2.76.0",
+        "request-debug": "^0.2.0",
         "supertest": "4.0.2",
         "ts-node": "~8.0.2",
         "tslint": "~5.9.1",

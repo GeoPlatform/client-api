@@ -110,6 +110,14 @@ class BaseService {
     }
 
     createRequestOpts(options : {[key:string]:any}) : {[key:string]:any} {
+
+        if(typeof(options.options)==='object') {
+            let req = options.options;
+            delete options.options;
+            Object.assign(req, options);
+            options = req;
+        }
+
         let request = this.client.createRequestOpts(options);
         this.logDebug("BaseService.createRequestOpts() - " + JSON.stringify(request));
         return request;

@@ -1753,6 +1753,12 @@ var BaseService = /** @class */ (function () {
         return opts;
     };
     BaseService.prototype.createRequestOpts = function (options) {
+        if (typeof (options.options) === 'object') {
+            var req = options.options;
+            delete options.options;
+            Object.assign(req, options);
+            options = req;
+        }
         var request = this.client.createRequestOpts(options);
         this.logDebug("BaseService.createRequestOpts() - " + JSON.stringify(request));
         return request;

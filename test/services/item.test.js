@@ -1,5 +1,4 @@
 
-const Q = require('q');
 const chai = require('chai');
 const expect = chai.expect;
 
@@ -47,45 +46,50 @@ describe('# ItemService', function() {
 
             if(opts.method === "GET") {
                 if(~opts.url.indexOf("/export"))
-                    return Q.resolve("<metadata></metadata>");
-                if(~opts.url.indexOf('items/test'))
-                    return Q.resolve(this.item);
-                else
-                    return Q.resolve({ results: [this.item], totalResults: 1});
+                    return Promise.resolve("<metadata></metadata>");
+                if(~opts.url.indexOf('items/test')) {
+                    if(opts.params) {
+                        return Promise.resolve(
+                            Object.assign({json:true}, this.item)
+                        );
+                    }
+                    return Promise.resolve(this.item);
+                } else
+                    return Promise.resolve({ results: [this.item], totalResults: 1});
 
             } else if(opts.method === 'POST') {
                 if(~opts.url.indexOf('api/utils/uri')) {
-                    return Q.resolve(URI);
+                    return Promise.resolve(URI);
                 } else if(~opts.url.indexOf('clone')) {
                     let result = Object.assign({}, this.item, opts.data, {
                         id: 'test2', uri: this.item.uri + "/2"
                     });
-                    return Q.resolve(result);
+                    return Promise.resolve(result);
                 } else {
                     opts.data.id = 'test';
                     opts.data._created = opts.data.modified = new Date().getTime();
                     opts.data.createdBy = 'test_user';
                     opts.data.lastModifiedBy = 'test_user';
-                    return Q.resolve(opts.data);
+                    return Promise.resolve(opts.data);
                 }
 
             } else if(opts.method === 'PUT') {
                 opts.data.modified = new Date().getTime();
                 opts.data.lastModifiedBy = 'test_user';
-                return Q.resolve(opts.data);
+                return Promise.resolve(opts.data);
 
             } else if(opts.method === 'DELETE') {
-                return Q.resolve();
+                return Promise.resolve();
 
             } else if(opts.method === 'PATCH') {
                 let result = Object.assign({
                     modified: new Date().getTime(),
                     lastModifiedBy: 'test_user',
                 }, this.item);
-                return Q.resolve(result);
+                return Promise.resolve(result);
             }
             let response = {};
-            return Q.resolve(response);
+            return Promise.resolve(response);
         }
     }
 
@@ -116,6 +120,19 @@ describe('# ItemService', function() {
     service.setLogger(new TestLogger());
 
 
+
+    it('should support custom parameters', (done) => {
+        let opts = {
+            params: { "format" : "json" }
+        };
+        service.get('test', opts)
+        .then( response => {
+            expect(response).to.exist;
+            expect(response.json).to.equal(true);
+            done();
+        })
+        .catch(e => done(e));
+    });
 
 
 
@@ -176,6 +193,7 @@ describe('# ItemService', function() {
         service.getUri(obj)
         .then( uri => {
             expect(uri).to.exist;
+            expect(typeof(uri)).to.equal('string');
             done();
         })
         .catch(e => done(e));

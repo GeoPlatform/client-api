@@ -42,7 +42,7 @@ class NG2HttpClient extends GPHttpClient {
             opts.body = options.data;
         }
 
-        opts.headers = new HttpHeaders();
+        opts.headers = new HttpHeaders(options.headers || {});
 
         //set authorization token if one was provided
         let token = this.getToken();

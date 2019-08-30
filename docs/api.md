@@ -107,6 +107,7 @@ Searches items using specified query parameters.
 | Parameter | required   | description |
 |:------    |:---------- |:----------- |
 | query     | false | js object or `GeoPlatform.Query` instance |
+| options   | false | js object defining additional configuration for the request. See [Configuring Requests](configuring_requests)
 
 ```javascript
 //continuing from example above...
@@ -681,6 +682,13 @@ svc.getGroup(id)
 | getPageSize/setPageSize | Retrieve/Specify number of results per page |
 
 
+### Configuring Requests
+Some service API calls may be additionally configured by passing an options parameter defining
+settings to use when making the call.  These settings can cover both the GeoPlatform API
+request as well as specific configurations for the underlying HttpClient instance being used.
+
+
+
 ### TrackingService API
 
 #### logEvent
@@ -708,7 +716,6 @@ let evt = new TrackingEvent(
 );
 svc.logEvent(evt);
 ```
-
 
 ## Logging
 The services provided also support logging information through a Logger that can

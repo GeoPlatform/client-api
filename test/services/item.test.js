@@ -50,12 +50,12 @@ describe('# ItemService', function() {
                 if(~opts.url.indexOf('items/test')) {
                     if(opts.params) {
                         return Promise.resolve(
-                            Object.assign({json:true}, this.item)
+                            Object.assign(opts.params, this.item)
                         );
                     }
                     return Promise.resolve(this.item);
                 } else
-                    return Promise.resolve({ results: [this.item], totalResults: 1});
+                    return Promise.resolve({ results: [this.item], totalResults: 1, params: opts.params});
 
             } else if(opts.method === 'POST') {
                 if(~opts.url.indexOf('api/utils/uri')) {
@@ -121,15 +121,37 @@ describe('# ItemService', function() {
 
 
 
+
+
     it('should support custom parameters', (done) => {
         let opts = {
             params: { "format" : "json" }
         };
         service.get('test', opts)
         .then( response => {
+
             expect(response).to.exist;
-            expect(response.json).to.equal(true);
-            done();
+
+            //look for user-supplied parameter
+            // (NOTE: test only, API call won't append to result)
+            expect(response.format).to.exist;
+            expect(response.format).to.equal('json');
+
+
+            //test merging both API parameters with user-supplied ones
+            return service.search({ test: true }, opts)
+            .then( response => {
+                expect(response).to.exist;
+                expect(response.results).to.exist;
+                expect(response.totalResults).to.exist;
+
+                //look for both user-supplied params and api query
+                // (NOTE: test only, API call won't append to result)
+                expect(response.params).to.exist;
+                expect(response.params.test).to.equal(true, "Missing test parameter");
+                expect(response.params.format).to.equal('json', "Missing format parameter");
+                done();
+            })
         })
         .catch(e => done(e));
     });

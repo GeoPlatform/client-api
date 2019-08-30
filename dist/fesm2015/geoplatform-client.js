@@ -1619,11 +1619,15 @@ class XHRHttpClient extends GPHttpClient {
             opts.data = options.data;
             opts.contentType = 'application/json';
         }
+        //set headers requested by user config
+        opts.headers = {};
+        if (options.headers) {
+            Object.assign(opts.headers, options.headers);
+        }
         //set authorization header if one was provided
         if (this.token) {
             let token = this.token();
             if (token) {
-                opts.headers = opts.headers || {};
                 opts.headers.Authorization = 'Bearer ' + token;
                 opts.withCredentials = true;
             }
@@ -1743,8 +1747,16 @@ class BaseService {
     }
     createRequestOpts(options) {
         if (typeof (options.options) === 'object') {
-            let req = options.options;
+            let req = options.options; //user supplied configuration
             delete options.options;
+            if (req.params && options.params) { //merge user params with ones needed by API calls
+                //Note: any user-supplied parameter of the same name as one used
+                // by the GP API call will be overwritten
+                Object.keys(options.params).forEach(param => {
+                    req.params[param] = options.params[param];
+                });
+                delete options.params;
+            }
             Object.assign(req, options);
             options = req;
         }

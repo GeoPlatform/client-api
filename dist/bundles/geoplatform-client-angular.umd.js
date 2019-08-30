@@ -230,7 +230,7 @@ This software has been approved for release by the U.S. Department of the Interi
             if (options.data) {
                 opts.body = options.data;
             }
-            opts.headers = new http.HttpHeaders();
+            opts.headers = new http.HttpHeaders(options.headers || {});
             //set authorization token if one was provided
             var token = this.getToken();
             if (token) {

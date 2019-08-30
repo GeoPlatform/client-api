@@ -1834,11 +1834,15 @@ This software has been approved for release by the U.S. Department of the Interi
                 opts.data = options.data;
                 opts.contentType = 'application/json';
             }
+            //set headers requested by user config
+            opts.headers = {};
+            if (options.headers) {
+                Object.assign(opts.headers, options.headers);
+            }
             //set authorization header if one was provided
             if (this.token) {
                 var token = this.token();
                 if (token) {
-                    opts.headers = opts.headers || {};
                     opts.headers.Authorization = 'Bearer ' + token;
                     opts.withCredentials = true;
                 }
@@ -1959,10 +1963,18 @@ This software has been approved for release by the U.S. Department of the Interi
         };
         BaseService.prototype.createRequestOpts = function (options) {
             if (typeof (options.options) === 'object') {
-                var req = options.options;
+                var req_1 = options.options; //user supplied configuration
                 delete options.options;
-                Object.assign(req, options);
-                options = req;
+                if (req_1.params && options.params) { //merge user params with ones needed by API calls
+                    //Note: any user-supplied parameter of the same name as one used
+                    // by the GP API call will be overwritten
+                    Object.keys(options.params).forEach(function (param) {
+                        req_1.params[param] = options.params[param];
+                    });
+                    delete options.params;
+                }
+                Object.assign(req_1, options);
+                options = req_1;
             }
             var request = this.client.createRequestOpts(options);
             this.logDebug("BaseService.createRequestOpts() - " + JSON.stringify(request));

@@ -34,11 +34,15 @@ class NGHttpClient extends GPHttpClient {
         if (options.data) {
             opts.data = options.data;
         }
+        //set headers requested by user config
+        opts.headers = {};
+        if (options.headers) {
+            Object.assign(opts.headers, options.headers);
+        }
         //set authorization token if one was provided
         if (this.token) {
             let token = this.token();
             if (token) {
-                opts.headers = opts.headers || {};
                 opts.headers.Authorization = 'Bearer ' + token;
                 opts.useXDomain = true;
             }

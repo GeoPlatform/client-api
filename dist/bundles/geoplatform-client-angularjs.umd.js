@@ -238,11 +238,15 @@ This software has been approved for release by the U.S. Department of the Interi
             if (options.data) {
                 opts.data = options.data;
             }
+            //set headers requested by user config
+            opts.headers = {};
+            if (options.headers) {
+                Object.assign(opts.headers, options.headers);
+            }
             //set authorization token if one was provided
             if (this.token) {
                 var token = this.token();
                 if (token) {
-                    opts.headers = opts.headers || {};
                     opts.headers.Authorization = 'Bearer ' + token;
                     opts.useXDomain = true;
                 }

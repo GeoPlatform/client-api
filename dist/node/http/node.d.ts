@@ -7,6 +7,10 @@ declare class NodeHttpClient extends GPHttpClient {
     constructor(options?: {
         [key: string]: any;
     });
+    /**
+     * @param options - request configuration
+     * @return request object
+     */
     createRequestOpts(options: {
         [key: string]: any;
     }): any;

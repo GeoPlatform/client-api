@@ -12,6 +12,10 @@ class NodeHttpClient extends GPHttpClient {
         super(options);
     }
 
+    /**
+     * @param options - request configuration
+     * @return request object
+     */
     createRequestOpts(options : { [key:string] : any }) : any {
 
         let opts : {[key:string]: any} = {
@@ -44,6 +48,10 @@ class NodeHttpClient extends GPHttpClient {
             } else {
                 opts.body = options.data;
             }
+        }
+
+        if(options.headers) {
+            opts.headers = options.headers;
         }
 
         //set authorization header if one was provided

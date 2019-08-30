@@ -35,11 +35,16 @@ class XHRHttpClient extends GPHttpClient {
             opts.contentType = 'application/json';
         }
 
+        //set headers requested by user config
+        opts.headers = {};
+        if(options.headers) {
+            Object.assign(opts.headers, options.headers);
+        }
+
         //set authorization header if one was provided
         if(this.token) {
             let token = this.token();
             if(token) {
-                opts.headers = opts.headers || {};
                 opts.headers.Authorization = 'Bearer ' + token;
                 opts.withCredentials = true;
             }

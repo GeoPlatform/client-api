@@ -31,7 +31,7 @@ var NG2HttpClient = /** @class */ (function (_super) {
         if (options.data) {
             opts.body = options.data;
         }
-        opts.headers = new HttpHeaders();
+        opts.headers = new HttpHeaders(options.headers || {});
         //set authorization token if one was provided
         var token = this.getToken();
         if (token) {

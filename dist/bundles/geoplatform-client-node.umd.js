@@ -213,6 +213,10 @@ This software has been approved for release by the U.S. Department of the Interi
         function NodeHttpClient(options) {
             return _super.call(this, options) || this;
         }
+        /**
+         * @param options - request configuration
+         * @return request object
+         */
         NodeHttpClient.prototype.createRequestOpts = function (options) {
             var opts = {
                 method: options.method,
@@ -244,6 +248,9 @@ This software has been approved for release by the U.S. Department of the Interi
                 else {
                     opts.body = options.data;
                 }
+            }
+            if (options.headers) {
+                opts.headers = options.headers;
             }
             //set authorization header if one was provided
             if (this.token) {

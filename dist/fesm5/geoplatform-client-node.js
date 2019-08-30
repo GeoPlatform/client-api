@@ -10,6 +10,10 @@ var NodeHttpClient = /** @class */ (function (_super) {
     function NodeHttpClient(options) {
         return _super.call(this, options) || this;
     }
+    /**
+     * @param options - request configuration
+     * @return request object
+     */
     NodeHttpClient.prototype.createRequestOpts = function (options) {
         var opts = {
             method: options.method,
@@ -41,6 +45,9 @@ var NodeHttpClient = /** @class */ (function (_super) {
             else {
                 opts.body = options.data;
             }
+        }
+        if (options.headers) {
+            opts.headers = options.headers;
         }
         //set authorization header if one was provided
         if (this.token) {

@@ -1,5 +1,4 @@
 
-const Q = require('q');
 const axios = require('axios');
 const chai = require('chai');
 const expect = chai.expect;
@@ -14,9 +13,36 @@ chai.config.includeStack = true;
 
 describe('# XHRHttpService', function() {
 
-    it("should communicate with API host", function(done) {
+    let client = new HttpClient();
 
-        let client = new HttpClient();
+
+    it("should allow custom headers", (done) => {
+
+        let args = {
+            method:"GET",
+            url: URL,
+            params: {
+                type: Types.DATASET
+            },
+            headers: {
+                'X-Header-Custom': 'test'
+            }
+        };
+
+        //convert generic request object into client-specific request objects
+        let opts = client.createRequestOpts(args);
+        expect(opts).to.be.ok;
+        expect(opts.url).to.equal(args.url);
+        expect(opts.params).to.be.ok;
+        expect(opts.params.type).to.equal(args.params.type);
+        expect(opts.headers['X-Header-Custom']).to.exist;
+        expect(opts.headers['X-Header-Custom']).to.equal('test');
+
+        done();
+    });
+
+
+    it("should communicate with API host", (done) => {
 
         let args = {
             method:"GET",
@@ -49,5 +75,6 @@ describe('# XHRHttpService', function() {
         });
 
     }).timeout(20000);
+
 
 });

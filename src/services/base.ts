@@ -112,8 +112,18 @@ class BaseService {
     createRequestOpts(options : {[key:string]:any}) : {[key:string]:any} {
 
         if(typeof(options.options)==='object') {
-            let req = options.options;
+            let req = options.options;  //user supplied configuration
             delete options.options;
+
+            if(req.params && options.params) {    //merge user params with ones needed by API calls
+                //Note: any user-supplied parameter of the same name as one used
+                // by the GP API call will be overwritten
+                Object.keys(options.params).forEach( param => {
+                    req.params[param] = options.params[param];
+                });
+                delete options.params;
+            }
+
             Object.assign(req, options);
             options = req;
         }

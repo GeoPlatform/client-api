@@ -27,7 +27,7 @@
         "test-node": "mocha node/test",
         "lint": "ng lint",
         "e2e": "ng e2e",
-        "postinstall": "cd node && npm install && cd ../angular && npm install && cd ../angularjs && npm install && cd .."
+        "install-all": "npm install && cd node && npm install && cd ../angular && npm install && cd ../angularjs && npm install && cd .."
     },
     "pre-commit": [
         "build"

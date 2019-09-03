@@ -1,10 +1,10 @@
 
-const Q      = require('q');
-const chai   = require('chai');
+const Q = require('q');
+const chai = require('chai');
 const expect = chai.expect;
-const md5    = require('md5');
+const md5 = require('md5');
 
-const API        = require('../dist/js/geoplatform.client');
+const API        = require('../dist/bundles/geoplatform-client.umd');
 const ItemTypes  = API.ItemTypes;
 const URIFactory = API.URIFactory(md5);
 
@@ -451,25 +451,5 @@ describe('## URI Factory', () => {
         });
     });
 
-
-    describe("### EO Products", () => {
-        it("should generate URIs", (done) => {
-
-            let input = {
-                title: "Testing",
-                productId: 'test_1'
-            };
-
-            let uri = URIFactory(input);
-            expect(uri).to.not.be.ok;       //missing 'type'
-
-            input.type = ItemTypes.IMAGE_PRODUCT;
-            uri = URIFactory(input);
-            expect(uri).to.be.ok;
-            expect(uri).to.contain(URI_BASE + 'product/');
-
-            done();
-        });
-    });
 
 });

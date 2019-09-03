@@ -1,13 +1,21 @@
 
-const Q = require('q');
 const chai = require('chai');
 const expect = chai.expect;
 
-const API           = require('../../dist/js/geoplatform.client');
+const mock = require('mock-require');
+
+const API           = require('../../dist/bundles/geoplatform-client.umd');
 const Query         = API.Query;
 const ItemTypes     = API.ItemTypes;
 const ItemService   = API.ItemService;
-const NodeHttpClient = API.NodeHttpClient;
+
+//needed to use the base client lib in this test server
+// as the client-node UMD file will attempt to require('@geoplatform/client')
+mock('@geoplatform/client', API);
+
+const HttpClient    = require('../../dist/bundles/geoplatform-client-node.umd').NodeHttpClient;
+
+
 
 const URL = 'https://ual.geoplatform.gov';
 const URI = "http://www.geoplatform.gov/items/test";
@@ -38,40 +46,50 @@ describe('# ItemService', function() {
 
             if(opts.method === "GET") {
                 if(~opts.url.indexOf("/export"))
-                    return Q.resolve("<metadata></metadata>");
-                if(~opts.url.indexOf('items/test'))
-                    return Q.resolve(this.item);
-                else
-                    return Q.resolve({ results: [this.item], totalResults: 1});
+                    return Promise.resolve("<metadata></metadata>");
+                if(~opts.url.indexOf('items/test')) {
+                    if(opts.params) {
+                        return Promise.resolve(
+                            Object.assign(opts.params, this.item)
+                        );
+                    }
+                    return Promise.resolve(this.item);
+                } else
+                    return Promise.resolve({ results: [this.item], totalResults: 1, params: opts.params});
 
             } else if(opts.method === 'POST') {
                 if(~opts.url.indexOf('api/utils/uri')) {
-                    return Q.resolve(URI);
+                    return Promise.resolve(URI);
+                } else if(~opts.url.indexOf('clone')) {
+                    let result = Object.assign({}, this.item, opts.data, {
+                        id: 'test2', uri: this.item.uri + "/2"
+                    });
+                    return Promise.resolve(result);
                 } else {
                     opts.data.id = 'test';
                     opts.data._created = opts.data.modified = new Date().getTime();
                     opts.data.createdBy = 'test_user';
                     opts.data.lastModifiedBy = 'test_user';
-                    return Q.resolve(opts.data);
+                    return Promise.resolve(opts.data);
                 }
 
             } else if(opts.method === 'PUT') {
                 opts.data.modified = new Date().getTime();
                 opts.data.lastModifiedBy = 'test_user';
-                return Q.resolve(opts.data);
+                return Promise.resolve(opts.data);
 
             } else if(opts.method === 'DELETE') {
-                return Q.resolve();
+                return Promise.resolve();
 
             } else if(opts.method === 'PATCH') {
                 let result = Object.assign({
                     modified: new Date().getTime(),
                     lastModifiedBy: 'test_user',
                 }, this.item);
-                return Q.resolve(result);
+                return Promise.resolve(result);
             }
             let response = {};
-            return Q.resolve(response);
+            return Promise.resolve(response);
         }
     }
 
@@ -102,6 +120,41 @@ describe('# ItemService', function() {
     service.setLogger(new TestLogger());
 
 
+
+
+
+    it('should support custom parameters', (done) => {
+        let opts = {
+            params: { "format" : "json" }
+        };
+        service.get('test', opts)
+        .then( response => {
+
+            expect(response).to.exist;
+
+            //look for user-supplied parameter
+            // (NOTE: test only, API call won't append to result)
+            expect(response.format).to.exist;
+            expect(response.format).to.equal('json');
+
+
+            //test merging both API parameters with user-supplied ones
+            return service.search({ test: true }, opts)
+            .then( response => {
+                expect(response).to.exist;
+                expect(response.results).to.exist;
+                expect(response.totalResults).to.exist;
+
+                //look for both user-supplied params and api query
+                // (NOTE: test only, API call won't append to result)
+                expect(response.params).to.exist;
+                expect(response.params.test).to.equal(true, "Missing test parameter");
+                expect(response.params.format).to.equal('json', "Missing format parameter");
+                done();
+            })
+        })
+        .catch(e => done(e));
+    });
 
 
 
@@ -162,6 +215,7 @@ describe('# ItemService', function() {
         service.getUri(obj)
         .then( uri => {
             expect(uri).to.exist;
+            expect(typeof(uri)).to.equal('string');
             done();
         })
         .catch(e => done(e));
@@ -258,6 +312,30 @@ describe('# ItemService', function() {
     });
 
 
+    /*
+     * TEST CLONE
+     */
+    it('should clone items', function(done) {
+
+        let obj = {
+            id: 'test',
+            uri: URI,
+            type: ItemTypes.DATASET,
+            label: "Test DataSet",
+            createdBy: "test_user"
+        };
+        service.clone(obj, { createdBy: "new_user" })
+        .then( item => {
+            expect(item).to.exist;
+            expect(item.id).not.to.be.equal(obj.id);
+            expect(item.uri).not.to.be.equal(obj.uri);
+            expect(item.createdBy).to.be.equal("new_user");
+            done();
+        })
+        .catch(e => done(e));
+
+    });
+
 
 
     /*
@@ -265,9 +343,10 @@ describe('# ItemService', function() {
      */
     it('should handle export errors', function(done) {
 
-        let svc = new ItemService(URL, new NodeHttpClient());
+        let svc = new ItemService(URL, new HttpClient());
 
-        svc.search({type:'regp:Service'})
+        let query = new Query({type:'regp:Service'});
+        svc.search(query)
         .then( response => {
 
             let id = response.results[0].id;

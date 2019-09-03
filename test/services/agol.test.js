@@ -4,10 +4,17 @@ const expect = chai.expect;
 // const request = require('request');
 // require('request-debug')(request);
 
-const API           = require('../../dist/js/geoplatform.client');
+var mock = require('mock-require');
+
+const API           = require('../../dist/bundles/geoplatform-client.umd');
 const Query         = API.AgolQuery;
 const AgolService   = API.AgolService;
-const HttpClient    = API.NodeHttpClient;
+
+//needed to use the base client lib in this test server
+// as the client-node UMD file will attempt to require('@geoplatform/client')
+mock('@geoplatform/client', API);
+
+const HttpClient    = require('../../dist/bundles/geoplatform-client-node.umd').NodeHttpClient;
 
 const URL = 'https://ual.geoplatform.gov';
 

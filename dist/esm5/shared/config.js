@@ -1,0 +1,11 @@
+var ɵ0 = function (options) {
+    Object.assign(this, options);
+};
+var Config = {
+    ualUrl: 'https://ual.geoplatform.gov',
+    //appId: '...',
+    configure: ɵ0
+};
+export default Config;
+export { ɵ0 };
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiY29uZmlnLmpzIiwic291cmNlUm9vdCI6Im5nOi8vQGdlb3BsYXRmb3JtL2NsaWVudC8iLCJzb3VyY2VzIjpbInNoYXJlZC9jb25maWcudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IlNBTWUsVUFBUyxPQUFhO0lBQzdCLE1BQU0sQ0FBQyxNQUFNLENBQUMsSUFBSSxFQUFFLE9BQU8sQ0FBQyxDQUFDO0FBQ2pDLENBQUM7QUFQTCxJQUFJLE1BQU0sR0FBNEI7SUFFbEMsTUFBTSxFQUFFLDZCQUE2QjtJQUNyQyxlQUFlO0lBRWYsU0FBUyxJQUVSO0NBQ0osQ0FBQztBQUVGLGVBQWUsTUFBTSxDQUFDIiwic291cmNlc0NvbnRlbnQiOlsiXG52YXIgQ29uZmlnIDogeyBba2V5OnN0cmluZ10gOiBhbnkgfSA9IHtcblxuICAgIHVhbFVybDogJ2h0dHBzOi8vdWFsLmdlb3BsYXRmb3JtLmdvdicsXG4gICAgLy9hcHBJZDogJy4uLicsXG5cbiAgICBjb25maWd1cmU6IGZ1bmN0aW9uKG9wdGlvbnMgOiBhbnkpIHtcbiAgICAgICAgT2JqZWN0LmFzc2lnbih0aGlzLCBvcHRpb25zKTtcbiAgICB9XG59O1xuXG5leHBvcnQgZGVmYXVsdCBDb25maWc7XG4iXX0=

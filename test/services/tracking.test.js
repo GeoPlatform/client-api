@@ -3,7 +3,7 @@ const Q = require('q');
 const chai = require('chai');
 const expect = chai.expect;
 
-const API            = require('../../dist/js/geoplatform.client');
+const API            = require('../../dist/bundles/geoplatform-client.umd');
 const TrackingService   = API.TrackingService;
 const TrackingEvent = API.TrackingEvent;
 const TrackingCategories = API.TrackingCategories;
@@ -42,9 +42,7 @@ describe('# Tracking Service', function() {
         expect(event.getItem()).to.equal(item.id);
 
         service.event(event);
-        setTimeout( () => {
-            provider.validate(1);
-        }, 1000);
+        provider.validate(1);
 
         done();
 
@@ -73,25 +71,19 @@ describe('# Tracking Service', function() {
 
         let events = TrackingEventFactory(TrackingTypes.DISPLAYED, item);
         expect(events.length).to.equal(3);
-
         expect(events[0].getCategory()).to.equal(TrackingCategories.MAP);
         expect(events[0].getType()).to.equal(TrackingTypes.DISPLAYED);
         expect(events[0].getItem()).to.equal(item.id);
-
         expect(events[1].getCategory()).to.equal(TrackingCategories.LAYER);
         expect(events[1].getType()).to.equal(TrackingTypes.DISPLAYED);
         expect(events[1].getItem()).to.equal(item.layers[0].layer.id);
-
         expect(events[2].getCategory()).to.equal(TrackingCategories.SERVICE);
-        expect(events[2].getType()).to.equal(TrackingTypes.ACCESSED);
+        expect(events[2].getType()).to.equal(TrackingTypes.DISPLAYED);
         expect(events[2].getItem()).to.equal(item.layers[0].layer.services[0].id);
 
         provider.reset();
         service.event(events);
-
-        setTimeout( () => {
-            provider.validate(3);
-        }, 1000);
+        provider.validate(3);
 
         done();
 

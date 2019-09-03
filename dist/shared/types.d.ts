@@ -1,0 +1,20 @@
+declare const ItemTypes: {
+    DATASET: string;
+    SERVICE: string;
+    LAYER: string;
+    MAP: string;
+    GALLERY: string;
+    COMMUNITY: string;
+    APPLICATION: string;
+    TOPIC: string;
+    WEBSITE: string;
+    ORGANIZATION: string;
+    CONTACT: string;
+    PERSON: string;
+    CONCEPT: string;
+    CONCEPT_SCHEME: string;
+    STANDARD: string;
+    RIGHTS_STATEMENT: string;
+};
+declare const ItemTypeLabels: {};
+export { ItemTypes as default, ItemTypes, ItemTypeLabels };

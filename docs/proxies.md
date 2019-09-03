@@ -1,92 +1,194 @@
-# Service Proxies
+# ExpressJS Service Proxies
 
-The following information details how to setup and use the service proxies
-provided by this library to enable server-side proxying of GeoPlatform API
-requests and responses.
+GeoPlatform API Client provides a set of proxies for its [services](../src/services), allowing
+quick integration into a NodeJS backend server using ExpressJS.  These proxies
+accept API calls matching their respective service APIs, forward the requests to
+the desired API destination (typically GeoPlatform's UAL server), and returns the
+received response back to the originating caller.
+
+## Supported Proxies
+
+- ItemServiceProxy - proxy for [ItemService](../src/services/item.ts)
+- DatasetServiceProxy - proxy for [DatasetService](../src/services/dataset.ts)
+- ServiceServiceProxy - proxy for [ServiceService](../src/services/service.ts)
+- LayerServiceProxy - proxy for [LayerService](../src/services/layer.ts)
+- MapServiceProxy - proxy for [MapService](../src/services/map.ts)
+- GalleryServiceProxy - proxy for [GalleryService](../src/services/gallery.ts)
+- UtilsServiceProxy - proxy for [UtilsService](../src/services/utils.ts)
+- KGServiceProxy - proxy for [KGService](../src/services/kg.ts)
+- AgolServiceProxy - proxy for [AgolService](../src/services/agol.ts)
 
 ## Setting Up a Proxy
 
 ```javascript
 const express = require('express');
-const app     = express();
-const router  = require('express').Router();
+var app       = express();
+var router    = express.Router();
 
-//
-// ... any app setup like ports, error handling, bodyparser, multer, etc ...
-//
+//bind router to desired path base
+app.use('/api', router);
 
-const GPAPI = require('geoplatform.client');
+//import the api client base for service support
+const GPAPI     = require('@geoplatform/client');
+
+//import the api client nodejs library for proxy support
+const GPProxies = require('@geoplatform/client/node');
+
+//configure the api as normal to define where to proxy requests to
 GPAPI.Config.configure({
-    //... any configuration items needed
+    ualUrl: 'https://ual.geoplatform.gov'
 });
 
-const proxyOptions = {
-    //...any proxy settings desired
-};
-//bind GP Item Service methods to the router
-router.use( GPAPI.ItemServiceProxy( proxyOptions ));
-
-//bind our router to 'api' path
-app.use('/api', router);
+//bind the desired proxy onto the router
+router.use( GPProxies.ItemServiceProxy() );
 ```
 
-The above sample code would expose all of the `ItemService` methods as HTTP endpoints.
-Using defaults, these endpoints would be:
 
-|Service Method|Http Method|Path|
-|:---|:---|:---|
-|search(query)|GET|api/items?:query|
-|get(id)|GET|api/items/:id|
-|save(item) _[create]_|POST|api/items|
-|save(item) _[update]_|PUT|api/items/:id|
-|remove(item)|DELETE|api/items/:id|
-|patch(id,changes)|PATCH|api/items/:id|
-|import(arg,format)|POST|api/items/import?url=:argformat=:format|
-|export(id,format)|GET|api/items:id/export?format=:format|
-|versions(id)|GET|api/items/:id/versions|
-|get(id, {version:_version_})|GET|api/items/:id/versions/:version|
+## Proxy Endpoints
+Each proxy binds an endpoint to a default route path for each of the API methods
+supported by its associated service.  These endpoints are defined using keys which
+allow them to be configured and overridden as needed (see below for more information).
+
+Refer to each service proxy's definition for the list of keys associated with the proxy.
 
 
-## Available Service Proxies
-- `ItemServiceProxy`
-- `ServiceServiceProxy` - also provides endpoints for operations such as harvest and live-test
-- `LayerServiceProxy` - also provides endpoints for operations such as style fetching and validation
-- `MapServiceProxy`
-- `DatasetServiceProxy`
-- `GalleryServiceProxy`
-- `UtilsServiceProxy` - provides endpoints for gazetteer geocoding and file parsing
-- `AgolServiceProxy` - provides endpoints for AGOL searching and data fetching
+## Configuring Proxies
+See below
 
-Please see the specific proxy class sources for more information about what endpoints are available (and as which paths).
-
-## Configuring Service Proxies
-Each proxy function accepts a configuration object which allows specifying the following properties:
-
-|Property|Default|Description|
-|:-------|:------|:----------|
-|router|none|The desired ExpressJS router instance to bind to and then return. If not specified, one will be created automatically and returned|
-|logger|none|Specify the logging class to log service messages|
-|paths|_see instances_|See below for details|
-|onError(pathId,error)|none|Function to invoke on an error resulting from a request|
-|onFinish(pathId,req,res)|none|Function to invoke once a request has been handled and response written out (useful for deleting temp files, etc)|
-
-### Path Configuration
-You can override the route bindings used by the proxy by passing a `paths` property object. Keys should be those defined in the specific proxy instance and values should be strings containing the paths _after_ the route path and trailing '/'.  For example, overriding the `ItemServiceProxy` path defaults could be done as follows:
+### Logger
+Associate a logger with a proxy by passing it to the proxy.
 
 ```javascript
-const proxyOptions = {
-    paths: {
-        //will bind service.search() to 'api/query' instead of 'api/items'
-        'search': 'query',
-        //will bind service.get() to 'api/data/:id' instead of 'api/items/:id'
-        'get': 'data/:id',
-        //will disable export endpoint from being bound and exposed
-        'export': false
-    }
-};
-//bind GP Item Service methods to the router
-router.use( GPAPI.ItemServiceProxy( proxyOptions ));
-app.use('api', router);
+const winston = require('winston');
+const Logger = new (winston.Logger)( /* logger options */ );
+GPProxies.ItemServiceProxy({
+    logger : Logger
+})
 ```
 
-As shown in the above example, you can also disable specific method-endpoint bindings by passing a value of `false` for the path.
+### Error Handling
+To provide an overall error handler for all endpoints for a proxy, provide a
+custom function using the `onError` property. Note the proxy will still invoke the
+ExpressJS `next(error)` middleware component after your error handler is finished.
+
+```javascript
+GPProxies.ItemServiceProxy({
+    onError: function( routeKey, error ) {
+        // 'routeKey' is the key of the route generating the error
+        /* do something with the error */
+    }
+})
+```
+
+### Post-Process / Cleanup
+To define a post-process handler for all endpoints for a proxy, provide a custom
+function using the 'onFinish' property.
+
+
+```javascript
+GPProxies.ItemServiceProxy({
+    onFinish: function( routeKey, request, response ) {
+        // 'routeKey' is the key of the route finishing its processing of a response
+        // request is a NodeJS Http.Request
+        // response is a NodeJS Http.Response
+    }
+})
+```
+
+
+
+### Per Endpoint Configuration
+Each endpoint supported by a proxy can be configured or even disabled by specifying
+options as detailed below.  For each endpoint, specify the endpoint's 'key' and
+then the configuration for that endpoint.
+
+#### Path
+Each proxy's API endpoints are bind to a default path. To change the bound path,
+specify the desired path using the `path` configuration property. Note the path will
+still be bound to the root path associated with the ExpressJS router you bind the
+proxy to (see above example).
+
+```javascript
+GPProxies.ItemServiceProxy({
+    'search': {
+        'path': 'query' //will bind search to '/api/query' using above example
+    }
+})
+```
+
+#### Authentication
+To enable an endpoint to forward authentication information as a part of request proxying,
+specify "true" using the `auth` configuration property.  By default some operations,
+such as those involving creation and deletion of data, set `auth` to be true.
+
+```javascript
+GPProxies.ItemServiceProxy({
+    'search': {
+        'auth': true //auth tokens will be forwarded with query reqeusts
+    }
+})
+```
+
+#### Successful Response Handling
+To override the default response handling of a proxied request's response, specify
+a custom response function for a given endpoint.
+
+```javascript
+GPProxies.ItemServiceProxy({
+    'search': {
+        'onResponse': function( result, response ) {
+            //result is the data to be sent back to the caller
+            //response is NodeJS Http.Response
+        }
+    }
+})
+```
+
+
+#### Error Response Handling
+To provide custom error handling for an endpoint during proxying of a request
+and response, specify the desired function. Note: this custom handler is invoked
+before a custom `onError` handler on the parent Proxy, if one is also registered.
+
+```javascript
+GPProxies.ItemServiceProxy({
+    'search': {
+        'onError': function( error ) {
+
+        }
+    }
+})
+```
+
+
+#### After Response and Cleanup
+To provide cleanup or post-processing to an endpoint, specify a custom finish function.
+A typical example of when this would be used is to unlink (ie, delete) uploaded files that were
+proxied along with a request. Note: this custom handler is invoked
+before a custom `onFinish` handler on the parent Proxy, if one is also registered.
+
+```javascript
+GPProxies.ItemServiceProxy({
+    'search': {
+        'onFinish': function( request, response ) {
+            if(req.files.file) {
+                fs.unlink(req.files.file.path, function(fsErr) {
+                    if(fsErr) {
+                        //do something with the error
+                    }
+                });
+            }
+        }
+    }
+})
+```
+
+#### Disabling an Endpoint
+To prevent the proxy from handling a specific API request, specify a value of `false`
+instead of a configuration object.
+
+```javascript
+GPProxies.ItemServiceProxy({
+    'search': false //will not bind a proxy at '/api/search'
+})
+```

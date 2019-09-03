@@ -3,9 +3,17 @@ const Q = require('q');
 const chai = require('chai');
 const expect = chai.expect;
 
-const API            = require('../../dist/js/geoplatform.client');
+const mock = require('mock-require');
+
+const API           = require('../../dist/bundles/geoplatform-client.umd');
 const UtilsService   = API.UtilsService;
-const NodeHttpClient = API.NodeHttpClient;
+
+//needed to use the base client lib in this test server
+// as the client-node UMD file will attempt to require('@geoplatform/client')
+mock('@geoplatform/client', API);
+
+const HttpClient    = require('../../dist/bundles/geoplatform-client-node.umd').NodeHttpClient;
+
 
 const URL = 'https://ual.geoplatform.gov';
 const URI = "http://www.geoplatform.gov/items/test";
@@ -19,7 +27,7 @@ describe('# UtilsService', function() {
      */
     it('should support geolocation requests', function(done) {
 
-        let svc = new UtilsService(URL, new NodeHttpClient());
+        let svc = new UtilsService(URL, new HttpClient());
         svc.locate('Washington')
         .then( response => {
             expect(response).to.exist;

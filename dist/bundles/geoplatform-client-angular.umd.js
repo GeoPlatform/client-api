@@ -262,7 +262,16 @@ This software has been approved for release by the U.S. Department of the Interi
                     }
                     return {};
                 }))
-                    .subscribe(function (v) { value = v; }, function (err) { reject(err); }, function () {
+                    .subscribe(function (v) {
+                    value = v;
+                }, function (err) {
+                    if (err instanceof http.HttpErrorResponse) {
+                        reject(err.error);
+                    }
+                    else {
+                        reject(err);
+                    }
+                }, function () {
                     if (_this.zone) {
                         _this.zone.run(function () {
                             resolve(value);

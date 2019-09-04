@@ -1,4 +1,4 @@
-import { HttpParams, HttpHeaders, HttpRequest, HttpResponse, HttpClientModule, HttpClient } from '@angular/common/http';
+import { HttpParams, HttpHeaders, HttpRequest, HttpResponse, HttpErrorResponse, HttpClientModule, HttpClient } from '@angular/common/http';
 import { map } from 'rxjs/operators';
 import { GPHttpClient, ItemService, Config, DatasetService, ServiceService, LayerService, MapService, GalleryService, UtilsService, KGService } from '@geoplatform/client';
 import { __decorate } from 'tslib';
@@ -60,7 +60,16 @@ class NG2HttpClient extends GPHttpClient {
                 }
                 return {};
             }))
-                .subscribe((v) => { value = v; }, (err) => { reject(err); }, () => {
+                .subscribe((v) => {
+                value = v;
+            }, (err) => {
+                if (err instanceof HttpErrorResponse) {
+                    reject(err.error);
+                }
+                else {
+                    reject(err);
+                }
+            }, () => {
                 if (this.zone) {
                     this.zone.run(() => {
                         resolve(value);

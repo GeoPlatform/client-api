@@ -2,7 +2,7 @@
 import { NgZone } from "@angular/core";
 import {
     HttpClient, HttpRequest, HttpHeaders, HttpParams,
-    HttpResponse, HttpEvent //, HttpErrorResponse
+    HttpResponse, HttpEvent, HttpErrorResponse
 } from '@angular/common/http';
 import { map } from 'rxjs/operators';
 
@@ -80,8 +80,17 @@ class NG2HttpClient extends GPHttpClient {
                     return {};
                 })
             )
-            .subscribe( (v: any) => { value = v; },
-                (err : Error) => { reject(err); },
+            .subscribe(
+                (v: any) => {
+                    value = v;
+                },
+                (err : Error) => {
+                    if (err instanceof HttpErrorResponse) {
+                        reject( (err as HttpErrorResponse).error );
+                    } else {
+                        reject(err);
+                    }
+                },
                 () => {
                     if(this.zone) {
                         this.zone.run( () => {

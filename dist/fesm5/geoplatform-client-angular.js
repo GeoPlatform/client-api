@@ -1,5 +1,5 @@
 import { __extends, __decorate } from 'tslib';
-import { HttpParams, HttpHeaders, HttpRequest, HttpResponse, HttpClientModule, HttpClient } from '@angular/common/http';
+import { HttpParams, HttpHeaders, HttpRequest, HttpResponse, HttpErrorResponse, HttpClientModule, HttpClient } from '@angular/common/http';
 import { map } from 'rxjs/operators';
 import { GPHttpClient, ItemService, Config, DatasetService, ServiceService, LayerService, MapService, GalleryService, UtilsService, KGService } from '@geoplatform/client';
 import { NgModule } from '@angular/core';
@@ -63,7 +63,16 @@ var NG2HttpClient = /** @class */ (function (_super) {
                 }
                 return {};
             }))
-                .subscribe(function (v) { value = v; }, function (err) { reject(err); }, function () {
+                .subscribe(function (v) {
+                value = v;
+            }, function (err) {
+                if (err instanceof HttpErrorResponse) {
+                    reject(err.error);
+                }
+                else {
+                    reject(err);
+                }
+            }, function () {
                 if (_this.zone) {
                     _this.zone.run(function () {
                         resolve(value);

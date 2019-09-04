@@ -23,8 +23,12 @@ var NG2HttpClient = /** @class */ (function (_super) {
         if (options.options && options.options.responseType) {
             opts.responseType = options.options.responseType;
         }
-        else
+        else if (options.responseType) {
+            opts.responseType = options.responseType;
+        }
+        else {
             opts.responseType = 'json'; //default response type
+        }
         if (options.params) {
             opts.params = new HttpParams({ fromObject: options.params });
         }

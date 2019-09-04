@@ -32,7 +32,11 @@ class NG2HttpClient extends GPHttpClient {
 
         if(options.options && options.options.responseType) {
             opts.responseType = options.options.responseType;
-        } else opts.responseType = 'json';  //default response type
+        } else if(options.responseType) {
+            opts.responseType = options.responseType;
+        } else {
+            opts.responseType = 'json';  //default response type
+        }
 
         if(options.params) {
             opts.params = new HttpParams({fromObject: options.params});

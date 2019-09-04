@@ -222,8 +222,12 @@ This software has been approved for release by the U.S. Department of the Interi
             if (options.options && options.options.responseType) {
                 opts.responseType = options.options.responseType;
             }
-            else
+            else if (options.responseType) {
+                opts.responseType = options.responseType;
+            }
+            else {
                 opts.responseType = 'json'; //default response type
+            }
             if (options.params) {
                 opts.params = new http.HttpParams({ fromObject: options.params });
             }

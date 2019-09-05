@@ -63,8 +63,25 @@ class NGHttpClient extends GPHttpClient {
         let $http = this.$http || $injector.get('$http');
         let deferred = $q.defer();
         $http(opts)
-            .then(response => { deferred.resolve(response.data); })
-            .catch(response => { deferred.reject(new Error(response.data)); });
+            .then(response => {
+            deferred.resolve(response.data);
+        })
+            .catch(response => {
+            let err = null, arg = response.data;
+            if (typeof (arg) === 'object' && arg.message) {
+                //wrapping json error object
+                err = new Error(arg.message);
+                err.status = arg.statusCode || 500;
+            }
+            else if (typeof (arg) === 'string') {
+                //just containing string message
+                err = new Error(arg);
+            }
+            else {
+                err = new Error("An error occurred issuing the request");
+            }
+            deferred.reject(err);
+        });
         return deferred.promise.then((data) => data);
         // return Promise.resolve( $http )
         // .then($http => {

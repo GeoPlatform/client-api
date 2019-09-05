@@ -66,8 +66,25 @@ var NGHttpClient = /** @class */ (function (_super) {
         var $http = this.$http || $injector.get('$http');
         var deferred = $q.defer();
         $http(opts)
-            .then(function (response) { deferred.resolve(response.data); })
-            .catch(function (response) { deferred.reject(new Error(response.data)); });
+            .then(function (response) {
+            deferred.resolve(response.data);
+        })
+            .catch(function (response) {
+            var err = null, arg = response.data;
+            if (typeof (arg) === 'object' && arg.message) {
+                //wrapping json error object
+                err = new Error(arg.message);
+                err.status = arg.statusCode || 500;
+            }
+            else if (typeof (arg) === 'string') {
+                //just containing string message
+                err = new Error(arg);
+            }
+            else {
+                err = new Error("An error occurred issuing the request");
+            }
+            deferred.reject(err);
+        });
         return deferred.promise.then(function (data) { return data; });
         // return Promise.resolve( $http )
         // .then($http => {

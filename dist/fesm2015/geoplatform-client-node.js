@@ -280,6 +280,7 @@ const ɵ0 = function (router, routes, options) {
         // options.logger.debug("Using service class: " + svcClass);
     }
     let service = new svcClass(Config.ualUrl, client);
+    service.setTimeout(Config.timeout || 30000);
     if (options.logger) {
         service.setLogger(options.logger);
     }

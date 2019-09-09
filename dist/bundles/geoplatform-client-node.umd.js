@@ -488,6 +488,7 @@ This software has been approved for release by the U.S. Department of the Interi
             // options.logger.debug("Using service class: " + svcClass);
         }
         var service = new svcClass(client.Config.ualUrl, client$1);
+        service.setTimeout(client.Config.timeout || 30000);
         if (options.logger) {
             service.setLogger(options.logger);
         }

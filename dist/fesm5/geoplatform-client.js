@@ -2276,15 +2276,15 @@ var LayerService = /** @class */ (function (_super) {
         }
         return Promise.resolve(id)
             .then(function (id) {
-            var options = null;
+            var options = { params: null };
             var url = _this.baseUrl + '/' + id + '/style';
             if (args[0] && typeof (args[0]) === 'string') { //style id parameter
                 url += 's/' + args[0]; //
                 if (args[1])
-                    options = args[1]; // ... plus options parameter
+                    options.params = args[1]; // ... plus options parameter
             }
             else if (args[0] && typeof (args[0]) === 'object') { //options parameter
-                options = args[0];
+                options.params = args[0];
             }
             var opts = _this.buildRequest({ method: "GET", url: url, options: options });
             return _this.execute(opts);

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html ng-app="my-app">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <base href="/">
+    <title>My GeoPlatform App</title>
+    <link rel="stylesheet" type="text/css" href="/css/style.min.css" />
+</head>
+<body class="app-custom-app env-dev" ua-test>
+
+    <my-app-container></my-app-container>
+
+    <script src="jquery/dist/jquery.min.js"></script>
+    <script src="bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="q/q.js"></script>
+
+    <script src="angular/angular.js"></script>
+    <script src="angular-resource/angular-resource.min.js"></script>
+    <script src="angular-sanitize/angular-sanitize.min.js"></script>
+    <script src="angular-animate/angular-animate.min.js"></script>
+    <script src="/@uirouter/angularjs/release/angular-ui-router.min.js"></script>
+
+    <script src="es5-shim/es5-shim.min.js"></script>
+    <script src="es5-shim/es5-sham.min.js"></script>
+
+    <!-- ==========================
+         plugin dependencies
+         ========================== -->
+
+    <!-- environment settings -->
+    <script src="api/config.js"></script>
+
+    <script src="/@geoplatform/client/dist/bundles/geoplatform-client.umd.js"></script>
+    <script src="/@geoplatform/client/dist/bundles/geoplatform-client-angularjs.umd.js"></script>
+    <script> geoplatform.client.Config.configure(GeoPlatform || {}); </script>
+
+    <script src="/@geoplatform/style/dist/js/geoplatform.style.min.js"></script>
+    <script src="/@geoplatform/common/dist/geoplatform.common.min.js"></script>
+
+
+    <script>
+        //configure env variables needed by client api and map core and
+        // refresh the list of supported service types
+        GeoPlatformClient.Config.configure(GeoPlatform);
+    </script>
+
+    <script src="app.js"></script>
+    <script src="component.js"></script>
+    <script src="details.js"></script>
+
+</body>
+</html>

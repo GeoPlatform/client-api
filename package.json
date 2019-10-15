@@ -4,7 +4,7 @@
     "main": "dist/bundles/geoplatform-client.umd.js",
     "module": "dist/esm2015/index.js",
     "typings": "dist/index.d.ts",
-    "version": "0.3.0",
+    "version": "0.4.0",
     "license": "MIT",
     "ngPackage": {
         "dest": "dist",

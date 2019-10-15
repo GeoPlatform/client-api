@@ -1,0 +1,43 @@
+
+
+/* imports will be done from the 'public/css' directory since all styles are
+    processed by concating to that directory and then compiled into CSS */
+
+//import geoplatform styles
+// @import "../../node_modules/geoplatform.common/dist/geoplatform.common.less";
+
+html, body { font-size: 16px; }
+
+h5 { font-size: 1rem; }
+h4 { font-size: 1.125rem; }
+h3 { font-size: 1.25rem; }
+h2 { font-size: 1.5rem; }
+h1 { font-size: 1.75rem; }
+
+a[ng-click] {
+    color:  blue;
+    cursor: pointer;
+}
+
+.d-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+
+    & > .col { flex: 1; }
+    &.has-gutter > .col:not(:last-child) {  margin-right: 1em; }
+}
+
+
+
+.app-heading {
+    margin: 0;
+    padding: 0.5em 1em;
+    background: #393;
+    color: #fff;
+}
+
+.p-custom-component,
+.p-details-component {
+    padding: 1em;
+}

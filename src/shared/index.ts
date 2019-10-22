@@ -17,7 +17,8 @@ import Config from './config';
 import {
     Item, Asset, Dataset, Service, Layer, Map, Gallery,
     Application, Topic, WebSite,
-    Organization, Contact, ConceptScheme, SearchResults, ServiceTypeStandard
+    Organization, Contact, ConceptScheme,
+    SearchResults, ServiceTypeStandard, Association
 } from "./models";
 
 
@@ -39,7 +40,8 @@ export {
     //model interfaces
     Item, Asset, Dataset, Service, Layer, Map, Gallery,
     Application, Topic, WebSite,
-    Organization, Contact, ConceptScheme, SearchResults, ServiceTypeStandard,
+    Organization, Contact, ConceptScheme,
+    SearchResults, ServiceTypeStandard, Association,
 
     Config
 

@@ -448,13 +448,32 @@ This software has been approved for release by the U.S. Department of the Interi
         };
         return NGUtilsService;
     }(client.UtilsService));
+    /** Angular-aware instance of AssociationService */
+    var NGAssociationService = /** @class */ (function (_super) {
+        __extends(NGAssociationService, _super);
+        function NGAssociationService(url, httpClient, $q) {
+            var _this = _super.call(this, url, httpClient) || this;
+            _this.$q = $q;
+            return _this;
+        }
+        NGAssociationService.prototype.createPromise = function (arg) {
+            return this.$q(arg);
+        };
+        NGAssociationService.prototype.createAndResolvePromise = function (value) {
+            return this.$q.resolve(value);
+        };
+        NGAssociationService.prototype.createAndRejectPromise = function (error) {
+            return this.$q.reject(error);
+        };
+        return NGAssociationService;
+    }(client.AssociationService));
 
     if (angular && typeof (angular.module) !== 'undefined') {
         var serviceFactory_1 = function (gpNgHttpClient, svcClass, url, $q) {
             if (NGItemService === svcClass || NGDatasetService === svcClass ||
                 NGServiceService === svcClass || NGLayerService === svcClass ||
                 NGMapService === svcClass || NGGalleryService === svcClass ||
-                NGUtilsService === svcClass) {
+                NGUtilsService === svcClass || NGAssociationService === svcClass) {
                 return new svcClass(url, gpNgHttpClient, $q);
             }
             return new svcClass(url, gpNgHttpClient);
@@ -505,7 +524,8 @@ This software has been approved for release by the U.S. Department of the Interi
             'gpServiceService': NGServiceService,
             'gpLayerService': NGLayerService,
             'gpMapService': NGMapService,
-            'gpGalleryService': NGGalleryService
+            'gpGalleryService': NGGalleryService,
+            'gpAssociationService': NGAssociationService
         };
         Object.keys(serviceClasses_1).forEach(function (name) {
             var svcClass = serviceClasses_1[name];

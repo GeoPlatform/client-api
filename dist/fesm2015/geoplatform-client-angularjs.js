@@ -1,6 +1,6 @@
 import * as angular from 'angular';
 import { injector, module } from 'angular';
-import { GPHttpClient, ItemService, DatasetService, GalleryService, LayerService, MapService, ServiceService, UtilsService, Config, QueryFactory, TrackingService } from '@geoplatform/client';
+import { GPHttpClient, ItemService, DatasetService, GalleryService, LayerService, MapService, ServiceService, UtilsService, AssociationService, Config, QueryFactory, TrackingService } from '@geoplatform/client';
 
 class NGHttpClient extends GPHttpClient {
     /**
@@ -222,13 +222,29 @@ class NGUtilsService extends UtilsService {
         return this.$q.reject(error);
     }
 }
+/** Angular-aware instance of AssociationService */
+class NGAssociationService extends AssociationService {
+    constructor(url, httpClient, $q) {
+        super(url, httpClient);
+        this.$q = $q;
+    }
+    createPromise(arg) {
+        return this.$q(arg);
+    }
+    createAndResolvePromise(value) {
+        return this.$q.resolve(value);
+    }
+    createAndRejectPromise(error) {
+        return this.$q.reject(error);
+    }
+}
 
 if (angular && typeof (module) !== 'undefined') {
     let serviceFactory = function (gpNgHttpClient, svcClass, url, $q) {
         if (NGItemService === svcClass || NGDatasetService === svcClass ||
             NGServiceService === svcClass || NGLayerService === svcClass ||
             NGMapService === svcClass || NGGalleryService === svcClass ||
-            NGUtilsService === svcClass) {
+            NGUtilsService === svcClass || NGAssociationService === svcClass) {
             return new svcClass(url, gpNgHttpClient, $q);
         }
         return new svcClass(url, gpNgHttpClient);
@@ -279,7 +295,8 @@ if (angular && typeof (module) !== 'undefined') {
         'gpServiceService': NGServiceService,
         'gpLayerService': NGLayerService,
         'gpMapService': NGMapService,
-        'gpGalleryService': NGGalleryService
+        'gpGalleryService': NGGalleryService,
+        'gpAssociationService': NGAssociationService
     };
     Object.keys(serviceClasses).forEach((name) => {
         let svcClass = serviceClasses[name];

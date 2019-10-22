@@ -1,7 +1,7 @@
 import { __extends } from 'tslib';
 import * as angular from 'angular';
 import { injector, module } from 'angular';
-import { GPHttpClient, ItemService, DatasetService, GalleryService, LayerService, MapService, ServiceService, UtilsService, Config, QueryFactory, TrackingService } from '@geoplatform/client';
+import { GPHttpClient, ItemService, DatasetService, GalleryService, LayerService, MapService, ServiceService, UtilsService, AssociationService, Config, QueryFactory, TrackingService } from '@geoplatform/client';
 
 var NGHttpClient = /** @class */ (function (_super) {
     __extends(NGHttpClient, _super);
@@ -247,13 +247,32 @@ var NGUtilsService = /** @class */ (function (_super) {
     };
     return NGUtilsService;
 }(UtilsService));
+/** Angular-aware instance of AssociationService */
+var NGAssociationService = /** @class */ (function (_super) {
+    __extends(NGAssociationService, _super);
+    function NGAssociationService(url, httpClient, $q) {
+        var _this = _super.call(this, url, httpClient) || this;
+        _this.$q = $q;
+        return _this;
+    }
+    NGAssociationService.prototype.createPromise = function (arg) {
+        return this.$q(arg);
+    };
+    NGAssociationService.prototype.createAndResolvePromise = function (value) {
+        return this.$q.resolve(value);
+    };
+    NGAssociationService.prototype.createAndRejectPromise = function (error) {
+        return this.$q.reject(error);
+    };
+    return NGAssociationService;
+}(AssociationService));
 
 if (angular && typeof (module) !== 'undefined') {
     var serviceFactory_1 = function (gpNgHttpClient, svcClass, url, $q) {
         if (NGItemService === svcClass || NGDatasetService === svcClass ||
             NGServiceService === svcClass || NGLayerService === svcClass ||
             NGMapService === svcClass || NGGalleryService === svcClass ||
-            NGUtilsService === svcClass) {
+            NGUtilsService === svcClass || NGAssociationService === svcClass) {
             return new svcClass(url, gpNgHttpClient, $q);
         }
         return new svcClass(url, gpNgHttpClient);
@@ -304,7 +323,8 @@ if (angular && typeof (module) !== 'undefined') {
         'gpServiceService': NGServiceService,
         'gpLayerService': NGLayerService,
         'gpMapService': NGMapService,
-        'gpGalleryService': NGGalleryService
+        'gpGalleryService': NGGalleryService,
+        'gpAssociationService': NGAssociationService
     };
     Object.keys(serviceClasses_1).forEach(function (name) {
         var svcClass = serviceClasses_1[name];

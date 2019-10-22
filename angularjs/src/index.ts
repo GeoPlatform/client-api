@@ -5,14 +5,14 @@ import NGHttpClient from './http/ng';
 import * as angular from "angular";
 import {
     Config, Query, QueryFactory, Item, SearchResults, GPHttpClient,
-    ItemService, UtilsService, TrackingService,
+    ItemService, UtilsService, TrackingService, AssociationService,
     DatasetService, ServiceService, LayerService, MapService, GalleryService
 } from "@geoplatform/client";
 
 import {
     NGItemService, NGDatasetService, NGServiceService,
     NGLayerService, NGMapService, NGGalleryService,
-    NGUtilsService
+    NGUtilsService, NGAssociationService
 } from './services/index';
 
 
@@ -22,7 +22,7 @@ if(angular && typeof(angular.module) !== 'undefined') {
         if( NGItemService === svcClass    || NGDatasetService === svcClass ||
             NGServiceService === svcClass || NGLayerService === svcClass ||
             NGMapService === svcClass     || NGGalleryService === svcClass ||
-            NGUtilsService === svcClass ) {
+            NGUtilsService === svcClass   || NGAssociationService === svcClass ) {
             return new svcClass( url, gpNgHttpClient, $q);
         }
         return new svcClass( url, gpNgHttpClient );
@@ -76,13 +76,14 @@ if(angular && typeof(angular.module) !== 'undefined') {
      * These services are angular aware using angular's $q wrapper
      */
     const serviceClasses = {
-        'gpItemService'   : NGItemService,
-        'gpUtilsService'  : NGUtilsService,
-        'gpDatasetService': NGDatasetService,
-        'gpServiceService': NGServiceService,
-        'gpLayerService'  : NGLayerService,
-        'gpMapService'    : NGMapService,
-        'gpGalleryService': NGGalleryService
+        'gpItemService'       : NGItemService,
+        'gpUtilsService'      : NGUtilsService,
+        'gpDatasetService'    : NGDatasetService,
+        'gpServiceService'    : NGServiceService,
+        'gpLayerService'      : NGLayerService,
+        'gpMapService'        : NGMapService,
+        'gpGalleryService'    : NGGalleryService,
+        'gpAssociationService': NGAssociationService
     };
 
     Object.keys(serviceClasses).forEach( (name) => {

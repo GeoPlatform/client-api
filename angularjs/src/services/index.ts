@@ -2,7 +2,7 @@
 import * as angular from "angular";
 import {
     Config, Query, QueryFactory, Item, SearchResults, GPHttpClient,
-    ItemService, UtilsService, TrackingService,
+    ItemService, UtilsService, TrackingService, AssociationService,
     DatasetService, ServiceService, LayerService, MapService, GalleryService
 } from "@geoplatform/client";
 
@@ -23,7 +23,6 @@ import NGHttpClient from '../http/ng';
  * you will need to wrap any response handler's manipulation of data
  * with $scope.$apply, $timeout, or an equivalent to trigger a digest
  */
-
 
 
 
@@ -187,6 +186,29 @@ class NGUtilsService extends UtilsService {
 
 }
 
+/** Angular-aware instance of AssociationService */
+class NGAssociationService extends AssociationService {
+
+    private $q : any;
+
+    constructor(url : string, httpClient : GPHttpClient, $q : any) {
+        super(url, httpClient);
+        this.$q = $q;
+    }
+
+    createPromise ( arg: (resolve: (value?: any) => void, reject: (reason?: any) => void) => void ) : Promise<any> {
+        return this.$q( arg );
+    }
+    createAndResolvePromise( value : any ) : Promise<any> {
+        return this.$q.resolve(value);
+    }
+    createAndRejectPromise ( error : Error ) : Promise<any>{
+        return this.$q.reject(error);
+    }
+
+}
+
+
 
 export {
     NGItemService,
@@ -195,5 +217,6 @@ export {
     NGLayerService,
     NGMapService,
     NGGalleryService,
-    NGUtilsService
+    NGUtilsService,
+    NGAssociationService
 }

@@ -112,3 +112,15 @@ export interface ServiceTypeStandard {
     resourceType: any;
     availableVersions?: string[];
 }
+export interface Association {
+    id: string;
+    relation: {
+        name: string;
+        path: {
+            simple: string;
+            full: string;
+        };
+    };
+    source?: Item;
+    target?: Item;
+}

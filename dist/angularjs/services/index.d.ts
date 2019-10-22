@@ -1,4 +1,4 @@
-import { GPHttpClient, ItemService, UtilsService, DatasetService, ServiceService, LayerService, MapService, GalleryService } from "@geoplatform/client";
+import { GPHttpClient, ItemService, UtilsService, AssociationService, DatasetService, ServiceService, LayerService, MapService, GalleryService } from "@geoplatform/client";
 /** Angular-aware instance of ItemService */
 declare class NGItemService extends ItemService {
     private $q;
@@ -55,4 +55,12 @@ declare class NGUtilsService extends UtilsService {
     createAndResolvePromise(value: any): Promise<any>;
     createAndRejectPromise(error: Error): Promise<any>;
 }
-export { NGItemService, NGDatasetService, NGServiceService, NGLayerService, NGMapService, NGGalleryService, NGUtilsService };
+/** Angular-aware instance of AssociationService */
+declare class NGAssociationService extends AssociationService {
+    private $q;
+    constructor(url: string, httpClient: GPHttpClient, $q: any);
+    createPromise(arg: (resolve: (value?: any) => void, reject: (reason?: any) => void) => void): Promise<any>;
+    createAndResolvePromise(value: any): Promise<any>;
+    createAndRejectPromise(error: Error): Promise<any>;
+}
+export { NGItemService, NGDatasetService, NGServiceService, NGLayerService, NGMapService, NGGalleryService, NGUtilsService, NGAssociationService };

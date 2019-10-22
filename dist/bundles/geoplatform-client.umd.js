@@ -2932,6 +2932,94 @@ This software has been approved for release by the U.S. Department of the Interi
         return UtilsService;
     }(BaseService));
 
+    /**
+     * GeoPlatform Association service
+     * service for working with the GeoPlatform API to
+     * retrieve and manipulate association objects.
+     *
+     * @see GeoPlatform.ItemService
+     */
+    var AssociationService = /** @class */ (function (_super) {
+        __extends(AssociationService, _super);
+        function AssociationService(url, httpClient) {
+            return _super.call(this, url, httpClient) || this;
+        }
+        /**
+         * @param itemId - identifier of item to fetch associations for
+         * @param options - optional set of request options to apply to xhr request
+         * @return Promise resolving array of associated items of the item in question
+         */
+        AssociationService.prototype.search = function (itemId, params, options) {
+            var _this = this;
+            return this.createAndResolvePromise(itemId)
+                .then(function (id) {
+                if (!id)
+                    throw new Error("Must specify a GeoPlatform resource for which to search associations");
+                var url = _this.baseUrl + '/' + id + '/associations';
+                var opts = _this.buildRequest({
+                    method: "GET",
+                    url: url,
+                    params: params || {},
+                    options: options
+                });
+                return _this.execute(opts);
+            })
+                .catch(function (e) {
+                var err = new Error("Error fetching associations for item " + itemId + ": " + e.message);
+                Object.assign(err, e);
+                _this.logError("AssociationService.search(" + itemId + ") - " + err.message);
+                throw err;
+            });
+        };
+        /**
+         * @param itemId - identifier of item
+         * @param associationId - identifier of association to fetch
+         * @param options - optional set of request options to apply to xhr request
+         * @return Promise resolving association
+         */
+        AssociationService.prototype.get = function (itemId, associationId, options) {
+            var _this = this;
+            return this.createAndResolvePromise(itemId)
+                .then(function (itemId) {
+                if (!itemId || !associationId)
+                    throw new Error("Must specify both the GeoPlatform resource id and its association's id");
+                var url = _this.baseUrl + '/' + itemId + '/associations/' + associationId;
+                var opts = _this.buildRequest({ method: "GET", url: url, options: options });
+                return _this.execute(opts);
+            })
+                .catch(function (e) {
+                var err = new Error("Error fetching association for item " + itemId + ": " + e.message);
+                Object.assign(err, e);
+                _this.logError("AssociationService.get(" + itemId + "," + associationId + ") - " + err.message);
+                throw err;
+            });
+        };
+        /**
+         * @param itemId - identifier of item
+         * @param associationId - identifier of association to remove
+         * @param options - optional set of request options to apply to xhr request
+         * @return Promise resolving empty
+         */
+        AssociationService.prototype.remove = function (itemId, associationId, options) {
+            var _this = this;
+            return this.createAndResolvePromise(itemId)
+                .then(function (itemId) {
+                if (!itemId || !associationId)
+                    throw new Error("Must specify both the GeoPlatform resource id and its association's id");
+                var url = _this.baseUrl + '/' + itemId + '/associations/' + associationId;
+                var opts = _this.buildRequest({ method: "DELETE", url: url, options: options });
+                return _this.execute(opts);
+            })
+                .catch(function (e) {
+                var err = new Error("Error removing association for item " + itemId + ": " + e.message);
+                Object.assign(err, e);
+                _this.logError("AssociationService.remove(" + itemId + "," + associationId + ") - " + err.message);
+                throw err;
+            });
+        };
+        return AssociationService;
+    }(BaseService));
+
     var AgolQuery = /** @class */ (function () {
         function AgolQuery() {
             this._query = {
@@ -3605,6 +3693,7 @@ This software has been approved for release by the U.S. Department of the Interi
     exports.AbstractService = BaseService;
     exports.AgolQuery = AgolQuery;
     exports.AgolService = AgolService;
+    exports.AssociationService = AssociationService;
     exports.ClientVersion = ClientVersion;
     exports.Config = Config;
     exports.DatasetService = DatasetService;

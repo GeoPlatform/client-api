@@ -7,5 +7,5 @@ import QueryParameters from './parameters';
 import { Query, Fields as QueryFields, Facets as QueryFacets } from './query';
 import QueryFactory from './query-factory';
 import Config from './config';
-import { Item, Asset, Dataset, Service, Layer, Map, Gallery, Application, Topic, WebSite, Organization, Contact, ConceptScheme, SearchResults, ServiceTypeStandard } from "./models";
-export { GPError, ItemTypes, ItemTypeLabels, QueryParameters, QueryFacets, Query, QueryFactory, QueryFields, KGQuery, KGClassifiers, URIFactory, Item, Asset, Dataset, Service, Layer, Map, Gallery, Application, Topic, WebSite, Organization, Contact, ConceptScheme, SearchResults, ServiceTypeStandard, Config };
+import { Item, Asset, Dataset, Service, Layer, Map, Gallery, Application, Topic, WebSite, Organization, Contact, ConceptScheme, SearchResults, ServiceTypeStandard, Association } from "./models";
+export { GPError, ItemTypes, ItemTypeLabels, QueryParameters, QueryFacets, Query, QueryFactory, QueryFields, KGQuery, KGClassifiers, URIFactory, Item, Asset, Dataset, Service, Layer, Map, Gallery, Application, Topic, WebSite, Organization, Contact, ConceptScheme, SearchResults, ServiceTypeStandard, Association, Config };

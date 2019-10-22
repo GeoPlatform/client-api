@@ -7,6 +7,7 @@ import LayerService from './layer';
 import ServiceService from './service';
 import GalleryService from './gallery';
 import UtilsService from './utils';
+import AssociationService from './association';
 import { AgolService, AgolQuery } from './agol';
 
 import {
@@ -32,6 +33,7 @@ export {
     ServiceService,
     GalleryService,
     UtilsService,
+    AssociationService,
     KGService,
     ServiceFactory,
     AgolService,

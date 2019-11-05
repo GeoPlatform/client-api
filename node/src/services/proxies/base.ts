@@ -14,12 +14,6 @@ const ServiceProxy = {
      */
     bindRoutes: function(router : any, routes : any[], options ?: any) {
 
-        console.log(" ");
-        console.log("BINDING ROUTES!");
-        console.log(" ");
-
-
-
         options = options || {};
         let paths = options.paths || {};
         let auths = options.auth || {};

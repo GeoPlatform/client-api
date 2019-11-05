@@ -193,9 +193,6 @@ class NodeHttpClient extends GPHttpClient {
 
 const GP_AUTH_COOKIE = 'gpoauth-a';
 const ɵ0 = function (router, routes, options) {
-    console.log(" ");
-    console.log("BINDING ROUTES!");
-    console.log(" ");
     options = options || {};
     let paths = options.paths || {};
     let auths = options.auth || {};

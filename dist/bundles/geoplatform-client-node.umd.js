@@ -401,9 +401,6 @@ This software has been approved for release by the U.S. Department of the Interi
     var GP_AUTH_COOKIE = 'gpoauth-a';
     var ɵ0 = function (router, routes, options) {
         var _this = this;
-        console.log(" ");
-        console.log("BINDING ROUTES!");
-        console.log(" ");
         options = options || {};
         var paths = options.paths || {};
         var auths = options.auth || {};

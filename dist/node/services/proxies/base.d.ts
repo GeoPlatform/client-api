@@ -19,5 +19,7 @@ declare const ServiceProxy: {
      * @param {object} options - additional configuration options
      */
     getService: (req: any, needsAuth: boolean, options?: any) => any;
+    getAuthCookie: (req: any) => string;
+    parseCookies: (str: string) => {};
 };
 export default ServiceProxy;

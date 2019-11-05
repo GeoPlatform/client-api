@@ -3,7 +3,7 @@
 import NodeHttpClient from '../../http/node';
 import { Config, ItemService } from '@geoplatform/client';
 
-
+const GP_AUTH_COOKIE = 'gpoauth-a';
 
 const ServiceProxy = {
 
@@ -13,6 +13,12 @@ const ServiceProxy = {
      * @param {object} options - additional configuration needed
      */
     bindRoutes: function(router : any, routes : any[], options ?: any) {
+
+        console.log(" ");
+        console.log("BINDING ROUTES!");
+        console.log(" ");
+
+
 
         options = options || {};
         let paths = options.paths || {};
@@ -96,7 +102,7 @@ const ServiceProxy = {
     getClient: function(req : any, needsAuth : boolean, options ?: any) {
 
         let token = req.accessToken || null;
-        if(needsAuth && options.logger) {
+        if(needsAuth && options && options.logger) {
             if(!token) {
                 options.logger.warn("ServiceProxy.getClient() - No Access Token was provided on incoming request header!");
             } else if(!!options.debug) {
@@ -105,9 +111,23 @@ const ServiceProxy = {
             }
         }
 
+        //check the incoming proxied request for cookies that should be forwarded along
+        let cookie = this.getAuthCookie(req);
+        // console.log("COOKIE IS " + cookie);
+        if(cookie && !cookie.length) cookie = null;
+
+        // if(options && options.logger) {
+        //     options.logger.debug("Proxying Request Cookie: " + cookie);
+        //     options.logger.debug(" ");
+        // } else {
+        //     console.log("Proxying Request Cookie: " + cookie);
+        // }
+
+
         return new NodeHttpClient({
             timeout: Config.timeout,
-            token: needsAuth ? token : null
+            token: needsAuth ? token : null,
+            cookie: needsAuth ? cookie : null
         });
     },
 
@@ -131,7 +151,63 @@ const ServiceProxy = {
             service.setLogger(options.logger);
         }
         return service;
+    },
+
+    getAuthCookie: function(req: any) : string {
+        if(!req) return null;
+        if(req.cookies) {   //parsed by cookieParser already
+            // console.log("COOKIES PARSED ... ");
+            // console.log("COOKIES ARE...");
+            // console.log(JSON.stringify(req.cookies));
+            // console.log(" ");
+            // console.log("AUTH COOKIE IS " + req.cookies[GP_AUTH_COOKIE]);
+            return req.cookies[GP_AUTH_COOKIE];
+        } else if(req.headers.cookie) {
+            // console.log("COOKIES NEED PARSING");
+            try {
+                let cookies = this.parseCookies(req.headers.cookie);
+                return cookies[GP_AUTH_COOKIE];
+            } catch( e ) {
+                console.log("ERROR parsing cookies: " + e.message);
+                return null;
+            }
+        }
+    },
+
+    parseCookies: function parse(str : string) {
+        if (!str || typeof str !== 'string' || !str.length) return null;
+
+        let result = {}
+        let expr = /; */;
+        let pairs = str.split(expr);
+
+        pairs.forEach( pair => {
+            let sepIdx = pair.indexOf('=');
+
+            if (sepIdx < 0) return; //ignore non- 'key=value' values
+
+            let key = pair.substr(0, sepIdx).trim();
+            let val = pair.substr(++sepIdx, pair.length).trim();
+
+            // quoted values
+            if ('"' == val[0]) val = val.slice(1, -1);
+
+            // only assign once
+            if (undefined == result[key]) {
+                let value = val;
+                try {
+                    value = decodeURIComponent(val);
+                } catch (e) { }
+                result[key] = value;
+            }
+        });
+
+        return result;
     }
+
+
+
+
 };
 
 export default ServiceProxy;

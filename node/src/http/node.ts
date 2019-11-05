@@ -61,6 +61,11 @@ class NodeHttpClient extends GPHttpClient {
                 opts.auth = { 'bearer': token };
             }
         }
+        let cookie = this.getCookie();
+        if(cookie) {
+            opts.headers = opts.headers || {};
+            opts.headers.Cookie = this.authCookieName + '=' + cookie;
+        }
 
         //copy over user-supplied options
         if(options.options) {

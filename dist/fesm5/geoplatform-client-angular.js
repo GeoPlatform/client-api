@@ -41,6 +41,10 @@ var NG2HttpClient = /** @class */ (function (_super) {
         if (token) {
             opts.headers = opts.headers.set('Authorization', 'Bearer ' + token);
         }
+        var cookie = this.getCookie();
+        if (cookie) {
+            opts.headers = opts.headers.set('Cookie', this.authCookieName + '=' + cookie);
+        }
         if (opts.body) {
             return new HttpRequest(options.method, options.url, opts.body, opts);
         }

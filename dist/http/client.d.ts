@@ -1,6 +1,8 @@
 declare class GPHttpClient {
     protected token: any;
+    protected cookie: any;
     protected timeout: number;
+    protected authCookieName: string;
     /**
      * @param options.timeout
      * @param options.token - the bearer token or a function to retrieve it
@@ -14,6 +16,8 @@ declare class GPHttpClient {
      */
     setAuthToken(arg: string | Function): void;
     getToken(): string;
+    setCookie(cookie: any): void;
+    getCookie(): any;
     createRequestOpts(options: {
         [key: string]: any;
     }): any;

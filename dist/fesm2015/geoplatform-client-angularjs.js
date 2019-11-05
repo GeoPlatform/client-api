@@ -47,6 +47,9 @@ class NGHttpClient extends GPHttpClient {
                 opts.useXDomain = true;
             }
         }
+        let cookie = this.getCookie();
+        if (cookie)
+            opts.headers.Cookie = this.authCookieName + '=' + cookie;
         //copy over user-supplied options
         if (options.options) {
             for (let o in options.options) {

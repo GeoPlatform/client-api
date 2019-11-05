@@ -53,6 +53,10 @@ class NG2HttpClient extends GPHttpClient {
         if(token) {
             opts.headers = opts.headers.set('Authorization', 'Bearer ' + token);
         }
+        let cookie = this.getCookie();
+        if(cookie) {
+            opts.headers = opts.headers.set('Cookie', this.authCookieName + '=' + cookie);
+        }
 
         if(opts.body) {
             return new HttpRequest<any>(options.method, options.url, opts.body, opts);

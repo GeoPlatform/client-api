@@ -3,7 +3,10 @@
 class GPHttpClient {
 
     protected token : any;
+    protected cookie : any;
     protected timeout : number = 5000;
+
+    protected authCookieName = 'gpoauth-a';
 
     /**
      * @param options.timeout
@@ -13,6 +16,7 @@ class GPHttpClient {
         options = options || {};
         this.setTimeout(options.timeout||30000);
         this.setAuthToken(options.token);
+        this.setCookie(options.cookie);
     }
 
     setTimeout(timeout : number) {
@@ -33,6 +37,14 @@ class GPHttpClient {
     getToken() : string {
         if(this.token && typeof(this.token) === 'function') return this.token();
         else return this.token || null;
+    }
+
+    setCookie(cookie) {
+        this.cookie = cookie;
+    }
+
+    getCookie() {
+        return this.cookie;
     }
 
     createRequestOpts(

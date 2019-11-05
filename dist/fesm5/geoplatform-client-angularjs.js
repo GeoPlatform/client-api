@@ -50,6 +50,9 @@ var NGHttpClient = /** @class */ (function (_super) {
                 opts.useXDomain = true;
             }
         }
+        var cookie = this.getCookie();
+        if (cookie)
+            opts.headers.Cookie = this.authCookieName + '=' + cookie;
         //copy over user-supplied options
         if (options.options) {
             for (var o in options.options) {

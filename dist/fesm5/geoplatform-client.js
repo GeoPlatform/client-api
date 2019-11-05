@@ -1569,9 +1569,11 @@ var GPHttpClient = /** @class */ (function () {
      */
     function GPHttpClient(options) {
         this.timeout = 5000;
+        this.authCookieName = 'gpoauth-a';
         options = options || {};
         this.setTimeout(options.timeout || 30000);
         this.setAuthToken(options.token);
+        this.setCookie(options.cookie);
     }
     GPHttpClient.prototype.setTimeout = function (timeout) {
         this.timeout = timeout;
@@ -1591,6 +1593,12 @@ var GPHttpClient = /** @class */ (function () {
             return this.token();
         else
             return this.token || null;
+    };
+    GPHttpClient.prototype.setCookie = function (cookie) {
+        this.cookie = cookie;
+    };
+    GPHttpClient.prototype.getCookie = function () {
+        return this.cookie;
     };
     GPHttpClient.prototype.createRequestOpts = function (
     // @ts-ignore
@@ -1642,6 +1650,9 @@ var XHRHttpClient = /** @class */ (function (_super) {
                 opts.withCredentials = true;
             }
         }
+        var cookie = this.getCookie();
+        if (cookie)
+            opts.headers.Cookie = this.authCookieName + '=' + cookie;
         //copy over user-supplied options
         if (options.options) {
             for (var o in options.options) {

@@ -240,6 +240,10 @@ This software has been approved for release by the U.S. Department of the Interi
             if (token) {
                 opts.headers = opts.headers.set('Authorization', 'Bearer ' + token);
             }
+            var cookie = this.getCookie();
+            if (cookie) {
+                opts.headers = opts.headers.set('Cookie', this.authCookieName + '=' + cookie);
+            }
             if (opts.body) {
                 return new http.HttpRequest(options.method, options.url, opts.body, opts);
             }

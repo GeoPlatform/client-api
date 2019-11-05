@@ -1561,9 +1561,11 @@ class GPHttpClient {
      */
     constructor(options) {
         this.timeout = 5000;
+        this.authCookieName = 'gpoauth-a';
         options = options || {};
         this.setTimeout(options.timeout || 30000);
         this.setAuthToken(options.token);
+        this.setCookie(options.cookie);
     }
     setTimeout(timeout) {
         this.timeout = timeout;
@@ -1583,6 +1585,12 @@ class GPHttpClient {
             return this.token();
         else
             return this.token || null;
+    }
+    setCookie(cookie) {
+        this.cookie = cookie;
+    }
+    getCookie() {
+        return this.cookie;
     }
     createRequestOpts(
     // @ts-ignore
@@ -1632,6 +1640,9 @@ class XHRHttpClient extends GPHttpClient {
                 opts.withCredentials = true;
             }
         }
+        let cookie = this.getCookie();
+        if (cookie)
+            opts.headers.Cookie = this.authCookieName + '=' + cookie;
         //copy over user-supplied options
         if (options.options) {
             for (let o in options.options) {

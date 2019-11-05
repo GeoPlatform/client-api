@@ -259,6 +259,11 @@ This software has been approved for release by the U.S. Department of the Interi
                     opts.auth = { 'bearer': token };
                 }
             }
+            var cookie = this.getCookie();
+            if (cookie) {
+                opts.headers = opts.headers || {};
+                opts.headers.Cookie = this.authCookieName + '=' + cookie;
+            }
             //copy over user-supplied options
             if (options.options) {
                 for (var o in options.options) {
@@ -393,8 +398,12 @@ This software has been approved for release by the U.S. Department of the Interi
         return NodeHttpClient;
     }(client.GPHttpClient));
 
+    var GP_AUTH_COOKIE = 'gpoauth-a';
     var ɵ0 = function (router, routes, options) {
         var _this = this;
+        console.log(" ");
+        console.log("BINDING ROUTES!");
+        console.log(" ");
         options = options || {};
         var paths = options.paths || {};
         var auths = options.auth || {};
@@ -466,7 +475,7 @@ This software has been approved for release by the U.S. Department of the Interi
         });
     }, ɵ1 = function (req, needsAuth, options) {
         var token = req.accessToken || null;
-        if (needsAuth && options.logger) {
+        if (needsAuth && options && options.logger) {
             if (!token) {
                 options.logger.warn("ServiceProxy.getClient() - No Access Token was provided on incoming request header!");
             }
@@ -475,9 +484,21 @@ This software has been approved for release by the U.S. Department of the Interi
                 options.logger.debug("ServiceProxy.getClient() - JWT: " + req.jwt);
             }
         }
+        //check the incoming proxied request for cookies that should be forwarded along
+        var cookie = this.getAuthCookie(req);
+        // console.log("COOKIE IS " + cookie);
+        if (cookie && !cookie.length)
+            cookie = null;
+        // if(options && options.logger) {
+        //     options.logger.debug("Proxying Request Cookie: " + cookie);
+        //     options.logger.debug(" ");
+        // } else {
+        //     console.log("Proxying Request Cookie: " + cookie);
+        // }
         return new NodeHttpClient({
             timeout: client.Config.timeout,
-            token: needsAuth ? token : null
+            token: needsAuth ? token : null,
+            cookie: needsAuth ? cookie : null
         });
     }, ɵ2 = function (req, needsAuth, options) {
         var client$1 = this.getClient(req, needsAuth, options);
@@ -493,6 +514,54 @@ This software has been approved for release by the U.S. Department of the Interi
             service.setLogger(options.logger);
         }
         return service;
+    }, ɵ3 = function (req) {
+        if (!req)
+            return null;
+        if (req.cookies) { //parsed by cookieParser already
+            // console.log("COOKIES PARSED ... ");
+            // console.log("COOKIES ARE...");
+            // console.log(JSON.stringify(req.cookies));
+            // console.log(" ");
+            // console.log("AUTH COOKIE IS " + req.cookies[GP_AUTH_COOKIE]);
+            return req.cookies[GP_AUTH_COOKIE];
+        }
+        else if (req.headers.cookie) {
+            // console.log("COOKIES NEED PARSING");
+            try {
+                var cookies = this.parseCookies(req.headers.cookie);
+                return cookies[GP_AUTH_COOKIE];
+            }
+            catch (e) {
+                console.log("ERROR parsing cookies: " + e.message);
+                return null;
+            }
+        }
+    }, ɵ4 = function parse(str) {
+        if (!str || typeof str !== 'string' || !str.length)
+            return null;
+        var result = {};
+        var expr = /; */;
+        var pairs = str.split(expr);
+        pairs.forEach(function (pair) {
+            var sepIdx = pair.indexOf('=');
+            if (sepIdx < 0)
+                return; //ignore non- 'key=value' values
+            var key = pair.substr(0, sepIdx).trim();
+            var val = pair.substr(++sepIdx, pair.length).trim();
+            // quoted values
+            if ('"' == val[0])
+                val = val.slice(1, -1);
+            // only assign once
+            if (undefined == result[key]) {
+                var value = val;
+                try {
+                    value = decodeURIComponent(val);
+                }
+                catch (e) { }
+                result[key] = value;
+            }
+        });
+        return result;
     };
     var ServiceProxy = {
         /**
@@ -513,7 +582,9 @@ This software has been approved for release by the U.S. Department of the Interi
          * @param {boolean} needsAuth - flag indicating if request requires authorization token
          * @param {object} options - additional configuration options
          */
-        getService: ɵ2
+        getService: ɵ2,
+        getAuthCookie: ɵ3,
+        parseCookies: ɵ4
     };
 
     var ɵ0$1 = function (svc, req) {
@@ -523,9 +594,9 @@ This software has been approved for release by the U.S. Department of the Interi
         return svc.get(req.params.id);
     }, ɵ2$1 = function (svc, req) {
         return svc.save(req.body);
-    }, ɵ3 = function (svc, req) {
+    }, ɵ3$1 = function (svc, req) {
         return svc.save(req.body);
-    }, ɵ4 = function (svc, req) {
+    }, ɵ4$1 = function (svc, req) {
         return svc.remove(req.params.id);
     }, ɵ5 = function (
     // @ts-ignore
@@ -589,14 +660,14 @@ This software has been approved for release by the U.S. Department of the Interi
             method: 'put',
             path: 'items/:id',
             auth: true,
-            onExecute: ɵ3
+            onExecute: ɵ3$1
         },
         {
             key: 'delete',
             method: 'delete',
             path: 'items/:id',
             auth: true,
-            onExecute: ɵ4,
+            onExecute: ɵ4$1,
             onResponse: ɵ5
         },
         {
@@ -714,9 +785,9 @@ This software has been approved for release by the U.S. Department of the Interi
         return svc.get(req.params.id);
     }, ɵ2$2 = function (svc, req) {
         return svc.save(req.body);
-    }, ɵ3$1 = function (svc, req) {
+    }, ɵ3$2 = function (svc, req) {
         return svc.save(req.body);
-    }, ɵ4$1 = function (svc, req) {
+    }, ɵ4$2 = function (svc, req) {
         return svc.remove(req.params.id);
     }, ɵ5$1 = function (
     // @ts-ignore
@@ -772,14 +843,14 @@ This software has been approved for release by the U.S. Department of the Interi
             method: 'put',
             path: 'services/:id',
             auth: true,
-            onExecute: ɵ3$1
+            onExecute: ɵ3$2
         },
         {
             key: 'delete',
             method: 'delete',
             path: 'services/:id',
             auth: true,
-            onExecute: ɵ4$1,
+            onExecute: ɵ4$2,
             onResponse: ɵ5$1
         },
         {
@@ -871,9 +942,9 @@ This software has been approved for release by the U.S. Department of the Interi
         return svc.get(req.params.id);
     }, ɵ2$3 = function (svc, req) {
         return svc.save(req.body);
-    }, ɵ3$2 = function (svc, req) {
+    }, ɵ3$3 = function (svc, req) {
         return svc.save(req.body);
-    }, ɵ4$2 = function (svc, req) {
+    }, ɵ4$3 = function (svc, req) {
         return svc.remove(req.params.id);
     }, ɵ5$2 = function (
     // @ts-ignore
@@ -925,14 +996,14 @@ This software has been approved for release by the U.S. Department of the Interi
             method: 'put',
             path: 'layers/:id',
             auth: true,
-            onExecute: ɵ3$2
+            onExecute: ɵ3$3
         },
         {
             key: 'delete',
             method: 'delete',
             path: 'layers/:id',
             auth: true,
-            onExecute: ɵ4$2,
+            onExecute: ɵ4$3,
             onResponse: ɵ5$2
         },
         {
@@ -1017,9 +1088,9 @@ This software has been approved for release by the U.S. Department of the Interi
         return svc.get(req.params.id);
     }, ɵ2$4 = function (svc, req) {
         return svc.save(req.body);
-    }, ɵ3$3 = function (svc, req) {
+    }, ɵ3$4 = function (svc, req) {
         return svc.save(req.body);
-    }, ɵ4$3 = function (svc, req) {
+    }, ɵ4$4 = function (svc, req) {
         return svc.remove(req.params.id);
     }, ɵ5$3 = function (
     // @ts-ignore
@@ -1063,14 +1134,14 @@ This software has been approved for release by the U.S. Department of the Interi
             method: 'put',
             path: 'datasets/:id',
             auth: true,
-            onExecute: ɵ3$3
+            onExecute: ɵ3$4
         },
         {
             key: 'delete',
             method: 'delete',
             path: 'datasets/:id',
             auth: true,
-            onExecute: ɵ4$3,
+            onExecute: ɵ4$4,
             onResponse: ɵ5$3
         },
         {
@@ -1122,9 +1193,9 @@ This software has been approved for release by the U.S. Department of the Interi
         return svc.get(req.params.id);
     }, ɵ2$5 = function (svc, req) {
         return svc.save(req.body);
-    }, ɵ3$4 = function (svc, req) {
+    }, ɵ3$5 = function (svc, req) {
         return svc.save(req.body);
-    }, ɵ4$4 = function (svc, req) {
+    }, ɵ4$5 = function (svc, req) {
         return svc.remove(req.params.id);
     }, ɵ5$4 = function (
     // @ts-ignore
@@ -1168,14 +1239,14 @@ This software has been approved for release by the U.S. Department of the Interi
             method: 'put',
             path: 'maps/:id',
             auth: true,
-            onExecute: ɵ3$4
+            onExecute: ɵ3$5
         },
         {
             key: 'delete',
             method: 'delete',
             path: 'maps/:id',
             auth: true,
-            onExecute: ɵ4$4,
+            onExecute: ɵ4$5,
             onResponse: ɵ5$4
         },
         {
@@ -1227,9 +1298,9 @@ This software has been approved for release by the U.S. Department of the Interi
         return svc.get(req.params.id);
     }, ɵ2$6 = function (svc, req) {
         return svc.save(req.body);
-    }, ɵ3$5 = function (svc, req) {
+    }, ɵ3$6 = function (svc, req) {
         return svc.save(req.body);
-    }, ɵ4$5 = function (svc, req) {
+    }, ɵ4$6 = function (svc, req) {
         return svc.remove(req.params.id);
     }, ɵ5$5 = function (
     // @ts-ignore
@@ -1273,14 +1344,14 @@ This software has been approved for release by the U.S. Department of the Interi
             method: 'put',
             path: 'galleries/:id',
             auth: true,
-            onExecute: ɵ3$5
+            onExecute: ɵ3$6
         },
         {
             key: 'delete',
             method: 'delete',
             path: 'galleries/:id',
             auth: true,
-            onExecute: ɵ4$5,
+            onExecute: ɵ4$6,
             onResponse: ɵ5$5
         },
         {
@@ -1332,9 +1403,9 @@ This software has been approved for release by the U.S. Department of the Interi
         return svc.parseFile(req.files.file, req.body.format);
     }, ɵ2$7 = function (svc, req) {
         return svc.capabilities(null, req.query);
-    }, ɵ3$6 = function (svc, req) {
+    }, ɵ3$7 = function (svc, req) {
         return svc.capabilities(req.params.id, req.query);
-    }, ɵ4$6 = function (svc, req) {
+    }, ɵ4$7 = function (svc, req) {
         return svc.store(req.files.file, req.body.format);
     };
     var Routes$6 = [
@@ -1364,14 +1435,14 @@ This software has been approved for release by the U.S. Department of the Interi
             method: 'get',
             path: 'utils/capabilities/:id',
             auth: false,
-            onExecute: ɵ3$6
+            onExecute: ɵ3$7
         },
         {
             key: 'store',
             method: 'post',
             path: 'store',
             auth: true,
-            onExecute: ɵ4$6
+            onExecute: ɵ4$7
         }
     ];
     /**
@@ -1463,9 +1534,9 @@ This software has been approved for release by the U.S. Department of the Interi
         return svc.searchGroups(req.query);
     }, ɵ2$9 = function (svc, req) {
         return svc.searchOrgs(req.query);
-    }, ɵ3$7 = function (svc, req) {
+    }, ɵ3$8 = function (svc, req) {
         return svc.getItem(req.params.id);
-    }, ɵ4$7 = function (svc, req) {
+    }, ɵ4$8 = function (svc, req) {
         return svc.getGroup(req.params.id);
     }, ɵ5$6 = function (svc, req) {
         return svc.getOrg(req.params.id);
@@ -1497,14 +1568,14 @@ This software has been approved for release by the U.S. Department of the Interi
             method: 'get',
             path: 'agol/items/:id',
             auth: false,
-            onExecute: ɵ3$7
+            onExecute: ɵ3$8
         },
         {
             key: 'getGroup',
             method: 'get',
             path: 'agol/groups/:id',
             auth: false,
-            onExecute: ɵ4$7
+            onExecute: ɵ4$8
         },
         {
             key: 'getOrg',

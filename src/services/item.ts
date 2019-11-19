@@ -238,13 +238,13 @@ class ItemService extends BaseService {
             return this.execute(opts);
         })
         .catch( e => {
-            let err = new Error(`Error importing item: ${e.message}`);
+            let err = new Error(`Error importing item: ${e.message||e}`);
             Object.assign(err, e);
-            if(e.status === 409 || ~e.message.indexOf('Item already exists'))
+            if(e.status === 409 || (e.message && ~e.message.indexOf('Item already exists') ))
                 Object.assign(err, {status: 409});
             if(e.item)
                 Object.assign(err, { item : e.item });
-            this.logError('ItemService.import() - ' + err.message);
+            this.logError('ItemService.import() - ' + (err.message||e));
             throw err;
         });
     }

@@ -95,13 +95,26 @@ const ServiceProxy = {
     */
     getClient: function(req : any, needsAuth : boolean, options ?: any) {
 
-        let token = req.accessToken || null;
-        if(needsAuth && options && options.logger) {
-            if(!token) {
-                options.logger.warn("ServiceProxy.getClient() - No Access Token was provided on incoming request header!");
-            } else if(!!options.debug) {
-                options.logger.debug(`ServiceProxy.getClient() - Token: ${token}`);
-                options.logger.debug(`ServiceProxy.getClient() - JWT: ${req.jwt}`);
+        let token = null;
+        if(needsAuth) {
+
+            token = req.accessToken || null;
+            if(!token && !req.jwt) {    //if not processed by middleware...
+                token = (req.headers.authorization || '').replace('Bearer ','');
+            }
+
+            if(options && options.logger) {
+                // options.logger.debug(`ServiceProxy.getClient() - Token: ${token}`);
+                // options.logger.debug(`ServiceProxy.getClient() - JWT: ${req.jwt}`);
+                if(!token) {
+                    options.logger.warn("ServiceProxy.getClient() - No Access Token was provided on incoming request header!");
+                }
+                else if(!!options.debug) {
+                    options.logger.debug(`ServiceProxy.getClient() - Token: ${token}`);
+                    options.logger.debug(`ServiceProxy.getClient() - JWT: ${req.jwt}`);
+                }
+            } else if(!token) {
+                console.log("[WARN] No Access Token provided on incoming request header");
             }
         }
 

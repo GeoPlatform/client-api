@@ -126,7 +126,8 @@ const Routes = [
         auth: true,
         onExecute: function(svc : ItemService, req : any) {
             let input = req.body.url || req.files.file;
-            return svc.import(input, req.query.format);
+            let format = req.body.format || req.query.format;
+            return svc.import(input, format);
         }
     },
     {

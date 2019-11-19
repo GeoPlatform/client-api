@@ -2024,13 +2024,13 @@ var ItemService = /** @class */ (function (_super) {
             return _this.execute(opts);
         })
             .catch(function (e) {
-            var err = new Error("Error importing item: " + e.message);
+            var err = new Error("Error importing item: " + (e.message || e));
             Object.assign(err, e);
-            if (e.status === 409 || ~e.message.indexOf('Item already exists'))
+            if (e.status === 409 || (e.message && ~e.message.indexOf('Item already exists')))
                 Object.assign(err, { status: 409 });
             if (e.item)
                 Object.assign(err, { item: e.item });
-            _this.logError('ItemService.import() - ' + err.message);
+            _this.logError('ItemService.import() - ' + (err.message || e));
             throw err;
         });
     };

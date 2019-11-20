@@ -13,10 +13,10 @@
         "dest": "../dist/angularjs"
     },
     "peerDependencies": {
-        "angular": "^1.6.0"
+        "angular": "^1.7.9"
     },
     "devDependencies": {
-        "angular": "^1.6.0",
+        "angular": "^1.7.9",
         "q": "1.5.1",
         "ts-node": "~4.1.0",
         "tslint": "~5.9.1",

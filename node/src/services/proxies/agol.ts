@@ -1,6 +1,6 @@
 
 
-import { AgolService } from "@geoplatform/client";
+import { AgolService, AgolQuery } from "@geoplatform/client";
 import ServiceProxy from './base';
 
 
@@ -11,7 +11,8 @@ const Routes = [
         path: 'agol/items',
         auth: false,
         onExecute: function(svc : AgolService, req : any) {
-            return svc.searchItems(req.query);
+            let query = new AgolQuery(req.query);
+            return svc.searchItems(query);
         }
     },
     {
@@ -20,7 +21,8 @@ const Routes = [
         path: 'agol/groups',
         auth: false,
         onExecute: function(svc : AgolService, req : any) {
-            return svc.searchGroups(req.query);
+            let query = new AgolQuery(req.query);
+            return svc.searchGroups(query);
         }
     },
     {
@@ -29,7 +31,8 @@ const Routes = [
         path: 'agol/orgs',
         auth: false,
         onExecute: function(svc : AgolService, req : any) {
-            return svc.searchOrgs(req.query);
+            let query = new AgolQuery(req.query);
+            return svc.searchOrgs(query);
         }
     },
     {

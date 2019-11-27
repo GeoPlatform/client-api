@@ -3032,11 +3032,18 @@ This software has been approved for release by the U.S. Department of the Interi
     }(BaseService));
 
     var AgolQuery = /** @class */ (function () {
-        function AgolQuery() {
+        function AgolQuery(options) {
             this._query = {
                 page: 0,
                 size: 10
             };
+            if (options) {
+                for (var p in options) {
+                    if (options.hasOwnProperty(p)) {
+                        this._query[p] = options[p];
+                    }
+                }
+            }
         }
         AgolQuery.prototype.getQuery = function () {
             var result = {};

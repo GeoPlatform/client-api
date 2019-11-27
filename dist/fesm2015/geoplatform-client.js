@@ -2759,11 +2759,18 @@ class AssociationService extends BaseService {
 }
 
 class AgolQuery {
-    constructor() {
+    constructor(options) {
         this._query = {
             page: 0,
             size: 10
         };
+        if (options) {
+            for (let p in options) {
+                if (options.hasOwnProperty(p)) {
+                    this._query[p] = options[p];
+                }
+            }
+        }
     }
     getQuery() {
         let result = {};

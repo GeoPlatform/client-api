@@ -3,7 +3,9 @@ import GPHttpClient from '../http/client';
 import BaseService from "./base";
 declare class AgolQuery {
     private _query;
-    constructor();
+    constructor(options?: {
+        [key: string]: any;
+    });
     getQuery(): {
         [key: string]: any;
     };

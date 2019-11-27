@@ -1538,11 +1538,14 @@ This software has been approved for release by the U.S. Department of the Interi
     }
 
     var ɵ0$9 = function (svc, req) {
-        return svc.searchItems(req.query);
+        var query = new client.AgolQuery(req.query);
+        return svc.searchItems(query);
     }, ɵ1$9 = function (svc, req) {
-        return svc.searchGroups(req.query);
+        var query = new client.AgolQuery(req.query);
+        return svc.searchGroups(query);
     }, ɵ2$9 = function (svc, req) {
-        return svc.searchOrgs(req.query);
+        var query = new client.AgolQuery(req.query);
+        return svc.searchOrgs(query);
     }, ɵ3$8 = function (svc, req) {
         return svc.getItem(req.params.id);
     }, ɵ4$8 = function (svc, req) {

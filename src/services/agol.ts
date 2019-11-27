@@ -9,11 +9,19 @@ class AgolQuery {
 
     private _query : { [key:string]:any };
 
-    constructor() {
+    constructor(options ?: { [key:string]:any }) {
         this._query = {
             page: 0,
             size: 10
         };
+
+        if(options) {
+            for(let p in options) {
+                if(options.hasOwnProperty(p)) {
+                    this._query[ p as string ] = options[p] as any;
+                }
+            }
+        }
     }
 
     getQuery() : { [key:string]:any } {

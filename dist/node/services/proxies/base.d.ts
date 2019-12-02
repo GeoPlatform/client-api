@@ -23,6 +23,13 @@ declare const ServiceProxy: {
      * @param {object} options - additional configuration options
      */
     getService: (req: any, needsAuth: boolean, options?: any) => any;
+    /**
+     * @return JWT authorization bearer token
+     */
+    getAuthToken: (req: any) => string;
+    /**
+     * @return GP Authentication cookie
+     */
     getAuthCookie: (req: any) => string;
     parseCookies: (str: string) => {};
 };

@@ -268,7 +268,7 @@ const ɵ0 = function (router, routes, options) {
     }
 }, ɵ1 = function (router, options) {
     //fetch thumbnail proxy
-    router.get('/items/:id/thumbnail', function (req, res, next) {
+    router.get('/items/:id/thumbnail', (req, res, next) => {
         let url = Config.ualUrl + '/api/items/' + req.params.id + '/thumbnail';
         request.get(url).pipe(res);
     });
@@ -276,10 +276,10 @@ const ɵ0 = function (router, routes, options) {
         options.logger.debug("Binding Service Route [get] /items/:id/thumbnail");
     }
     //request new thumbnail be created
-    router.post('/items/:id/thumbnail', function (req, res, next) {
+    router.post('/items/:id/thumbnail', (req, res, next) => {
         let url = Config.ualUrl + '/api/items/' + req.params.id + '/thumbnail';
-        let token = (req.headers.authorization || '').replace('Bearer ', '');
-        let cookie = this.getCookie();
+        let token = this.getAuthToken(req);
+        let cookie = this.getAuthCookie(req);
         let opts = {}; //doesn't need a body when posting to thumbnail
         if (token)
             opts.auth = { bearer: token };
@@ -291,12 +291,8 @@ const ɵ0 = function (router, routes, options) {
         options.logger.debug("Binding Service Route [post] /items/:id/thumbnail");
     }
 }, ɵ2 = function (req, needsAuth, options) {
-    let token = null;
+    let token = this.getAuthToken(req);
     if (needsAuth) {
-        token = req.accessToken || null;
-        if (!token && !req.jwt) { //if not processed by middleware...
-            token = (req.headers.authorization || '').replace('Bearer ', '');
-        }
         if (options && options.logger) {
             // options.logger.debug(`ServiceProxy.getClient() - Token: ${token}`);
             // options.logger.debug(`ServiceProxy.getClient() - JWT: ${req.jwt}`);
@@ -343,6 +339,12 @@ const ɵ0 = function (router, routes, options) {
     }
     return service;
 }, ɵ4 = function (req) {
+    let token = req.accessToken || null;
+    if (!token && !req.jwt) { //if not processed by middleware...
+        token = (req.headers.authorization || '').replace('Bearer ', '');
+    }
+    return token;
+}, ɵ5 = function (req) {
     if (!req)
         return null;
     if (req.cookies) { //parsed by cookieParser already
@@ -364,7 +366,7 @@ const ɵ0 = function (router, routes, options) {
             return null;
         }
     }
-}, ɵ5 = function parse(str) {
+}, ɵ6 = function parse(str) {
     if (!str || typeof str !== 'string' || !str.length)
         return null;
     let result = {};
@@ -415,8 +417,15 @@ const ServiceProxy = {
      * @param {object} options - additional configuration options
      */
     getService: ɵ3,
-    getAuthCookie: ɵ4,
-    parseCookies: ɵ5
+    /**
+     * @return JWT authorization bearer token
+     */
+    getAuthToken: ɵ4,
+    /**
+     * @return GP Authentication cookie
+     */
+    getAuthCookie: ɵ5,
+    parseCookies: ɵ6
 };
 
 const ɵ0$1 = function (svc, req) {
@@ -434,7 +443,7 @@ const ɵ0$1 = function (svc, req) {
 // @ts-ignore
 result, res) {
     res.status(204).end();
-}, ɵ6 = function (svc, req) {
+}, ɵ6$1 = function (svc, req) {
     return svc.patch(req.params.id, req.body);
 }, ɵ7 = function (svc, req) { return svc.clone(req.params.id, req.body); }, ɵ8 = function (svc, req) { return svc.clone(req.params.id, req.body); }, ɵ9 = function (svc, req) {
     return svc.export(req.params.id, req.query.format);
@@ -508,7 +517,7 @@ const Routes = [
         method: 'patch',
         path: 'items/:id',
         auth: true,
-        onExecute: ɵ6
+        onExecute: ɵ6$1
     },
     {
         key: 'clone',
@@ -629,7 +638,7 @@ const ɵ0$2 = function (svc, req) {
 // @ts-ignore
 result, res) {
     res.status(204).end();
-}, ɵ6$1 = function (svc, req) {
+}, ɵ6$2 = function (svc, req) {
     return svc.patch(req.params.id, req.body);
 }, ɵ7$1 = function (svc, req) {
     return svc.export(req.params.id, req.query.format);
@@ -694,7 +703,7 @@ const Routes$1 = [
         method: 'patch',
         path: 'services/:id',
         auth: true,
-        onExecute: ɵ6$1
+        onExecute: ɵ6$2
     },
     {
         key: 'export',
@@ -784,7 +793,7 @@ const ɵ0$3 = function (svc, req) {
     return svc.remove(req.params.id);
 }, ɵ5$3 = function (
 // @ts-ignore
-result, res) { res.status(204).end(); }, ɵ6$2 = function (svc, req) {
+result, res) { res.status(204).end(); }, ɵ6$3 = function (svc, req) {
     return svc.patch(req.params.id, req.body);
 }, ɵ7$2 = function (svc, req) {
     return svc.export(req.params.id, req.query.format);
@@ -847,7 +856,7 @@ const Routes$2 = [
         method: 'patch',
         path: 'layers/:id',
         auth: true,
-        onExecute: ɵ6$2
+        onExecute: ɵ6$3
     },
     {
         key: 'export',
@@ -932,7 +941,7 @@ const ɵ0$4 = function (svc, req) {
 // @ts-ignore
 result, res) {
     res.status(204).end();
-}, ɵ6$3 = function (svc, req) {
+}, ɵ6$4 = function (svc, req) {
     return svc.patch(req.params.id, req.body);
 }, ɵ7$3 = function (svc, req) {
     return svc.export(req.params.id, req.query.format);
@@ -985,7 +994,7 @@ const Routes$3 = [
         method: 'patch',
         path: 'datasets/:id',
         auth: true,
-        onExecute: ɵ6$3
+        onExecute: ɵ6$4
     },
     {
         key: 'export',
@@ -1037,7 +1046,7 @@ const ɵ0$5 = function (svc, req) {
 // @ts-ignore
 result, res) {
     res.status(204).end();
-}, ɵ6$4 = function (svc, req) {
+}, ɵ6$5 = function (svc, req) {
     return svc.patch(req.params.id, req.body);
 }, ɵ7$4 = function (svc, req) {
     return svc.export(req.params.id, req.query.format);
@@ -1090,7 +1099,7 @@ const Routes$4 = [
         method: 'patch',
         path: 'maps/:id',
         auth: true,
-        onExecute: ɵ6$4
+        onExecute: ɵ6$5
     },
     {
         key: 'export',
@@ -1142,7 +1151,7 @@ const ɵ0$6 = function (svc, req) {
 // @ts-ignore
 result, res) {
     res.status(204).end();
-}, ɵ6$5 = function (svc, req) {
+}, ɵ6$6 = function (svc, req) {
     return svc.patch(req.params.id, req.body);
 }, ɵ7$5 = function (svc, req) {
     return svc.export(req.params.id, req.query.format);
@@ -1195,7 +1204,7 @@ const Routes$5 = [
         method: 'patch',
         path: 'galleries/:id',
         auth: true,
-        onExecute: ɵ6$5
+        onExecute: ɵ6$6
     },
     {
         key: 'export',

@@ -97,7 +97,7 @@ const ServiceProxy = {
     bindAdditionalRoutes: function( router : any, options ?: any ) {
 
         //fetch thumbnail proxy
-        router.get('/items/:id/thumbnail', function(req, res, next) {
+        router.get('/items/:id/thumbnail', (req, res, next) => {
             let url = Config.ualUrl + '/api/items/' + req.params.id + '/thumbnail';
             request.get(url).pipe(res);
         });
@@ -106,10 +106,10 @@ const ServiceProxy = {
         }
 
         //request new thumbnail be created
-        router.post('/items/:id/thumbnail', function(req, res, next) {
+        router.post('/items/:id/thumbnail', (req, res, next) => {
             let url = Config.ualUrl + '/api/items/' + req.params.id + '/thumbnail';
-            let token = (req.headers.authorization || '').replace('Bearer ','');
-            let cookie = this.getCookie();
+            let token = this.getAuthToken(req);
+            let cookie = this.getAuthCookie(req);
             let opts : any = {};  //doesn't need a body when posting to thumbnail
             if(token)  opts.auth = { bearer : token };
             if(cookie) opts.headers = { Cookie : this.authCookieName + '=' + cookie };
@@ -129,13 +129,8 @@ const ServiceProxy = {
     */
     getClient: function(req : any, needsAuth : boolean, options ?: any) {
 
-        let token = null;
+        let token = this.getAuthToken(req);
         if(needsAuth) {
-
-            token = req.accessToken || null;
-            if(!token && !req.jwt) {    //if not processed by middleware...
-                token = (req.headers.authorization || '').replace('Bearer ','');
-            }
 
             if(options && options.logger) {
                 // options.logger.debug(`ServiceProxy.getClient() - Token: ${token}`);
@@ -194,6 +189,20 @@ const ServiceProxy = {
         return service;
     },
 
+    /**
+     * @return JWT authorization bearer token
+     */
+    getAuthToken: function(req : any) : string {
+        let token = req.accessToken || null;
+        if(!token && !req.jwt) {    //if not processed by middleware...
+            token = (req.headers.authorization || '').replace('Bearer ','');
+        }
+        return token;
+    },
+
+    /**
+     * @return GP Authentication cookie
+     */
     getAuthCookie: function(req: any) : string {
         if(!req) return null;
         if(req.cookies) {   //parsed by cookieParser already
@@ -203,6 +212,7 @@ const ServiceProxy = {
             // console.log(" ");
             // console.log("AUTH COOKIE IS " + req.cookies[GP_AUTH_COOKIE]);
             return req.cookies[GP_AUTH_COOKIE];
+
         } else if(req.headers.cookie) {
             // console.log("COOKIES NEED PARSING");
             try {

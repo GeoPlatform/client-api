@@ -1,4 +1,5 @@
 import { GPHttpClient, Config, ItemService, Query, ServiceService, LayerService, DatasetService, MapService, GalleryService, UtilsService, KGQuery, KGService, AgolQuery, AgolService } from '@geoplatform/client';
+import request from 'request';
 
 class NodeHttpClient extends GPHttpClient {
     /**
@@ -262,7 +263,34 @@ const ɵ0 = function (router, routes, options) {
             });
         });
     });
-}, ɵ1 = function (req, needsAuth, options) {
+    if (options && options.addl) {
+        this.bindAdditionalRoutes(router, options);
+    }
+}, ɵ1 = function (router, options) {
+    //fetch thumbnail proxy
+    router.get('/items/:id/thumbnail', function (req, res, next) {
+        let url = Config.ualUrl + '/api/items/' + req.params.id + '/thumbnail';
+        request.get(url).pipe(res);
+    });
+    if (options && options.logger) {
+        options.logger.debug("Binding Service Route [get] /items/:id/thumbnail");
+    }
+    //request new thumbnail be created
+    router.post('/items/:id/thumbnail', function (req, res, next) {
+        let url = Config.ualUrl + '/api/items/' + req.params.id + '/thumbnail';
+        let token = (req.headers.authorization || '').replace('Bearer ', '');
+        let cookie = this.getCookie();
+        let opts = {}; //doesn't need a body when posting to thumbnail
+        if (token)
+            opts.auth = { bearer: token };
+        if (cookie)
+            opts.headers = { Cookie: this.authCookieName + '=' + cookie };
+        request.post(url, opts).pipe(res);
+    });
+    if (options && options.logger) {
+        options.logger.debug("Binding Service Route [post] /items/:id/thumbnail");
+    }
+}, ɵ2 = function (req, needsAuth, options) {
     let token = null;
     if (needsAuth) {
         token = req.accessToken || null;
@@ -300,7 +328,7 @@ const ɵ0 = function (router, routes, options) {
         token: needsAuth ? token : null,
         cookie: needsAuth ? cookie : null
     });
-}, ɵ2 = function (req, needsAuth, options) {
+}, ɵ3 = function (req, needsAuth, options) {
     let client = this.getClient(req, needsAuth, options);
     let svcClass = options.serviceClass || ItemService;
     // console.log("Proxying to " + Config.ualUrl);
@@ -314,7 +342,7 @@ const ɵ0 = function (router, routes, options) {
         service.setLogger(options.logger);
     }
     return service;
-}, ɵ3 = function (req) {
+}, ɵ4 = function (req) {
     if (!req)
         return null;
     if (req.cookies) { //parsed by cookieParser already
@@ -336,7 +364,7 @@ const ɵ0 = function (router, routes, options) {
             return null;
         }
     }
-}, ɵ4 = function parse(str) {
+}, ɵ5 = function parse(str) {
     if (!str || typeof str !== 'string' || !str.length)
         return null;
     let result = {};
@@ -371,20 +399,24 @@ const ServiceProxy = {
      */
     bindRoutes: ɵ0,
     /**
+     *
+     */
+    bindAdditionalRoutes: ɵ1,
+    /**
     * @param {HttpRequest} req - incoming http request being proxied
     * @param {boolean} needsAuth - flag indicating if the request must provide an authentication token
     * @param {object} options - additional configuration options
     * @return {HttpClient} client to use to make requests to GeoPlatform API endpoint
     */
-    getClient: ɵ1,
+    getClient: ɵ2,
     /**
      * @param {HttpRequest} req - incoming http request being proxied
      * @param {boolean} needsAuth - flag indicating if request requires authorization token
      * @param {object} options - additional configuration options
      */
-    getService: ɵ2,
-    getAuthCookie: ɵ3,
-    parseCookies: ɵ4
+    getService: ɵ3,
+    getAuthCookie: ɵ4,
+    parseCookies: ɵ5
 };
 
 const ɵ0$1 = function (svc, req) {
@@ -398,7 +430,7 @@ const ɵ0$1 = function (svc, req) {
     return svc.save(req.body);
 }, ɵ4$1 = function (svc, req) {
     return svc.remove(req.params.id);
-}, ɵ5 = function (
+}, ɵ5$1 = function (
 // @ts-ignore
 result, res) {
     res.status(204).end();
@@ -469,7 +501,7 @@ const Routes = [
         path: 'items/:id',
         auth: true,
         onExecute: ɵ4$1,
-        onResponse: ɵ5
+        onResponse: ɵ5$1
     },
     {
         key: 'patch',
@@ -564,6 +596,9 @@ function ItemServiceProxy(options) {
         options = {};
     }
     ;
+    //if not configured to bind or avoid bind additional routes...
+    if (typeof (options.addl) === 'undefined')
+        options.addl = true; //auto bind addl routes
     let router = options.router;
     if (!options.router) {
         let express = require('express');
@@ -590,7 +625,7 @@ const ɵ0$2 = function (svc, req) {
     return svc.save(req.body);
 }, ɵ4$2 = function (svc, req) {
     return svc.remove(req.params.id);
-}, ɵ5$1 = function (
+}, ɵ5$2 = function (
 // @ts-ignore
 result, res) {
     res.status(204).end();
@@ -652,7 +687,7 @@ const Routes$1 = [
         path: 'services/:id',
         auth: true,
         onExecute: ɵ4$2,
-        onResponse: ɵ5$1
+        onResponse: ɵ5$2
     },
     {
         key: 'patch',
@@ -747,7 +782,7 @@ const ɵ0$3 = function (svc, req) {
     return svc.save(req.body);
 }, ɵ4$3 = function (svc, req) {
     return svc.remove(req.params.id);
-}, ɵ5$2 = function (
+}, ɵ5$3 = function (
 // @ts-ignore
 result, res) { res.status(204).end(); }, ɵ6$2 = function (svc, req) {
     return svc.patch(req.params.id, req.body);
@@ -805,7 +840,7 @@ const Routes$2 = [
         path: 'layers/:id',
         auth: true,
         onExecute: ɵ4$3,
-        onResponse: ɵ5$2
+        onResponse: ɵ5$3
     },
     {
         key: 'patch',
@@ -893,7 +928,7 @@ const ɵ0$4 = function (svc, req) {
     return svc.save(req.body);
 }, ɵ4$4 = function (svc, req) {
     return svc.remove(req.params.id);
-}, ɵ5$3 = function (
+}, ɵ5$4 = function (
 // @ts-ignore
 result, res) {
     res.status(204).end();
@@ -943,7 +978,7 @@ const Routes$3 = [
         path: 'datasets/:id',
         auth: true,
         onExecute: ɵ4$4,
-        onResponse: ɵ5$3
+        onResponse: ɵ5$4
     },
     {
         key: 'patch',
@@ -998,7 +1033,7 @@ const ɵ0$5 = function (svc, req) {
     return svc.save(req.body);
 }, ɵ4$5 = function (svc, req) {
     return svc.remove(req.params.id);
-}, ɵ5$4 = function (
+}, ɵ5$5 = function (
 // @ts-ignore
 result, res) {
     res.status(204).end();
@@ -1048,7 +1083,7 @@ const Routes$4 = [
         path: 'maps/:id',
         auth: true,
         onExecute: ɵ4$5,
-        onResponse: ɵ5$4
+        onResponse: ɵ5$5
     },
     {
         key: 'patch',
@@ -1103,7 +1138,7 @@ const ɵ0$6 = function (svc, req) {
     return svc.save(req.body);
 }, ɵ4$6 = function (svc, req) {
     return svc.remove(req.params.id);
-}, ɵ5$5 = function (
+}, ɵ5$6 = function (
 // @ts-ignore
 result, res) {
     res.status(204).end();
@@ -1153,7 +1188,7 @@ const Routes$5 = [
         path: 'galleries/:id',
         auth: true,
         onExecute: ɵ4$6,
-        onResponse: ɵ5$5
+        onResponse: ɵ5$6
     },
     {
         key: 'patch',
@@ -1342,7 +1377,7 @@ const ɵ0$9 = function (svc, req) {
     return svc.getItem(req.params.id);
 }, ɵ4$8 = function (svc, req) {
     return svc.getGroup(req.params.id);
-}, ɵ5$6 = function (svc, req) {
+}, ɵ5$7 = function (svc, req) {
     return svc.getOrg(req.params.id);
 };
 const Routes$8 = [
@@ -1386,7 +1421,7 @@ const Routes$8 = [
         method: 'get',
         path: 'agol/orgs/:id',
         auth: false,
-        onExecute: ɵ5$6
+        onExecute: ɵ5$7
     }
 ];
 /**

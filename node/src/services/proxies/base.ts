@@ -1,7 +1,7 @@
 
-
-import NodeHttpClient from '../../http/node';
+import request                 from 'request';
 import { Config, ItemService } from '@geoplatform/client';
+import NodeHttpClient          from '../../http/node';
 
 const GP_AUTH_COOKIE = 'gpoauth-a';
 
@@ -84,6 +84,40 @@ const ServiceProxy = {
                 });
             })
         });
+
+        if(options && options.addl) {
+            this.bindAdditionalRoutes(router, options);
+        }
+
+    },
+
+    /**
+     *
+     */
+    bindAdditionalRoutes: function( router : any, options ?: any ) {
+
+        //fetch thumbnail proxy
+        router.get('/items/:id/thumbnail', function(req, res, next) {
+            let url = Config.ualUrl + '/api/items/' + req.params.id + '/thumbnail';
+            request.get(url).pipe(res);
+        });
+        if(options && options.logger) {
+            options.logger.debug("Binding Service Route [get] /items/:id/thumbnail");
+        }
+
+        //request new thumbnail be created
+        router.post('/items/:id/thumbnail', function(req, res, next) {
+            let url = Config.ualUrl + '/api/items/' + req.params.id + '/thumbnail';
+            let token = (req.headers.authorization || '').replace('Bearer ','');
+            let cookie = this.getCookie();
+            let opts : any = {};  //doesn't need a body when posting to thumbnail
+            if(token)  opts.auth = { bearer : token };
+            if(cookie) opts.headers = { Cookie : this.authCookieName + '=' + cookie };
+            request.post(url, opts).pipe(res);
+        });
+        if(options && options.logger) {
+            options.logger.debug("Binding Service Route [post] /items/:id/thumbnail");
+        }
 
     },
 

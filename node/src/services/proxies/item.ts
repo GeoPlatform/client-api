@@ -183,6 +183,10 @@ function ItemServiceProxy( options ?: any ) {
         options = {};
     };
 
+    //if not configured to bind or avoid bind additional routes...
+    if( typeof(options.addl) === 'undefined' )
+        options.addl = true;    //auto bind addl routes
+
     let router = options.router;
     if(!options.router) {
         let express = require('express');

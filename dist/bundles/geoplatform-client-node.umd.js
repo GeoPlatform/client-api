@@ -2,10 +2,12 @@
 This software has been approved for release by the U.S. Department of the Interior. Although the software has been subjected to rigorous review, the DOI reserves the right to update the software as needed pursuant to further analysis and review. No warranty, expressed or implied, is made by the DOI or the U.S. Government as to the functionality of the software and related material nor shall the fact of release constitute any such warranty. Furthermore, the software is released on condition that neither the DOI nor the U.S. Government shall be held liable for any damages resulting from its authorized or unauthorized use.
 */
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@geoplatform/client')) :
-    typeof define === 'function' && define.amd ? define('@geoplatform/client/node', ['exports', '@geoplatform/client'], factory) :
-    (global = global || self, factory((global.geoplatform = global.geoplatform || {}, global.geoplatform.client = global.geoplatform.client || {}, global.geoplatform.client.node = {}), global.geoplatform.client));
-}(this, function (exports, client) { 'use strict';
+    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@geoplatform/client'), require('request')) :
+    typeof define === 'function' && define.amd ? define('@geoplatform/client/node', ['exports', '@geoplatform/client', 'request'], factory) :
+    (global = global || self, factory((global.geoplatform = global.geoplatform || {}, global.geoplatform.client = global.geoplatform.client || {}, global.geoplatform.client.node = {}), global.geoplatform.client, global.request));
+}(this, function (exports, client, request) { 'use strict';
+
+    request = request && request.hasOwnProperty('default') ? request['default'] : request;
 
     /*! *****************************************************************************
     Copyright (c) Microsoft Corporation. All rights reserved.
@@ -470,7 +472,34 @@ This software has been approved for release by the U.S. Department of the Interi
                 });
             });
         });
-    }, ɵ1 = function (req, needsAuth, options) {
+        if (options && options.addl) {
+            this.bindAdditionalRoutes(router, options);
+        }
+    }, ɵ1 = function (router, options) {
+        //fetch thumbnail proxy
+        router.get('/items/:id/thumbnail', function (req, res, next) {
+            var url = client.Config.ualUrl + '/api/items/' + req.params.id + '/thumbnail';
+            request.get(url).pipe(res);
+        });
+        if (options && options.logger) {
+            options.logger.debug("Binding Service Route [get] /items/:id/thumbnail");
+        }
+        //request new thumbnail be created
+        router.post('/items/:id/thumbnail', function (req, res, next) {
+            var url = client.Config.ualUrl + '/api/items/' + req.params.id + '/thumbnail';
+            var token = (req.headers.authorization || '').replace('Bearer ', '');
+            var cookie = this.getCookie();
+            var opts = {}; //doesn't need a body when posting to thumbnail
+            if (token)
+                opts.auth = { bearer: token };
+            if (cookie)
+                opts.headers = { Cookie: this.authCookieName + '=' + cookie };
+            request.post(url, opts).pipe(res);
+        });
+        if (options && options.logger) {
+            options.logger.debug("Binding Service Route [post] /items/:id/thumbnail");
+        }
+    }, ɵ2 = function (req, needsAuth, options) {
         var token = null;
         if (needsAuth) {
             token = req.accessToken || null;
@@ -508,7 +537,7 @@ This software has been approved for release by the U.S. Department of the Interi
             token: needsAuth ? token : null,
             cookie: needsAuth ? cookie : null
         });
-    }, ɵ2 = function (req, needsAuth, options) {
+    }, ɵ3 = function (req, needsAuth, options) {
         var client$1 = this.getClient(req, needsAuth, options);
         var svcClass = options.serviceClass || client.ItemService;
         // console.log("Proxying to " + Config.ualUrl);
@@ -522,7 +551,7 @@ This software has been approved for release by the U.S. Department of the Interi
             service.setLogger(options.logger);
         }
         return service;
-    }, ɵ3 = function (req) {
+    }, ɵ4 = function (req) {
         if (!req)
             return null;
         if (req.cookies) { //parsed by cookieParser already
@@ -544,7 +573,7 @@ This software has been approved for release by the U.S. Department of the Interi
                 return null;
             }
         }
-    }, ɵ4 = function parse(str) {
+    }, ɵ5 = function parse(str) {
         if (!str || typeof str !== 'string' || !str.length)
             return null;
         var result = {};
@@ -579,20 +608,24 @@ This software has been approved for release by the U.S. Department of the Interi
          */
         bindRoutes: ɵ0,
         /**
+         *
+         */
+        bindAdditionalRoutes: ɵ1,
+        /**
         * @param {HttpRequest} req - incoming http request being proxied
         * @param {boolean} needsAuth - flag indicating if the request must provide an authentication token
         * @param {object} options - additional configuration options
         * @return {HttpClient} client to use to make requests to GeoPlatform API endpoint
         */
-        getClient: ɵ1,
+        getClient: ɵ2,
         /**
          * @param {HttpRequest} req - incoming http request being proxied
          * @param {boolean} needsAuth - flag indicating if request requires authorization token
          * @param {object} options - additional configuration options
          */
-        getService: ɵ2,
-        getAuthCookie: ɵ3,
-        parseCookies: ɵ4
+        getService: ɵ3,
+        getAuthCookie: ɵ4,
+        parseCookies: ɵ5
     };
 
     var ɵ0$1 = function (svc, req) {
@@ -606,7 +639,7 @@ This software has been approved for release by the U.S. Department of the Interi
         return svc.save(req.body);
     }, ɵ4$1 = function (svc, req) {
         return svc.remove(req.params.id);
-    }, ɵ5 = function (
+    }, ɵ5$1 = function (
     // @ts-ignore
     result, res) {
         res.status(204).end();
@@ -677,7 +710,7 @@ This software has been approved for release by the U.S. Department of the Interi
             path: 'items/:id',
             auth: true,
             onExecute: ɵ4$1,
-            onResponse: ɵ5
+            onResponse: ɵ5$1
         },
         {
             key: 'patch',
@@ -772,6 +805,9 @@ This software has been approved for release by the U.S. Department of the Interi
             options = {};
         }
         ;
+        //if not configured to bind or avoid bind additional routes...
+        if (typeof (options.addl) === 'undefined')
+            options.addl = true; //auto bind addl routes
         var router = options.router;
         if (!options.router) {
             var express = require('express');
@@ -798,7 +834,7 @@ This software has been approved for release by the U.S. Department of the Interi
         return svc.save(req.body);
     }, ɵ4$2 = function (svc, req) {
         return svc.remove(req.params.id);
-    }, ɵ5$1 = function (
+    }, ɵ5$2 = function (
     // @ts-ignore
     result, res) {
         res.status(204).end();
@@ -860,7 +896,7 @@ This software has been approved for release by the U.S. Department of the Interi
             path: 'services/:id',
             auth: true,
             onExecute: ɵ4$2,
-            onResponse: ɵ5$1
+            onResponse: ɵ5$2
         },
         {
             key: 'patch',
@@ -955,7 +991,7 @@ This software has been approved for release by the U.S. Department of the Interi
         return svc.save(req.body);
     }, ɵ4$3 = function (svc, req) {
         return svc.remove(req.params.id);
-    }, ɵ5$2 = function (
+    }, ɵ5$3 = function (
     // @ts-ignore
     result, res) { res.status(204).end(); }, ɵ6$2 = function (svc, req) {
         return svc.patch(req.params.id, req.body);
@@ -1013,7 +1049,7 @@ This software has been approved for release by the U.S. Department of the Interi
             path: 'layers/:id',
             auth: true,
             onExecute: ɵ4$3,
-            onResponse: ɵ5$2
+            onResponse: ɵ5$3
         },
         {
             key: 'patch',
@@ -1101,7 +1137,7 @@ This software has been approved for release by the U.S. Department of the Interi
         return svc.save(req.body);
     }, ɵ4$4 = function (svc, req) {
         return svc.remove(req.params.id);
-    }, ɵ5$3 = function (
+    }, ɵ5$4 = function (
     // @ts-ignore
     result, res) {
         res.status(204).end();
@@ -1151,7 +1187,7 @@ This software has been approved for release by the U.S. Department of the Interi
             path: 'datasets/:id',
             auth: true,
             onExecute: ɵ4$4,
-            onResponse: ɵ5$3
+            onResponse: ɵ5$4
         },
         {
             key: 'patch',
@@ -1206,7 +1242,7 @@ This software has been approved for release by the U.S. Department of the Interi
         return svc.save(req.body);
     }, ɵ4$5 = function (svc, req) {
         return svc.remove(req.params.id);
-    }, ɵ5$4 = function (
+    }, ɵ5$5 = function (
     // @ts-ignore
     result, res) {
         res.status(204).end();
@@ -1256,7 +1292,7 @@ This software has been approved for release by the U.S. Department of the Interi
             path: 'maps/:id',
             auth: true,
             onExecute: ɵ4$5,
-            onResponse: ɵ5$4
+            onResponse: ɵ5$5
         },
         {
             key: 'patch',
@@ -1311,7 +1347,7 @@ This software has been approved for release by the U.S. Department of the Interi
         return svc.save(req.body);
     }, ɵ4$6 = function (svc, req) {
         return svc.remove(req.params.id);
-    }, ɵ5$5 = function (
+    }, ɵ5$6 = function (
     // @ts-ignore
     result, res) {
         res.status(204).end();
@@ -1361,7 +1397,7 @@ This software has been approved for release by the U.S. Department of the Interi
             path: 'galleries/:id',
             auth: true,
             onExecute: ɵ4$6,
-            onResponse: ɵ5$5
+            onResponse: ɵ5$6
         },
         {
             key: 'patch',
@@ -1550,7 +1586,7 @@ This software has been approved for release by the U.S. Department of the Interi
         return svc.getItem(req.params.id);
     }, ɵ4$8 = function (svc, req) {
         return svc.getGroup(req.params.id);
-    }, ɵ5$6 = function (svc, req) {
+    }, ɵ5$7 = function (svc, req) {
         return svc.getOrg(req.params.id);
     };
     var Routes$8 = [
@@ -1594,7 +1630,7 @@ This software has been approved for release by the U.S. Department of the Interi
             method: 'get',
             path: 'agol/orgs/:id',
             auth: false,
-            onExecute: ɵ5$6
+            onExecute: ɵ5$7
         }
     ];
     /**

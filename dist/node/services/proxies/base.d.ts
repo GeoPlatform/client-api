@@ -7,6 +7,10 @@ declare const ServiceProxy: {
      */
     bindRoutes: (router: any, routes: any[], options?: any) => void;
     /**
+     *
+     */
+    bindAdditionalRoutes: (router: any, options?: any) => void;
+    /**
     * @param {HttpRequest} req - incoming http request being proxied
     * @param {boolean} needsAuth - flag indicating if the request must provide an authentication token
     * @param {object} options - additional configuration options

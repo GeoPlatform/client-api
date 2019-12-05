@@ -668,12 +668,7 @@ This software has been approved for release by the U.S. Department of the Interi
     }, ɵ12 = function (result, res) {
         res.json({ uri: result });
     }, ɵ13 = function (svc, req) {
-        return svc.getUri(req.body)
-            .then(function (uri) {
-            var fields = ['serviceType', 'services', 'scheme', 'themes', 'publishers', 'keywords'];
-            var query = new client.Query().uri(uri).fields(fields);
-            return svc.search(query);
-        });
+        return svc.exists(req.body);
     }, ɵ14 = function (svc, req) {
         var input = req.body.url || req.files.file;
         var format = req.body.format || req.query.format;
@@ -754,7 +749,7 @@ This software has been approved for release by the U.S. Department of the Interi
         {
             key: 'uri',
             method: 'post',
-            path: 'items/uri',
+            path: 'utils/uri',
             auth: false,
             onExecute: ɵ11,
             onResponse: ɵ12
@@ -762,7 +757,7 @@ This software has been approved for release by the U.S. Department of the Interi
         {
             key: 'exists',
             method: 'post',
-            path: 'items/exists',
+            path: 'utils/exists',
             auth: false,
             onExecute: ɵ13
         },

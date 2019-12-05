@@ -96,7 +96,7 @@ const Routes = [
     {
         key: 'uri',
         method: 'post',
-        path: 'items/uri',
+        path: 'utils/uri',
         auth: false,
         onExecute: function(svc : ItemService, req : any) {
             return svc.getUri(req.body);
@@ -108,15 +108,10 @@ const Routes = [
     {
         key: 'exists',
         method: 'post',
-        path: 'items/exists',
+        path: 'utils/exists',
         auth: false,
         onExecute: function(svc : ItemService, req : any) {
-            return svc.getUri(req.body)
-            .then( uri => {
-                let fields = ['serviceType','services','scheme','themes','publishers','keywords'];
-                let query : Query = new Query().uri(uri).fields(fields);
-                return svc.search(query);
-            });
+            return svc.exists(req.body);
         }
     },
     {

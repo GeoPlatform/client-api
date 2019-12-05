@@ -458,12 +458,7 @@ result, res) {
 }, ɵ12 = function (result, res) {
     res.json({ uri: result });
 }, ɵ13 = function (svc, req) {
-    return svc.getUri(req.body)
-        .then(uri => {
-        let fields = ['serviceType', 'services', 'scheme', 'themes', 'publishers', 'keywords'];
-        let query = new Query().uri(uri).fields(fields);
-        return svc.search(query);
-    });
+    return svc.exists(req.body);
 }, ɵ14 = function (svc, req) {
     let input = req.body.url || req.files.file;
     let format = req.body.format || req.query.format;
@@ -544,7 +539,7 @@ const Routes = [
     {
         key: 'uri',
         method: 'post',
-        path: 'items/uri',
+        path: 'utils/uri',
         auth: false,
         onExecute: ɵ11,
         onResponse: ɵ12
@@ -552,7 +547,7 @@ const Routes = [
     {
         key: 'exists',
         method: 'post',
-        path: 'items/exists',
+        path: 'utils/exists',
         auth: false,
         onExecute: ɵ13
     },

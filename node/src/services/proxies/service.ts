@@ -118,6 +118,15 @@ const Routes = [
         }
     },
     {
+        key: 'layers',
+        method: 'get',
+        path: 'services/:id/layers',
+        auth: false,
+        onExecute: function( svc : ServiceService, req : any) {
+            return svc.layers(req.params.id);
+        }
+    },
+    {
         key: 'test',
         method: 'get',
         path: 'services/:id/test',

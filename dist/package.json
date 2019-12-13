@@ -4,7 +4,7 @@
   "main": "bundles/geoplatform-client.umd.js",
   "module": "fesm5/geoplatform-client.js",
   "typings": "geoplatform-client.d.ts",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "license": "MIT",
   "whitelistedNonPeerDependencies": [
     "."

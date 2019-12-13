@@ -22,7 +22,7 @@ class GalleryService extends ItemService {
     }
 
     addItem (galleryId : string, itemObj : any, options ?: any) : Promise<any> {
-        return Promise.resolve( true )
+        return this.createAndResolvePromise( true )
         .then( () => {
             let url = this.baseUrl + '/' + galleryId + '/items';
             let opts = this.buildRequest({
@@ -39,7 +39,7 @@ class GalleryService extends ItemService {
     }
 
     removeItem( galleryId : string, itemId : any, options ?: any) : Promise<any> {
-        return Promise.resolve( this.baseUrl + '/' + galleryId + '/items/' + itemId )
+        return this.createAndResolvePromise( this.baseUrl + '/' + galleryId + '/items/' + itemId )
         .then( url => {
             let opts = this.buildRequest({
                 method:'DELETE', url:url, options:options

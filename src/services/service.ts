@@ -1,9 +1,10 @@
 
 
-import ItemTypes from '../shared/types';
-import ItemService from './item';
-import Query from '../shared/query';
-import GPHttpClient from '../http/client';
+import ItemTypes         from '../shared/types';
+import ItemService       from './item';
+import Query             from '../shared/query';
+import { SearchResults } from '../shared/models';
+import GPHttpClient      from '../http/client';
 
 /**
  * GeoPlatform Service service
@@ -35,7 +36,7 @@ class ServiceService extends ItemService {
      */
     about( service : any, options ?: any ) : Promise<any> {
 
-        return Promise.resolve( service )
+        return this.createAndResolvePromise( service )
         .then( svc => {
             if(!svc)
                 throw new Error("Must provide service to get metadata about");
@@ -55,6 +56,34 @@ class ServiceService extends ItemService {
 
 
     /**
+     * @param id - identifier of the parent service to fetch layers from
+     * @param options - optional set of request options to apply to xhr request
+     * @return Promise resolving search results containing Layers
+     */
+    layers( id : string, options ?: any ) : Promise<SearchResults> {
+
+        return this.createAndResolvePromise(id)
+        .then( svcId => {
+            if(!svcId)
+                throw new Error("Must provide service identifier");
+            let opts = this.buildRequest({
+                method:'GET',
+                url:this.baseUrl + '/' + svcId + '/layers',
+                options:options
+            });
+            return this.execute(opts);
+        })
+        .catch(e => {
+            let err = new Error(`Error fetching service layers: ${e.message}`);
+            Object.assign(err, e);
+            this.logError('ServiceService.layers() - ' + err.message);
+            throw err;
+        });
+    }
+
+
+
+    /**
      * @param options - optional set of request options to apply to request
      * @return Promise resolving service types
      */
@@ -66,7 +95,7 @@ class ServiceService extends ItemService {
         .pageSize(50)
         .getQuery();
 
-        return Promise.resolve( query )
+        return this.createAndResolvePromise( query )
         .then( (params) => {
             let url = this.apiBase + '/api/items';
             let opts = this.buildRequest({
@@ -91,7 +120,7 @@ class ServiceService extends ItemService {
      */
     import (service : any, options ?: any) : Promise<any> {
 
-        return Promise.resolve( service )
+        return this.createAndResolvePromise( service )
         .then( svc => {
             let url = this.baseUrl + '/import';
             let opts = this.buildRequest({
@@ -115,7 +144,7 @@ class ServiceService extends ItemService {
      */
     harvest (id : string, options ?: any) : Promise<any> {
 
-        return Promise.resolve( id )
+        return this.createAndResolvePromise( id )
         .then( id => {
             let url = this.baseUrl + '/' + id + '/harvest';
             let opts = this.buildRequest({
@@ -139,7 +168,7 @@ class ServiceService extends ItemService {
      */
     liveTest (id : string, options ?: any) : Promise<any> {
 
-        return Promise.resolve( id )
+        return this.createAndResolvePromise( id )
         .then( id => {
             let url = this.baseUrl + '/' + id + '/test';
             let opts = this.buildRequest({
@@ -161,7 +190,7 @@ class ServiceService extends ItemService {
      * @return Promise resolving service statistics
      */
     statistics (id : string, options ?: any) : Promise<any> {
-        return Promise.resolve( id )
+        return this.createAndResolvePromise( id )
         .then( id => {
             let url = this.baseUrl + '/' + id + '/statistics';
             let opts = this.buildRequest({

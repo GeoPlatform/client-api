@@ -2490,7 +2490,7 @@ This software has been approved for release by the U.S. Department of the Interi
             for (var _i = 1; _i < arguments.length; _i++) {
                 args[_i - 1] = arguments[_i];
             }
-            return Promise.resolve(id)
+            return this.createAndResolvePromise(id)
                 .then(function (id) {
                 var options = { params: null };
                 var url = _this.baseUrl + '/' + id + '/style';
@@ -2520,7 +2520,7 @@ This software has been approved for release by the U.S. Department of the Interi
          */
         LayerService.prototype.styles = function (id, options) {
             var _this = this;
-            return Promise.resolve(id)
+            return this.createAndResolvePromise(id)
                 .then(function (id) {
                 var url = _this.baseUrl + '/' + id + '/styles';
                 var opts = _this.buildRequest({ method: "GET", url: url, options: options });
@@ -2541,7 +2541,7 @@ This software has been approved for release by the U.S. Department of the Interi
          */
         LayerService.prototype.describe = function (id, req, options) {
             var _this = this;
-            return Promise.resolve(req)
+            return this.createAndResolvePromise(req)
                 .then(function (req) {
                 if (!req) {
                     throw new Error("Must provide describe parameters to use");
@@ -2583,7 +2583,7 @@ This software has been approved for release by the U.S. Department of the Interi
          */
         LayerService.prototype.validate = function (id, params, options) {
             var _this = this;
-            return Promise.resolve(params)
+            return this.createAndResolvePromise(params)
                 .then(function (params) {
                 if (!params) {
                     throw new Error("Must provide parameters to use in layer validation");
@@ -2630,7 +2630,7 @@ This software has been approved for release by the U.S. Department of the Interi
          */
         ServiceService.prototype.about = function (service, options) {
             var _this = this;
-            return Promise.resolve(service)
+            return this.createAndResolvePromise(service)
                 .then(function (svc) {
                 if (!svc)
                     throw new Error("Must provide service to get metadata about");
@@ -2647,6 +2647,31 @@ This software has been approved for release by the U.S. Department of the Interi
             });
         };
         /**
+         * @param id - identifier of the parent service to fetch layers from
+         * @param options - optional set of request options to apply to xhr request
+         * @return Promise resolving search results containing Layers
+         */
+        ServiceService.prototype.layers = function (id, options) {
+            var _this = this;
+            return this.createAndResolvePromise(id)
+                .then(function (svcId) {
+                if (!svcId)
+                    throw new Error("Must provide service identifier");
+                var opts = _this.buildRequest({
+                    method: 'GET',
+                    url: _this.baseUrl + '/' + svcId + '/layers',
+                    options: options
+                });
+                return _this.execute(opts);
+            })
+                .catch(function (e) {
+                var err = new Error("Error fetching service layers: " + e.message);
+                Object.assign(err, e);
+                _this.logError('ServiceService.layers() - ' + err.message);
+                throw err;
+            });
+        };
+        /**
          * @param options - optional set of request options to apply to request
          * @return Promise resolving service types
          */
@@ -2657,7 +2682,7 @@ This software has been approved for release by the U.S. Department of the Interi
                 .resourceTypes('ServiceType')
                 .pageSize(50)
                 .getQuery();
-            return Promise.resolve(query)
+            return this.createAndResolvePromise(query)
                 .then(function (params) {
                 var url = _this.apiBase + '/api/items';
                 var opts = _this.buildRequest({
@@ -2680,7 +2705,7 @@ This software has been approved for release by the U.S. Department of the Interi
          */
         ServiceService.prototype.import = function (service, options) {
             var _this = this;
-            return Promise.resolve(service)
+            return this.createAndResolvePromise(service)
                 .then(function (svc) {
                 var url = _this.baseUrl + '/import';
                 var opts = _this.buildRequest({
@@ -2702,7 +2727,7 @@ This software has been approved for release by the U.S. Department of the Interi
          */
         ServiceService.prototype.harvest = function (id, options) {
             var _this = this;
-            return Promise.resolve(id)
+            return this.createAndResolvePromise(id)
                 .then(function (id) {
                 var url = _this.baseUrl + '/' + id + '/harvest';
                 var opts = _this.buildRequest({
@@ -2724,7 +2749,7 @@ This software has been approved for release by the U.S. Department of the Interi
          */
         ServiceService.prototype.liveTest = function (id, options) {
             var _this = this;
-            return Promise.resolve(id)
+            return this.createAndResolvePromise(id)
                 .then(function (id) {
                 var url = _this.baseUrl + '/' + id + '/test';
                 var opts = _this.buildRequest({
@@ -2746,7 +2771,7 @@ This software has been approved for release by the U.S. Department of the Interi
          */
         ServiceService.prototype.statistics = function (id, options) {
             var _this = this;
-            return Promise.resolve(id)
+            return this.createAndResolvePromise(id)
                 .then(function (id) {
                 var url = _this.baseUrl + '/' + id + '/statistics';
                 var opts = _this.buildRequest({
@@ -2782,7 +2807,7 @@ This software has been approved for release by the U.S. Department of the Interi
         };
         GalleryService.prototype.addItem = function (galleryId, itemObj, options) {
             var _this = this;
-            return Promise.resolve(true)
+            return this.createAndResolvePromise(true)
                 .then(function () {
                 var url = _this.baseUrl + '/' + galleryId + '/items';
                 var opts = _this.buildRequest({
@@ -2799,7 +2824,7 @@ This software has been approved for release by the U.S. Department of the Interi
         };
         GalleryService.prototype.removeItem = function (galleryId, itemId, options) {
             var _this = this;
-            return Promise.resolve(this.baseUrl + '/' + galleryId + '/items/' + itemId)
+            return this.createAndResolvePromise(this.baseUrl + '/' + galleryId + '/items/' + itemId)
                 .then(function (url) {
                 var opts = _this.buildRequest({
                     method: 'DELETE', url: url, options: options
@@ -3168,6 +3193,9 @@ This software has been approved for release by the U.S. Department of the Interi
         };
         return AgolQuery;
     }());
+    /**
+     * AGOL Service
+     */
     var AgolService = /** @class */ (function (_super) {
         __extends(AgolService, _super);
         function AgolService(url, httpClient) {

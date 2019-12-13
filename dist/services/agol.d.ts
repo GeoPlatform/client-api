@@ -52,6 +52,9 @@ declare class AgolQuery {
     setPageSize(size: number): void;
     getPageSize(): number;
 }
+/**
+ * AGOL Service
+ */
 declare class AgolService extends BaseService {
     constructor(url: string, httpClient: GPHttpClient);
     setUrl(baseUrl: string): void;

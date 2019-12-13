@@ -37,7 +37,7 @@ class LayerService extends ItemService {
      * @return Promise resolving style JSON object
      */
     style (id : string, ...args) : Promise<any> {
-        return Promise.resolve( id )
+        return this.createAndResolvePromise( id )
         .then( (id) => {
 
             let options = { params: null };
@@ -69,7 +69,7 @@ class LayerService extends ItemService {
      * @return Promise resolving style JSON object
      */
     styles ( id : string, options ?: any ) : Promise<any[]> {
-        return Promise.resolve( id )
+        return this.createAndResolvePromise( id )
         .then( (id) => {
             let url = this.baseUrl + '/' + id + '/styles';
             let opts = this.buildRequest({ method:"GET", url:url, options:options });
@@ -92,7 +92,7 @@ class LayerService extends ItemService {
      */
     describe( id : string, req : any, options ?: any ) : Promise<any> {
 
-        return Promise.resolve( req )
+        return this.createAndResolvePromise( req )
         .then( (req) => {
 
             if(!req) {
@@ -139,7 +139,7 @@ class LayerService extends ItemService {
      */
     validate(id : string, params : any, options ?: any) : Promise<any> {
 
-        return Promise.resolve( params )
+        return this.createAndResolvePromise( params )
         .then( params => {
 
             if(!params) {

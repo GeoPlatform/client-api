@@ -1,4 +1,5 @@
 import ItemService from './item';
+import { SearchResults } from '../shared/models';
 import GPHttpClient from '../http/client';
 /**
  * GeoPlatform Service service
@@ -19,6 +20,12 @@ declare class ServiceService extends ItemService {
      * @return Promise resolving service metadata
      */
     about(service: any, options?: any): Promise<any>;
+    /**
+     * @param id - identifier of the parent service to fetch layers from
+     * @param options - optional set of request options to apply to xhr request
+     * @return Promise resolving search results containing Layers
+     */
+    layers(id: string, options?: any): Promise<SearchResults>;
     /**
      * @param options - optional set of request options to apply to request
      * @return Promise resolving service types

@@ -658,8 +658,10 @@ result, res) {
 }, ɵ12$1 = function (svc, req) {
     return svc.harvest(req.params.id);
 }, ɵ13$1 = function (svc, req) {
-    return svc.liveTest(req.params.id);
+    return svc.layers(req.params.id);
 }, ɵ14$1 = function (svc, req) {
+    return svc.liveTest(req.params.id);
+}, ɵ15$1 = function (svc, req) {
     return svc.statistics(req.params.id);
 };
 var Routes$1 = [
@@ -743,18 +745,25 @@ var Routes$1 = [
         onExecute: ɵ12$1
     },
     {
+        key: 'layers',
+        method: 'get',
+        path: 'services/:id/layers',
+        auth: false,
+        onExecute: ɵ13$1
+    },
+    {
         key: 'test',
         method: 'get',
         path: 'services/:id/test',
         auth: false,
-        onExecute: ɵ13$1
+        onExecute: ɵ14$1
     },
     {
         key: 'statistics',
         method: 'get',
         path: 'services/:id/statistics',
         auth: false,
-        onExecute: ɵ14$1
+        onExecute: ɵ15$1
     }
 ];
 /**

@@ -174,6 +174,11 @@ class AgolQuery {
 }
 
 
+
+
+/**
+ * AGOL Service
+ */
 class AgolService extends BaseService {
 
     constructor(url : string, httpClient : GPHttpClient) {

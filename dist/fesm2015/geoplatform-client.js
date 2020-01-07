@@ -2246,7 +2246,7 @@ class LayerService extends ItemService {
      * @return Promise resolving style JSON object
      */
     style(id, ...args) {
-        return Promise.resolve(id)
+        return this.createAndResolvePromise(id)
             .then((id) => {
             let options = { params: null };
             let url = this.baseUrl + '/' + id + '/style';
@@ -2275,7 +2275,7 @@ class LayerService extends ItemService {
      * @return Promise resolving style JSON object
      */
     styles(id, options) {
-        return Promise.resolve(id)
+        return this.createAndResolvePromise(id)
             .then((id) => {
             let url = this.baseUrl + '/' + id + '/styles';
             let opts = this.buildRequest({ method: "GET", url: url, options: options });
@@ -2295,7 +2295,7 @@ class LayerService extends ItemService {
      * @return Promise resolving feature JSON object
      */
     describe(id, req, options) {
-        return Promise.resolve(req)
+        return this.createAndResolvePromise(req)
             .then((req) => {
             if (!req) {
                 throw new Error("Must provide describe parameters to use");
@@ -2336,7 +2336,7 @@ class LayerService extends ItemService {
      * @return Promise resolving empty if successful or a message if failed
      */
     validate(id, params, options) {
-        return Promise.resolve(params)
+        return this.createAndResolvePromise(params)
             .then(params => {
             if (!params) {
                 throw new Error("Must provide parameters to use in layer validation");
@@ -2380,7 +2380,7 @@ class ServiceService extends ItemService {
      * @return Promise resolving service metadata
      */
     about(service, options) {
-        return Promise.resolve(service)
+        return this.createAndResolvePromise(service)
             .then(svc => {
             if (!svc)
                 throw new Error("Must provide service to get metadata about");
@@ -2397,6 +2397,30 @@ class ServiceService extends ItemService {
         });
     }
     /**
+     * @param id - identifier of the parent service to fetch layers from
+     * @param options - optional set of request options to apply to xhr request
+     * @return Promise resolving search results containing Layers
+     */
+    layers(id, options) {
+        return this.createAndResolvePromise(id)
+            .then(svcId => {
+            if (!svcId)
+                throw new Error("Must provide service identifier");
+            let opts = this.buildRequest({
+                method: 'GET',
+                url: this.baseUrl + '/' + svcId + '/layers',
+                options: options
+            });
+            return this.execute(opts);
+        })
+            .catch(e => {
+            let err = new Error(`Error fetching service layers: ${e.message}`);
+            Object.assign(err, e);
+            this.logError('ServiceService.layers() - ' + err.message);
+            throw err;
+        });
+    }
+    /**
      * @param options - optional set of request options to apply to request
      * @return Promise resolving service types
      */
@@ -2406,7 +2430,7 @@ class ServiceService extends ItemService {
             .resourceTypes('ServiceType')
             .pageSize(50)
             .getQuery();
-        return Promise.resolve(query)
+        return this.createAndResolvePromise(query)
             .then((params) => {
             let url = this.apiBase + '/api/items';
             let opts = this.buildRequest({
@@ -2428,7 +2452,7 @@ class ServiceService extends ItemService {
      * @return Promise resolving imported service
      */
     import(service, options) {
-        return Promise.resolve(service)
+        return this.createAndResolvePromise(service)
             .then(svc => {
             let url = this.baseUrl + '/import';
             let opts = this.buildRequest({
@@ -2449,7 +2473,7 @@ class ServiceService extends ItemService {
      * @return Promise resolving service layers
      */
     harvest(id, options) {
-        return Promise.resolve(id)
+        return this.createAndResolvePromise(id)
             .then(id => {
             let url = this.baseUrl + '/' + id + '/harvest';
             let opts = this.buildRequest({
@@ -2470,7 +2494,7 @@ class ServiceService extends ItemService {
      * @return Promise resolving service statistics
      */
     liveTest(id, options) {
-        return Promise.resolve(id)
+        return this.createAndResolvePromise(id)
             .then(id => {
             let url = this.baseUrl + '/' + id + '/test';
             let opts = this.buildRequest({
@@ -2491,7 +2515,7 @@ class ServiceService extends ItemService {
      * @return Promise resolving service statistics
      */
     statistics(id, options) {
-        return Promise.resolve(id)
+        return this.createAndResolvePromise(id)
             .then(id => {
             let url = this.baseUrl + '/' + id + '/statistics';
             let opts = this.buildRequest({
@@ -2524,7 +2548,7 @@ class GalleryService extends ItemService {
         this.baseUrl = baseUrl + '/api/galleries';
     }
     addItem(galleryId, itemObj, options) {
-        return Promise.resolve(true)
+        return this.createAndResolvePromise(true)
             .then(() => {
             let url = this.baseUrl + '/' + galleryId + '/items';
             let opts = this.buildRequest({
@@ -2540,7 +2564,7 @@ class GalleryService extends ItemService {
         });
     }
     removeItem(galleryId, itemId, options) {
-        return Promise.resolve(this.baseUrl + '/' + galleryId + '/items/' + itemId)
+        return this.createAndResolvePromise(this.baseUrl + '/' + galleryId + '/items/' + itemId)
             .then(url => {
             let opts = this.buildRequest({
                 method: 'DELETE', url: url, options: options
@@ -2901,6 +2925,9 @@ class AgolQuery {
         return this._query.size;
     }
 }
+/**
+ * AGOL Service
+ */
 class AgolService extends BaseService {
     constructor(url, httpClient) {
         super(url, httpClient);

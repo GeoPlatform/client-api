@@ -16,11 +16,7 @@ class AgolQuery {
         };
 
         if(options) {
-            for(let p in options) {
-                if(options.hasOwnProperty(p)) {
-                    this._query[ p as string ] = options[p] as any;
-                }
-            }
+            this.applyParameters(options);
         }
     }
 
@@ -35,6 +31,18 @@ class AgolQuery {
         }
         return result;
     }
+
+    /**
+     * @param obj - set of parameter/values to apply to this query
+     */
+    applyParameters (obj : { [key:string]:any } ) : void { 
+        for(let p in obj) {
+            if(obj.hasOwnProperty(p)) {
+                this._query[ p as string ] = obj[p] as any;
+            }
+        }
+    }
+
 
     // ---------------------------------------
 

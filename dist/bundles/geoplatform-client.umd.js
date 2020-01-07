@@ -533,6 +533,7 @@ This software has been approved for release by the U.S. Department of the Interi
         SCHEMES_ID: 'scheme.id',
         SCHEMES_LABEL: 'scheme.label',
         SCHEMES_URI: 'scheme.uri',
+        SEMANTIC_CONCEPTS: 'concepts',
         SIMILAR_TO: 'similarTo',
         STATUS: 'status',
         SERVICE_TYPES: 'serviceType.id',
@@ -3038,11 +3039,7 @@ This software has been approved for release by the U.S. Department of the Interi
                 size: 10
             };
             if (options) {
-                for (var p in options) {
-                    if (options.hasOwnProperty(p)) {
-                        this._query[p] = options[p];
-                    }
-                }
+                this.applyParameters(options);
             }
         }
         AgolQuery.prototype.getQuery = function () {
@@ -3055,6 +3052,16 @@ This software has been approved for release by the U.S. Department of the Interi
                 result[prop] = value;
             }
             return result;
+        };
+        /**
+         * @param obj - set of parameter/values to apply to this query
+         */
+        AgolQuery.prototype.applyParameters = function (obj) {
+            for (var p in obj) {
+                if (obj.hasOwnProperty(p)) {
+                    this._query[p] = obj[p];
+                }
+            }
         };
         // ---------------------------------------
         AgolQuery.prototype.q = function (value) { this.setQ(value); return this; };

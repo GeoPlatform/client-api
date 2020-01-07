@@ -28,6 +28,7 @@ export default {
     SCHEMES_ID       : 'scheme.id',
     SCHEMES_LABEL    : 'scheme.label',
     SCHEMES_URI      : 'scheme.uri',
+    SEMANTIC_CONCEPTS: 'concepts',  // <- for Semantic filter by concepts
     SIMILAR_TO       : 'similarTo',
     STATUS           : 'status',
     SERVICE_TYPES    : 'serviceType.id',

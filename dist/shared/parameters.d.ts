@@ -26,6 +26,7 @@ declare const _default: {
     SCHEMES_ID: string;
     SCHEMES_LABEL: string;
     SCHEMES_URI: string;
+    SEMANTIC_CONCEPTS: string;
     SIMILAR_TO: string;
     STATUS: string;
     SERVICE_TYPES: string;

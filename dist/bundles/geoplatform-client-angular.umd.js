@@ -325,6 +325,10 @@ This software has been approved for release by the U.S. Department of the Interi
         var client$1 = ng2HttpClientFactory(http);
         return new client.KGService(client.Config.ualUrl, client$1);
     }
+    function agolServiceProviderFactory(http) {
+        var client$1 = ng2HttpClientFactory(http);
+        return new client.AgolService(client.Config.ualUrl, client$1);
+    }
     var GeoPlatformClientModule = /** @class */ (function () {
         function GeoPlatformClientModule() {
         }
@@ -379,6 +383,11 @@ This software has been approved for release by the U.S. Department of the Interi
                         provide: client.KGService,
                         useFactory: kgServiceProviderFactory,
                         deps: [http.HttpClient]
+                    },
+                    {
+                        provide: client.AgolService,
+                        useFactory: agolServiceProviderFactory,
+                        deps: [http.HttpClient]
                     }
                 ]
             })
@@ -397,6 +406,7 @@ This software has been approved for release by the U.S. Department of the Interi
     exports.serviceServiceProviderFactory = serviceServiceProviderFactory;
     exports.utilsServiceProviderFactory = utilsServiceProviderFactory;
     exports.ɵa = kgServiceProviderFactory;
+    exports.ɵb = agolServiceProviderFactory;
 
     Object.defineProperty(exports, '__esModule', { value: true });
 

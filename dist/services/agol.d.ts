@@ -9,6 +9,12 @@ declare class AgolQuery {
     getQuery(): {
         [key: string]: any;
     };
+    /**
+     * @param obj - set of parameter/values to apply to this query
+     */
+    applyParameters(obj: {
+        [key: string]: any;
+    }): void;
     q(value: string): AgolQuery;
     setQ(value: string): void;
     getQ(): string;

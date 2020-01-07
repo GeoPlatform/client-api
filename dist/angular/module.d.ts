@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { ItemService, DatasetService, ServiceService, LayerService, MapService, GalleryService, UtilsService, KGService } from '@geoplatform/client';
+import { ItemService, DatasetService, ServiceService, LayerService, MapService, GalleryService, UtilsService, KGService, AgolService } from '@geoplatform/client';
 import { NG2HttpClient } from './http/ng';
 export declare function ng2HttpClientFactory(http: HttpClient): NG2HttpClient;
 export declare function itemServiceProviderFactory(http: HttpClient): ItemService;
@@ -10,5 +10,6 @@ export declare function mapServiceProviderFactory(http: HttpClient): MapService;
 export declare function galleryServiceProviderFactory(http: HttpClient): GalleryService;
 export declare function utilsServiceProviderFactory(http: HttpClient): UtilsService;
 export declare function kgServiceProviderFactory(http: HttpClient): KGService;
+export declare function agolServiceProviderFactory(http: HttpClient): AgolService;
 export declare class GeoPlatformClientModule {
 }

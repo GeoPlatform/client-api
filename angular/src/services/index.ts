@@ -3,7 +3,7 @@ import {
     Config, GPHttpClient,
     ItemService, UtilsService, TrackingService,
     DatasetService, ServiceService, LayerService,
-    MapService, GalleryService
+    MapService, GalleryService, AgolService
 } from "@geoplatform/client";
 
 import { NG2HttpClient } from '../http/ng';
@@ -25,6 +25,7 @@ function layerServiceFactory  (args : ServiceArgs) { return serviceFactory(Layer
 function mapServiceFactory    (args : ServiceArgs) { return serviceFactory(MapService,     args); }
 function galleryServiceFactory(args : ServiceArgs) { return serviceFactory(GalleryService, args); }
 function utilsServiceFactory  (args : ServiceArgs) { return serviceFactory(UtilsService,   args); }
+function agolServiceFactory  (args : ServiceArgs)  { return serviceFactory(AgolService,   args); }
 function trackingServiceFactory(args: ServiceArgs) { return serviceFactory(TrackingService, args); }
 
 function serviceFactory(clazz : any, args : ServiceArgs) {
@@ -55,5 +56,6 @@ export {
     mapServiceFactory,
     galleryServiceFactory,
     utilsServiceFactory,
+    agolServiceFactory,
     serviceFactory
 }

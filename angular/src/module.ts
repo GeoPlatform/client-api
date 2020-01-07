@@ -5,7 +5,7 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
 import {
     Config, GPHttpClient,
     ItemService, DatasetService, ServiceService, LayerService,
-    MapService, GalleryService, UtilsService, KGService
+    MapService, GalleryService, UtilsService, KGService, AgolService
 } from '@geoplatform/client';
 
 import { NG2HttpClient } from './http/ng';
@@ -45,6 +45,10 @@ export function utilsServiceProviderFactory( http : HttpClient ) {
 export function kgServiceProviderFactory( http : HttpClient ) {
     let client = ng2HttpClientFactory(http);
     return new KGService(Config.ualUrl, client);
+}
+export function agolServiceProviderFactory( http : HttpClient ) {
+    let client = ng2HttpClientFactory(http);
+    return new AgolService(Config.ualUrl, client);
 }
 
 
@@ -97,6 +101,11 @@ export function kgServiceProviderFactory( http : HttpClient ) {
         {
             provide:    KGService,
             useFactory: kgServiceProviderFactory,
+            deps:       [ HttpClient ]
+        },
+        {
+            provide:    AgolService,
+            useFactory: agolServiceProviderFactory,
             deps:       [ HttpClient ]
         }
     ]

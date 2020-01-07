@@ -1,6 +1,6 @@
 import { HttpParams, HttpHeaders, HttpRequest, HttpResponse, HttpErrorResponse, HttpClientModule, HttpClient } from '@angular/common/http';
 import { map } from 'rxjs/operators';
-import { GPHttpClient, ItemService, Config, DatasetService, ServiceService, LayerService, MapService, GalleryService, UtilsService, KGService } from '@geoplatform/client';
+import { GPHttpClient, ItemService, Config, DatasetService, ServiceService, LayerService, MapService, GalleryService, UtilsService, KGService, AgolService } from '@geoplatform/client';
 import { __decorate } from 'tslib';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -122,6 +122,10 @@ function kgServiceProviderFactory(http) {
     let client = ng2HttpClientFactory(http);
     return new KGService(Config.ualUrl, client);
 }
+function agolServiceProviderFactory(http) {
+    let client = ng2HttpClientFactory(http);
+    return new AgolService(Config.ualUrl, client);
+}
 let GeoPlatformClientModule = class GeoPlatformClientModule {
 };
 GeoPlatformClientModule = __decorate([
@@ -175,6 +179,11 @@ GeoPlatformClientModule = __decorate([
                 provide: KGService,
                 useFactory: kgServiceProviderFactory,
                 deps: [HttpClient]
+            },
+            {
+                provide: AgolService,
+                useFactory: agolServiceProviderFactory,
+                deps: [HttpClient]
             }
         ]
     })
@@ -186,5 +195,5 @@ GeoPlatformClientModule = __decorate([
  * Generated bundle index. Do not edit.
  */
 
-export { GeoPlatformClientModule, NG2HttpClient, datasetServiceProviderFactory, galleryServiceProviderFactory, itemServiceProviderFactory, layerServiceProviderFactory, mapServiceProviderFactory, ng2HttpClientFactory, serviceServiceProviderFactory, utilsServiceProviderFactory, kgServiceProviderFactory as ɵa };
+export { GeoPlatformClientModule, NG2HttpClient, datasetServiceProviderFactory, galleryServiceProviderFactory, itemServiceProviderFactory, layerServiceProviderFactory, mapServiceProviderFactory, ng2HttpClientFactory, serviceServiceProviderFactory, utilsServiceProviderFactory, kgServiceProviderFactory as ɵa, agolServiceProviderFactory as ɵb };
 //# sourceMappingURL=geoplatform-client-angular.js.map

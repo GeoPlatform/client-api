@@ -324,6 +324,7 @@ var Parameters = {
     SCHEMES_ID: 'scheme.id',
     SCHEMES_LABEL: 'scheme.label',
     SCHEMES_URI: 'scheme.uri',
+    SEMANTIC_CONCEPTS: 'concepts',
     SIMILAR_TO: 'similarTo',
     STATUS: 'status',
     SERVICE_TYPES: 'serviceType.id',
@@ -2765,11 +2766,7 @@ class AgolQuery {
             size: 10
         };
         if (options) {
-            for (let p in options) {
-                if (options.hasOwnProperty(p)) {
-                    this._query[p] = options[p];
-                }
-            }
+            this.applyParameters(options);
         }
     }
     getQuery() {
@@ -2782,6 +2779,16 @@ class AgolQuery {
             result[prop] = value;
         }
         return result;
+    }
+    /**
+     * @param obj - set of parameter/values to apply to this query
+     */
+    applyParameters(obj) {
+        for (let p in obj) {
+            if (obj.hasOwnProperty(p)) {
+                this._query[p] = obj[p];
+            }
+        }
     }
     // ---------------------------------------
     q(value) { this.setQ(value); return this; }

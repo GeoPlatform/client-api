@@ -61,7 +61,7 @@
         "md5": "2.2.1",
         "mocha": "6.2.0",
         "mock-require": "^3.0.3",
-        "ng-packagr": "^5.5.0",
+        "ng-packagr": "^10.1.1",
         "pre-commit": "^1.2.2",
         "protractor": "~6.0.0",
         "request": "^2.76.0",

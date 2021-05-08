@@ -33,7 +33,7 @@
         "axios": "^0.18.0",
         "codelyzer": "^4.0.1",
         "core-js": "^2.4.1",
-        "ng-packagr": "^4.7.0",
+        "ng-packagr": "^10.1.1",
         "request": "^2.76.0",
         "request-debug": "^0.2.0",
         "ts-node": "~4.1.0",
